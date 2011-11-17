@@ -27,6 +27,10 @@ class RCDraw extends #if flash RCView #elseif js RCViewCanvas #end {
 		this.alpha = alpha;
 		this.borderThickness = 1;
 		
+#if js
+		this.graphics = untyped view;//untyped view.getContext('2d');
+#end
+		
 		// Parse the color
 		if (Std.is (color, RCColor) || Std.is (color, RCGradient)) {
 			this.color = color;

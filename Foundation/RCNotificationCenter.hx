@@ -2,11 +2,13 @@
 //  RCNotificationCenter
 //
 //  Created by Cristi Baluta on 2010-03-12.
-//  Copyright (c) 2010 ralcr.com. All rights reserved.
+//  Copyright (c) 2010-2011 ralcr.com. All rights reserved.
 //
 #if flash
 import flash.events.Event;
 import flash.events.FullScreenEvent;
+#elseif js
+import js.Dom;// typedef js.Event
 #end
 
 class RCNotificationCenter {
@@ -20,17 +22,27 @@ class RCNotificationCenter {
 #if flash			
 			flash.Lib.current.stage.addEventListener (Event.RESIZE, resizeHandler);
 			flash.Lib.current.stage.addEventListener (FullScreenEvent.FULL_SCREEN, fullScreenHandler);
+#elseif js
+			js.Lib.window.onresize = resizeHandler;
 #end
 		}
 	}
-#if flash
+
 	/**
 	 *  Default notifications: RESIZE, FULL_SCREEN
 	 */
 	static function resizeHandler (e:Event) {
-		postNotification ("resize", [flash.Lib.current.stage.stageWidth, flash.Lib.current.stage.stageHeight]);
+#if flash
+		var w = flash.Lib.current.stage.stageWidth;
+		var h = flash.Lib.current.stage.stageHeight;
+#elseif js
+		var w = js.Lib.document.body.scrollWidth;
+		var h = js.Lib.document.body.scrollHeight;
+#end
+		postNotification ("resize", [w, h]);
 	}
 	
+#if flash
 	static function fullScreenHandler (e:FullScreenEvent) {
 	    postNotification ("fullscreen");
 	}

@@ -16,6 +16,8 @@ class RCViewCanvas {
 	public var clipsToBounds (default, setClipsToBounds) :Bool;
 	public var x (default, setX) :Float;
 	public var y (default, setY) :Float;
+	public var scaleX (default, setScaleX) :Float;
+	public var scaleY (default, setScaleY) :Float;
 	public var width (default, setWidth) :Float;
 	public var height (default, setHeight) :Float;
 	public var alpha (default, setAlpha) :Float;
@@ -206,12 +208,12 @@ class RCViewCanvas {
 		view.style.height = height + "px";
 		return h;
 	}
-	function scaleX (x:Float) :Float {
+	function setScaleX (x:Float) :Float {
 		scaleX = x;
 		scale (scaleX, scaleY);
 		return scaleX;
 	}
-	function scaleY (y:Float) :Float {
+	function setScaleY (y:Float) :Float {
 		scaleY = y;
 		scale (scaleX, scaleY);
 		return scaleY;

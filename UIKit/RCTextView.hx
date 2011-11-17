@@ -92,3 +92,55 @@ class RCTextView extends RCView {
 		super.destroy();
 	}
 }
+
+
+//Draw text string at specified point with specified color,font,width & alignment	
+/*function drawText(text,point,font,color,width,align)
+{
+	//Check arguments for null values        
+	if(!text || !point)
+		return false;
+		
+	phPoint=logicalToPhysicalPoint(point);
+	
+	if(width!=null)
+	    width=Math.round(width*scale) + "px";
+	
+    var textDiv=canvasDiv.appendChild(document.createElement("div"));
+
+    textDiv.style.position="absolute";
+    textDiv.style.left=phPoint.x + "px";
+    textDiv.style.top=phPoint.y + "px";
+    
+    if(color)
+        textDiv.style.color=color.getHex();
+            
+    //set font
+    if(font)
+    {
+    	if(font.family)
+        	textDiv.style.fontFamily=font.family;
+
+        if(font.weight)
+	        textDiv.style.fontWeight=font.weight;
+    
+    	if(font.size)
+        	textDiv.style.fontSize=font.size;
+    
+        if(font.style)
+	        textDiv.style.fontStyle=font.style;
+    
+    	if(font.variant)
+        	textDiv.style.fontVariant=font.variant;
+	}
+	
+    if(width)
+        textDiv.style.width=width;
+
+    if(align) 
+        textDiv.style.textAlign=align;
+
+    textDiv.innerHTML=text;
+    
+    return textDiv;
+}*/

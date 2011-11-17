@@ -129,3 +129,43 @@ class RCPhoto extends RCView {
 		loader = null;
 	}
 }
+
+
+//Draw image at specified point with specified width & height
+/*function drawImage(url,point,width,height)
+{
+    if(!url || !point)
+        return false;
+         
+    phPoint=logicalToPhysicalPoint(point);
+  
+    if(width!=null)
+        width=Math.round(width*scale) + "px";
+        
+    if(height!=null)   
+        height=Math.round(height*scale) + "px";
+
+    var imgDiv=canvasDiv.appendChild(document.createElement("div"));
+
+    imgDiv.style.position="absolute";
+    imgDiv.style.left=phPoint.x + "px";
+    imgDiv.style.top=phPoint.y + "px";
+    //create and set img tag/element
+    var img=imgDiv.appendChild(document.createElement("img"));
+     
+    img.src=url;
+    
+    if(width!=null)
+    {
+        img.style.width=width;
+        imgDiv.style.width=width;
+    }
+      
+    if(height!=null)
+    {
+        img.style.height=height;
+        imgDiv.style.height=height;
+    }
+    
+    return imgDiv;
+}*/

@@ -6,6 +6,7 @@
 //
 import js.Dom;
 import RCView;
+import RCStage;
 
 class Main {
 	
@@ -13,25 +14,16 @@ class Main {
 	static function main() {
 		haxe.Firebug.redirectTraces();
 		
-		var root = js.Lib.document.getElementById("main");
-		root.style.position = "absolute";
-		var sprite = new RCView(200,100);
-		root.appendChild ( sprite.view );
+		//var root = js.Lib.document.getElementById("main");
+		RCStage.init();
+		
+		var sprite = new RCView(200,200);
+		RCStage.addChild ( sprite );
+		
 		
 		var rect = new RCRectangle(20,30, 100, 50, 0xffff33);
-		root.appendChild ( rect.view );
+	 	RCStage.addChild ( rect );
 		
-/*		var buttonnode= js.Lib.document.createElement('input');
-			buttonnode.setAttribute('type','button');
-			buttonnode.setAttribute('name','sal');
-			buttonnode.setAttribute('value','sal');*/
-		//js.Lib.document.appendChild ( buttonnode );
-		
-		//New Part here
-		//buttonnode.onClick = Hi;
-		//setContent ("test", buttonnode);
-		
-		//js.Lib.document.createElement('draw');
 		
     }
 	static function Hi(){

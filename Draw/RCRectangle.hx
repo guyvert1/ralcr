@@ -30,3 +30,23 @@ class RCRectangle extends RCDraw, implements RCDrawInterface {
 		this.graphics.endFill();
 	}
 }
+
+//Draw color filled rectangle at specified point with specified color, width and height
+/*function fillRectangle(color,point,width,height)
+{
+    //Check arguments for null values
+    if(!color || !point || !width || !height)
+	    return false;
+
+    width=Math.round(width*scale);
+    height=Math.round(height*scale);
+	
+    var rectDiv=canvasDiv.appendChild(document.createElement("div"));
+    phPoint=logicalToPhysicalPoint(point);
+
+    var hexColor=color.getHex();
+    
+    //Draw a single div element
+    rectDiv.innerHTML="<DIV style=\"position:absolute;overflow:hidden;left:" + phPoint.x + "px;top:" + phPoint.y + "px;width:" + width +  "px;height:" + height + "px;background-color:" + hexColor + "\"></DIV>";
+    return rectDiv;
+}*/

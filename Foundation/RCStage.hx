@@ -15,6 +15,7 @@ import flash.external.ExternalInterface;
 import js.Dom;
 private typedef DisplayObjectContainer = RCViewCanvas;
 import haxe.remoting.ExternalConnection;
+typedef ExternalInterface = ExternalConnection;
 #end
 
 
@@ -23,27 +24,35 @@ class RCStage {
 #if flash
 	inline public static var target = flash.Lib.current;
 	inline public static var stage :Stage = flash.Lib.current.stage;
-#elseif js
-	inline public static var target = js.Lib.document.getElementById("main");
-	inline public static var stage = target;
-#end	
 	public static var SCREEN_W :Float = flash.system.Capabilities.screenResolutionX;
 	public static var SCREEN_H :Float = flash.system.Capabilities.screenResolutionY;
 	public static var URL :String = flash.Lib.current.loaderInfo.url;
 	public static var ID :String = flash.Lib.current.loaderInfo.parameters.id;
+#elseif js
+	public static var target = js.Lib.document.body;//js.Lib.document.getElementById("main");
+	inline public static var stage = target;
+	public static var SCREEN_W :Float = js.Lib.window.screen.width;
+	public static var SCREEN_H :Float = js.Lib.window.screen.height;
+	public static var URL :String = "";
+	public static var ID :String = "";
+#end
+
 	public static var width :Int;
 	public static var height :Int;
 	
 		
 	public static function init () {
-		
+#if flash
 		stage.scaleMode = StageScaleMode.NO_SCALE;
 		stage.align = StageAlign.TOP_LEFT;
 		width = stage.stageWidth;
 		height = stage.stageHeight;
-		
+#elseif js
 		target.style.position = "absolute";
-		
+		target.style.backgroundColor = "#333322";
+		width = target.scrollWidth;
+		height = target.scrollHeight;
+#end
 		// Create the url without swf name
 		var url = URL.split("/");
 			url.pop();
@@ -54,8 +63,8 @@ class RCStage {
 	}
 	
 	static function resizeHandler (w, h) {
-		width = stage.stageWidth;
-		height = stage.stageHeight;
+		width = w;
+		height = h;
 	}
 	
 	
@@ -71,14 +80,10 @@ class RCStage {
 	
 	
 	public static function fullscreen () {
-#if flash
-		stage.displayState = StageDisplayState.FULL_SCREEN;
-#end
+#if flash stage.displayState = StageDisplayState.FULL_SCREEN; #end
 	}
 	public static function normal () {
-#if flash
-		stage.displayState = StageDisplayState.NORMAL;
-#end
+#if flash stage.displayState = StageDisplayState.NORMAL; #end
 	}
 	public static function isFullScreen () :Bool {
 #if flash
@@ -92,7 +97,7 @@ class RCStage {
 	/**
 	 *	Set the new size for the swf
 	 */
-	public static function setWidth (w:Int) {
+/*	public static function setWidth (w:Int) {
 		if (ExternalInterface.available)
 			ExternalInterface.call ("swffit.configure", {target:ID, maxWid:w});
 	}
@@ -102,7 +107,7 @@ class RCStage {
 			//ExternalInterface.call ("k0.resizeDivTo", "controller", h);
 			ExternalInterface.call ("swffit.configure", {target:ID, maxHei:h, maxWid:width, hCenter:false});
 	}
-	
+*/
 	
 	
 	/**
@@ -113,12 +118,30 @@ class RCStage {
 #if flash
 			target.addChild ( child );
 #elseif js
-			target.appendChild ( child );
+			target.appendChild ( child.view );
 #end
 	}
 	public static function removeChild (child:DisplayObjectContainer) :Void {
 		if (child != null)
-		if (target.contains ( child ))
-			target.removeChild ( child );
+#if flash	if (target.contains ( child )) #end
+			target.removeChild ( #if flash child #elseif js child.view #end );
 	}
 }
+
+
+/*		fcl.util.getDocumentWidth = function()
+		{
+		if (document.body.scrollWidth)
+		return document.body.scrollWidth;
+		var w = document.documentElement.offsetWidth;
+		if (window.scrollMaxX)
+		w += window.scrollMaxX;
+		return w;
+		};
+
+		fcl.util.getDocumentHeight = function()
+		{
+		if (document.body.scrollHeight)
+		return document.body.scrollHeight;
+		return document.documentElement.offsetHeight;
+		};*/

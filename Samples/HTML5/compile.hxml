@@ -1,5 +1,5 @@
--js Samples/JS/test.js
--cp Samples/JS
+-js Samples/HTML5/test.js
+-cp Samples/HTML5
 -cp Foundation
 -cp CoreAnimation
 -cp UIKit
