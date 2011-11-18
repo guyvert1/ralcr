@@ -20,10 +20,10 @@ class CATKenBurns extends CAObject, implements CATransitionInterface {
 		var f_h = target.height;
 		
 		// Scale the photo to fill the constraintBounds
-		var x = constraintBounds.x;
-		var y = constraintBounds.y;
-		var w = constraintBounds.width;
-		var h = constraintBounds.height;
+		var x = constraintBounds.origin.x;
+		var y = constraintBounds.origin.y;
+		var w = constraintBounds.size.width;
+		var h = constraintBounds.size.height;
 		
 		// Begin the scale
 		if (w / target.width > h / target.height) {

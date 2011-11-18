@@ -26,7 +26,7 @@ class RCViewCanvas {
 	var viewMask :HtmlDom;
 	var lastW :Float;
 	var lastH :Float;
-	//var caobj :CAObject;
+	var caobj :CAObject;
 	var graphics :CanvasContext;
 	
 	
@@ -35,19 +35,13 @@ class RCViewCanvas {
 		size = new RCSize (0, 0);
 		
 		view = Lib.document.createElement("div");
+		//view = Lib.document.createElement("canvas");
 		view.style.position = "absolute";
-		
-		//graphics = untyped view.getContext('2d');
-/*		
-		view.addEventListener (Event.ADDED_TO_STAGE, viewDidAppear);
-		view.addEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappear);*/
 		
 		setX(x);
 		setY(y);
 		
-		setWidth(100);
-		setHeight(100);
-		setColor(0xff3300);
+		try{graphics = untyped view.getContext('2d');}catch(e:Dynamic){trace(e);}
 	}
 	//function viewWillAppear (_) :Void {}
 	//function viewWillDisappear (_) :Void {}
@@ -178,6 +172,7 @@ class RCViewCanvas {
 	
 	// Simulate flash API
 	function setVisible (v:Bool) :Bool {
+		visible = v;
 		view.style.visibility = (v ? "visible" : "hidden");
 		return v;
 	}

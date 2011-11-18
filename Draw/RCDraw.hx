@@ -28,7 +28,7 @@ class RCDraw extends #if flash RCView #elseif js RCViewCanvas #end {
 		this.borderThickness = 1;
 		
 #if js
-		this.graphics = untyped view;//untyped view.getContext('2d');
+		try{this.graphics = untyped view;}catch(e:Dynamic){trace(e);}//untyped view.getContext('2d');
 #end
 		
 		// Parse the color

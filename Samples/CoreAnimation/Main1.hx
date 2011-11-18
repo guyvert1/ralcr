@@ -94,7 +94,7 @@ class Main1 {
 		container.addChild ( p );
 		
 		var obj = new CATKenBurns (p, {}, 10, 0, caequations.Linear.NONE);
-			obj.constraintBounds = new flash.geom.Rectangle(0, 0, 500, 500);
+			obj.constraintBounds = new RCRect(0, 0, 500, 500);
 			obj.delegate.animationDidStop = destroyPhoto;
 			//obj.delegate.animationDidStart = st;
 			obj.delegate.arguments = [p];

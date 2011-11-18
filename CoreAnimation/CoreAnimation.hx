@@ -4,12 +4,16 @@
 //  Created by Baluta Cristian on 2008-09-28.
 //  Copyright (c) 2008 ralcr.com. All rights reserved.
 //
-import flash.display.Sprite;
+#if flash
+typedef Ticker = flash.display.Sprite;
+#elseif (js || cpp || neko)
+typedef Ticker = haxe.Timer;
+#end
 
 class CoreAnimation {
 	
 	static var latest :CAObject;
-	static var sprite :Sprite;
+	static var ticker :Ticker;
 	
 	public static var defaultTimingFunction = caequations.Linear.NONE;
 	public static var defaultDuration = 0.8;
@@ -42,9 +46,14 @@ class CoreAnimation {
 		obj.init();
 		obj.initTime();
 		
-		if (sprite == null) {
-			sprite = new Sprite();
-			sprite.addEventListener (flash.events.Event.ENTER_FRAME, updateAnimations);
+		if (ticker == null) {
+#if flash
+			ticker = new Ticker();
+			ticker.addEventListener (flash.events.Event.ENTER_FRAME, updateAnimations);
+#elseif js
+			ticker = new Ticker( 10 );
+			ticker.run = updateAnimations;
+#end
 		}
 	}
 	
@@ -77,9 +86,14 @@ class CoreAnimation {
 	}
 	
 	static function removeTimer () :Void {
-		if (latest == null && sprite != null) {
-			sprite.removeEventListener (flash.events.Event.ENTER_FRAME, updateAnimations);
-			sprite = null;
+		if (latest == null && ticker != null) {
+#if flash
+			ticker.removeEventListener (flash.events.Event.ENTER_FRAME, updateAnimations);
+#elseif (js || neko || cpp)
+			ticker.stop();
+#end
+			
+			ticker = null;
 		}
 	}
 	
@@ -95,9 +109,9 @@ class CoreAnimation {
 	/**
 	 *	Update the animations
 	 */
-	static function updateAnimations (_) :Void {
+	static function updateAnimations (#if flash _ #end) :Void {
 		
-		var current_time = flash.Lib.getTimer();
+		var current_time = timestamp();
 		var time_diff = 0.0;
 		
 		// Iterate over existing animations list from the newest to older
@@ -147,5 +161,15 @@ class CoreAnimation {
 			// Animate the next CAObject
 			a = a.prev;
 		}
+	}
+	
+	inline public static function timestamp () :Float {
+		#if (neko || cpp)
+			return neko.Sys.time() * 1000;
+		#elseif js
+			return Date.now().getTime();
+		#elseif flash
+			return flash.Lib.getTimer();
+		#end
 	}
 }

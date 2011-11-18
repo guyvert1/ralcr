@@ -13,15 +13,9 @@ class Main {
 	// change the HTML content of a DIV based on its ID
 	static function main() {
 		haxe.Firebug.redirectTraces();
-		
-		//var root = js.Lib.document.getElementById("main");
 		RCStage.init();
 		
-		var sprite = new RCView(200,200);
-		RCStage.addChild ( sprite );
-		
-		
-		var rect = new RCRectangle(20,30, 100, 50, 0xffff33);
+		var rect = new RCRectangle(200,30, 180, 150, 0xff3300);
 	 	RCStage.addChild ( rect );
 		
 		

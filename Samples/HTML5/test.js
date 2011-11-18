@@ -1,4 +1,100 @@
 $estr = function() { return js.Boot.__string_rec(this,''); }
+if(typeof haxe=='undefined') haxe = {}
+haxe.StackItem = { __ename__ : ["haxe","StackItem"], __constructs__ : ["CFunction","Module","FilePos","Method","Lambda"] }
+haxe.StackItem.CFunction = ["CFunction",0];
+haxe.StackItem.CFunction.toString = $estr;
+haxe.StackItem.CFunction.__enum__ = haxe.StackItem;
+haxe.StackItem.Module = function(m) { var $x = ["Module",1,m]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
+haxe.StackItem.FilePos = function(s,file,line) { var $x = ["FilePos",2,s,file,line]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
+haxe.StackItem.Method = function(classname,method) { var $x = ["Method",3,classname,method]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
+haxe.StackItem.Lambda = function(v) { var $x = ["Lambda",4,v]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
+haxe.Stack = function() { }
+haxe.Stack.__name__ = ["haxe","Stack"];
+haxe.Stack.callStack = function() {
+	return haxe.Stack.makeStack("$s");
+}
+haxe.Stack.exceptionStack = function() {
+	return haxe.Stack.makeStack("$e");
+}
+haxe.Stack.toString = function(stack) {
+	var b = new StringBuf();
+	{
+		var _g = 0;
+		while(_g < stack.length) {
+			var s = stack[_g];
+			++_g;
+			b.b[b.b.length] = "\nCalled from ";
+			haxe.Stack.itemToString(b,s);
+		}
+	}
+	return b.b.join("");
+}
+haxe.Stack.itemToString = function(b,s) {
+	var $e = s;
+	switch( $e[1] ) {
+	case 0:
+	{
+		b.b[b.b.length] = "a C function";
+	}break;
+	case 1:
+	var m = $e[2];
+	{
+		b.b[b.b.length] = "module ";
+		b.b[b.b.length] = m;
+	}break;
+	case 2:
+	var line = $e[4], file = $e[3], s1 = $e[2];
+	{
+		if(s1 != null) {
+			haxe.Stack.itemToString(b,s1);
+			b.b[b.b.length] = " (";
+		}
+		b.b[b.b.length] = file;
+		b.b[b.b.length] = " line ";
+		b.b[b.b.length] = line;
+		if(s1 != null) b.b[b.b.length] = ")";
+	}break;
+	case 3:
+	var meth = $e[3], cname = $e[2];
+	{
+		b.b[b.b.length] = cname;
+		b.b[b.b.length] = ".";
+		b.b[b.b.length] = meth;
+	}break;
+	case 4:
+	var n = $e[2];
+	{
+		b.b[b.b.length] = "local function #";
+		b.b[b.b.length] = n;
+	}break;
+	}
+}
+haxe.Stack.makeStack = function(s) {
+	var a = (function($this) {
+		var $r;
+		try {
+			$r = eval(s);
+		}
+		catch( $e0 ) {
+			{
+				var e = $e0;
+				$r = [];
+			}
+		}
+		return $r;
+	}(this));
+	var m = new Array();
+	{
+		var _g1 = 0, _g = a.length - (s == "$s"?2:0);
+		while(_g1 < _g) {
+			var i = _g1++;
+			var d = a[i].split("::");
+			m.unshift(haxe.StackItem.Method(d[0],d[1]));
+		}
+	}
+	return m;
+}
+haxe.Stack.prototype.__class__ = haxe.Stack;
 RCNotificationCenter = function() { }
 RCNotificationCenter.__name__ = ["RCNotificationCenter"];
 RCNotificationCenter.notificationsList = null;
@@ -61,9 +157,17 @@ RCViewCanvas = function(x,y) { if( x === $_ ) return; {
 	this.view.style.position = "absolute";
 	this.setX(x);
 	this.setY(y);
-	this.setWidth(100);
-	this.setHeight(100);
-	this.setColor(16724736);
+	try {
+		this.graphics = this.view.getContext("2d");
+	}
+	catch( $e0 ) {
+		{
+			var e = $e0;
+			{
+				haxe.Log.trace(e,{ fileName : "RCViewCanvas.hx", lineNumber : 44, className : "RCViewCanvas", methodName : "new"});
+			}
+		}
+	}
 }}
 RCViewCanvas.__name__ = ["RCViewCanvas"];
 RCViewCanvas.COL = function(color) {
@@ -85,6 +189,7 @@ RCViewCanvas.prototype.visible = null;
 RCViewCanvas.prototype.viewMask = null;
 RCViewCanvas.prototype.lastW = null;
 RCViewCanvas.prototype.lastH = null;
+RCViewCanvas.prototype.caobj = null;
 RCViewCanvas.prototype.graphics = null;
 RCViewCanvas.prototype.viewDidAppear = function(_) {
 	null;
@@ -151,6 +256,7 @@ RCViewCanvas.prototype.removeFromSuperView = function() {
 	var parent = null;
 }
 RCViewCanvas.prototype.setVisible = function(v) {
+	this.visible = v;
 	this.view.style.visibility = v?"visible":"hidden";
 	return v;
 }
@@ -226,7 +332,17 @@ RCDraw = function(x,y,w,h,color,alpha) { if( x === $_ ) return; {
 	this.size.height = h;
 	this.setAlpha(alpha);
 	this.borderThickness = 1;
-	this.graphics = this.view;
+	try {
+		this.graphics = this.view;
+	}
+	catch( $e0 ) {
+		{
+			var e = $e0;
+			{
+				haxe.Log.trace(e,{ fileName : "RCDraw.hx", lineNumber : 31, className : "RCDraw", methodName : "new"});
+			}
+		}
+	}
 	if(Std["is"](color,RCColor) || Std["is"](color,RCGradient)) {
 		this.color = color;
 	}
@@ -473,7 +589,6 @@ Reflect.makeVarArgs = function(f) {
 	}
 }
 Reflect.prototype.__class__ = Reflect;
-if(typeof haxe=='undefined') haxe = {}
 haxe.Log = function() { }
 haxe.Log.__name__ = ["haxe","Log"];
 haxe.Log.trace = function(v,infos) {
@@ -728,6 +843,94 @@ haxe.remoting.ExternalConnection.prototype.call = function(params) {
 }
 haxe.remoting.ExternalConnection.prototype.__class__ = haxe.remoting.ExternalConnection;
 haxe.remoting.ExternalConnection.__interfaces__ = [haxe.remoting.Connection];
+if(typeof caequations=='undefined') caequations = {}
+caequations.Linear = function() { }
+caequations.Linear.__name__ = ["caequations","Linear"];
+caequations.Linear.NONE = function(t,b,c,d,p_params) {
+	return c * t / d + b;
+}
+caequations.Linear.prototype.__class__ = caequations.Linear;
+CoreAnimation = function() { }
+CoreAnimation.__name__ = ["CoreAnimation"];
+CoreAnimation.latest = null;
+CoreAnimation.ticker = null;
+CoreAnimation.add = function(obj) {
+	if(obj == null) return;
+	if(obj.target == null) return;
+	var a = CoreAnimation.latest;
+	var prev = CoreAnimation.latest;
+	if(prev != null) prev.next = obj;
+	obj.prev = prev;
+	CoreAnimation.latest = obj;
+	obj.init();
+	obj.initTime();
+	if(CoreAnimation.ticker == null) {
+		CoreAnimation.ticker = new haxe.Timer(10);
+		CoreAnimation.ticker.run = $closure(CoreAnimation,"updateAnimations");
+	}
+}
+CoreAnimation.remove = function(obj) {
+	if(obj == null) return;
+	var a = CoreAnimation.latest;
+	while(a != null) {
+		if(a.target == obj) CoreAnimation.removeCAObject(a);
+		a = a.prev;
+	}
+}
+CoreAnimation.removeCAObject = function(a) {
+	if(a.prev != null) a.prev.next = a.next;
+	if(a.next != null) a.next.prev = a.prev;
+	if(CoreAnimation.latest == a) CoreAnimation.latest = a.prev != null?a.prev:null;
+	CoreAnimation.removeTimer();
+	a = null;
+}
+CoreAnimation.removeTimer = function() {
+	if(CoreAnimation.latest == null && CoreAnimation.ticker != null) {
+		CoreAnimation.ticker.stop();
+		CoreAnimation.ticker = null;
+	}
+}
+CoreAnimation.destroy = function() {
+	CoreAnimation.latest = null;
+	CoreAnimation.removeTimer();
+}
+CoreAnimation.updateAnimations = function() {
+	var current_time = Date.now().getTime();
+	var time_diff = 0.0;
+	var a = CoreAnimation.latest;
+	while(a != null) {
+		if(a.target == null) {
+			a = a.prev;
+			CoreAnimation.removeCAObject(a);
+			break;
+		}
+		time_diff = current_time - a.fromTime - a.delay;
+		if(time_diff >= a.duration) time_diff = a.duration;
+		if(time_diff > 0) {
+			a.animate(time_diff);
+			if(time_diff > 0 && !a.delegate.startPointPassed) a.delegate.start();
+			if(time_diff >= a.duration) {
+				if(a.repeatCount > 0) {
+					a.repeat();
+					a.delegate.repeat();
+				}
+				else {
+					CoreAnimation.removeCAObject(a);
+					a.delegate.stop();
+				}
+			}
+			if(a.delegate.kenBurnsPointIn != null) {
+				if(time_diff > a.delegate.kenBurnsPointIn && !a.delegate.kenBurnsPointInPassed) a.delegate.kbIn();
+				if(time_diff > a.delegate.kenBurnsPointOut && !a.delegate.kenBurnsPointOutPassed) a.delegate.kbOut();
+			}
+		}
+		a = a.prev;
+	}
+}
+CoreAnimation.timestamp = function() {
+	return Date.now().getTime();
+}
+CoreAnimation.prototype.__class__ = CoreAnimation;
 RCColor = function(fillColor,borderColor,a) { if( fillColor === $_ ) return; {
 	this.borderColor = borderColor;
 	this.fillColor = fillColor;
@@ -740,6 +943,15 @@ RCColor.initWithColor = function(fillColor,borderColor) {
 RCColor.prototype.alpha = null;
 RCColor.prototype.borderColor = null;
 RCColor.prototype.fillColor = null;
+RCColor.prototype.hexFillColor = function() {
+	var r = (this.fillColor & 16711680) >> 16;
+	var g = (this.fillColor & 65280) >> 8;
+	var b = this.fillColor & 255;
+	return ("#" + (r << 16 | g << 8 | b)).substr(0,7);
+}
+RCColor.prototype.hexBorderColor = function() {
+	return StringTools.replace(Std.string(this.borderColor),"0x","#");
+}
 RCColor.prototype.__class__ = RCColor;
 RCNotification = function(name,functionToCall,args) { if( name === $_ ) return; {
 	this.name = name;
@@ -895,11 +1107,8 @@ RCRectangle.__super__ = RCDraw;
 for(var k in RCDraw.prototype ) RCRectangle.prototype[k] = RCDraw.prototype[k];
 RCRectangle.prototype.roundness = null;
 RCRectangle.prototype.redraw = function() {
-	this.graphics.clear();
-	this.configure();
-	if(this.roundness != null) this.graphics.drawRoundRect(0,0,this.size.width,this.size.height,this.roundness);
-	else this.graphics.drawRect(0,0,this.size.width,this.size.height);
-	this.graphics.endFill();
+	haxe.Log.trace(this.color.hexFillColor(),{ fileName : "RCRectangle.hx", lineNumber : 34, className : "RCRectangle", methodName : "redraw"});
+	this.view.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:0px;top:0px;width:" + this.size.width + "px;height:" + this.size.height + "px;background-color:" + this.color.hexFillColor() + "\"></DIV>";
 }
 RCRectangle.prototype.__class__ = RCRectangle;
 RCRectangle.__interfaces__ = [RCDrawInterface];
@@ -941,6 +1150,46 @@ haxe.Firebug.trace = function(v,inf) {
 	console[type]((inf == null?"":inf.fileName + ":" + inf.lineNumber + " : ") + Std.string(v));
 }
 haxe.Firebug.prototype.__class__ = haxe.Firebug;
+haxe.Timer = function(time_ms) { if( time_ms === $_ ) return; {
+	this.id = haxe.Timer.arr.length;
+	haxe.Timer.arr[this.id] = this;
+	this.timerId = window.setInterval("haxe.Timer.arr[" + this.id + "].run();",time_ms);
+}}
+haxe.Timer.__name__ = ["haxe","Timer"];
+haxe.Timer.delay = function(f,time_ms) {
+	var t = new haxe.Timer(time_ms);
+	t.run = function() {
+		t.stop();
+		f();
+	}
+	return t;
+}
+haxe.Timer.measure = function(f,pos) {
+	var t0 = haxe.Timer.stamp();
+	var r = f();
+	haxe.Log.trace(haxe.Timer.stamp() - t0 + "s",pos);
+	return r;
+}
+haxe.Timer.stamp = function() {
+	return Date.now().getTime() / 1000;
+}
+haxe.Timer.prototype.id = null;
+haxe.Timer.prototype.timerId = null;
+haxe.Timer.prototype.stop = function() {
+	if(this.id == null) return;
+	window.clearInterval(this.timerId);
+	haxe.Timer.arr[this.id] = null;
+	if(this.id > 100 && this.id == haxe.Timer.arr.length - 1) {
+		var p = this.id - 1;
+		while(p >= 0 && haxe.Timer.arr[p] == null) p--;
+		haxe.Timer.arr = haxe.Timer.arr.slice(0,p + 1);
+	}
+	this.id = null;
+}
+haxe.Timer.prototype.run = function() {
+	null;
+}
+haxe.Timer.prototype.__class__ = haxe.Timer;
 IntIter = function(min,max) { if( min === $_ ) return; {
 	this.min = min;
 	this.max = max;
@@ -966,6 +1215,99 @@ haxe.io.Error.OutsideBounds = ["OutsideBounds",2];
 haxe.io.Error.OutsideBounds.toString = $estr;
 haxe.io.Error.OutsideBounds.__enum__ = haxe.io.Error;
 haxe.io.Error.Custom = function(e) { var $x = ["Custom",3,e]; $x.__enum__ = haxe.io.Error; $x.toString = $estr; return $x; }
+CADelegate = function(p) { if( p === $_ ) return; {
+	this.startPointPassed = false;
+	this.kenBurnsPointInPassed = false;
+	this.kenBurnsPointOutPassed = false;
+}}
+CADelegate.__name__ = ["CADelegate"];
+CADelegate.prototype.animationDidStart = null;
+CADelegate.prototype.animationDidStop = null;
+CADelegate.prototype.animationDidReversed = null;
+CADelegate.prototype.arguments = null;
+CADelegate.prototype.kenBurnsDidFadedIn = null;
+CADelegate.prototype.kenBurnsBeginsFadingOut = null;
+CADelegate.prototype.kenBurnsArgs = null;
+CADelegate.prototype.startPointPassed = null;
+CADelegate.prototype.kenBurnsPointInPassed = null;
+CADelegate.prototype.kenBurnsPointOutPassed = null;
+CADelegate.prototype.kenBurnsPointIn = null;
+CADelegate.prototype.kenBurnsPointOut = null;
+CADelegate.prototype.pos = null;
+CADelegate.prototype.start = function() {
+	this.startPointPassed = true;
+	if(Reflect.isFunction(this.animationDidStart)) try {
+		this.animationDidStart.apply(null,this.arguments);
+	}
+	catch( $e0 ) {
+		{
+			var e = $e0;
+			{
+				haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 36, className : "CADelegate", methodName : "start"});
+			}
+		}
+	}
+}
+CADelegate.prototype.stop = function() {
+	if(Reflect.isFunction(this.animationDidStop)) {
+		try {
+			this.animationDidStop.apply(null,this.arguments);
+		}
+		catch( $e0 ) {
+			{
+				var e = $e0;
+				{
+					haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 42, className : "CADelegate", methodName : "stop"});
+					haxe.Log.trace(this.pos.className + " -> " + this.pos.methodName + " -> " + this.pos.lineNumber,{ fileName : "CADelegate.hx", lineNumber : 43, className : "CADelegate", methodName : "stop"});
+					var stack = haxe.Stack.exceptionStack();
+					haxe.Log.trace(haxe.Stack.toString(stack),{ fileName : "CADelegate.hx", lineNumber : 45, className : "CADelegate", methodName : "stop"});
+				}
+			}
+		}
+	}
+}
+CADelegate.prototype.repeat = function() {
+	if(Reflect.isFunction(this.animationDidReversed)) try {
+		this.animationDidReversed.apply(null,this.arguments);
+	}
+	catch( $e0 ) {
+		{
+			var e = $e0;
+			{
+				haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 52, className : "CADelegate", methodName : "repeat"});
+			}
+		}
+	}
+}
+CADelegate.prototype.kbIn = function() {
+	this.kenBurnsPointInPassed = true;
+	if(Reflect.isFunction(this.kenBurnsDidFadedIn)) try {
+		this.kenBurnsDidFadedIn.apply(null,this.kenBurnsArgs);
+	}
+	catch( $e0 ) {
+		{
+			var e = $e0;
+			{
+				haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 58, className : "CADelegate", methodName : "kbIn"});
+			}
+		}
+	}
+}
+CADelegate.prototype.kbOut = function() {
+	this.kenBurnsPointOutPassed = true;
+	if(Reflect.isFunction(this.kenBurnsBeginsFadingOut)) try {
+		this.kenBurnsBeginsFadingOut.apply(null,this.kenBurnsArgs);
+	}
+	catch( $e0 ) {
+		{
+			var e = $e0;
+			{
+				haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 64, className : "CADelegate", methodName : "kbOut"});
+			}
+		}
+	}
+}
+CADelegate.prototype.__class__ = CADelegate;
 Type = function() { }
 Type.__name__ = ["Type"];
 Type.getClass = function(o) {
@@ -1861,6 +2203,64 @@ List.prototype.map = function(f) {
 	return b;
 }
 List.prototype.__class__ = List;
+CAObject = function(obj,properties,duration,delay,Eq,pos) { if( obj === $_ ) return; {
+	this.target = obj;
+	this.properties = properties;
+	this.repeatCount = 0;
+	this.autoreverses = false;
+	this.fromTime = Date.now().getTime();
+	this.duration = duration == null?CoreAnimation.defaultDuration:duration <= 0?0.001:duration;
+	this.delay = delay == null || delay < 0?0:delay;
+	this.timingFunction = Eq == null?CoreAnimation.defaultTimingFunction:Eq;
+	this.delegate = new CADelegate();
+	this.delegate.pos = pos;
+	this.fromValues = { };
+	this.toValues = { };
+}}
+CAObject.__name__ = ["CAObject"];
+CAObject.prototype.target = null;
+CAObject.prototype.prev = null;
+CAObject.prototype.next = null;
+CAObject.prototype.properties = null;
+CAObject.prototype.fromValues = null;
+CAObject.prototype.toValues = null;
+CAObject.prototype.fromTime = null;
+CAObject.prototype.delay = null;
+CAObject.prototype.duration = null;
+CAObject.prototype.repeatCount = null;
+CAObject.prototype.autoreverses = null;
+CAObject.prototype.timingFunction = null;
+CAObject.prototype.modifierFunction = null;
+CAObject.prototype.constraintBounds = null;
+CAObject.prototype.delegate = null;
+CAObject.prototype.init = function() {
+	throw "CAObject should be extended (" + this.delegate.pos + ")";
+}
+CAObject.prototype.animate = function(time_diff) {
+	throw "CAObject should be extended (" + this.delegate.pos + ")";
+}
+CAObject.prototype.initTime = function() {
+	this.fromTime = Date.now().getTime();
+	this.duration = this.duration * 1000;
+	this.delay = this.delay * 1000;
+}
+CAObject.prototype.repeat = function() {
+	this.fromTime = Date.now().getTime();
+	this.delay = 0;
+	if(this.autoreverses) {
+		var v = this.fromValues;
+		this.fromValues = this.toValues;
+		this.toValues = v;
+	}
+	this.repeatCount--;
+}
+CAObject.prototype.calculate = function(time_diff,prop) {
+	return this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null);
+}
+CAObject.prototype.toString = function() {
+	return "[CAObject: target=" + this.target + ", duration=" + this.duration + ", delay=" + this.delay + ", fromTime=" + this.fromTime + ", properties=" + this.properties + ", repeatCount=" + this.repeatCount + "]";
+}
+CAObject.prototype.__class__ = CAObject;
 haxe.Http = function(url) { if( url === $_ ) return; {
 	this.url = url;
 	this.headers = new Hash();
@@ -2304,13 +2704,11 @@ Main.__name__ = ["Main"];
 Main.main = function() {
 	haxe.Firebug.redirectTraces();
 	RCStage.init();
-	var sprite = new RCViewCanvas(200,200);
-	RCStage.addChild(sprite);
-	var rect = new RCRectangle(20,30,100,50,16777011);
+	var rect = new RCRectangle(200,30,180,150,16724736);
 	RCStage.addChild(rect);
 }
 Main.Hi = function() {
-	haxe.Log.trace("psst",{ fileName : "Main.hx", lineNumber : 30, className : "Main", methodName : "Hi"});
+	haxe.Log.trace("psst",{ fileName : "Main.hx", lineNumber : 24, className : "Main", methodName : "Hi"});
 }
 Main.setContent = function(id,content) {
 	var d = js.Lib.document.getElementById(id);
@@ -2324,7 +2722,7 @@ Main.click = function() {
 	Main.setContent("main",haxe.Http.requestUrl("data.xml"));
 }
 Main.clickAsync = function(xml) {
-	haxe.Log.trace("click async",{ fileName : "Main.hx", lineNumber : 52, className : "Main", methodName : "clickAsync"});
+	haxe.Log.trace("click async",{ fileName : "Main.hx", lineNumber : 46, className : "Main", methodName : "clickAsync"});
 	var r = new haxe.Http(xml);
 	r.onError = $closure(js.Lib,"alert");
 	r.onData = function(r1) {
@@ -2458,9 +2856,12 @@ RCStage.SCREEN_H = js.Lib.window.screen.height;
 RCStage.URL = "";
 RCStage.ID = "";
 haxe.remoting.ExternalConnection.connections = new Hash();
+CoreAnimation.defaultTimingFunction = $closure(caequations.Linear,"NONE");
+CoreAnimation.defaultDuration = 0.8;
 RCColor.RED = 16711680;
 RCColor.GREEN = 65280;
 RCColor.BLUE = 255;
+haxe.Timer.arr = new Array();
 haxe.Unserializer.DEFAULT_RESOLVER = Type;
 haxe.Unserializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";
 haxe.Unserializer.CODES = null;

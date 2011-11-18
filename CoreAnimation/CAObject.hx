@@ -4,9 +4,6 @@
 //  Created by Baluta Cristian on 2009-03-22.
 //  Copyright (c) 2009 http://ralcr.com. All rights reserved.
 //
-import flash.geom.Rectangle;
-
-
 class CAObject {
 	
 	public var target :Dynamic;// The object that is animated (DisplayObjectContainer, TextField, Sound)
@@ -26,7 +23,7 @@ class CAObject {
 	public var autoreverses :Bool;
 	public var timingFunction :Float -> Float -> Float -> Float -> Dynamic -> Float;
 	public var modifierFunction :Float -> Void;//function used to modify values in HaxeGetSet transition
-	public var constraintBounds :Rectangle;// used by kenburns and slide
+	public var constraintBounds :RCRect;// used by kenburns and slide
 	public var delegate :CADelegate;
 	
 	
@@ -47,7 +44,7 @@ class CAObject {
 		this.properties = properties;
 		this.repeatCount = 0;
 		this.autoreverses = false;
-		this.fromTime = flash.Lib.getTimer();
+		this.fromTime = CoreAnimation.timestamp();
 		this.duration = (duration == null) ? CoreAnimation.defaultDuration : ((duration <= 0) ? 0.001 : duration);
 		this.delay = (delay == null || delay < 0) ? 0 : delay;
 		this.timingFunction = (Eq == null) ? CoreAnimation.defaultTimingFunction : Eq;
@@ -60,8 +57,8 @@ class CAObject {
 	}
 	
 	
-	public function init () :Void { trace("CAObject should be extended ("+delegate.pos+")"); }
-	public function animate (time_diff:Float) :Void { trace("CAObject should be extended ("+delegate.pos+")"); }
+	public function init () :Void { throw "CAObject should be extended ("+delegate.pos+")"; }
+	public function animate (time_diff:Float) :Void { throw "CAObject should be extended ("+delegate.pos+")"; }
 	
 	
 	/**
@@ -69,7 +66,7 @@ class CAObject {
 	 *  This is not called till is not added to CoreAnimation
 	 */
 	public function initTime () :Void {
-		this.fromTime = flash.Lib.getTimer();
+		this.fromTime = CoreAnimation.timestamp();
 		this.duration = this.duration*1000;// Convert duration from seconds to milliseconds
 		this.delay = this.delay*1000;// Convert delay from seconds to milliseconds
 	}
@@ -81,7 +78,7 @@ class CAObject {
 	 */
 	public function repeat () :Void {
 		
-		fromTime = flash.Lib.getTimer();
+		fromTime = CoreAnimation.timestamp();
 		delay = 0;
 		
 		if (autoreverses) {
