@@ -18,6 +18,13 @@ class Main {
 		var rect = new RCRectangle(200,30, 180, 150, 0xff3300);
 	 	RCStage.addChild ( rect );
 		
+		var ell = new RCEllipse(100,100, 100, 100, 0xff3300);
+	 	RCStage.addChild ( ell );
+		
+		var lin = new RCLine(30,300, 400, 600, 0xff3300);
+/*		lin.lineWeight = 4;
+		lin.redraw();*/
+	 	RCStage.addChild ( lin );
 		
     }
 	static function Hi(){

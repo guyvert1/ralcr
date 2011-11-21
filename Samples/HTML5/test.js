@@ -589,6 +589,76 @@ Reflect.makeVarArgs = function(f) {
 	}
 }
 Reflect.prototype.__class__ = Reflect;
+RCDrawInterface = function() { }
+RCDrawInterface.__name__ = ["RCDrawInterface"];
+RCDrawInterface.prototype.configure = null;
+RCDrawInterface.prototype.redraw = null;
+RCDrawInterface.prototype.__class__ = RCDrawInterface;
+RCEllipse = function(x,y,w,h,color,alpha) { if( x === $_ ) return; {
+	if(alpha == null) alpha = 1.0;
+	RCDraw.call(this,x,y,w,h,color,alpha);
+	this.redraw();
+}}
+RCEllipse.__name__ = ["RCEllipse"];
+RCEllipse.__super__ = RCDraw;
+for(var k in RCDraw.prototype ) RCEllipse.prototype[k] = RCDraw.prototype[k];
+RCEllipse.prototype.redraw = function() {
+	this.fillEllipse(0,0,this.size.width,this.size.height);
+}
+RCEllipse.prototype.fillEllipse = function(xc,yc,width,height) {
+	var iHtml = new Array();
+	var a = Math.round(width / 2);
+	var b = Math.round(height / 2);
+	var hexColor = this.color.hexFillColor();
+	var x = 0;
+	var y = b;
+	var a2 = a * a;
+	var b2 = b * b;
+	var xp, yp;
+	xp = 1;
+	yp = y;
+	while(b2 * x < a2 * y) {
+		x++;
+		if(b2 * x * x + a2 * (y - 0.5) * (y - 0.5) - a2 * b2 >= 0) y--;
+		if(x == 1 && y != yp) {
+			iHtml[iHtml.length] = "<DIV style=\"position:absolute;overflow:hidden;width:1px;height:1px;left:" + xc + "px;top:" + (yc + yp - 1) + "px;background-color:" + hexColor + "\"></DIV>";
+			iHtml[iHtml.length] = "<DIV style=\"position:absolute;overflow:hidden;width:1px;height:1px;left:" + xc + "px;top:" + (yc - yp) + "px;background-color:" + hexColor + "\"></DIV>";
+		}
+		if(y != yp) {
+			iHtml[iHtml.length] = "<DIV style=\"position:absolute;overflow:hidden;height:1px;left:" + (xc - x + 1) + "px;top:" + (yc - yp) + "px;width:" + (2 * x - 1) + "px;background-color:" + hexColor + "\"></DIV>";
+			iHtml[iHtml.length] = "<DIV style=\"position:absolute;overflow:hidden;height:1px;left:" + (xc - x + 1) + "px;top:" + (yc + yp) + "px;width:" + (2 * x - 1) + "px;background-color:" + hexColor + "\"></DIV>";
+			yp = y;
+			xp = x;
+		}
+		if(b2 * x >= a2 * y) {
+			iHtml[iHtml.length] = "<DIV style=\"position:absolute;overflow:hidden;height:1px;left:" + (xc - x) + "px;top:" + (yc - yp) + "px;width:" + (2 * x + 1) + "px;background-color:" + hexColor + "\"></DIV>";
+			iHtml[iHtml.length] = "<DIV style=\"position:absolute;overflow:hidden;height:1px;left:" + (xc - x) + "px;top:" + (yc + yp) + "px;width:" + (2 * x + 1) + "px;background-color:" + hexColor + "\"></DIV>";
+		}
+	}
+	xp = x;
+	yp = y;
+	var divHeight = 1;
+	while(y != 0) {
+		y--;
+		if(b2 * (x + 0.5) * (x + 0.5) + a2 * y * y - a2 * b2 <= 0) x++;
+		if(x != xp) {
+			divHeight = yp - y;
+			iHtml[iHtml.length] = "<DIV style=\"position:absolute;overflow:hidden;left:" + (xc - xp) + "px;top:" + (yc - yp) + "px;width:" + (2 * xp + 1) + "px;height:" + divHeight + "px;background-color:" + hexColor + "\"></DIV>";
+			iHtml[iHtml.length] = "<DIV style=\"position:absolute;overflow:hidden;left:" + (xc - xp) + "px;top:" + (yc + y + 1) + "px;width:" + (2 * xp + 1) + "px;height:" + divHeight + "px;background-color:" + hexColor + "\"></DIV>";
+			xp = x;
+			yp = y;
+		}
+		if(y == 0) {
+			divHeight = yp - y + 1;
+			iHtml[iHtml.length] = "<DIV style=\"position:absolute;overflow:hidden;left:" + (xc - xp) + "px;top:" + (yc - yp) + "px;width:" + (2 * x + 1) + "px;height:" + divHeight + "px;background-color:" + hexColor + "\"></DIV>";
+			iHtml[iHtml.length] = "<DIV style=\"position:absolute;overflow:hidden;left:" + (xc - xp) + "px;top:" + (yc + y) + "px;width:" + (2 * x + 1) + "px;height:" + divHeight + "px;background-color:" + hexColor + "\"></DIV>";
+		}
+	}
+	this.view.innerHTML = iHtml.join("");
+	return this.view;
+}
+RCEllipse.prototype.__class__ = RCEllipse;
+RCEllipse.__interfaces__ = [RCDrawInterface];
 haxe.Log = function() { }
 haxe.Log.__name__ = ["haxe","Log"];
 haxe.Log.trace = function(v,infos) {
@@ -1091,11 +1161,6 @@ haxe.io.Bytes.prototype.getData = function() {
 	return this.b;
 }
 haxe.io.Bytes.prototype.__class__ = haxe.io.Bytes;
-RCDrawInterface = function() { }
-RCDrawInterface.__name__ = ["RCDrawInterface"];
-RCDrawInterface.prototype.configure = null;
-RCDrawInterface.prototype.redraw = null;
-RCDrawInterface.prototype.__class__ = RCDrawInterface;
 RCRectangle = function(x,y,w,h,color,alpha,r) { if( x === $_ ) return; {
 	if(alpha == null) alpha = 1.0;
 	RCDraw.call(this,x,y,w,h,color,alpha);
@@ -1107,7 +1172,7 @@ RCRectangle.__super__ = RCDraw;
 for(var k in RCDraw.prototype ) RCRectangle.prototype[k] = RCDraw.prototype[k];
 RCRectangle.prototype.roundness = null;
 RCRectangle.prototype.redraw = function() {
-	haxe.Log.trace(this.color.hexFillColor(),{ fileName : "RCRectangle.hx", lineNumber : 34, className : "RCRectangle", methodName : "redraw"});
+	this.view.innerHTML = "";
 	this.view.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:0px;top:0px;width:" + this.size.width + "px;height:" + this.size.height + "px;background-color:" + this.color.hexFillColor() + "\"></DIV>";
 }
 RCRectangle.prototype.__class__ = RCRectangle;
@@ -2668,6 +2733,150 @@ IntHash.prototype.toString = function() {
 	return s.b.join("");
 }
 IntHash.prototype.__class__ = IntHash;
+RCLine = function(x1,y1,x2,y2,color,alpha,lineWeight) { if( x1 === $_ ) return; {
+	if(lineWeight == null) lineWeight = 1;
+	if(alpha == null) alpha = 1.0;
+	RCDraw.call(this,x1,y1,x2 - x1,y2 - y1,color,alpha);
+	this.lineWeight = lineWeight;
+	this.redraw();
+}}
+RCLine.__name__ = ["RCLine"];
+RCLine.__super__ = RCDraw;
+for(var k in RCDraw.prototype ) RCLine.prototype[k] = RCDraw.prototype[k];
+RCLine.prototype.lineWeight = null;
+RCLine.prototype.redraw = function() {
+	this.drawLine(0,0,Math.round(this.size.width),Math.round(this.size.height));
+}
+RCLine.prototype.drawLine = function(x0,y0,x1,y1) {
+	var hexColor = this.color.hexFillColor();
+	if(y0 == y1) {
+		if(x0 <= x1) this.view.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:" + x0 + "px;top:" + y0 + "px;width:" + (x1 - x0 + 1) + "px;height:" + this.lineWeight + ";background-color:" + hexColor + "\"></DIV>";
+		else if(x0 > x1) this.view.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:" + x1 + "px;top:" + y0 + "px;width:" + (x0 - x1 + 1) + "px;height:" + this.lineWeight + ";background-color:" + hexColor + "\"></DIV>";
+		return this.view;
+	}
+	if(x0 == x1) {
+		if(y0 <= y1) this.view.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:" + x0 + "px;top:" + y0 + "px;width:" + this.lineWeight + ";height:" + (y1 - y0 + 1) + "px;background-color:" + hexColor + "\"></DIV>";
+		else if(y0 > y1) this.view.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:" + x0 + "px;top:" + y1 + "px;width:" + this.lineWeight + ";height:" + (y0 - y1 + 1) + "px;background-color:" + hexColor + "\"></DIV>";
+		return this.view;
+	}
+	var iHtml = new Array();
+	var yArray = new Array();
+	var dx = Math.abs(x1 - x0);
+	var dy = Math.abs(y1 - y0);
+	var pixHeight = Math.round(Math.sqrt(this.lineWeight * this.lineWeight / (dy * dy / (dx * dx) + 1)));
+	var pixWidth = Math.round(Math.sqrt(this.lineWeight * this.lineWeight - pixHeight * pixHeight));
+	if(pixWidth == 0) {
+		pixWidth = 1;
+	}
+	if(pixHeight == 0) {
+		pixHeight = 1;
+	}
+	var steep = Math.abs(y1 - y0) > Math.abs(x1 - x0);
+	if(steep) {
+		var tmp = x0;
+		x0 = y0;
+		y0 = tmp;
+		tmp = x1;
+		x1 = y1;
+		y1 = tmp;
+	}
+	if(x0 > x1) {
+		var tmp = x0;
+		x0 = x1;
+		x1 = tmp;
+		tmp = y0;
+		y0 = y1;
+		y1 = tmp;
+	}
+	var deltax = x1 - x0;
+	var deltay = Math.abs(y1 - y0);
+	var error = deltax / 2;
+	var ystep;
+	var y = y0;
+	if(y0 < y1) ystep = 1;
+	else ystep = -1;
+	var xp = 0;
+	var yp = 0;
+	var divWidth = 0;
+	var divHeight = 0;
+	if(steep) {
+		divWidth = pixWidth;
+	}
+	else {
+		divHeight = pixHeight;
+	}
+	{
+		var _g1 = x0, _g = x1 + 1;
+		while(_g1 < _g) {
+			var x = _g1++;
+			if(steep) {
+				if(x == x0) {
+					xp = y;
+					yp = x;
+				}
+				else {
+					if(y == xp) {
+						divHeight = divHeight + 1;
+					}
+					else {
+						divHeight = divHeight + pixHeight;
+						iHtml[iHtml.length] = "<DIV style=\"position:absolute;overflow:hidden;left:" + xp + "px;top:" + yp + "px;width:" + divWidth + "px;height:" + divHeight + "px;background-color:" + hexColor + "\"></DIV>";
+						divHeight = 0;
+						xp = y;
+						yp = x;
+					}
+				}
+				if(x == x1) {
+					if(divHeight != 0) {
+						divHeight = divHeight + pixHeight;
+						iHtml[iHtml.length] = "<DIV style=\"position:absolute;overflow:hidden;left:" + xp + "px;top:" + yp + "px;width:" + divWidth + "px;height:" + divHeight + "px;background-color:" + hexColor + "\"></DIV>";
+					}
+					else {
+						divHeight = pixHeight;
+						iHtml[iHtml.length] = "<DIV style=\"position:absolute;overflow:hidden;left:" + y + "px;top:" + x + "px;width:" + divWidth + "px;height:" + divHeight + "px;background-color:" + hexColor + "\"></DIV>";
+					}
+				}
+			}
+			else {
+				if(x == x0) {
+					xp = x;
+					yp = y;
+				}
+				else {
+					if(y == yp) {
+						divWidth = divWidth + 1;
+					}
+					else {
+						divWidth = divWidth + pixWidth;
+						iHtml[iHtml.length] = "<DIV style=\"position:absolute;overflow:hidden;left:" + xp + "px;top:" + yp + "px;width:" + divWidth + "px;height:" + divHeight + "px;background-color:" + hexColor + "\"></DIV>";
+						divWidth = 0;
+						xp = x;
+						yp = y;
+					}
+				}
+				if(x == x1) {
+					if(divWidth != 0) {
+						divWidth = divWidth + pixWidth;
+						iHtml[iHtml.length] = "<DIV style=\"position:absolute;overflow:hidden;left:" + xp + "px;top:" + yp + "px;width:" + divWidth + "px;height:" + divHeight + "px;background-color:" + hexColor + "\"></DIV>";
+					}
+					else {
+						divWidth = pixWidth;
+						iHtml[iHtml.length] = "<DIV style=\"position:absolute;overflow:hidden;left:" + x + "px;top:" + y + "px;width:" + divWidth + "px;height:" + divHeight + "px;background-color:" + hexColor + "\"></DIV>";
+					}
+				}
+			}
+			error = error - deltay;
+			if(error < 0) {
+				y = y + ystep;
+				error = error + deltax;
+			}
+		}
+	}
+	this.view.innerHTML = iHtml.join("");
+	return this.view;
+}
+RCLine.prototype.__class__ = RCLine;
+RCLine.__interfaces__ = [RCDrawInterface];
 RCGradient = function(colors,alphas,linear) { if( colors === $_ ) return; {
 	if(linear == null) linear = true;
 	this.gradientColors = colors;
@@ -2706,9 +2915,13 @@ Main.main = function() {
 	RCStage.init();
 	var rect = new RCRectangle(200,30,180,150,16724736);
 	RCStage.addChild(rect);
+	var ell = new RCEllipse(100,100,100,100,16724736);
+	RCStage.addChild(ell);
+	var lin = new RCLine(30,300,400,600,16724736);
+	RCStage.addChild(lin);
 }
 Main.Hi = function() {
-	haxe.Log.trace("psst",{ fileName : "Main.hx", lineNumber : 24, className : "Main", methodName : "Hi"});
+	haxe.Log.trace("psst",{ fileName : "Main.hx", lineNumber : 31, className : "Main", methodName : "Hi"});
 }
 Main.setContent = function(id,content) {
 	var d = js.Lib.document.getElementById(id);
@@ -2722,7 +2935,7 @@ Main.click = function() {
 	Main.setContent("main",haxe.Http.requestUrl("data.xml"));
 }
 Main.clickAsync = function(xml) {
-	haxe.Log.trace("click async",{ fileName : "Main.hx", lineNumber : 46, className : "Main", methodName : "clickAsync"});
+	haxe.Log.trace("click async",{ fileName : "Main.hx", lineNumber : 53, className : "Main", methodName : "clickAsync"});
 	var r = new haxe.Http(xml);
 	r.onError = $closure(js.Lib,"alert");
 	r.onData = function(r1) {

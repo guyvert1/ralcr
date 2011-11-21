@@ -5,7 +5,6 @@
 //  Copyright (c) 2008 ralcr.com. All rights reserved.
 //
 
-
 class RCRectangle extends RCDraw, implements RCDrawInterface {
 	
 	public var roundness :Null<Int>;// Rounded corners radius
