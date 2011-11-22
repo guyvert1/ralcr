@@ -9,6 +9,7 @@ import RCView;
 import RCStage;
 
 class Main {
+	static var lin :RCLine;
 	
 	// change the HTML content of a DIV based on its ID
 	static function main() {
@@ -21,12 +22,16 @@ class Main {
 		var ell = new RCEllipse(100,100, 100, 100, 0xff3300);
 	 	RCStage.addChild ( ell );
 		
-		var lin = new RCLine(30,300, 400, 600, 0xff3300);
-/*		lin.lineWeight = 4;
-		lin.redraw();*/
+		lin = new RCLine(30,300, 400, 600, 0xff3300);
 	 	RCStage.addChild ( lin );
-		
+		moveLine();
     }
+	static function moveLine(){
+		lin.size.width = Math.random()*500;
+		lin.size.height = Math.random()*500;
+		lin.redraw();
+		haxe.Timer.delay(moveLine, 150);
+	}
 	static function Hi(){
 		trace("psst");
 	}

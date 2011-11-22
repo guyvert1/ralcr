@@ -1,4 +1,4 @@
--cmd haxe Samples/CoreAnimation/compile.hxml
+#-cmd haxe Samples/CoreAnimation/compile.hxml
 -cmd haxe Samples/Draw/compile.hxml
 -cmd haxe Samples/Text/compile.hxml
 -cmd haxe Samples/HTML5/compile.hxml

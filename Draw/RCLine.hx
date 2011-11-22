@@ -25,6 +25,7 @@ class RCLine extends RCDraw, implements RCDrawInterface {
 		this.graphics.moveTo (0, 0);
 		this.graphics.lineTo (size.width, size.height);
 #elseif js
+		view.innerHTML = "";
 		drawLine (0, 0, Math.round(size.width), Math.round(size.height));
 #end
 	}
@@ -97,11 +98,8 @@ class RCLine extends RCDraw, implements RCDrawInterface {
 		var ystep;
 		var y = y0;
 		
-		if (y0<y1) 
-			ystep = 1; 
-		else 
-			ystep = -1;
-			
+		ystep = (y0<y1) ? 1 : -1; 
+		
 		var xp = 0;
 		var yp = 0;
 		var divWidth=0;

@@ -1,6 +1,4 @@
 
-import massive.signal.IPrioritySignal;
-
 interface IEvent
 {
 	var target:Dynamic;
