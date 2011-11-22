@@ -34,14 +34,16 @@ class RCViewCanvas {
 		
 		size = new RCSize (0, 0);
 		
+#if canvas
+		view = Lib.document.createElement("canvas");
+		graphics = untyped view.getContext('2d');
+#else
 		view = Lib.document.createElement("div");
-		//view = Lib.document.createElement("canvas");
+#end
 		view.style.position = "absolute";
 		
 		setX(x);
 		setY(y);
-		
-		try{graphics = untyped view.getContext('2d');}catch(e:Dynamic){trace(e);}
 	}
 	//function viewWillAppear (_) :Void {}
 	//function viewWillDisappear (_) :Void {}
@@ -85,7 +87,9 @@ class RCViewCanvas {
 		if (clip) {
 			view.style.overflow = "hidden";
 			viewMask = Lib.document.createElement("div");
-
+			viewMask.style.width = size.width+"px";
+			viewMask.style.height = size.height+"px";
+			
 			while (view.hasChildNodes()) {
 				viewMask.appendChild(view.removeChild(view.firstChild));
 			}
@@ -111,45 +115,45 @@ class RCViewCanvas {
 	 */
 	public function scaleToFit (w:Int, h:Int) :Void {
 		
-/*		if (size.width/w > size.height/h && size.width > w) {
-			view.width = w;
-			view.height = view.width * size.height / size.width;
+		if (size.width/w > size.height/h && size.width > w) {
+			setWidth ( w );
+			setHeight ( this.width * size.height / size.width );
 		}
 		else if (size.height > h) {
-			view.height = h;
-			view.width = view.height * size.width / size.height;
+			setHeight ( h );
+			setWidth ( this.height * size.width / size.height );
 		}
 		else if (size.width > lastW && size.height > lastH) {
-			view.width = size.width;
-			view.height = size.height;
+			setWidth ( size.width );
+			setHeight ( size.height );
 		}
 		else
 			resetScale();
 		
-		lastW = view.width;
-		lastH = view.height;*/
+		lastW = this.width;
+		lastH = this.height;
 	}
 	
 	public function scaleToFill (w:Int, h:Int) :Void {
 		
-/*		if (w/size.width > h/size.height) {
-			view.width = w;
-			view.height = view.width * size.height / size.width;
+		if (w/size.width > h/size.height) {
+			setWidth ( w );
+			setHeight ( this.width * size.height / size.width );
 		}
 		else {
-			view.height = h;
-			view.width = view.height * size.width / size.height;
-		}*/
+			setHeight ( h );
+			setWidth ( this.height * size.width / size.height );
+		}
 	}
 	
 	public function resetScale () :Void {
-/*		view.width = lastW;
-		view.height = lastH;*/
+		setWidth ( lastW );
+		setHeight ( lastH );
 	}
 	
-/*	public function animate (obj:CAObject) :Void {
+	public function animate (obj:CAObject) :Void {
 		CoreAnimation.add ( this.caobj = obj );
-	}*/
+	}
 	
 	/**
 	 *  This methos is usually overriten by the extension class.
@@ -186,21 +190,23 @@ class RCViewCanvas {
 		return a;
 	}
 	function setX (x:Float) :Float {
+		this.x = x;
 		view.style.left = Std.string(x) + "px";
 		return x;
 	}
 	function setY (y:Float) :Float {
+		this.y = y;
 		view.style.top = Std.string(y) + "px";
 		return y;
 	}
 	function setWidth (w:Float) :Float {
 		width = w;
-		view.style.width = width + "px";
+		view.style.width = w + "px";
 		return w;
 	}
 	function setHeight (h:Float) :Float {
 		height = h;
-		view.style.height = height + "px";
+		view.style.height = h + "px";
 		return h;
 	}
 	function setScaleX (x:Float) :Float {

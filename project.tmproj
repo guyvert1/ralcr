@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>Draw/RCRectangle.hx</string>
+	<string>Samples/HTML5/Main.hx</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -250,14 +250,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>62</integer>
+				<integer>1</integer>
 				<key>line</key>
-				<integer>30</integer>
+				<integer>16</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>60</integer>
+			<integer>3</integer>
 		</dict>
 		<key>Draw/RCDrawInterface.hx</key>
 		<dict>
@@ -278,14 +278,30 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>58</integer>
-				<key>line</key>
 				<integer>20</integer>
+				<key>line</key>
+				<integer>34</integer>
 			</dict>
+			<key>columnSelection</key>
+			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
+			<integer>6</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>41</integer>
+				<key>line</key>
+				<integer>34</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>20</integer>
+				<key>line</key>
+				<integer>34</integer>
+			</dict>
 		</dict>
 		<key>Draw/RCGradient.hx</key>
 		<dict>
@@ -306,14 +322,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>2</integer>
+				<integer>12</integer>
 				<key>line</key>
-				<integer>29</integer>
+				<integer>105</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
+			<integer>138</integer>
 		</dict>
 		<key>Draw/RCNoisyRectangle.hx</key>
 		<dict>
@@ -392,12 +408,12 @@
 				<key>column</key>
 				<integer>2</integer>
 				<key>line</key>
-				<integer>29</integer>
+				<integer>20</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>3</integer>
+			<integer>2</integer>
 		</dict>
 		<key>Draw/RCStar.hx</key>
 		<dict>
@@ -799,6 +815,20 @@
 				<integer>33</integer>
 				<key>line</key>
 				<integer>10</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>Foundation/RCPosition.hx</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -1316,9 +1346,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>55</integer>
+				<integer>37</integer>
 				<key>line</key>
-				<integer>17</integer>
+				<integer>23</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -1908,14 +1938,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>2</integer>
+				<integer>3</integer>
 				<key>line</key>
-				<integer>54</integer>
+				<integer>71</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>41</integer>
+			<integer>51</integer>
 		</dict>
 		<key>UIKit/RCSegmentControl.hx</key>
 		<dict>
@@ -2048,14 +2078,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>2</integer>
+				<integer>1</integer>
 				<key>line</key>
-				<integer>97</integer>
+				<integer>38</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>84</integer>
+			<integer>31</integer>
 		</dict>
 		<key>UIKit/RCToolTip.hx</key>
 		<dict>
@@ -2328,6 +2358,10 @@
 	<array>
 		<string>Foundation/RCLib.hx</string>
 		<string>UIKit/RCTextView.hx</string>
+		<string>UIKit/RCScrollView.hx</string>
+		<string>Draw/RCWedge.hx</string>
+		<string>Draw/RCEllipse.hx</string>
+		<string>Foundation/RCPosition.hx</string>
 		<string>Media/RCPhoto.hx</string>
 		<string>UIKit/RCView.hx</string>
 		<string>Media/RCVideo.hx</string>
@@ -2340,6 +2374,7 @@
 		<string>Samples/CoreAnimation/Main1.hx</string>
 		<string>Samples/build_tests.hxml</string>
 		<string>Draw/RCRectangle.hx</string>
+		<string>UIKit/RCTextInput.hx</string>
 		<string>Draw/RCDraw.hx</string>
 		<string>CoreAnimation/CADelegate.hx</string>
 		<string>CoreAnimation/CoreAnimation.hx</string>
@@ -2354,6 +2389,6 @@
 	<key>showFileHierarchyDrawer</key>
 	<false/>
 	<key>windowFrame</key>
-	<string>{{36, 29}, {1114, 688}}</string>
+	<string>{{161, 3}, {1114, 688}}</string>
 </dict>
 </plist>

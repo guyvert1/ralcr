@@ -9,30 +9,45 @@ import RCView;
 import RCStage;
 
 class Main {
+	
 	static var lin :RCLine;
+	static var ph :RCPhoto;
 	
 	// change the HTML content of a DIV based on its ID
 	static function main() {
 		haxe.Firebug.redirectTraces();
 		RCStage.init();
 		
-		var rect = new RCRectangle(200,30, 180, 150, 0xff3300);
+		var rect = new RCRectangle(200,30, 300, 150, 0xff3300);
 	 	RCStage.addChild ( rect );
+		rect.clipsToBounds = true;
 		
 		var ell = new RCEllipse(100,100, 100, 100, 0xff3300);
 	 	RCStage.addChild ( ell );
 		
 		lin = new RCLine(30,300, 400, 600, 0xff3300);
 	 	RCStage.addChild ( lin );
-		moveLine();
+		js.Lib.document.onmousemove = moveLine;
+		
+		ph = new RCPhoto(1, 1, "../CoreAnimation/3134265_large.jpg");
+		ph.onComplete = resizePhoto;
+	 	rect.addChild ( ph );
+		
     }
-	static function moveLine(){
-		lin.size.width = Math.random()*500;
-		lin.size.height = Math.random()*500;
+	static function moveLine(e:Event){
+		lin.size.width = e.clientX - lin.x;
+		lin.size.height = e.clientY - lin.y;
 		lin.redraw();
-		haxe.Timer.delay(moveLine, 150);
 	}
-	static function Hi(){
+	static function resizePhoto(){
+		trace("onComplete");
+		trace(ph.width);
+		trace(ph.size.width);
+		ph.scaleToFill (300-2, 150-2);
+		//ph.scaleToFit (300-2, 150-2);
+		
+	}
+/*	static function Hi(){
 		trace("psst");
 	}
 	
@@ -61,5 +76,5 @@ class Main {
 	    	r.onError = js.Lib.alert;
 	    	r.onData = function(r) { setContent("main", r); }
 	    	r.request(false);
-	}
+	}*/
 }
