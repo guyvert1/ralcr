@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>Samples/HTML5/Main.hx</string>
+	<string>UIKit/JSView.hx</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -250,9 +250,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>1</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>16</integer>
+				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -672,9 +672,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>1</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>16</integer>
+				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -854,9 +854,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>2</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>59</integer>
+				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -1038,14 +1038,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>2</integer>
+				<integer>1</integer>
 				<key>line</key>
-				<integer>134</integer>
+				<integer>151</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>79</integer>
+			<integer>135</integer>
 		</dict>
 		<key>Media/RCPhoto3D.hx</key>
 		<dict>
@@ -1346,9 +1346,23 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>37</integer>
+				<integer>2</integer>
 				<key>line</key>
-				<integer>23</integer>
+				<integer>30</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>17</integer>
+		</dict>
+		<key>Samples/HTML5/compile.hxml</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>9</integer>
+				<key>line</key>
+				<integer>6</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -1793,6 +1807,20 @@
 				<integer>7</integer>
 			</dict>
 		</dict>
+		<key>UIKit/JSView.hx</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>2</integer>
+				<key>line</key>
+				<integer>46</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>330</integer>
+		</dict>
 		<key>UIKit/RCAlertView.hx</key>
 		<dict>
 			<key>caret</key>
@@ -2106,28 +2134,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>21</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>137</integer>
+				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>106</integer>
-		</dict>
-		<key>UIKit/RCViewCanvas.hx</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>1</integer>
-				<key>line</key>
-				<integer>24</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>14</integer>
 		</dict>
 		<key>Utils/CollisionDetection.hx</key>
 		<dict>
@@ -2368,7 +2382,7 @@
 		<string>Foundation/RCStage.hx</string>
 		<string>Foundation/RCNotificationCenter.hx</string>
 		<string>Foundation/RCSize.hx</string>
-		<string>UIKit/RCViewCanvas.hx</string>
+		<string>UIKit/JSView.hx</string>
 		<string>Draw/RCLine.hx</string>
 		<string>CoreAnimation/Transitions/CATKenBurns.hx</string>
 		<string>Samples/CoreAnimation/Main1.hx</string>
@@ -2380,6 +2394,8 @@
 		<string>CoreAnimation/CoreAnimation.hx</string>
 		<string>CoreAnimation/Transitions/CATween.hx</string>
 		<string>Samples/HTML5/Main.hx</string>
+		<string>Foundation/RCAppDelegate.hx</string>
+		<string>Samples/HTML5/compile.hxml</string>
 		<string>Samples/HTML5/index.html</string>
 		<string>CoreAnimation/CAObject.hx</string>
 		<string>Draw/RCGradient.hx</string>

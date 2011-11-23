@@ -13,7 +13,7 @@ import flash.display.DisplayObjectContainer;
 import flash.external.ExternalInterface;
 #elseif js
 import js.Dom;
-private typedef DisplayObjectContainer = RCViewCanvas;
+private typedef DisplayObjectContainer = JSView;
 import haxe.remoting.ExternalConnection;
 typedef ExternalInterface = ExternalConnection;
 #end

@@ -13,7 +13,7 @@ private class LineScaleMode { static public var NONE = null; }
 private typedef UInt = Int;
 #end
 
-class RCDraw extends #if flash RCView #elseif js RCViewCanvas #end {
+class RCDraw extends #if flash RCView #elseif js JSView #end {
 	
 	public var color :Dynamic;// UInt, RCColor, RCGradient
 	public var borderThickness :Int;

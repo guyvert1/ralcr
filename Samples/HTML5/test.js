@@ -151,50 +151,50 @@ if(typeof _RCDraw=='undefined') _RCDraw = {}
 _RCDraw.LineScaleMode = function() { }
 _RCDraw.LineScaleMode.__name__ = ["_RCDraw","LineScaleMode"];
 _RCDraw.LineScaleMode.prototype.__class__ = _RCDraw.LineScaleMode;
-RCViewCanvas = function(x,y) { if( x === $_ ) return; {
+JSView = function(x,y) { if( x === $_ ) return; {
 	this.size = new RCSize(0,0);
 	this.view = js.Lib.document.createElement("div");
 	this.view.style.position = "absolute";
 	this.setX(x);
 	this.setY(y);
 }}
-RCViewCanvas.__name__ = ["RCViewCanvas"];
-RCViewCanvas.COL = function(color) {
+JSView.__name__ = ["JSView"];
+JSView.COL = function(color) {
 	return "rgb(" + (color >> 16) + "," + (color >> 8 & 255) + "," + (color & 255) + ")";
 }
-RCViewCanvas.prototype.parent = null;
-RCViewCanvas.prototype.view = null;
-RCViewCanvas.prototype.size = null;
-RCViewCanvas.prototype.center = null;
-RCViewCanvas.prototype.clipsToBounds = null;
-RCViewCanvas.prototype.x = null;
-RCViewCanvas.prototype.y = null;
-RCViewCanvas.prototype.scaleX = null;
-RCViewCanvas.prototype.scaleY = null;
-RCViewCanvas.prototype.width = null;
-RCViewCanvas.prototype.height = null;
-RCViewCanvas.prototype.alpha = null;
-RCViewCanvas.prototype.visible = null;
-RCViewCanvas.prototype.viewMask = null;
-RCViewCanvas.prototype.lastW = null;
-RCViewCanvas.prototype.lastH = null;
-RCViewCanvas.prototype.caobj = null;
-RCViewCanvas.prototype.graphics = null;
-RCViewCanvas.prototype.viewDidAppear = function(_) {
+JSView.prototype.parent = null;
+JSView.prototype.view = null;
+JSView.prototype.size = null;
+JSView.prototype.center = null;
+JSView.prototype.clipsToBounds = null;
+JSView.prototype.x = null;
+JSView.prototype.y = null;
+JSView.prototype.scaleX = null;
+JSView.prototype.scaleY = null;
+JSView.prototype.width = null;
+JSView.prototype.height = null;
+JSView.prototype.alpha = null;
+JSView.prototype.visible = null;
+JSView.prototype.viewMask = null;
+JSView.prototype.lastW = null;
+JSView.prototype.lastH = null;
+JSView.prototype.caobj = null;
+JSView.prototype.graphics = null;
+JSView.prototype.viewDidAppear = function(_) {
 	null;
 }
-RCViewCanvas.prototype.viewDidDisappear = function(_) {
+JSView.prototype.viewDidDisappear = function(_) {
 	null;
 }
-RCViewCanvas.prototype.addChild = function(child) {
+JSView.prototype.addChild = function(child) {
 	child.parent = this.view;
 	this.view.appendChild(child.view);
 }
-RCViewCanvas.prototype.removeChild = function(child) {
+JSView.prototype.removeChild = function(child) {
 	child.parent = null;
 	this.view.removeChild(child.view);
 }
-RCViewCanvas.prototype.setColor = function(color,mpl) {
+JSView.prototype.setColor = function(color,mpl) {
 	if(mpl == null) mpl = 0;
 	var red = (color & 16711680) >> 16;
 	var green = (color & 65280) >> 8;
@@ -203,14 +203,14 @@ RCViewCanvas.prototype.setColor = function(color,mpl) {
 	var color_ = "rgba(" + red + "," + green + "," + blue + "," + alpha + ")";
 	this.view.style.background = color_;
 }
-RCViewCanvas.prototype.resetColor = function() {
+JSView.prototype.resetColor = function() {
 	this.view.style.background = null;
 }
-RCViewCanvas.prototype.setCenter = function(pos) {
+JSView.prototype.setCenter = function(pos) {
 	this.center = pos;
 	return this.center;
 }
-RCViewCanvas.prototype.setClipsToBounds = function(clip) {
+JSView.prototype.setClipsToBounds = function(clip) {
 	if(clip) {
 		this.view.style.overflow = "hidden";
 		this.viewMask = js.Lib.document.createElement("div");
@@ -231,7 +231,7 @@ RCViewCanvas.prototype.setClipsToBounds = function(clip) {
 	}
 	return clip;
 }
-RCViewCanvas.prototype.scaleToFit = function(w,h) {
+JSView.prototype.scaleToFit = function(w,h) {
 	if(this.size.width / w > this.size.height / h && this.size.width > w) {
 		this.setWidth(w);
 		this.setHeight(this.width * this.size.height / this.size.width);
@@ -248,7 +248,7 @@ RCViewCanvas.prototype.scaleToFit = function(w,h) {
 	this.lastW = this.width;
 	this.lastH = this.height;
 }
-RCViewCanvas.prototype.scaleToFill = function(w,h) {
+JSView.prototype.scaleToFill = function(w,h) {
 	if(w / this.size.width > h / this.size.height) {
 		this.setWidth(w);
 		this.setHeight(this.width * this.size.height / this.size.width);
@@ -258,94 +258,94 @@ RCViewCanvas.prototype.scaleToFill = function(w,h) {
 		this.setWidth(this.height * this.size.width / this.size.height);
 	}
 }
-RCViewCanvas.prototype.resetScale = function() {
+JSView.prototype.resetScale = function() {
 	this.setWidth(this.lastW);
 	this.setHeight(this.lastH);
 }
-RCViewCanvas.prototype.animate = function(obj) {
+JSView.prototype.animate = function(obj) {
 	CoreAnimation.add(this.caobj = obj);
 }
-RCViewCanvas.prototype.destroy = function() {
+JSView.prototype.destroy = function() {
 	null;
 }
-RCViewCanvas.prototype.removeFromSuperView = function() {
+JSView.prototype.removeFromSuperView = function() {
 	var parent = null;
 }
-RCViewCanvas.prototype.setVisible = function(v) {
+JSView.prototype.setVisible = function(v) {
 	this.visible = v;
 	this.view.style.visibility = v?"visible":"hidden";
 	return v;
 }
-RCViewCanvas.prototype.setAlpha = function(a) {
+JSView.prototype.setAlpha = function(a) {
 	this.view.style.opacity = Std.string(a);
 	return a;
 }
-RCViewCanvas.prototype.setX = function(x) {
+JSView.prototype.setX = function(x) {
 	this.x = x;
 	this.view.style.left = Std.string(x) + "px";
 	return x;
 }
-RCViewCanvas.prototype.setY = function(y) {
+JSView.prototype.setY = function(y) {
 	this.y = y;
 	this.view.style.top = Std.string(y) + "px";
 	return y;
 }
-RCViewCanvas.prototype.setWidth = function(w) {
+JSView.prototype.setWidth = function(w) {
 	this.width = w;
 	this.view.style.width = w + "px";
 	return w;
 }
-RCViewCanvas.prototype.setHeight = function(h) {
+JSView.prototype.setHeight = function(h) {
 	this.height = h;
 	this.view.style.height = h + "px";
 	return h;
 }
-RCViewCanvas.prototype.setScaleX = function(x) {
+JSView.prototype.setScaleX = function(x) {
 	this.scaleX = x;
 	this.scale(this.scaleX,this.scaleY);
 	return this.scaleX;
 }
-RCViewCanvas.prototype.setScaleY = function(y) {
+JSView.prototype.setScaleY = function(y) {
 	this.scaleY = y;
 	this.scale(this.scaleX,this.scaleY);
 	return this.scaleY;
 }
-RCViewCanvas.prototype.scale = function(x,y) {
+JSView.prototype.scale = function(x,y) {
 	this.view.style.WebkitTransformOrigin = "top left";
 	this.view.style.WebkitTransform = "scale(" + this.scaleX + "," + this.scaleY + ")";
 }
-RCViewCanvas.prototype.clear = function() {
+JSView.prototype.clear = function() {
 	this.graphics.clearRect(0,0,this.graphics.canvas.width,this.graphics.canvas.height);
 }
-RCViewCanvas.prototype.lineStyle = function(width,color) {
+JSView.prototype.lineStyle = function(width,color) {
 	if(width == null) return;
 	this.graphics.lineWidth = width;
 	this.graphics.strokeStyle = "rgb(" + (color >> 16) + "," + (color >> 8 & 255) + "," + (color & 255) + ")";
 }
-RCViewCanvas.prototype.beginFill = function(color,alpha) {
+JSView.prototype.beginFill = function(color,alpha) {
 	this.graphics.fillStyle = "rgb(" + (color >> 16) + "," + (color >> 8 & 255) + "," + (color & 255) + ")";
 	this.graphics.beginPath();
 }
-RCViewCanvas.prototype.endFill = function() {
+JSView.prototype.endFill = function() {
 	this.graphics.fill();
 	this.graphics.stroke();
 }
-RCViewCanvas.prototype.drawCircle = function(x,y,radius) {
+JSView.prototype.drawCircle = function(x,y,radius) {
 	this.graphics.arc(x,y,radius,0,6.29,true);
 }
-RCViewCanvas.prototype.drawRect = function(x,y,w,h) {
+JSView.prototype.drawRect = function(x,y,w,h) {
 	this.graphics.rect(x,y,w,h);
 }
-RCViewCanvas.prototype.moveTo = function(x,y) {
+JSView.prototype.moveTo = function(x,y) {
 	this.graphics.moveTo(x,y);
 }
-RCViewCanvas.prototype.lineTo = function(x,y) {
+JSView.prototype.lineTo = function(x,y) {
 	this.graphics.lineTo(x,y);
 }
-RCViewCanvas.prototype.__class__ = RCViewCanvas;
+JSView.prototype.__class__ = JSView;
 RCDraw = function(x,y,w,h,color,alpha) { if( x === $_ ) return; {
 	if(alpha == null) alpha = 1.0;
-	RCViewCanvas.call(this,x,y);
+	JSView.call(this,x,y);
 	this.size.width = w;
 	this.size.height = h;
 	this.setAlpha(alpha);
@@ -373,8 +373,8 @@ RCDraw = function(x,y,w,h,color,alpha) { if( x === $_ ) return; {
 	else this.color = new RCColor(0);
 }}
 RCDraw.__name__ = ["RCDraw"];
-RCDraw.__super__ = RCViewCanvas;
-for(var k in RCViewCanvas.prototype ) RCDraw.prototype[k] = RCViewCanvas.prototype[k];
+RCDraw.__super__ = JSView;
+for(var k in JSView.prototype ) RCDraw.prototype[k] = JSView.prototype[k];
 RCDraw.prototype.color = null;
 RCDraw.prototype.borderThickness = null;
 RCDraw.prototype.configure = function() {
@@ -2369,13 +2369,13 @@ ValueType.TUnknown = ["TUnknown",8];
 ValueType.TUnknown.toString = $estr;
 ValueType.TUnknown.__enum__ = ValueType;
 RCPhoto = function(x,y,URL) { if( x === $_ ) return; {
-	RCViewCanvas.call(this,x,y);
+	JSView.call(this,x,y);
 	this.load(URL);
 	this.addListeners();
 }}
 RCPhoto.__name__ = ["RCPhoto"];
-RCPhoto.__super__ = RCViewCanvas;
-for(var k in RCViewCanvas.prototype ) RCPhoto.prototype[k] = RCViewCanvas.prototype[k];
+RCPhoto.__super__ = JSView;
+for(var k in JSView.prototype ) RCPhoto.prototype[k] = JSView.prototype[k];
 RCPhoto.prototype.loader = null;
 RCPhoto.prototype.isLoaded = null;
 RCPhoto.prototype.percentLoaded = null;
@@ -2423,12 +2423,12 @@ RCPhoto.prototype.destroy = function() {
 	this.loader = null;
 }
 RCPhoto.prototype.scaleToFit = function(w,h) {
-	RCViewCanvas.prototype.scaleToFit.call(this,w,h);
+	JSView.prototype.scaleToFit.call(this,w,h);
 	this.loader.style.width = this.width + "px";
 	this.loader.style.height = this.height + "px";
 }
 RCPhoto.prototype.scaleToFill = function(w,h) {
-	RCViewCanvas.prototype.scaleToFill.call(this,w,h);
+	JSView.prototype.scaleToFill.call(this,w,h);
 	this.loader.style.width = this.width + "px";
 	this.loader.style.height = this.height + "px";
 }

@@ -135,6 +135,6 @@ class RCView extends Sprite {
 
 #elseif js
 
-typedef RCView = RCViewCanvas;
+typedef RCView = JSView;
 
 #end

@@ -6,6 +6,8 @@
 //
 #if flash
 import flash.display.MovieClip;
+#elseif js
+typedef MovieClip = JSView;
 #end
 
 class RCAppDelegate extends MovieClip {
