@@ -14,6 +14,7 @@ import RCIterator;
 import RCLib;
 //import RCLocalization; // Do not compile it because it requires the xml to be present
 import RCNotification;
+import RCMath;
 import RCNotificationCenter;
 import RCSkin;
 import RCSize;
