@@ -1,13 +1,9 @@
-import flash.geom.Rectangle;
-import flash.geom.Point;
-
 
 class RCMath {
 	
 	
 	/**
-	 *	Returns an int from a string operation
-	 *	obj - pass an object to get width and height instead the stage width and height
+	 *	
 	 */
 	inline public static function angleOnCircle (i:Int, nrOfItems:Int) :Float {
 		return i * ((Math.PI * 2) / nrOfItems);
@@ -16,10 +12,10 @@ class RCMath {
 	/**
 	 *  Arrange the object on the ellipse depending by the angle
 	 */
-	inline public function positionOnEllipse (angle:Float, radiusX:Float, radiusY:Float) :Point {
-		return new Point (	Math.cos (angle) * radiusX,
-							Math.sin (angle) * radiusY
-						);
+	inline public function positionOnEllipse (angle:Float, radiusX:Float, radiusY:Float) :RCPosition {
+		return new RCPosition (	Math.cos (angle) * radiusX,
+								Math.sin (angle) * radiusY
+								);
 	}
 	
 	inline public function radians (deg:Float) :Float {
@@ -30,7 +26,7 @@ class RCMath {
 	}
 	
 	
-	inline public function distanceBetween2Points (p1:Point, p2:Point) :Float {
+	inline public function distanceBetween2Points (p1:RCPosition, p2:RCPosition) :Float {
 		var dx = p2.x - p1.x;
 		var dy = p2.y - p1.y;
 		return Math.sqrt (dx*dx + dy*dy);
