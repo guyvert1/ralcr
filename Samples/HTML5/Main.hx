@@ -22,17 +22,26 @@ class Main {
 	 	RCStage.addChild ( rect );
 		rect.clipsToBounds = true;
 		
-		var ell = new RCEllipse(100,100, 100, 100, 0xff3300);
+		var ell = new RCEllipse(800,300, 100, 100, 0xff3300);
 	 	RCStage.addChild ( ell );
 		
 		lin = new RCLine(30,300, 400, 600, 0xff3300);
 	 	RCStage.addChild ( lin );
-		js.Lib.document.onmousemove = moveLine;
+		//js.Lib.document.onmousemove = moveLine;
 		
 		ph = new RCPhoto(1, 1, "../CoreAnimation/3134265_large.jpg");
 		ph.onComplete = resizePhoto;
 	 	rect.addChild ( ph );
 		
+		var f = new RCFont();
+			f.color = 0xffffff;
+			f.font = "Arial";
+			f.size = 30;
+		var t = new RCTextView (50, 30, 200, null, "IMAGIN", f);
+		RCStage.addChild ( t );
+		
+		var r = new RCTextView (220, 30, null, null, "We are working on the HTML5 version of the gallery...", f);
+		RCStage.addChild ( r );
     }
 	static function moveLine(e:Event){
 		lin.size.width = e.clientX - lin.x;

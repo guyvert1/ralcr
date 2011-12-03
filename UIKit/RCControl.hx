@@ -2,12 +2,12 @@
 //  mc
 //
 //  Created by Baluta Cristian on 2008-03-23.
-//  Copyright (c) 2008 www.lib.com. All rights reserved.
+//  Copyright (c) 2008 www.ralcr.com. All rights reserved.
 //
-import flash.display.Sprite;
+#if flash
 import flash.events.MouseEvent;
 import flash.events.IEventDispatcher;
-
+#end
 
 class RCControl extends RCView {
 	

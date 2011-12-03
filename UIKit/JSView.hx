@@ -91,17 +91,17 @@ class JSView {
 			viewMask.style.height = size.height+"px";
 			
 			while (view.hasChildNodes()) {
-				viewMask.appendChild(view.removeChild(view.firstChild));
+				viewMask.appendChild ( view.removeChild (view.firstChild));
 			}
 
-			view.appendChild(viewMask);
+			view.appendChild ( viewMask );
 		}
 		else {
 			view.style.overflow = null;
-			view.removeChild(viewMask);
+			view.removeChild ( viewMask );
 
 			while (viewMask.hasChildNodes()) {
-				view.appendChild(viewMask.removeChild(viewMask.firstChild));
+				view.appendChild ( viewMask.removeChild (viewMask.firstChild));
 			}
 
 			viewMask = view;

@@ -4,14 +4,23 @@
 //  Created by Cristi Baluta on 2010-10-15.
 //  Copyright (c) 2010 ralcr.com. All rights reserved.
 //
+#if flash
 import flash.text.TextFieldType;
 import flash.text.TextFormat;
 import flash.text.TextFormatAlign;
 import flash.text.TextFieldAutoSize;
 import flash.text.TextFormatDisplay;
 import flash.text.StyleSheet;
-import flash.text.TextFieldAutoSize;
 import flash.text.AntiAliasType;
+#elseif js
+typedef TextFieldType = Dynamic;
+typedef TextFormat = Dynamic;
+typedef TextFormatAlign = Dynamic;
+typedef TextFieldAutoSize = Dynamic;
+typedef TextFormatDisplay = Dynamic;
+typedef StyleSheet = Dynamic;
+typedef AntiAliasType = Dynamic;
+#end
 
 
 class RCFont {
@@ -35,7 +44,7 @@ class RCFont {
 	public var blockIndent : Null<Float>;
 	public var bold : Null<Bool>;
 	public var bullet : Null<Bool>;
-	public var color : Null<UInt>;
+	public var color : Null<Int>;
 	public var display : TextFormatDisplay;
 	public var font : String;
 	public var indent : Null<Float>;
@@ -46,7 +55,7 @@ class RCFont {
 	public var letterSpacing : Null<Float>;
 	public var rightMargin : Null<Float>;
 	public var size : Null<Float>;
-	public var tabStops : Array<UInt>;
+	public var tabStops : Array<Int>;
 	public var target : String;
 	public var underline : Null<Bool>;
 	public var url :String;
@@ -72,6 +81,7 @@ class RCFont {
 		
 		html = true;
 		embedFonts = true;
+#if flash
 		type = TextFieldType.DYNAMIC;
 		antiAliasType = AntiAliasType.ADVANCED;// ADVANCED-normal fonts(<40px), NORMAL-pixel fonts
 		autoSize = TextFieldAutoSize.LEFT;
@@ -79,6 +89,7 @@ class RCFont {
 		
 		format = new TextFormat();
 		style = new StyleSheet();
+#end
 	}
 		
 	public function copy (?exceptions:Dynamic) :RCFont {
@@ -101,7 +112,7 @@ class RCFont {
 			}
 		}
 		
-		rcfont.format = new TextFormat();
+		rcfont.format = #if flash new TextFormat() #elseif js {} #end;
 		rcfont.format.align = rcfont.align;
 		rcfont.format.blockIndent = rcfont.blockIndent;
 		rcfont.format.bold = rcfont.bold;

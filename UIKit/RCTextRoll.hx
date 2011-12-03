@@ -2,30 +2,27 @@
 //  RollingText
 //
 //  Created by Baluta Cristian on 2007-10-02.
-//  Copyright (c) 2007 http://imagin.ro. All rights reserved.
+//  Copyright (c) 2007-2011 http://imagin.ro. All rights reserved.
 //
-import flash.display.Sprite;
-import flash.events.Event;
+import RCView;
 
-
-class RCTextRoll extends Sprite {
+class RCTextRoll extends RCView {
 	
-	inline static var PAS :Int = 20; // space between the two text fields
+	inline static var GAP :Int = 20; // space between the two text fields
 	
 	var maskSprite :RCRectangle;
 	var txt1 :RCTextView;
 	var txt2 :RCTextView;
 	var w :Float; // maximum visible surface
 	var timer :haxe.Timer;
+	var timerLoop :haxe.Timer;
 	
 	public var continuous :Bool;
 	
 	
 	public function new (x, y, w:Float, h:Null<Float>, str:String, properties:RCFont) {
-		super();
-		this.x = x;
-		this.y = y;
-		this.w = w;
+		super(x, y);
+		this.size.width = w;
 		this.continuous = true;
 		
 		// add first textfield
@@ -34,45 +31,54 @@ class RCTextRoll extends Sprite {
 		
 		// add the second textfield
 		if (txt1.width > w) {
-			txt2 = new RCTextView (Math.round (txt1.width + PAS), 0, null, h, str, properties);
+			txt2 = new RCTextView (Math.round (txt1.width + GAP), 0, null, h, str, properties);
 			this.addChild ( txt2 );
-			
-			maskSprite = new RCRectangle (0, 0, w, this.height);
-			this.addChild ( maskSprite );
-			this.mask = maskSprite;
+			//this.clipsToBounds = true;
 		}
 	}
 	
 	
-	public function over () :Void {
+	/**
+	 *  Start and stop the rolling text
+	 **/
+	public function start () :Void {
 		if (txt2 == null) return;
 		if (continuous)
-			this.addEventListener (Event.ENTER_FRAME, onEnterFrame);
+			startRolling();
 		else
 			timer = haxe.Timer.delay (startRolling, 3000);
 	}
-	function startRolling(){
-		this.addEventListener (Event.ENTER_FRAME, onEnterFrame);
-	}
-	
-	public function out () :Void {
+	public function stop () :Void {
 		if (txt2 == null) return;
-		this.removeEventListener (Event.ENTER_FRAME, onEnterFrame);
+		stopRolling();
 		reset();
 	}
 	
+	function stopRolling(){
+		if (timerLoop != null)
+			timerLoop.stop();
+			timerLoop = null;
+	}
+	function startRolling(){
+		stopRolling();
+		timerLoop = new haxe.Timer(20);
+		timerLoop.run = loop;
+	}
 	
-	function onEnterFrame (e:Event) :Void {
+	
+	
+	
+	function loop () :Void {
 		
 		txt1.x --;
 		txt2.x --;
 		
 		if (!continuous && txt2.x <= 0) {
-			out();
+			stop();
 			timer = haxe.Timer.delay (startRolling, 3000);
 		}
-		if (txt1.x < -txt1.width) txt1.x = Math.round (txt2.x + txt2.width + PAS);
-		if (txt2.x < -txt2.width) txt2.x = Math.round (txt1.x + txt1.width + PAS);
+		if (txt1.x < -txt1.width) txt1.x = Math.round (txt2.x + txt2.width + GAP);
+		if (txt2.x < -txt2.width) txt2.x = Math.round (txt1.x + txt1.width + GAP);
 	}
 	
 	function reset () :Void {
@@ -81,10 +87,11 @@ class RCTextRoll extends Sprite {
 			timer = null;
 		}
 		txt1.x = 0;
-		txt2.x = Math.round (txt1.width + PAS);
+		txt2.x = Math.round (txt1.width + GAP);
 	}
 	
-	public function destroy () :Void {
-		out();
+	override public function destroy () :Void {
+		stop();
+		super.destroy();
 	}
 }
