@@ -12,8 +12,8 @@ class RCMath {
 	/**
 	 *  Arrange the object on the ellipse depending by the angle
 	 */
-	inline public static function positionOnEllipse (angle:Float, radiusX:Float, radiusY:Float) :RCPosition {
-		return new RCPosition (	Math.cos (angle) * radiusX,
+	inline public static function positionOnEllipse (angle:Float, radiusX:Float, radiusY:Float) :RCPoint {
+		return new RCPoint (	Math.cos (angle) * radiusX,
 								Math.sin (angle) * radiusY
 								);
 	}
@@ -26,7 +26,7 @@ class RCMath {
 	}
 	
 	
-	inline public static function distanceBetween2Points (p1:RCPosition, p2:RCPosition) :Float {
+	inline public static function distanceBetween2Points (p1:RCPoint, p2:RCPoint) :Float {
 		var dx = p2.x - p1.x;
 		var dy = p2.y - p1.y;
 		return Math.sqrt (dx*dx + dy*dy);

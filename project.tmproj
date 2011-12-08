@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>UIKit/RCCircularProgressIndicator.hx</string>
+	<string>UIKit/RCTextView.hx</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -28,7 +28,7 @@
 				<key>column</key>
 				<integer>1</integer>
 				<key>line</key>
-				<integer>12</integer>
+				<integer>53</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -40,28 +40,28 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>1</integer>
+				<integer>23</integer>
 				<key>line</key>
-				<integer>16</integer>
+				<integer>43</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>10</integer>
+			<integer>91</integer>
 		</dict>
 		<key>CoreAnimation/CASequence.hx</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>1</integer>
+				<integer>16</integer>
 				<key>line</key>
-				<integer>25</integer>
+				<integer>9</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
+			<integer>2</integer>
 		</dict>
 		<key>CoreAnimation/CATimingFunction.hx</key>
 		<dict>
@@ -70,12 +70,12 @@
 				<key>column</key>
 				<integer>1</integer>
 				<key>line</key>
-				<integer>52</integer>
+				<integer>37</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>23</integer>
+			<integer>29</integer>
 		</dict>
 		<key>CoreAnimation/CATransitionInterface.hx</key>
 		<dict>
@@ -96,14 +96,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>2</integer>
+				<integer>4</integer>
 				<key>line</key>
-				<integer>112</integer>
+				<integer>110</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>96</integer>
+			<integer>0</integer>
 		</dict>
 		<key>CoreAnimation/Transitions/CATKenBurns.hx</key>
 		<dict>
@@ -250,14 +250,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>11</integer>
+				<integer>1</integer>
 				<key>line</key>
-				<integer>17</integer>
+				<integer>20</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>3</integer>
+			<integer>2</integer>
 		</dict>
 		<key>Draw/RCDrawInterface.hx</key>
 		<dict>
@@ -392,12 +392,12 @@
 				<key>column</key>
 				<integer>2</integer>
 				<key>line</key>
-				<integer>29</integer>
+				<integer>28</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>3</integer>
+			<integer>2</integer>
 		</dict>
 		<key>Draw/RCStar.hx</key>
 		<dict>
@@ -600,9 +600,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>51</integer>
+				<integer>2</integer>
 				<key>line</key>
-				<integer>149</integer>
+				<integer>176</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -698,14 +698,30 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>1</integer>
+				<integer>14</integer>
 				<key>line</key>
-				<integer>21</integer>
+				<integer>44</integer>
 			</dict>
+			<key>columnSelection</key>
+			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
+			<integer>28</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>12</integer>
+				<key>line</key>
+				<integer>44</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>16</integer>
+				<key>line</key>
+				<integer>44</integer>
+			</dict>
 		</dict>
 		<key>Foundation/RCIterator.hx</key>
 		<dict>
@@ -1330,14 +1346,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>39</integer>
 				<key>line</key>
-				<integer>0</integer>
+				<integer>42</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
+			<integer>24</integer>
 		</dict>
 		<key>Samples/HTML5/compile.hxml</key>
 		<dict>
@@ -1847,6 +1863,20 @@
 				<integer>7</integer>
 			</dict>
 		</dict>
+		<key>UIKit/JSView.hx</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>44</integer>
+				<key>line</key>
+				<integer>103</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>17</integer>
+		</dict>
 		<key>UIKit/RCAlertView.hx</key>
 		<dict>
 			<key>caret</key>
@@ -1894,9 +1924,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>35</integer>
+				<integer>1</integer>
 				<key>line</key>
-				<integer>14</integer>
+				<integer>16</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -2132,28 +2162,28 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>13</integer>
+				<integer>2</integer>
 				<key>line</key>
-				<integer>17</integer>
+				<integer>24</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>1</integer>
+			<integer>6</integer>
 		</dict>
 		<key>UIKit/RCTextView.hx</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>2</integer>
+				<integer>55</integer>
 				<key>line</key>
-				<integer>97</integer>
+				<integer>35</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>84</integer>
+			<integer>22</integer>
 		</dict>
 		<key>UIKit/RCToolTip.hx</key>
 		<dict>
@@ -2454,6 +2484,9 @@
 	<array>
 		<string>Foundation/RCLib.hx</string>
 		<string>UIKit/RCTextView.hx</string>
+		<string>Foundation/RCFont.hx</string>
+		<string>Foundation/FontManager.hx</string>
+		<string>UIKit/JSView.hx</string>
 		<string>Media/RCPhoto.hx</string>
 		<string>UIKit/RCView.hx</string>
 		<string>Media/RCVideo.hx</string>
@@ -2466,7 +2499,6 @@
 		<string>Samples/CoreAnimation/Main1.hx</string>
 		<string>Samples/build_tests.hxml</string>
 		<string>Samples/swfobject.js</string>
-		<string>Samples/HTML5/test.js</string>
 		<string>Draw/RCRectangle.hx</string>
 		<string>build.hxml</string>
 		<string>Foundation/Shortcuts.hx</string>
@@ -2481,11 +2513,17 @@
 		<string>CoreAnimation/CoreAnimation.hx</string>
 		<string>CoreAnimation/Transitions/CATween.hx</string>
 		<string>Samples/HTML5/Main.hx</string>
+		<string>UIKit/RCTextRoll.hx</string>
+		<string>UIKit/RCTextInput.hx</string>
+		<string>UIKit/RCTableView.hx</string>
 		<string>Samples/HTML5/page2.xml</string>
 		<string>Samples/HTML5/index.html</string>
 		<string>Samples/HTML5/data.xml</string>
 		<string>Samples/HTML5/compile.hxml</string>
 		<string>CoreAnimation/CAObject.hx</string>
+		<string>CoreAnimation/CASequence.hx</string>
+		<string>CoreAnimation/CATimingFunction.hx</string>
+		<string>CoreAnimation/CATransitionInterface.hx</string>
 		<string>Draw/RCGradient.hx</string>
 		<string>Draw/RCColor.hx</string>
 		<string>Foundation/RCMath.hx</string>
@@ -2498,6 +2536,6 @@
 	<key>showFileHierarchyDrawer</key>
 	<false/>
 	<key>windowFrame</key>
-	<string>{{56, 29}, {1114, 688}}</string>
+	<string>{{54, 63}, {1114, 688}}</string>
 </dict>
 </plist>

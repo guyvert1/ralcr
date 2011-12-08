@@ -6,11 +6,11 @@
 //
 class RCRect {
 	
-	public var origin :RCPosition;
+	public var origin :RCPoint;
 	public var size :RCSize;
 	
 	public function new (x, y, w, h) {
-		this.origin = new RCPosition (x, y);
+		this.origin = new RCPoint (x, y);
 		this.size = new RCSize (w, h);
 	}
 }

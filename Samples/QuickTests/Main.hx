@@ -24,7 +24,9 @@ class Main {
 		flash.Lib.current.addEventListener (MouseEvent.MOUSE_DOWN, mouseDown);
 		
 		
-		testTheDeals();
+		var o = new Obj();
+		o.x = 4;
+		trace(o.x);
 	}
 	static function resize(w, h):Void {
 		//trace("resize to "+w+"x"+h);
@@ -53,7 +55,7 @@ class Main {
 	}
 	
 	
-	static var req :HTTPRequest;
+/*	static var req :HTTPRequest;
 	static function testTheDeals () {
 		req = new HTTPRequest("http://thedeals.ro/api/categories");
 		req.onComplete = onC;
@@ -61,5 +63,15 @@ class Main {
 	}
 	static function onC () {
 		trace(req.result);
+	}*/
+}
+
+class Obj {
+	public var x (default, setX) :Int;
+	function setX(x:Int):Int{
+		this.x = x;trace(x);
+		return x;
 	}
+	public function new(){}
+		
 }

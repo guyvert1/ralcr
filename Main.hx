@@ -18,7 +18,7 @@ import RCMath;
 import RCNotificationCenter;
 import RCSkin;
 import RCSize;
-import RCPosition;
+import RCPoint;
 import RCRect;
 import RCSkinInterface;
 import RCView;

@@ -1730,15 +1730,15 @@ haxe.Unserializer.prototype.unserialize = function() {
 	throw "Invalid char " + this.buf.charAt(this.pos) + " at position " + this.pos;
 }
 haxe.Unserializer.prototype.__class__ = haxe.Unserializer;
-RCPosition = function(x,y) {
+RCPoint = function(x,y) {
 	if( x === $_ ) return;
 	this.x = x;
 	this.y = y;
 }
-RCPosition.__name__ = ["RCPosition"];
-RCPosition.prototype.x = null;
-RCPosition.prototype.y = null;
-RCPosition.prototype.__class__ = RCPosition;
+RCPoint.__name__ = ["RCPoint"];
+RCPoint.prototype.x = null;
+RCPoint.prototype.y = null;
+RCPoint.prototype.__class__ = RCPoint;
 haxe.remoting.Context = function(p) {
 	if( p === $_ ) return;
 	this.objects = new Hash();
@@ -2712,7 +2712,7 @@ RCGradient.prototype.matrixRotation = null;
 RCGradient.prototype.__class__ = RCGradient;
 RCRect = function(x,y,w,h) {
 	if( x === $_ ) return;
-	this.origin = new RCPosition(x,y);
+	this.origin = new RCPoint(x,y);
 	this.size = new RCSize(w,h);
 }
 RCRect.__name__ = ["RCRect"];

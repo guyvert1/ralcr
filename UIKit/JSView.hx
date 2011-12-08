@@ -12,7 +12,7 @@ class JSView {
 	public var parent :HtmlDom;
 	public var view :HtmlDom;
 	public var size :RCSize; // Real size of the view
-	public var center (default, setCenter) :RCPosition;
+	public var center (default, setCenter) :RCPoint;
 	public var clipsToBounds (default, setClipsToBounds) :Bool;
 	public var x (default, setX) :Float;
 	public var y (default, setY) :Float;
@@ -76,7 +76,7 @@ class JSView {
 		view.style.background = null;
 	}
 	
-	public function setCenter (pos:RCPosition) :RCPosition {
+	public function setCenter (pos:RCPoint) :RCPoint {
 		this.center = pos;
 /*		this.view.x = Std.int (point.x - size.width/2);
 		this.view.y = Std.int (point.y - size.height/2);*/

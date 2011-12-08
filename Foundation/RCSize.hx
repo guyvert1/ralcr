@@ -10,7 +10,7 @@ class RCSize {
 	public var height :Null<Float>;
 	
 	
-	public function new (w, h) {
+	public function new (?w:Null<Float>, ?h:Null<Float>) {
 		this.width = w;
 		this.height = h;
 	}

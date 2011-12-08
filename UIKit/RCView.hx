@@ -14,7 +14,7 @@ class RCView extends Sprite {
 
 	public var view :DisplayObjectContainer;
 	public var size :RCSize; // Real size of the view
-	public var center (default, setCenter) :RCPosition;
+	public var center (default, setCenter) :RCPoint;
 	public var clipsToBounds (default, setClipsToBounds) :Bool;
 	var viewMask :Sprite;
 	var lastW :Float;
@@ -57,7 +57,7 @@ class RCView extends Sprite {
 																		0,	0,	0,	0);
 	}
 	
-	public function setCenter (point:RCPosition) :RCPosition {
+	public function setCenter (point:RCPoint) :RCPoint {
 		this.center = point;
 		this.view.x = Std.int (point.x - size.width/2);
 		this.view.y = Std.int (point.y - size.height/2);

@@ -24,7 +24,7 @@ class RCScrollView extends RCView {
 	public var decelerationRate :Float;
 	public var pagingEnabled :Bool;
 	public var scrollEnabled (null, setScrollEnabled) :Bool;
-	public var scrollIndicatorInsets :RCPosition;
+	public var scrollIndicatorInsets :RCPoint;
 	
 	dynamic public function scrollViewDidScroll():Void{}
 	dynamic public function scrollViewWillBeginDragging():Void{}
