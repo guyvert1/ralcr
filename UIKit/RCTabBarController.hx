@@ -7,7 +7,7 @@
 import Shortcuts;
 
 
-class TabBarController extends Sprite {
+class TabBarController extends RCView {
 	
 	inline static var LABELS = ["Info", "Bio", "Bauturi", "Rezultate"];
 	inline static var SYMBOLS = ["SymbolInfo", "SymbolBio", "SymbolDrinks", "SymbolAlarm"];
