@@ -2,7 +2,7 @@
 class RCSignal<T> {
 	
 	var listeners :List<T>;
-	var exposableListeners :List<T>;
+	var exposableListener :T;
 	
 	
 	public function new () {
@@ -16,7 +16,7 @@ class RCSignal<T> {
 		listeners.add ( listener );
 	}
 	public function addOnce (listener:T) {
-		exposableListeners.add ( listener );
+		exposableListener = listener;
 	}
 	public function remove (listener:T) :Void {
 		for (l in listeners) {
@@ -25,47 +25,46 @@ class RCSignal<T> {
 				return;
 			}
 		}
-		for (l in exposableListeners) {
-			if (Reflect.compareMethods(l, listener)) {
-				exposableListeners.remove ( listener );
-				return;
-			}
+		if (Reflect.compareMethods (exposableListener, listener)) {
+			exposableListener = null;
 		}
 	}
-	public function removeAll():Void
-	{
+	public function removeAll():Void {
 		listeners = new List<T>();
-		exposableListeners = new List<T>();
+		exposableListener = null;
 	}
 	
 	
-	public function dispatch (?args:Array<Dynamic>, ?pos:haxe.PosInfos) :Void
-	{
+	public function dispatch (?args:Array<Dynamic>, ?pos:haxe.PosInfos) :Void {
 		for (listener in listeners)
-			if (Reflect.compareMethods(listener, T))
-				try {
-					Reflect.callMethod (null, listener, args);
-				}
-				catch (e:Dynamic) {
-					trace ("[RCSignal error: " + Std.string ( pos ) + "]");
-				}
+			callMethod (listener, args, pos);
+		if (exposableListener != null) {
+			callMethod (exposableListener, args, pos);
+			exposableListener = null;
+		}
+	}
+	function callMethod (listener:T, ?args:Array<Dynamic>, ?pos:haxe.PosInfos) {
+		try {
+			Reflect.callMethod (null, listener, args);
+		}
+		catch (e:Dynamic) {
+			trace ("[RCSignal error: " + Std.string ( pos ) + "]");
+		}
 	}
 	
 	public function exists (listener:T) :Bool {
 		
-		if (existing == null || !existing.has(listener)) return true;
+		//if (existing == null || !existing.has(listener)) return true;
 		
-		
+		//if (Reflect.compareMethods(listener, T))
 				// If the listener was previously added, definitely don't add it again.
 				// But throw an exception if their once value differs.
-				throw new IllegalOperationException('You cannot addOnce() then add() the same listener without removing the relationship first.');
-			}
+				//throw new IllegalOperationException('You cannot addOnce() then add() the same listener without removing the relationship first.');
 			
 			// Listener was already added.
 			return false;
-		}
 		
 		// This listener has not been added before.
-		return true;
+		//return true;
 	}
 }

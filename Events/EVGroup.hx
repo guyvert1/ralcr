@@ -1,5 +1,5 @@
 
-class GroupEvent extends flash.events.Event {
+class EVGroup extends RCSignal<RCIndexPath->Void> {
 	
 	inline public static var UPDATED :String = "group_updated";
 	inline public static var CLICK :String = "group_click";
@@ -10,15 +10,8 @@ class GroupEvent extends flash.events.Event {
 	public var index :Int;
 	
 	
-	public function new (type:String, label:String, index:Int, ?bubbles:Bool=false, ?cancelable:Bool=false) {
+	public function new (type:String, label:String, index:Int) {
 		
-		super ( type, bubbles, cancelable );
-		
-		this.label = label;
-		this.index = index;
-	}
-	
-	public function duplicate () :GroupEvent {
-		return new GroupEvent (type, label, index);
+		dispatch ( new RCIndexPath (0, index) );
 	}
 }

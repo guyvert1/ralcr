@@ -7,6 +7,7 @@ import js.Dom;// typedef js.Event
 class EVResize extends RCSignal<Int->Int->Void> {
 	
 	public function new () {
+		super();
 #if flash
 		flash.Lib.current.stage.addEventListener (Event.RESIZE, resizeHandler);
 #elseif js
