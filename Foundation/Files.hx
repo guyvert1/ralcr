@@ -6,7 +6,7 @@ class Files {
 	inline public static var MUSIC :Array<String> = [".mp3"];
 	inline public static var FLASH :Array<String> = [".swf"];
 	inline public static var PANO2VR :Array<String> = [".pano2vr"];
-	inline public static var VIDEOS :Array<String> = [".flv", ".f4v", ".mp4", ".ytb"];
+	inline public static var VIDEOS :Array<String> = [".flv", ".f4v", ".mp4", ".m4v", ".ytb"];
 	inline public static var TEXT :Array<String> = [".txt", ".data"];
 	
 	public var dir :Array<String>;
@@ -31,38 +31,42 @@ class Files {
 		music	= new Array<String>();
 		video	= new Array<String>();
 		text	= new Array<String>();
-		xml 	= new Array<String>();
-		extra 	= new Array<String>();
+		xml		= new Array<String>();
+		extra	= new Array<String>();
 		
 		for (file in files) {
-			if (file.isIn (PHOTOS, "end")) {
-				photos.push ( file );
-				media.push ( file );
-			}
-			else if (file.isIn (MUSIC, "end")) {
-				music.push ( file );
-			}
-			else if (file.isIn (VIDEOS, "end")) {
-				video.push ( file );
-				media.push ( file );
-			}
-			else if (file.isIn (FLASH, "end")) {
-				flash.push ( file );
-				media.push ( file );
-			}
-			else if (file.isIn (PANO2VR, "end")) {
-				pano2vr.push ( file );
-				media.push ( file );
-			}
-			else if (file.isIn (TEXT, "end")) {
-				text.push ( file );
-			}
-			else if (file.isIn ([".xml"], "end")) {
-				xml.push ( file );
-			}
-			else {
-				dir.push ( file );
-			}
+			push ( file );
+		}
+	}
+	
+	public function push (file:String) :Void {
+		if (file.isIn (PHOTOS, "end")) {
+			photos.push ( file );
+			media.push ( file );
+		}
+		else if (file.isIn (MUSIC, "end")) {
+			music.push ( file );
+		}
+		else if (file.isIn (VIDEOS, "end")) {
+			video.push ( file );
+			media.push ( file );
+		}
+		else if (file.isIn (FLASH, "end")) {
+			flash.push ( file );
+			media.push ( file );
+		}
+		else if (file.isIn (PANO2VR, "end")) {
+			pano2vr.push ( file );
+			media.push ( file );
+		}
+		else if (file.isIn (TEXT, "end")) {
+			text.push ( file );
+		}
+		else if (file.isIn ([".xml"], "end")) {
+			xml.push ( file );
+		}
+		else {
+			dir.push ( file );
 		}
 	}
 	

@@ -6,7 +6,6 @@
 //
 import flash.display.Sprite;
 import flash.display.DisplayObjectContainer;
-import flash.geom.Rectangle;
 import flash.events.Event;
 import flash.events.MouseEvent;
 
@@ -15,7 +14,7 @@ private enum Direction {
 	vertical;
 }
 
-class RCSlider extends Sprite {
+class RCSlider extends RCView {
 	
 	var background :DisplayObjectContainer;
 	var symbol :Dynamic;

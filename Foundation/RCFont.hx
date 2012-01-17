@@ -4,22 +4,23 @@
 //  Created by Cristi Baluta on 2010-10-15.
 //  Copyright (c) 2010 ralcr.com. All rights reserved.
 //
+
 #if flash
-import flash.text.TextFieldType;
-import flash.text.TextFormat;
-import flash.text.TextFormatAlign;
-import flash.text.TextFieldAutoSize;
-import flash.text.TextFormatDisplay;
-import flash.text.StyleSheet;
-import flash.text.AntiAliasType;
+	import flash.text.TextFieldType;
+	import flash.text.TextFormat;
+	import flash.text.TextFormatAlign;
+	import flash.text.TextFieldAutoSize;
+	import flash.text.TextFormatDisplay;
+	import flash.text.StyleSheet;
+	import flash.text.AntiAliasType;
 #elseif js
-typedef TextFieldType = Dynamic;
-typedef TextFormat = Dynamic;
-typedef TextFormatAlign = Dynamic;
-typedef TextFieldAutoSize = Dynamic;
-typedef TextFormatDisplay = Dynamic;
-typedef StyleSheet = Dynamic;
-typedef AntiAliasType = Dynamic;
+	typedef TextFieldType = Dynamic;
+	typedef TextFormat = Dynamic;
+	typedef TextFormatAlign = Dynamic;
+	typedef TextFieldAutoSize = Dynamic;
+	typedef TextFormatDisplay = Dynamic;
+	typedef StyleSheet = Dynamic;
+	typedef AntiAliasType = Dynamic;
 #end
 
 

@@ -2,14 +2,19 @@
 //  Keys
 //
 //  Created by Baluta Cristian on 2007-08-17.
-//  Copyright (c) 2007 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2007-2012 http://ralcr.com. All rights reserved.
 //
+
+#if flash
 import flash.events.KeyboardEvent;
 import flash.ui.Keyboard;
+#elseif js
+import js.Dom;
+typedef KeyboardEvent = Event;
+#end
 
 
 class RCKeys {
-	
 	
 	/**
 	 * Dispatch events by replacing this delegate functions
@@ -25,7 +30,7 @@ class RCKeys {
 	dynamic public function onKeyDown () :Void {}
 	
 	public var char :String;
-	public var charCode :Int;
+	public var keyCode :Int;
 	
 	
 	public function new () {
@@ -33,12 +38,11 @@ class RCKeys {
 	}
 	
 	function keyDownHandler (e:KeyboardEvent) {
-		
-		charCode = e.charCode;
+		keyCode = e.keyCode;trace(keyCode);
 		char = "";
-		onKeyDown();
+		//onKeyDown();
 		
-		switch (e.charCode) {
+/*		switch (e.charCode) {
 			case 13: onEnter();
 		}
 		switch (e.keyCode) {
@@ -50,12 +54,14 @@ class RCKeys {
 			case Keyboard.SPACE :	onSpace();
 			case Keyboard.ESCAPE :	onEsc();
 		}
-		
+#if flash
 		e.updateAfterEvent();
+#end
+*/
 	}
 	
 	function keyUpHandler (e:KeyboardEvent) {
-		charCode = e.charCode;
+		//charCode = e.charCode;
 		char = "";
 		onKeyUp();
 	}
@@ -65,13 +71,23 @@ class RCKeys {
 	 * Add or remove the keyboard listener
 	 */
 	public function resume () :Void {
+#if flash
 		flash.Lib.current.stage.addEventListener (KeyboardEvent.KEY_DOWN, keyDownHandler);
 		flash.Lib.current.stage.addEventListener (KeyboardEvent.KEY_UP, keyUpHandler);
+#elseif js
+		js.Lib.document.onkeydown = keyDownHandler;
+		js.Lib.document.onkeyup = keyUpHandler;
+#end
 	}
 	
 	public function hold () :Void {
+#if flash
 		flash.Lib.current.stage.removeEventListener (KeyboardEvent.KEY_DOWN, keyDownHandler);
 		flash.Lib.current.stage.removeEventListener (KeyboardEvent.KEY_UP, keyUpHandler);
+#elseif js
+		js.Lib.document.onkeydown = null;
+		js.Lib.document.onkeyup = null;
+#end
 	}
 	
 	

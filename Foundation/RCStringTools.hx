@@ -7,8 +7,6 @@
 
 class RCStringTools {
 	
-	
-	
 	inline public static var DIGITS :String = "0123456789abcdefghijklmnopqrstuvwxyz";
 	
 	
@@ -35,7 +33,7 @@ class RCStringTools {
 	
 	
 	/**
-	 * replace a part of the string with ...
+	 * Shorten the string and add "..." at the end
 	 */
 	public static function cutString (str:String, limit:Int) :String {
 		var fin = str.length > limit ? "..." : "";

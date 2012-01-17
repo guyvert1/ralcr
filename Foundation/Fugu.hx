@@ -46,7 +46,7 @@ class Fugu {
 		var objs :Array<Dynamic> = Std.is (obj, Array) ? obj : [obj];
 		
 		for (o in objs) if (o != null) target.addChild ( o );
-			
+		
 		return true;
 	}
 	
@@ -140,7 +140,7 @@ class Fugu {
 		}
 	}
 	
-	public static function stack () :Void {
+	inline public static function stack () :Void {
 		var stack = haxe.Stack.exceptionStack();
 		trace ( haxe.Stack.toString ( stack ) );
 	}

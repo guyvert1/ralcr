@@ -10,6 +10,7 @@ class SegmentControl extends RCView {
 	var values :Array<String>;
 	var buttons :RCGroupButtons<RCButton>;
 	var segmentWidth :Int;
+	
 	public var selectedIndex (getIndex, setIndex) :Int;
 	
 	

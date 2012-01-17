@@ -14,8 +14,7 @@ import flash.external.ExternalInterface;
 #elseif js
 import js.Dom;
 private typedef DisplayObjectContainer = JSView;
-import haxe.remoting.ExternalConnection;
-typedef ExternalInterface = ExternalConnection;
+typedef ExternalInterface = haxe.remoting.ExternalConnection;
 #end
 
 

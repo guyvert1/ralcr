@@ -4,8 +4,15 @@
 //  Created by Baluta Cristian on 2008-09-14.
 //  Copyright (c) 2008 http://imagin.ro. All rights reserved.
 //
-import flash.display.DisplayObjectContainer;
-import flash.events.MouseEvent;
+
+#if flash
+	import flash.display.DisplayObjectContainer;
+	import flash.events.MouseEvent;
+#elseif js
+	import js.Dom;
+	typedef DisplayObjectContainer = JSView;
+#end
+
 
 private enum Position {
 	left;

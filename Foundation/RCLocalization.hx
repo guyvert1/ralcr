@@ -7,7 +7,6 @@
 class RCLocalization {
 	
 	static var inited :Bool = false;
-	public static var percentLoaded :Int;
 	public static var hash :Hash<String>;
 	public static var list :RCLocalizationProxy;// Has autocomplete
 	
