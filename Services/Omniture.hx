@@ -16,7 +16,7 @@ class Omniture {
 	public var unit :String;
 	public var campaign :String;
 	public var debug :Bool;
-		
+	
 	
 	public function new () {
 		country = "uk|en";

@@ -4,13 +4,15 @@
 //  Created by Baluta Cristian on 2008-12-29.
 //  Copyright (c) 2008 http://ralcr.com. All rights reserved.
 //
-import flash.display.Sprite;
-import flash.events.Event;
-import flash.events.MouseEvent;
-import flash.ui.Mouse;
+#if flash
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+	import flash.ui.Mouse;
+#elseif js
+	import js.Dom;
+#end
 
-
-class RCCustomCursor extends Sprite {
+class RCCustomCursor extends RCView {
 	
 	var target :Dynamic;
 	var cursor :Dynamic;

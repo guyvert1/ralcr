@@ -1,7 +1,7 @@
 #if flash
-import flash.events.Event;
+	import flash.events.Event;
 #elseif js
-import js.Dom;// typedef js.Event
+	import js.Dom;// typedef js.Event
 #end
 
 class EVResize extends RCSignal<Int->Int->Void> {

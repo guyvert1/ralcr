@@ -5,15 +5,16 @@
 //  Copyright (c) 2010 ralcr.com. All rights reserved.
 //
 #if flash
-import flash.geom.Matrix;
-import flash.display.LineScaleMode;
+	import flash.geom.Matrix;
+	import flash.display.LineScaleMode;
 #elseif js
-typedef Matrix = Dynamic;
-private class LineScaleMode { static public var NONE = null; }
-private typedef UInt = Int;
+	typedef Matrix = Dynamic;
+	private class LineScaleMode { static public var NONE = null; }
+	private typedef UInt = Int;
+	import RCView;
 #end
 
-class RCDraw extends #if flash RCView #elseif js JSView #end {
+class RCDraw extends RCView {
 	
 	public var color :Dynamic;// UInt, RCColor, RCGradient
 	public var borderThickness :Int;

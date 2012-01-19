@@ -31,5 +31,5 @@ class RCAppDelegate extends MovieClip {
 	// Override this methods
 	public function applicationDidFinishLaunching () :Void {}
 	public function resize (w:Int, h:Int) :Void {}
-	public function fullscreen () :Void {}
+	public function fullscreen (b:Bool) :Void {}
 }

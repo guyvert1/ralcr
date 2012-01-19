@@ -67,4 +67,9 @@ class RCSignal<T> {
 		// This listener has not been added before.
 		//return true;
 	}
+	
+	public function destroy () :Void {
+		listeners = null;
+		exposableListener = null;
+	}
 }
