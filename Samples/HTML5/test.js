@@ -88,13 +88,17 @@ RCNotificationCenter.notificationsList = null;
 RCNotificationCenter.init = function() {
 	if(RCNotificationCenter.notificationsList == null) {
 		RCNotificationCenter.notificationsList = new List();
-		js.Lib.window.onresize = RCNotificationCenter.resizeHandler;
+		var fs = new EVFullScreen();
+		fs.add(RCNotificationCenter.fullScreenHandler);
+		var rs = new EVResize();
+		rs.add(RCNotificationCenter.resizeHandler);
 	}
 }
-RCNotificationCenter.resizeHandler = function(e) {
-	var w = js.Lib.document.body.scrollWidth;
-	var h = js.Lib.document.body.scrollHeight;
-	RCNotificationCenter.postNotification("resize",[w,h],{ fileName : "RCNotificationCenter.hx", lineNumber : 42, className : "RCNotificationCenter", methodName : "resizeHandler"});
+RCNotificationCenter.resizeHandler = function(w,h) {
+	RCNotificationCenter.postNotification("resize",[w,h],{ fileName : "RCNotificationCenter.hx", lineNumber : 25, className : "RCNotificationCenter", methodName : "resizeHandler"});
+}
+RCNotificationCenter.fullScreenHandler = function(b) {
+	RCNotificationCenter.postNotification("fullscreen",[b],{ fileName : "RCNotificationCenter.hx", lineNumber : 28, className : "RCNotificationCenter", methodName : "fullScreenHandler"});
 }
 RCNotificationCenter.addObserver = function(name,func) {
 	RCNotificationCenter.init();
@@ -118,7 +122,7 @@ RCNotificationCenter.postNotification = function(name,args,pos) {
 			notificationFound = true;
 			notification.functionToCall.apply(null,args);
 		} catch( e ) {
-			haxe.Log.trace("[RCNotificationCenter error: " + Std.string(pos) + "]",{ fileName : "RCNotificationCenter.hx", lineNumber : 90, className : "RCNotificationCenter", methodName : "postNotification"});
+			haxe.Log.trace("[RCNotificationCenter error calling function: " + notification.functionToCall + " from: " + Std.string(pos) + "]",{ fileName : "RCNotificationCenter.hx", lineNumber : 70, className : "RCNotificationCenter", methodName : "postNotification"});
 		}
 	}
 	return notificationFound;
@@ -127,7 +131,7 @@ RCNotificationCenter.list = function() {
 	var $it0 = RCNotificationCenter.notificationsList.iterator();
 	while( $it0.hasNext() ) {
 		var notification = $it0.next();
-		haxe.Log.trace(notification,{ fileName : "RCNotificationCenter.hx", lineNumber : 101, className : "RCNotificationCenter", methodName : "list"});
+		haxe.Log.trace(notification,{ fileName : "RCNotificationCenter.hx", lineNumber : 81, className : "RCNotificationCenter", methodName : "list"});
 	}
 }
 RCNotificationCenter.prototype.__class__ = RCNotificationCenter;
@@ -327,7 +331,7 @@ RCDraw = function(x,y,w,h,color,alpha) {
 	try {
 		this.graphics = this.view;
 	} catch( e ) {
-		haxe.Log.trace(e,{ fileName : "RCDraw.hx", lineNumber : 31, className : "RCDraw", methodName : "new"});
+		haxe.Log.trace(e,{ fileName : "RCDraw.hx", lineNumber : 32, className : "RCDraw", methodName : "new"});
 	}
 	if(Std["is"](color,RCColor) || Std["is"](color,RCGradient)) this.color = color; else if(Std["is"](color,Int) || Std["is"](color,Int)) this.color = new RCColor(color); else if(Std["is"](color,Array)) this.color = new RCColor(color[0],color[1]); else this.color = new RCColor(0);
 }
@@ -637,11 +641,12 @@ RCStage = function() { }
 RCStage.__name__ = ["RCStage"];
 RCStage.width = null;
 RCStage.height = null;
+RCStage.backgroundColor = null;
 RCStage.init = function() {
-	RCStage.target.style.position = "absolute";
-	RCStage.target.style.backgroundColor = "#333322";
-	RCStage.width = RCStage.target.scrollWidth;
-	RCStage.height = RCStage.target.scrollHeight;
+	js.Lib.document.body.style.position = "absolute";
+	RCStage.width = js.Lib.document.body.scrollWidth;
+	RCStage.height = js.Lib.document.body.scrollHeight;
+	RCStage.set_backgroundColor(3355443);
 	var url = RCStage.URL.split("/");
 	url.pop();
 	RCStage.URL = url.join("/") + "/";
@@ -664,11 +669,18 @@ RCStage.normal = function() {
 RCStage.isFullScreen = function() {
 	return false;
 }
+RCStage.set_backgroundColor = function(color) {
+	js.Lib.document.body.style.backgroundColor = RCStage.toHexStyle(color);
+	return color;
+}
+RCStage.toHexStyle = function(color) {
+	return "#" + StringTools.lpad(StringTools.hex(color),"0",6);
+}
 RCStage.addChild = function(child) {
-	if(child != null) RCStage.target.appendChild(child.view);
+	if(child != null) js.Lib.document.body.appendChild(child.view);
 }
 RCStage.removeChild = function(child) {
-	if(child != null) RCStage.target.removeChild(child.view);
+	if(child != null) js.Lib.document.body.removeChild(child.view);
 }
 RCStage.prototype.__class__ = RCStage;
 StringBuf = function(p) {
@@ -766,6 +778,74 @@ RCFont.prototype.copy = function(exceptions) {
 	return rcfont;
 }
 RCFont.prototype.__class__ = RCFont;
+RCSignal = function(p) {
+	if( p === $_ ) return;
+	this.removeAll();
+}
+RCSignal.__name__ = ["RCSignal"];
+RCSignal.prototype.listeners = null;
+RCSignal.prototype.exposableListener = null;
+RCSignal.prototype.add = function(listener) {
+	this.listeners.add(listener);
+}
+RCSignal.prototype.addOnce = function(listener) {
+	this.exposableListener = listener;
+}
+RCSignal.prototype.remove = function(listener) {
+	var $it0 = this.listeners.iterator();
+	while( $it0.hasNext() ) {
+		var l = $it0.next();
+		if(Reflect.compareMethods(l,listener)) {
+			this.listeners.remove(listener);
+			return;
+		}
+	}
+	if(Reflect.compareMethods(this.exposableListener,listener)) this.exposableListener = null;
+}
+RCSignal.prototype.removeAll = function() {
+	this.listeners = new List();
+	this.exposableListener = null;
+}
+RCSignal.prototype.dispatch = function(args,pos) {
+	var $it0 = this.listeners.iterator();
+	while( $it0.hasNext() ) {
+		var listener = $it0.next();
+		this.callMethod(listener,args,pos);
+	}
+	if(this.exposableListener != null) {
+		this.callMethod(this.exposableListener,args,pos);
+		this.exposableListener = null;
+	}
+}
+RCSignal.prototype.callMethod = function(listener,args,pos) {
+	try {
+		listener.apply(null,args);
+	} catch( e ) {
+		haxe.Log.trace("[RCSignal error: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 51, className : "RCSignal", methodName : "callMethod"});
+	}
+}
+RCSignal.prototype.exists = function(listener) {
+	return false;
+}
+RCSignal.prototype.destroy = function() {
+	this.listeners = null;
+	this.exposableListener = null;
+}
+RCSignal.prototype.__class__ = RCSignal;
+EVResize = function(p) {
+	if( p === $_ ) return;
+	RCSignal.call(this);
+	js.Lib.window.onresize = $closure(this,"resizeHandler");
+}
+EVResize.__name__ = ["EVResize"];
+EVResize.__super__ = RCSignal;
+for(var k in RCSignal.prototype ) EVResize.prototype[k] = RCSignal.prototype[k];
+EVResize.prototype.resizeHandler = function(e) {
+	var w = js.Lib.document.body.scrollWidth;
+	var h = js.Lib.document.body.scrollHeight;
+	this.dispatch([w,h],{ fileName : "EVResize.hx", lineNumber : 27, className : "EVResize", methodName : "resizeHandler"});
+}
+EVResize.prototype.__class__ = EVResize;
 if(!haxe.remoting) haxe.remoting = {}
 haxe.remoting.Connection = function() { }
 haxe.remoting.Connection.__name__ = ["haxe","remoting","Connection"];
@@ -995,29 +1075,24 @@ RCColor.__name__ = ["RCColor"];
 RCColor.initWithColor = function(fillColor,borderColor) {
 	return new RCColor(fillColor,borderColor);
 }
+RCColor.toHexStyle = function(color) {
+	return "#" + StringTools.lpad(StringTools.hex(color),"0",6);
+}
 RCColor.prototype.alpha = null;
 RCColor.prototype.borderColor = null;
 RCColor.prototype.fillColor = null;
 RCColor.prototype.hexFillColor = function() {
-	var r = (this.fillColor & 16711680) >> 16;
-	var g = (this.fillColor & 65280) >> 8;
-	var b = this.fillColor & 255;
-	return ("#" + (r << 16 | g << 8 | b)).substr(0,7);
-}
-RCColor.prototype.hexBorderColor = function() {
-	return StringTools.replace(Std.string(this.borderColor),"0x","#");
+	return RCColor.toHexStyle(this.fillColor);
 }
 RCColor.prototype.__class__ = RCColor;
-RCNotification = function(name,functionToCall,args) {
+RCNotification = function(name,functionToCall) {
 	if( name === $_ ) return;
 	this.name = name;
 	this.functionToCall = functionToCall;
-	this.args = args;
 }
 RCNotification.__name__ = ["RCNotification"];
 RCNotification.prototype.name = null;
 RCNotification.prototype.functionToCall = null;
-RCNotification.prototype.args = null;
 RCNotification.prototype.toString = function() {
 	return "[RCNotification with name: '" + this.name + "', functionToCall: " + this.functionToCall + "]";
 }
@@ -1164,8 +1239,7 @@ RCRectangle.__super__ = RCDraw;
 for(var k in RCDraw.prototype ) RCRectangle.prototype[k] = RCDraw.prototype[k];
 RCRectangle.prototype.roundness = null;
 RCRectangle.prototype.redraw = function() {
-	this.view.innerHTML = "";
-	this.view.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:0px;top:0px;width:" + this.size.width + "px;height:" + this.size.height + "px;background-color:" + this.color.hexFillColor() + "\"></DIV>";
+	this.view.innerHTML = "<div style=\"position:absolute;overflow:hidden;left:0px;top:0px;width:" + this.size.width + "px;height:" + this.size.height + "px;background-color:" + this.color.hexFillColor() + "\"></div>";
 }
 RCRectangle.prototype.__class__ = RCRectangle;
 RCRectangle.__interfaces__ = [RCDrawInterface];
@@ -1730,15 +1804,6 @@ haxe.Unserializer.prototype.unserialize = function() {
 	throw "Invalid char " + this.buf.charAt(this.pos) + " at position " + this.pos;
 }
 haxe.Unserializer.prototype.__class__ = haxe.Unserializer;
-RCPoint = function(x,y) {
-	if( x === $_ ) return;
-	this.x = x;
-	this.y = y;
-}
-RCPoint.__name__ = ["RCPoint"];
-RCPoint.prototype.x = null;
-RCPoint.prototype.y = null;
-RCPoint.prototype.__class__ = RCPoint;
 haxe.remoting.Context = function(p) {
 	if( p === $_ ) return;
 	this.objects = new Hash();
@@ -2686,6 +2751,15 @@ RCLine.prototype.drawLine = function(x0,y0,x1,y1) {
 }
 RCLine.prototype.__class__ = RCLine;
 RCLine.__interfaces__ = [RCDrawInterface];
+RCPoint = function(x,y) {
+	if( x === $_ ) return;
+	this.x = x;
+	this.y = y;
+}
+RCPoint.__name__ = ["RCPoint"];
+RCPoint.prototype.x = null;
+RCPoint.prototype.y = null;
+RCPoint.prototype.__class__ = RCPoint;
 RCGradient = function(colors,alphas,linear) {
 	if( colors === $_ ) return;
 	if(linear == null) linear = true;
@@ -2710,6 +2784,14 @@ RCGradient.prototype.tx = null;
 RCGradient.prototype.ty = null;
 RCGradient.prototype.matrixRotation = null;
 RCGradient.prototype.__class__ = RCGradient;
+EVFullScreen = function(p) {
+	if( p === $_ ) return;
+	RCSignal.call(this);
+}
+EVFullScreen.__name__ = ["EVFullScreen"];
+EVFullScreen.__super__ = RCSignal;
+for(var k in RCSignal.prototype ) EVFullScreen.prototype[k] = RCSignal.prototype[k];
+EVFullScreen.prototype.__class__ = EVFullScreen;
 RCRect = function(x,y,w,h) {
 	if( x === $_ ) return;
 	this.origin = new RCPoint(x,y);
@@ -2719,10 +2801,57 @@ RCRect.__name__ = ["RCRect"];
 RCRect.prototype.origin = null;
 RCRect.prototype.size = null;
 RCRect.prototype.__class__ = RCRect;
+RCKeys = function(p) {
+	if( p === $_ ) return;
+	this.resume();
+}
+RCKeys.__name__ = ["RCKeys"];
+RCKeys.prototype.onLeft = function() {
+}
+RCKeys.prototype.onRight = function() {
+}
+RCKeys.prototype.onUp = function() {
+}
+RCKeys.prototype.onDown = function() {
+}
+RCKeys.prototype.onEnter = function() {
+}
+RCKeys.prototype.onSpace = function() {
+}
+RCKeys.prototype.onEsc = function() {
+}
+RCKeys.prototype.onKeyUp = function() {
+}
+RCKeys.prototype.onKeyDown = function() {
+}
+RCKeys.prototype["char"] = null;
+RCKeys.prototype.keyCode = null;
+RCKeys.prototype.keyDownHandler = function(e) {
+	this.keyCode = e.keyCode;
+	haxe.Log.trace(this.keyCode,{ fileName : "RCKeys.hx", lineNumber : 41, className : "RCKeys", methodName : "keyDownHandler"});
+	this["char"] = "";
+}
+RCKeys.prototype.keyUpHandler = function(e) {
+	this["char"] = "";
+	this.onKeyUp();
+}
+RCKeys.prototype.resume = function() {
+	js.Lib.document.onkeydown = $closure(this,"keyDownHandler");
+	js.Lib.document.onkeyup = $closure(this,"keyUpHandler");
+}
+RCKeys.prototype.hold = function() {
+	js.Lib.document.onkeydown = null;
+	js.Lib.document.onkeyup = null;
+}
+RCKeys.prototype.destroy = function() {
+	this.hold();
+}
+RCKeys.prototype.__class__ = RCKeys;
 Main = function() { }
 Main.__name__ = ["Main"];
 Main.lin = null;
 Main.ph = null;
+Main.signal = null;
 Main.main = function() {
 	haxe.Firebug.redirectTraces();
 	RCStage.init();
@@ -2744,6 +2873,17 @@ Main.main = function() {
 	RCStage.addChild(t);
 	var r = new RCTextView(220,30,null,null,"We are working on the HTML5 version of the gallery...",f);
 	RCStage.addChild(r);
+	var k = new RCKeys();
+	Main.signal = new RCSignal();
+	Main.signal.add(Main.printNr);
+	Main.signal.addOnce(Main.printNr2);
+	Main.signal.remove(Main.printNr);
+	Main.signal.removeAll();
+	var _g = 0;
+	while(_g < 5) {
+		var i = _g++;
+		Main.signal.dispatch([Math.random()],{ fileName : "Main.hx", lineNumber : 56, className : "Main", methodName : "main"});
+	}
 }
 Main.moveLine = function(e) {
 	Main.lin.size.width = e.clientX - Main.lin.x;
@@ -2751,10 +2891,16 @@ Main.moveLine = function(e) {
 	Main.lin.redraw();
 }
 Main.resizePhoto = function() {
-	haxe.Log.trace("onComplete",{ fileName : "Main.hx", lineNumber : 52, className : "Main", methodName : "resizePhoto"});
-	haxe.Log.trace(Main.ph.width,{ fileName : "Main.hx", lineNumber : 53, className : "Main", methodName : "resizePhoto"});
-	haxe.Log.trace(Main.ph.size.width,{ fileName : "Main.hx", lineNumber : 54, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace("onComplete",{ fileName : "Main.hx", lineNumber : 64, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace(Main.ph.width,{ fileName : "Main.hx", lineNumber : 65, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace(Main.ph.size.width,{ fileName : "Main.hx", lineNumber : 66, className : "Main", methodName : "resizePhoto"});
 	Main.ph.scaleToFill(298,148);
+}
+Main.printNr = function(nr) {
+	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 72, className : "Main", methodName : "printNr"});
+}
+Main.printNr2 = function(nr) {
+	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 75, className : "Main", methodName : "printNr2"});
 }
 Main.prototype.__class__ = Main;
 $_ = {}
@@ -2844,7 +2990,7 @@ if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 _RCDraw.LineScaleMode.NONE = null;
 js.Lib.onerror = null;
 RCStage.target = js.Lib.document.body;
-RCStage.stage = RCStage.target;
+RCStage.stage = js.Lib.document.body;
 RCStage.SCREEN_W = js.Lib.window.screen.width;
 RCStage.SCREEN_H = js.Lib.window.screen.height;
 RCStage.URL = "";

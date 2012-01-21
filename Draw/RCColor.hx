@@ -33,12 +33,10 @@ class RCColor {
 	}
 	
 	inline public function hexFillColor () :String {
-		var r = (fillColor & 0xff0000) >> 16;
-		var g = (fillColor & 0xff00) >> 8;
-		var b = fillColor & 0xFF;
-		return ("#" + (r << 16 | g << 8 | b)).substr(0, 7);
+		return toHexStyle ( fillColor );
 	}
-	inline public function hexBorderColor () :String {
-		return StringTools.replace (Std.string(borderColor), "0x", "#");
+	
+	public static function toHexStyle (color:Int) :String {
+		return "#" + StringTools.lpad(StringTools.hex(color), "0", 6);
 	}
 }

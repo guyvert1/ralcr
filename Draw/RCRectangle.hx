@@ -29,7 +29,7 @@ class RCRectangle extends RCDraw, implements RCDrawInterface {
 		
 		this.graphics.endFill();
 #elseif js
-	    view.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:0px;top:0px;width:" + size.width +  "px;height:" + size.height + "px;background-color:" + color.hexFillColor() + "\"></DIV>";
+	    view.innerHTML = "<div style=\"position:absolute;overflow:hidden;left:0px;top:0px;width:" + size.width +  "px;height:" + size.height + "px;background-color:" + color.hexFillColor() + "\"></div>";
 #end
 	}
 }

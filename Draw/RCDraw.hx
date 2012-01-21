@@ -29,7 +29,7 @@ class RCDraw extends RCView {
 		this.borderThickness = 1;
 		
 #if js
-		try{this.graphics = untyped view;}catch(e:Dynamic){trace(e);}//untyped view.getContext('2d');
+		try{ this.graphics = untyped view; }catch(e:Dynamic){trace(e);}//untyped view.getContext('2d');
 #end
 		
 		// Parse the color
@@ -42,8 +42,9 @@ class RCDraw extends RCView {
 		else if (Std.is (color, Array)) {
 			this.color = new RCColor ( color[0], color[1] );
 		}
-		else
+		else {
 			this.color = new RCColor ( 0x000000 );
+		}
 	}
 	
 	public function configure () :Void {

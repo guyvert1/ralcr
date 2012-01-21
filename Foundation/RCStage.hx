@@ -2,19 +2,20 @@
 //  RCStage
 //
 //  Created by Baluta Cristian on 2008-03-21.
-//  Copyright (c) 2008-2011 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2008-2012 http://ralcr.com. All rights reserved.
 //
+
 #if flash
-import flash.display.Stage;
-import flash.display.StageAlign;
-import flash.display.StageScaleMode;
-import flash.display.StageDisplayState;
-import flash.display.DisplayObjectContainer;
-import flash.external.ExternalInterface;
+	import flash.display.Stage;
+	import flash.display.StageAlign;
+	import flash.display.StageScaleMode;
+	import flash.display.StageDisplayState;
+	import flash.display.DisplayObjectContainer;
+	import flash.external.ExternalInterface;
 #elseif js
-import js.Dom;
-private typedef DisplayObjectContainer = JSView;
-typedef ExternalInterface = haxe.remoting.ExternalConnection;
+	import js.Dom;
+	private typedef DisplayObjectContainer = JSView;
+	typedef ExternalInterface = haxe.remoting.ExternalConnection;
 #end
 
 
@@ -28,7 +29,7 @@ class RCStage {
 	public static var URL :String = flash.Lib.current.loaderInfo.url;
 	public static var ID :String = flash.Lib.current.loaderInfo.parameters.id;
 #elseif js
-	public static var target = js.Lib.document.body;//js.Lib.document.getElementById("main");
+	inline public static var target = js.Lib.document.body;//js.Lib.document.getElementById("main");
 	inline public static var stage = target;
 	public static var SCREEN_W :Float = js.Lib.window.screen.width;
 	public static var SCREEN_H :Float = js.Lib.window.screen.height;
@@ -38,8 +39,9 @@ class RCStage {
 
 	public static var width :Int;
 	public static var height :Int;
+	public static var backgroundColor (null, set_backgroundColor) :Int;
 	
-		
+	
 	public static function init () {
 #if flash
 		stage.scaleMode = StageScaleMode.NO_SCALE;
@@ -48,9 +50,9 @@ class RCStage {
 		height = stage.stageHeight;
 #elseif js
 		target.style.position = "absolute";
-		target.style.backgroundColor = "#333322";
 		width = target.scrollWidth;
 		height = target.scrollHeight;
+		backgroundColor = 0x333333;
 #end
 		// Create the url without swf name
 		var url = URL.split("/");
@@ -107,10 +109,21 @@ class RCStage {
 			ExternalInterface.call ("swffit.configure", {target:ID, maxHei:h, maxWid:width, hCenter:false});
 	}
 */
+	public static function set_backgroundColor (color:Int) :Int {
+#if js
+		target.style.backgroundColor = toHexStyle(color);
+		return color;
+#end
+	}
+	public static function toHexStyle(color:Int):String
+	{
+		return "#" + StringTools.lpad(StringTools.hex(color), "0", 6);
+	}
+	
 	
 	
 	/**
-	 *	Add and remove childs into stage
+	 *	Add and remove views into stage
 	 */
 	public static function addChild (child:DisplayObjectContainer) :Void {
 		if (child != null)
@@ -126,21 +139,3 @@ class RCStage {
 			target.removeChild ( #if flash child #elseif js child.view #end );
 	}
 }
-
-
-/*		fcl.util.getDocumentWidth = function()
-		{
-		if (document.body.scrollWidth)
-		return document.body.scrollWidth;
-		var w = document.documentElement.offsetWidth;
-		if (window.scrollMaxX)
-		w += window.scrollMaxX;
-		return w;
-		};
-
-		fcl.util.getDocumentHeight = function()
-		{
-		if (document.body.scrollHeight)
-		return document.body.scrollHeight;
-		return document.documentElement.offsetHeight;
-		};*/
