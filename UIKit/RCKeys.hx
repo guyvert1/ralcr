@@ -6,11 +6,11 @@
 //
 
 #if flash
-import flash.events.KeyboardEvent;
-import flash.ui.Keyboard;
+	import flash.events.KeyboardEvent;
+	import flash.ui.Keyboard;
 #elseif js
-import js.Dom;
-typedef KeyboardEvent = Event;
+	import js.Dom;
+	typedef KeyboardEvent = Event;
 #end
 
 
@@ -38,13 +38,11 @@ class RCKeys {
 	}
 	
 	function keyDownHandler (e:KeyboardEvent) {
+		
 		keyCode = e.keyCode;trace(keyCode);
 		char = "";
-		//onKeyDown();
+		onKeyDown();
 		
-/*		switch (e.charCode) {
-			case 13: onEnter();
-		}
 		switch (e.keyCode) {
 			case Keyboard.LEFT :	onLeft();
 			case Keyboard.RIGHT :	onRight();
@@ -57,7 +55,7 @@ class RCKeys {
 #if flash
 		e.updateAfterEvent();
 #end
-*/
+
 	}
 	
 	function keyUpHandler (e:KeyboardEvent) {
@@ -98,3 +96,19 @@ class RCKeys {
 		hold();
 	}
 }
+
+
+
+#if js
+
+class Keyboard {
+	inline static public var LEFT = 37;
+	inline static public var RIGHT = 39;
+	inline static public var UP = 38;
+	inline static public var DOWN = 40;
+	inline static public var ENTER = 13;
+	inline static public var SPACE = 32;
+	inline static public var ESCAPE = 27;
+}
+
+#end

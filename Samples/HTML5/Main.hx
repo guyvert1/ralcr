@@ -12,19 +12,21 @@ class Main {
 	
 	static var lin :RCLine;
 	static var ph :RCPhoto;
+	static var circ :RCEllipse;
 	static var signal :RCSignal<Int->Void>;
 	
 	// change the HTML content of a DIV based on its ID
 	static function main() {
 		haxe.Firebug.redirectTraces();
 		RCStage.init();
+		RCStage.backgroundColor = 0xDDDDDD;
 		
 		var rect = new RCRectangle(200,30, 300, 150, 0xff3300);
 	 	RCStage.addChild ( rect );
 		rect.clipsToBounds = true;
 		
-		var ell = new RCEllipse(800,300, 100, 100, 0xff3300);
-	 	RCStage.addChild ( ell );
+		circ = new RCEllipse(800,300, 100, 100, 0xff3300);
+	 	RCStage.addChild ( circ );
 		
 		lin = new RCLine(30,300, 400, 600, 0xff3300);
 		RCStage.addChild ( lin );
@@ -45,6 +47,8 @@ class Main {
 		RCStage.addChild ( r );
 		
 		var k = new RCKeys();
+			k.onLeft = moveLeft;
+			k.onRight = moveRight;
 		
 		signal = new RCSignal<Int->Void>();
 		signal.add ( printNr );
@@ -74,6 +78,13 @@ class Main {
 	static function printNr2(nr:Int){
 		trace("printNr2 "+nr);
 	}
+	static function moveLeft(){
+		circ.x -= 10;
+	}
+	static function moveRight(){
+		circ.x += 10;
+	}
+	
 	
 /*	static function Hi(){
 		trace("psst");
