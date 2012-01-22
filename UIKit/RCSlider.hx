@@ -14,7 +14,7 @@ private enum Direction {
 	vertical;
 }
 
-class RCSlider extends RCView {
+class RCSlider extends RCControl {
 	
 	var background :DisplayObjectContainer;
 	var symbol :Dynamic;

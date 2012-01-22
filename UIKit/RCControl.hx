@@ -1,21 +1,51 @@
 //
-//  mc
+//  RCControl
 //
 //  Created by Baluta Cristian on 2008-03-23.
-//  Copyright (c) 2008 www.ralcr.com. All rights reserved.
+//  Copyright (c) 2008-2012 www.ralcr.com. All rights reserved.
 //
+
 #if flash
 import flash.events.MouseEvent;
 import flash.events.IEventDispatcher;
 #end
 
+enum RCControlState {
+	NORMAL;
+	HIGHLIGHTED;// used when UIControl isHighlighted is set
+	DISABLED;
+	SELECTED;
+}
+
 class RCControl extends RCView {
+	
+	public var touchDown :RCSignal<Void>;// on all touch downs
+	public var touchDownRepeat :RCSignal<Void>;// on multiple touchdowns (tap count > 1)
+	public var touchDragInside :RCSignal<Void>;
+	public var touchDragOutside :RCSignal<Void>;
+	public var touchDragEnter :RCSignal<Void>;
+	public var touchDragExit :RCSignal<Void>;
+	public var touchUpInside :RCSignal<Void>;
+	public var touchUpOutside :RCSignal<Void>;
+	public var touchCancel :RCSignal<Void>;
+
+	public var valueChanged :RCSignal<Void>;// sliders, etc.
+
+	public var editingDidBegin :RCSignal<Void>;// UITextField
+	public var editingChanged :RCSignal<Void>;
+	public var editingDidEnd :RCSignal<Void>;
+	public var editingDidEndOnExit :RCSignal<Void>;// 'return key' ending editing
+	
 	
 	public var locked (getLocked, null) :Bool;
 	public var toggled (getToggled, null) :Bool;
 	public var toggable (getToggable, setToggable) :Bool;
 	public var clickable (getClickable, setClickable) :Bool;
 	public var lockable (getLockable, setLockable) :Bool;
+	
+	public var enabled :Bool;// default is YES. if NO, ignores touch events and subclasses may draw differently
+	public var selected :Bool;// default is NO may be used by some subclasses or by application
+	public var highlighted :Bool;// default is NO. this gets set/cleared automatically when touch enters/exits during tracking and cleared on up
 	
 	var _toggled :Bool;
 	var _toggable :Bool;
