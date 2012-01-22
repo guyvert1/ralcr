@@ -1,22 +1,23 @@
 //
-//  RCText2
+//  RCTextView
 //
 //  Created by Cristi Baluta on 2011-02-01.
-//  Copyright (c) 2011 ralcr.com. All rights reserved.
+//  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
+
 #if flash
-import flash.display.Sprite;
-import flash.text.TextField;
-import flash.text.TextFieldType;
-import flash.text.TextFormat;
-import flash.text.TextFieldAutoSize;
-import flash.text.AntiAliasType;
-import flash.events.MouseEvent;
+	import flash.display.Sprite;
+	import flash.text.TextField;
+	import flash.text.TextFieldType;
+	import flash.text.TextFormat;
+	import flash.text.TextFieldAutoSize;
+	import flash.text.AntiAliasType;
+	import flash.events.MouseEvent;
 #elseif js
-import js.Dom;
-import RCView;
-typedef MouseEvent = Event;
-typedef TextField = RCView;
+	import js.Dom;
+	import RCView;
+	typedef MouseEvent = Event;
+	typedef TextField = RCView;
 #end
 
 
@@ -33,7 +34,7 @@ class RCTextView extends RCView {
 		size.width = w;
 		size.height = h;
 #if js
-		setWidth ( w ); if (w==null) view.style.width="100%";
+		setWidth ( w );
 		setHeight ( h );
 #end
 		init ( properties );
@@ -46,7 +47,9 @@ class RCTextView extends RCView {
 		redraw();
 		//target.addEventListener (MouseEvent.MOUSE_WHEEL, wheelHandler);
 	}
+	
 #if flash
+	
 	public function redraw () :Void {
 		
 		// Remove the previous textfield
@@ -75,11 +78,40 @@ class RCTextView extends RCView {
 		
 		view.addChild ( target );
 	}
+	
 #elseif js
+	
 	public function redraw () :Void {
 		
+		var wrap = size.width != null;
+		var multiline = size.height != 0;
+		
+		view.style.whiteSpace = (wrap ? "normal" : "nowrap");
+		view.style.wordWrap = (wrap ? "break-word" : "normal");
+		
+		var style = (properties.selectable ? "text" : "none");
+		untyped view.style.WebkitUserSelect = style;
+		untyped view.style.MozUserSelect = style;
+		
+		view.style.lineHeight = (properties.leading + properties.size) + "px";
+		view.style.fontFamily = properties.font;
+		view.style.fontSize = properties.size + "px";
+		view.style.fontWeight = (properties.bold ? "bold" : "normal");
+		view.style.fontStyle = (properties.italic ? "italic" : "normal");
+		view.style.letterSpacing = properties.letterSpacing + "px";
+		view.style.textAlign = properties.align;
+		
+		if (properties.autoSize) {
+			view.style.width = multiline ? size.width + "px" : "auto";
+			view.style.height = "auto";
+		}
+		else {
+			view.style.width = size.width + "px";
+			view.style.height = size.height + "px";
+		}
+		
 		view.innerHTML = "";
-		view.style.color = "#ffffff";//color.getHex();
+		view.style.color = RCColor.toHexStyle ( properties.color );
 		view.style.fontFamily = properties.font;
 		view.style.fontWeight = properties.bold;
     	view.style.fontSize = properties.size;
@@ -89,6 +121,7 @@ class RCTextView extends RCView {
 		if (size.width != null) setWidth ( size.width );
 		view.style.textAlign = properties.align;
 	}
+	
 #end
 	
 	public function getText() :String {
@@ -97,12 +130,28 @@ class RCTextView extends RCView {
 	
 	public function setText (str:String) :String {
 #if flash
+	
 		if (properties.html)
 			target.htmlText = str;
 		else
 			target.text = str;
+		
 #elseif js
+		
+	if (properties.html) {
 		view.innerHTML = str;
+	}
+	else {
+		// this is just horrible. fix at some point.
+		var content:String = Std.string(str);
+		content = content.split("\n").join("~~~NEWLINE~~~");
+		content = content.split("\t").join("~~~TAB~~~");
+		content = StringTools.htmlEscape(content);
+		content = content.split("~~~NEWLINE~~~").join("<br/>");
+		content = content.split("~~~TAB~~~").join("<span style='letter-spacing:1.3em'>&nbsp;</span>");
+		view.innerHTML = content;
+	}
+		
 #end
 		return str;
 	}

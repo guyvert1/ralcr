@@ -4,6 +4,7 @@
 //  Created by Baluta Cristian on 2009-03-22.
 //  Copyright (c) 2009 http://ralcr.com. All rights reserved.
 //
+
 class CAObject {
 	
 	public var target :Dynamic;// The object that is animated (DisplayObjectContainer, TextField, Sound)

@@ -111,15 +111,10 @@ class RCStage {
 */
 	public static function set_backgroundColor (color:Int) :Int {
 #if js
-		target.style.backgroundColor = toHexStyle(color);
-		return color;
+		target.style.backgroundColor = RCColor.toHexStyle(color);
 #end
+		return color;
 	}
-	public static function toHexStyle(color:Int):String
-	{
-		return "#" + StringTools.lpad(StringTools.hex(color), "0", 6);
-	}
-	
 	
 	
 	/**

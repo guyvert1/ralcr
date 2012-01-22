@@ -28,6 +28,11 @@ class Main {
 		circ = new RCEllipse(800,300, 100, 100, 0xff3300);
 	 	RCStage.addChild ( circ );
 		
+		var anim = new CATween (circ, {x:50, y:50}, 1, 0, caequations.Cubic.IN_OUT);
+			anim.repeatCount = 12;
+			anim.autoreverses = true;
+		CoreAnimation.add ( anim );
+		
 		lin = new RCLine(30,300, 400, 600, 0xff3300);
 		RCStage.addChild ( lin );
 		//js.Lib.document.onmousemove = moveLine;
@@ -39,12 +44,13 @@ class Main {
 		var f = new RCFont();
 			f.color = 0xffffff;
 			f.font = "Arial";
-			f.size = 30;
+			f.size = 20;
 		var t = new RCTextView (50, 30, 200, null, "IMAGIN", f);
 		RCStage.addChild ( t );
 		
-		var r = new RCTextView (220, 30, null, null, "We are working on the HTML5 version of the gallery...", f);
+		var r = new RCTextView (50, 60, null, null, "We are working on the HTML5 version of the gallery...", f);
 		RCStage.addChild ( r );
+		//r.clipsToBounds = true;
 		
 		var k = new RCKeys();
 			k.onLeft = moveLeft;

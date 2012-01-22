@@ -1,8 +1,8 @@
 //
-//  Text
+//  RCTextInput
 //
 //  Created by Baluta Cristian on 2008-03-22.
-//  Copyright (c) 2008 www.lib.com. All rights reserved.
+//  Copyright (c) 2008 www.ralcr.com. All rights reserved.
 //
 import flash.text.TextField;
 import flash.text.TextFieldType;
@@ -122,6 +122,7 @@ class RCTextInput extends RCTextView {
 	
 	function setType (t:TextFieldType) :TextFieldType {
 		return target.type = t;
+		
 	}
 	
 	function setPassword (t:Bool) :Bool {

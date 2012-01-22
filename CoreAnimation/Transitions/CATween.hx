@@ -30,7 +30,17 @@ class CATween extends CAObject, implements CATransitionInterface {
 		// Iterate over properties that should be tweened for this object
 		for (prop in Reflect.fields (toValues))
 			try {
+#if flash
 				Reflect.setField (target, prop, calculate (time_diff, prop));
+#elseif js
+				switch ( prop ) {
+					case "x": target.setX ( calculate (time_diff, prop) );
+					case "y": target.setY ( calculate (time_diff, prop) );
+					case "scaleX": target.setScaleX ( calculate (time_diff, prop) );
+					case "scaleY": target.setScaleY ( calculate (time_diff, prop) );
+					case "alpha": target.setAlpha ( calculate (time_diff, prop) );
+				}
+#end
 			}
 			catch (e:Dynamic) { trace(e); }
 	}

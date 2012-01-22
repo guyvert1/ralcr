@@ -17,7 +17,7 @@ import flash.utils.Timer;
 import flash.media.SoundTransform;
 
 
-class RCVideo extends Sprite, implements RCVideoInterface {
+class RCVideo extends RCView, implements RCVideoInterface {
 	
 	public static var BUFFER_TIME :Int = 2;
 	public static var DEFAULT_VOLUME :Float = 0.8;

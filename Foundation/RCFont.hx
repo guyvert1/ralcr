@@ -9,7 +9,7 @@
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
-	import flash.text.TextFieldAutoSize;
+	//import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormatDisplay;
 	import flash.text.StyleSheet;
 	import flash.text.AntiAliasType;
@@ -17,7 +17,7 @@
 	typedef TextFieldType = Dynamic;
 	typedef TextFormat = Dynamic;
 	typedef TextFormatAlign = Dynamic;
-	typedef TextFieldAutoSize = Dynamic;
+	//typedef TextFieldAutoSize = Dynamic;
 	typedef TextFormatDisplay = Dynamic;
 	typedef StyleSheet = Dynamic;
 	typedef AntiAliasType = Dynamic;
@@ -34,7 +34,7 @@ class RCFont {
 	public var embedFonts :Bool;
 	public var type :TextFieldType;
 	public var antiAliasType :AntiAliasType;
-	public var autoSize :TextFieldAutoSize;
+	public var autoSize :Bool;//TextFieldAutoSize;
 	public var displayAsPassword :Bool;
 	public var selectable :Bool;
 	public var sharpness :Int;// -400 ... 400
@@ -82,11 +82,11 @@ class RCFont {
 		
 		html = true;
 		embedFonts = true;
+		autoSize = true;//TextFieldAutoSize.LEFT;
+		selectable = false;
 #if flash
 		type = TextFieldType.DYNAMIC;
 		antiAliasType = AntiAliasType.ADVANCED;// ADVANCED-normal fonts(<40px), NORMAL-pixel fonts
-		autoSize = TextFieldAutoSize.LEFT;
-		selectable = false;
 		
 		format = new TextFormat();
 		style = new StyleSheet();
