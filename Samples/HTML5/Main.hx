@@ -68,9 +68,10 @@ class Main {
 		
 		
 		// Shared objects
-		RCUserDefaults.init("com.ralcr.html5");
+		RCUserDefaults.init("com.ralcr.html5.");
 		trace(RCUserDefaults.stringForKey("key1"));
 		RCUserDefaults.set ("key1", "blah blah");
+		RCUserDefaults.set ("key2", "blah blah 2");
 		trace(RCUserDefaults.stringForKey("key1"));
     }
 	static function moveLine(e:Event){
