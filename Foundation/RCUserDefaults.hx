@@ -75,7 +75,7 @@ import js.Cookie;
 class SharedObject {
 	
 	var identifier :String;
-	public var data :Dynamic;
+	public var data :Dynamic;// Contains key->value pairs without the identifier added to the key
 	
 	public static function getLocal (identifier:String) :SharedObject {
 		var so = new SharedObject(identifier);
@@ -84,24 +84,26 @@ class SharedObject {
 	public function new (identifier:String) {
 		this.identifier = identifier;
 		this.data = {};
-		
+			trace(Cookie.all().keys());
 		// Gett all the data with this identifier and store it locally in 'data'
 		for (key in Cookie.all().keys()) {
+			trace(key);
 			if (key.indexOf(identifier) == 0)
-				Reflect.setField (data, identifier + key, haxe.Unserializer.run ( Cookie.get (identifier + key)));
-	}
-	public function flush( ?minDiskSpace : Int ) : String {
-		
-		for (key in Cookie.all().keys()) {
-			if (key.indexOf(identifier) == 0)
-				Cookie.remove (identifier + key);
+				Reflect.setField (data, key.substr(0, identifier.length), haxe.Unserializer.run ( Cookie.get ( key)));
 		}
+	}
+	public function flush () :Void {
 		
-		if (value != null)
-			Cookie.set (identifier + key, haxe.Serializer.run(value));
-		else
-			Cookie.remove (identifier + key);
-		
+		for (key in Reflect.fields(data)) {
+			trace(key);
+			if (key.indexOf(identifier) == 0) {
+				var value = Reflect.field (data, identifier + key);
+				if (value != null)
+					Cookie.set (identifier + key, haxe.Serializer.run( value), 31536000);
+				else
+					Cookie.remove (identifier + key);
+			}
+		}
 	}
 }
 

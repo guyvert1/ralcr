@@ -220,7 +220,7 @@ class JSView {
 		view.style.height = h + "px";
 		return h;
 	}
-	public function setScaleX (sx:Float) :Float {trace("setScaleX "+x);
+	public function setScaleX (sx:Float) :Float {
 		scaleX_ = scaleX = sx;
 		scale (scaleX_, scaleY_);
 		return scaleX_;

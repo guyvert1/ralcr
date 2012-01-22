@@ -65,6 +65,13 @@ class Main {
 		
 		for (i in 0...5)
 		signal.dispatch ([Math.random()]);
+		
+		
+		// Shared objects
+		RCUserDefaults.init("com.ralcr.html5");
+		trace(RCUserDefaults.stringForKey("key1"));
+		RCUserDefaults.set ("key1", "blah blah");
+		trace(RCUserDefaults.stringForKey("key1"));
     }
 	static function moveLine(e:Event){
 		lin.size.width = e.clientX - lin.x;
