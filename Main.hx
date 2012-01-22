@@ -22,7 +22,7 @@ import RCPoint;
 import RCRect;
 import RCSkinInterface;
 import RCView;
-import RCStage;
+import RCWindow;
 import RCStringTools;
 import RCUserDefaults;
 import Zeta;
