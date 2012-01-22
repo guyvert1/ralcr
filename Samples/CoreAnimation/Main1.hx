@@ -40,7 +40,7 @@ class Main1 {
 	
 	static function main () {
 		haxe.Firebug.redirectTraces();
-		RCStage.init();
+		RCWindow.init();
 		FontManager.init();
 		//TestColors.init();
 		
@@ -48,11 +48,11 @@ class Main1 {
 		menu.add ( tweeners );
 		menu.addEventListener (GroupEvent.CLICK, clickHandler);
 		menu.select( "CoreAnimation" );
-		RCStage.addChild ( menu );
-		RCStage.addChild ( new RCStats (5, 5) );
+		RCWindow.addChild ( menu );
+		RCWindow.addChild ( new RCStats (5, 5) );
 		
 		particlesTxt = new RCTextView (5, 50+menu.height, null, null, "Particles: "+c+"->50ms", FontManager.getRCFont("system",{embedFonts:false}));
-		RCStage.addChild ( particlesTxt );
+		RCWindow.addChild ( particlesTxt );
 		
 		timer = new haxe.Timer(50);
 		timer.run = genParticles;
@@ -79,13 +79,13 @@ class Main1 {
 		
 		photo = new RCPhoto (200, 0, "3134265_large.jpg");
 		photo.onComplete = fadePhoto;
-		RCStage.addChild ( container );
+		RCWindow.addChild ( container );
 		
 		m = new RCRectangle (200, 50, 500, 500, 0x000000, 0.3);
-		RCStage.addChild ( m );
+		RCWindow.addChild ( m );
 		container.mask = m;
 		
-		RCStage.addChild ( new LayerOldTV (200, 50, 500, 500) );
+		RCWindow.addChild ( new LayerOldTV (200, 50, 500, 500) );
 	}
 	
 	
@@ -118,8 +118,8 @@ class Main1 {
 	static function p2(){trace("kenburn 2= ");}
 	static function genParticles() :Void {
 		for (i in 0...c) {
-			var obj = new RCEllipse(RCStage.width/2, RCStage.height/2, 2, 2, 0xffffff, 0.6);
-			RCStage.addChild ( obj );
+			var obj = new RCEllipse(RCWindow.width/2, RCWindow.height/2, 2, 2, 0xffffff, 0.6);
+			RCWindow.addChild ( obj );
 			t5 ( obj );
 		}
 	}
@@ -186,8 +186,8 @@ class Main1 {
 	// Particles
 	static function t5(obj:RCEllipse){
 		timeIn = 0.2+Math.random()*1;
-		var nx = RCStage.width-Math.random()*RCStage.width*2;
-		var ny = RCStage.height-Math.random()*RCStage.height*2;
+		var nx = RCWindow.width-Math.random()*RCWindow.width*2;
+		var ny = RCWindow.height-Math.random()*RCWindow.height*2;
 		
 		switch (tweener) {
 			case tweeners[0]:
@@ -208,12 +208,12 @@ class Main1 {
 		}
 	}
 	static function remove (obj:RCEllipse) {//trace("remove "+obj);
-		RCStage.removeChild ( obj );
+		RCWindow.removeChild ( obj );
 		obj = null;
 	}
 	static function remove2(tween:GTween):Void {
 		//trace("tween completed");
-		RCStage.removeChild ( tween.target );
+		RCWindow.removeChild ( tween.target );
 		tween.target = null;
 	}
 }

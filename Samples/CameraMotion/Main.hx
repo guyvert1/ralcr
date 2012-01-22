@@ -47,7 +47,7 @@ class Main extends Sprite {
 	}
 	
 	static function main(){
-		RCStage.init();
-		RCStage.addChild ( new Main() );
+		RCWindow.init();
+		RCWindow.addChild ( new Main() );
 	}
 }

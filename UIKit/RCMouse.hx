@@ -70,10 +70,10 @@ class RCMouse {
 		//_over.buttonMode = true;
 		//_parent.doubleClickEnabled = true;
 		
-		if (_parent != RCStage.target)
+		if (_parent != RCWindow.target)
 			_parent.mouseEnabled = true;
 			
-		if (_over != RCStage.target)
+		if (_over != RCWindow.target)
 			_over.mouseEnabled = true;
 		
 		resume();

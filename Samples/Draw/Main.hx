@@ -12,8 +12,8 @@ class Main extends MovieClip {
 		
 	public static function main () {
 		haxe.Firebug.redirectTraces();
-		RCStage.init();
-		RCStage.addChild ( new Main() );
+		RCWindow.init();
+		RCWindow.addChild ( new Main() );
 	}
 	
 	

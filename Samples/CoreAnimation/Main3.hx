@@ -16,9 +16,9 @@ class Main3 extends Sprite {
 	
 	static function main () :Void {
 		haxe.Firebug.redirectTraces();
-		RCStage.init();
-		RCStage.addChild ( new RCStats (5, 5) );
-		RCStage.addChild ( new Main3() );
+		RCWindow.init();
+		RCWindow.addChild ( new RCStats (5, 5) );
+		RCWindow.addChild ( new Main3() );
 	}
 	
 	function new () {

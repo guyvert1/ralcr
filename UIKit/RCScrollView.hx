@@ -61,7 +61,7 @@ class RCScrollView extends RCView {
 			var scroller_w = Zeta.lineEquationInt (50, size.width-50, contentRect.size.width, size.width*10, size.width);
 			var skinH = new SKSlider (scroller_w, 5, size.width, 5,  0, colors);
 			horizontalSliderIndicator = new RCSlider (0, size.height + 2, Math.round(size.width), null, skinH);
-			horizontalSliderSync = new RCSliderSync (RCStage.target, contentView, horizontalSliderIndicator, Math.round(size.width), "horizontal");
+			horizontalSliderSync = new RCSliderSync (RCWindow.target, contentView, horizontalSliderIndicator, Math.round(size.width), "horizontal");
 			horizontalSliderSync.onUpdate = scrollViewDidScrollHandler;
 			view.addChild ( horizontalSliderIndicator );
 		}
@@ -78,7 +78,7 @@ class RCScrollView extends RCView {
 			var scroller_h = Zeta.lineEquationInt (50, size.height-50, contentRect.size.height, size.height*10, size.height);
 			var skinV = new SKSlider (5, scroller_h, 5, size.height,  0, colors);
 			verticalSliderIndicator = new RCSlider (size.width + 2, 0, null, Math.round(size.height), skinV);
-			verticalSliderSync = new RCSliderSync (RCStage.target, contentView, verticalSliderIndicator, Math.round(size.height), "vertical");
+			verticalSliderSync = new RCSliderSync (RCWindow.target, contentView, verticalSliderIndicator, Math.round(size.height), "vertical");
 			verticalSliderSync.onUpdate = scrollViewDidScrollHandler;
 			view.addChild ( verticalSliderIndicator );
 		}

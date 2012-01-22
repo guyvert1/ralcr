@@ -96,13 +96,13 @@ class RCTableView<T:RCControl> extends RCView {
 		
 		this.addEventListener (Event.ENTER_FRAME, loop);
 		this.addEventListener (MouseEvent.MOUSE_MOVE, mouseMove);
-		RCStage.stage.addEventListener (MouseEvent.MOUSE_UP, stopDragCells);
+		RCWindow.stage.addEventListener (MouseEvent.MOUSE_UP, stopDragCells);
 	}
 	function stopDragCells(_){
 		dragging = false;
 		//CoreAnimation.remove ( anim );
 		
-		RCStage.stage.removeEventListener (MouseEvent.MOUSE_UP, stopDragCells);
+		RCWindow.stage.removeEventListener (MouseEvent.MOUSE_UP, stopDragCells);
 		this.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMove);
 		
 /*		if (contentView.y > 0) {

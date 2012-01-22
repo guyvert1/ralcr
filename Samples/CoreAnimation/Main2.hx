@@ -6,16 +6,16 @@ class Main2 {
 	
 	static function main () :Void {
 		haxe.Firebug.redirectTraces();
-		RCStage.init();
-		RCStage.addChild ( new RCStats (5, 5) );
+		RCWindow.init();
+		RCWindow.addChild ( new RCStats (5, 5) );
 		
 		photo = new RCPhoto (200, 0, "3134265_large.jpg");
 		photo.onComplete = fadePhoto;
-		RCStage.addChild ( photo );
+		RCWindow.addChild ( photo );
 		
 		bg = new RCRectangle (0, 100, 200, 300, 0x999999);
 		bg.setColor (0xffffff);
-		RCStage.addChild ( bg );
+		RCWindow.addChild ( bg );
 		trace (bg.transform.colorTransform);
 		
 		var obj = new CATColors (bg, {color:0x000000}, 4, 0, caequations.Cubic.IN_OUT);

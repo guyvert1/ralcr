@@ -1,5 +1,5 @@
 //
-//  RCStage
+//  RCWindow
 //
 //  Created by Baluta Cristian on 2008-03-21.
 //  Copyright (c) 2008-2012 http://ralcr.com. All rights reserved.

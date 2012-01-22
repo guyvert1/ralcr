@@ -6,7 +6,7 @@
 //
 import js.Dom;
 import RCView;
-import RCStage;
+import RCWindow;
 
 class Main {
 	
@@ -18,16 +18,16 @@ class Main {
 	// change the HTML content of a DIV based on its ID
 	static function main() {
 		haxe.Firebug.redirectTraces();
-		RCStage.init();
-		RCStage.backgroundColor = 0xDDDDDD;
+		RCWindow.init();
+		RCWindow.backgroundColor = 0xDDDDDD;
 		
 		var rect = new RCRectangle(200,30, 300, 150, 0xff3300);
-	 	RCStage.addChild ( rect );
+	 	RCWindow.addChild ( rect );
 		rect.clipsToBounds = true;
 		rect.scaleX = 1;
 		
 		circ = new RCEllipse(800,300, 100, 100, 0xff3300);
-	 	RCStage.addChild ( circ );
+	 	RCWindow.addChild ( circ );
 		
 		var anim = new CATween (rect, {x:50, y:50, scaleX:0.3}, 1, 0, caequations.Cubic.IN_OUT);
 			anim.repeatCount = 12;
@@ -35,7 +35,7 @@ class Main {
 		CoreAnimation.add ( anim );
 		
 		lin = new RCLine(30,300, 400, 600, 0xff3300);
-		RCStage.addChild ( lin );
+		RCWindow.addChild ( lin );
 		//js.Lib.document.onmousemove = moveLine;
 		
 		ph = new RCPhoto(1, 1, "../CoreAnimation/3134265_large.jpg");
@@ -47,10 +47,10 @@ class Main {
 			f.font = "Arial";
 			f.size = 20;
 		var t = new RCTextView (50, 30, 200, null, "IMAGIN", f);
-		RCStage.addChild ( t );
+		RCWindow.addChild ( t );
 		
 		var r = new RCTextView (50, 60, null, null, "We are working on the HTML5 version of the gallery...", f);
-		RCStage.addChild ( r );
+		RCWindow.addChild ( r );
 		//r.clipsToBounds = true;
 		
 		var k = new RCKeys();

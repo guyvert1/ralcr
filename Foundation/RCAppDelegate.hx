@@ -20,8 +20,8 @@ class RCAppDelegate extends MovieClip {
 	public function new () {
 		super();
 		
-		// The RCStage should be initialized before anything
-		RCStage.init();
+		// The RCWindow should be initialized before anything
+		RCWindow.init();
 		RCNotificationCenter.addObserver ("resize", resize);
 		RCNotificationCenter.addObserver ("fullscreen", fullscreen);
 		

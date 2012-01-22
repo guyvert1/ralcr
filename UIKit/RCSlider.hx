@@ -85,15 +85,15 @@ class RCSlider extends RCControl {
 		
 		symbol.startDrag (false, new Rectangle (0, 0, bound_w, bound_h));
 		
-		RCStage.target.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
-		RCStage.target.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+		RCWindow.target.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
+		RCWindow.target.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 	}
 	function mouseUpHandler (e:MouseEvent) {
 		// When the mouse is released stop dragging the symbol
 		symbol.stopDrag ();
 		
-		RCStage.target.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
-		RCStage.target.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+		RCWindow.target.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
+		RCWindow.target.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 	}
 	
 	

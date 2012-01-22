@@ -14,8 +14,8 @@ amarkov,CLASS4E,Anya Markov,UKSCHOOLS,3,Y,STANDARD,PUPIL,1,N,N";
 	
 	public static function main () {
 		haxe.Firebug.redirectTraces();
-		RCStage.init();
-		RCStage.addChild ( new Main() );
+		RCWindow.init();
+		RCWindow.addChild ( new Main() );
 	}
 	
 	

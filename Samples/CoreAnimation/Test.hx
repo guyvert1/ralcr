@@ -11,7 +11,7 @@ class Test {
 	
 	public function new (){
 		f = new RCRectangle (0, 10, 50, 50, 0xff4422, 1);
-		RCStage.addChild ( f );
+		RCWindow.addChild ( f );
 	}
 	
 	

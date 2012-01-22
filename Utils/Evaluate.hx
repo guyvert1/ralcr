@@ -46,8 +46,8 @@ class Evaluate {
 	
 	public static function parseInt (str:String, ?rect:Rectangle) :Int {
 		return Math.round ( switch ( str ) {
-			case "stagewidth":	RCStage.width;
-			case "stageheight":	RCStage.height;
+			case "stagewidth":	RCWindow.width;
+			case "stageheight":	RCWindow.height;
 			case "photowidth":	rect == null ? 0.0 : rect.width;
 			case "photoheight":	rect == null ? 0.0 : rect.height;
 			default :			Std.parseInt ( str );
