@@ -84,25 +84,24 @@ class SharedObject {
 	public function new (identifier:String) {
 		this.identifier = identifier;
 		this.data = {};
-			trace(Cookie.all().keys());
+		
 		// Gett all the data with this identifier and store it locally in 'data'
 		for (key in Cookie.all().keys()) {
-			trace(key);
+			
 			if (key.indexOf(identifier) == 0)
-				Reflect.setField (data, key.substr(0, identifier.length), haxe.Unserializer.run ( Cookie.get ( key)));
+				Reflect.setField (data, key.substr(identifier.length), haxe.Unserializer.run ( Cookie.get ( key)));
 		}
 	}
 	public function flush () :Void {
 		
 		for (key in Reflect.fields(data)) {
-			trace(key);
-			if (key.indexOf(identifier) == 0) {
-				var value = Reflect.field (data, identifier + key);
-				if (value != null)
-					Cookie.set (identifier + key, haxe.Serializer.run( value), 31536000);
-				else
-					Cookie.remove (identifier + key);
-			}
+			
+			var value = Reflect.field (data, key);
+			if (value != null)
+				Cookie.set (identifier + key, haxe.Serializer.run( value ), 31536000);
+			else
+				Cookie.remove (identifier + key);
+			
 		}
 	}
 }
