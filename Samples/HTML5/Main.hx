@@ -24,11 +24,12 @@ class Main {
 		var rect = new RCRectangle(200,30, 300, 150, 0xff3300);
 	 	RCStage.addChild ( rect );
 		rect.clipsToBounds = true;
+		rect.scaleX = 1;
 		
 		circ = new RCEllipse(800,300, 100, 100, 0xff3300);
 	 	RCStage.addChild ( circ );
 		
-		var anim = new CATween (circ, {x:50, y:50}, 1, 0, caequations.Cubic.IN_OUT);
+		var anim = new CATween (rect, {x:50, y:50, scaleX:0.3}, 1, 0, caequations.Cubic.IN_OUT);
 			anim.repeatCount = 12;
 			anim.autoreverses = true;
 		CoreAnimation.add ( anim );
@@ -39,7 +40,7 @@ class Main {
 		
 		ph = new RCPhoto(1, 1, "../CoreAnimation/3134265_large.jpg");
 		ph.onComplete = resizePhoto;
-		rect.addChild ( ph );
+		//rect.addChild ( ph );
 		
 		var f = new RCFont();
 			f.color = 0xffffff;

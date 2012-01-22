@@ -2,7 +2,7 @@
 //  JSView
 //
 //  Created by Baluta Cristian on 2011-11-12.
-//  Copyright (c) 2011 ralcr.com. All rights reserved.
+//  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
 import js.Lib;
 import js.Dom;
@@ -14,6 +14,7 @@ class JSView {
 	public var size :RCSize; // Real size of the view
 	public var center (default, setCenter) :RCPoint;
 	public var clipsToBounds (default, setClipsToBounds) :Bool;
+	public var backgroundColor (default, setBackgroundColor) :Null<Int>;
 	public var x (default, setX) :Float;
 	public var y (default, setY) :Float;
 	public var scaleX (default, setScaleX) :Float;
@@ -26,6 +27,9 @@ class JSView {
 	var viewMask :HtmlDom;
 	var lastW :Float;
 	var lastH :Float;
+	var scaleX_ :Float;
+	var scaleY_ :Float;
+	var alpha_ :Float;
 	var caobj :CAObject;
 	var graphics :CanvasContext;
 	
@@ -33,6 +37,10 @@ class JSView {
 	public function new (x, y) {
 		
 		size = new RCSize (0, 0);
+		scaleX_ = 1;
+		scaleY_ = 1;
+		alpha_ = 1;
+		//visible = true;
 		
 #if canvas
 		view = Lib.document.createElement("canvas");
@@ -60,9 +68,14 @@ class JSView {
 	}
 	
 	/**
-	 *  Change the color of the Sprite
+	 *  Change the color of the background
 	 */
-	public function setColor (color:Int, ?mpl:Float=0) :Void {
+	public function setBackgroundColor (color:Null<Int>) :Null<Int> {
+		
+		if (color == null) {
+			view.style.background = null;
+			return color;
+		}
 		
 		var red   = (color & 0xff0000) >> 16;
 		var green = (color & 0xff00) >> 8;
@@ -70,10 +83,8 @@ class JSView {
 		var alpha = 1;
 		var color_ = "rgba("+red+","+green+","+blue+","+alpha+")";
 		view.style.background = color_;
-	}
-	
-	public function resetColor () :Void {
-		view.style.background = null;
+		
+		return color;
 	}
 	
 	public function setCenter (pos:RCPoint) :RCPoint {
@@ -159,9 +170,7 @@ class JSView {
 	 *  This methos is usually overriten by the extension class.
 	 */
 	public function destroy () :Void {
-		//CoreAnimation.remove ( caobj );
-/*		view.removeEventListener (Event.ADDED_TO_STAGE, viewDidAppear);
-		view.removeEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappear);*/
+		CoreAnimation.remove ( caobj );
 	}
 	
 	
@@ -175,12 +184,14 @@ class JSView {
 	
 	
 	// Simulate flash API
+	//
 	function setVisible (v:Bool) :Bool {
 		visible = v;
 		view.style.visibility = (v ? "visible" : "hidden");
 		return v;
 	}
-	function setAlpha (a:Float) :Float {
+	public function setAlpha (a:Float) :Float {
+		alpha_ = a;
 /*		if (BrowserUtil.browserName == MSIE) {
 			untyped view.style.filter = "alpha(opacity="+Std.string(alpha*100)+")";
 		}
@@ -189,39 +200,39 @@ class JSView {
 //		}
 		return a;
 	}
-	function setX (x:Float) :Float {
+	public function setX (x:Float) :Float {
 		this.x = x;
 		view.style.left = Std.string(x) + "px";
 		return x;
 	}
-	function setY (y:Float) :Float {
+	public function setY (y:Float) :Float {
 		this.y = y;
 		view.style.top = Std.string(y) + "px";
 		return y;
 	}
-	function setWidth (w:Float) :Float {
+	public function setWidth (w:Float) :Float {
 		width = w;
 		view.style.width = w + "px";
 		return w;
 	}
-	function setHeight (h:Float) :Float {
+	public function setHeight (h:Float) :Float {
 		height = h;
 		view.style.height = h + "px";
 		return h;
 	}
-	function setScaleX (x:Float) :Float {
-		scaleX = x;
-		scale (scaleX, scaleY);
-		return scaleX;
+	public function setScaleX (sx:Float) :Float {trace("setScaleX "+x);
+		scaleX_ = scaleX = sx;
+		scale (scaleX_, scaleY_);
+		return scaleX_;
 	}
-	function setScaleY (y:Float) :Float {
-		scaleY = y;
-		scale (scaleX, scaleY);
-		return scaleY;
+	public function setScaleY (sy:Float) :Float {
+		scaleY_ = scaleY = sy;
+		scale (scaleX_, scaleY_);
+		return scaleY_;
 	}
-	function scale (x:Float, y:Float) {
+	public function scale (sx:Float, sy:Float) {
 		untyped view.style.WebkitTransformOrigin = "top left";
-		untyped view.style.WebkitTransform = "scale(" + scaleX + "," + scaleY + ")";
+		untyped view.style.WebkitTransform = "scale(" + sx + "," + sy + ")";
 	}
 	
 /*	function get_mouseX():Float
@@ -244,7 +255,7 @@ class JSView {
 	}
 
 	public inline function clear() {
-		graphics.clearRect(0,0,graphics.canvas.width,graphics.canvas.height);
+		graphics.clearRect (0, 0, graphics.canvas.width, graphics.canvas.height);
 	}
 
 	public function lineStyle( ?width : Float, ?color : Int ) {

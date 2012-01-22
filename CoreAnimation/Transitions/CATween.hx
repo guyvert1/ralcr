@@ -1,9 +1,10 @@
 //
-//  Fade - fades normal properties of a DisplayObject
+//  Fades normal properties of a DisplayObject
 //
 //  Created by Baluta Cristian on 2009-03-21.
-//  Copyright (c) 2009 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2009-2012 http://ralcr.com. All rights reserved.
 //
+
 class CATween extends CAObject, implements CATransitionInterface {
 	
 	override public function init () :Void {
@@ -16,7 +17,7 @@ class CATween extends CAObject, implements CATransitionInterface {
 				Reflect.setField (toValues, p, Reflect.field (properties, p));
 			}
 			else try {
-				//Prevents on adding to the object unknown properties
+				// Prevents on adding to the object unknown properties
 				// We have composed properties: x={fromValue:0, toValue:10}, ....
 				Reflect.setField (fromValues, p, Reflect.field (Reflect.field (properties, p), "fromValue"));
 				Reflect.setField (target, p, Reflect.field (fromValues, p));
@@ -33,12 +34,15 @@ class CATween extends CAObject, implements CATransitionInterface {
 #if flash
 				Reflect.setField (target, prop, calculate (time_diff, prop));
 #elseif js
+				var val = calculate (time_diff, prop);
 				switch ( prop ) {
-					case "x": target.setX ( calculate (time_diff, prop) );
-					case "y": target.setY ( calculate (time_diff, prop) );
-					case "scaleX": target.setScaleX ( calculate (time_diff, prop) );
-					case "scaleY": target.setScaleY ( calculate (time_diff, prop) );
-					case "alpha": target.setAlpha ( calculate (time_diff, prop) );
+					case "x": target.setX ( val );
+					case "y": target.setY ( val );
+					case "width": target.setWidth ( val );
+					case "height": target.setHeight ( val );
+					case "scaleX": target.setScaleX ( val );
+					case "scaleY": target.setScaleY ( val );
+					case "alpha": target.setAlpha ( val );
 				}
 #end
 			}
