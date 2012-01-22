@@ -6,6 +6,7 @@
 //
 
 #if flash
+
 import flash.display.Sprite;
 import flash.display.DisplayObjectContainer;
 import flash.events.Event;
@@ -16,6 +17,8 @@ class RCView extends Sprite {
 	public var size :RCSize; // Real size of the view
 	public var center (default, setCenter) :RCPoint;
 	public var clipsToBounds (default, setClipsToBounds) :Bool;
+	public var backgroundColor (default, setBackgroundColor) :Null<Int>;
+	
 	var viewMask :Sprite;
 	var lastW :Float;
 	var lastH :Float;
@@ -42,17 +45,19 @@ class RCView extends Sprite {
 	/**
 	 *  Change the color of the Sprite
 	 */
-	public function setColor (color:Int, ?mpl:Float=0) :Void {
+	public function setBackgroundColor (color:Null<Int>) :Null<Int> {
 		
 		var red   = (color & 0xff0000) >> 16;
 		var green = (color & 0xff00) >> 8;
 		var blue  = color & 0xFF;
+		var mpl = 0;
+		
+		if (color != null)
 		
 		view.transform.colorTransform = new flash.geom.ColorTransform ( mpl,mpl,mpl,mpl,
 																		red,green,blue,view.alpha*255);
-	}
-	
-	public function resetColor () :Void {
+		else
+		
 		view.transform.colorTransform = new flash.geom.ColorTransform  (1,	1,	1,	1,
 																		0,	0,	0,	0);
 	}
