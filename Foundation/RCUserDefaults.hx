@@ -8,36 +8,24 @@
 
 #if flash
 	import flash.net.SharedObject;
-#elseif js
-	import js.Cookie;
 #end
 
 
 class RCUserDefaults {
-
-	static var inited :Bool = false;
+	
 	static var sharedObject :SharedObject;
-	static var identifier :String;
 	
 	
-	public static function init (?identifier_:String="ralcr") :Void {
-		if (inited) return;
-		identifier = identifier_;
-#if flash
-		sharedObject = SharedObject.getLocal ( identifier );
-#end
-		inited = true;
+	public static function init (?identifier:String="com.ralcr") :Void {
+		if (sharedObject == null)
+			sharedObject = SharedObject.getLocal ( identifier );
 	}
 	
 	// Get objects from Shared object
 	//
 	public static function objectForKey (key:String) :Dynamic {
 		init();
-#if flash
 		return Reflect.field (sharedObject.data, key);
-#elseif js
-		return deserialize ( Cookie.get (identifier + key) );
-#end
 	}
 	public static function arrayForKey (key:String) :Array<Dynamic> {
 		return objectForKey ( key );
@@ -60,12 +48,8 @@ class RCUserDefaults {
 	public static function set (key:String, value:Dynamic) :Dynamic {
 		init();
 		try {
-#if flash
 			Reflect.setField (sharedObject.data, key, value);
 			sharedObject.flush();
-#elseif js
-			Cookie.set (ide + key, serialize(value));
-#end
 		}
 		catch (e:Dynamic) { trace("Error setting a SharedObject {"+e+"}"); }
 		
@@ -84,105 +68,41 @@ class RCUserDefaults {
 }
 
 
+#if js
 
+import js.Cookie;
 
-
-
-class LocalStorage<T> extends LocalStorageBase<T>
-{
-	var internal:Hash<T>;
+class SharedObject {
 	
-	public function new(nameSpace:String)
-	{
-		super(nameSpace);
-		internal = new Hash();
+	var identifier :String;
+	public var data :Dynamic;
+	
+	public static function getLocal (identifier:String) :SharedObject {
+		var so = new SharedObject(identifier);
+		return so;
 	}
-	
-	override public function get(key:String):T
-	{
-		if (internal.exists(key))
-			return internal.get(key);
-			
+	public function new (identifier:String) {
+		this.identifier = identifier;
+		this.data = {};
 		
-		if (value != null) internal.set(key, value);
+		// Gett all the data with this identifier and store it locally in 'data'
+		for (key in Cookie.all().keys()) {
+			if (key.indexOf(identifier) == 0)
+				Reflect.setField (data, identifier + key, haxe.Unserializer.run ( Cookie.get (identifier + key)));
+	}
+	public function flush( ?minDiskSpace : Int ) : String {
 		
-		return value;
-	}
-	
-	override public function set(key:String, value:T)
-	{
-		internal.set(key, value);
-		 
-	}
-	
-	override public function remove(key:String)
-	{
-		if (internal.exists(key))
-		{
-			internal.remove(key);
-			Cookie.remove(nameSpace + key);
-			return true;
+		for (key in Cookie.all().keys()) {
+			if (key.indexOf(identifier) == 0)
+				Cookie.remove (identifier + key);
 		}
-		return false;
-	}
-	
-	override public function exists(key:String):Bool
-	{
-		if (!internal.exists(key))
-			return Cookie.exists(nameSpace + key);
-		return true;
-	}
-	
-	override public function save()
-	{
-		for (key in internal.keys())
-			set(key, internal.get(key));
-	}
-	
-	override public function clear()
-	{
-		for (key in keys())
-			remove(key);
-	}
-	
-	override public function keys():Iterator<String>
-	{
-		var keys = [];
-		for (key in Cookie.all().keys())
-		{
-			if (key.indexOf(nameSpace) == 0)
-				keys.push(key.substr(nameSpace.length));
-		}
-		return keys.iterator();
-	}
-	
-	function serialize(value:T):String
-	{
-		if (value == null)
-			return null;
 		
-		try
-		{
-			return haxe.Serializer.run(value);
-		}
-		catch(e:Dynamic)
-		{
-			return Std.string(value);
-		}
-	}
-	
-	function deserialize(value:String):T
-	{
-		if (value == null)
-			return null;
+		if (value != null)
+			Cookie.set (identifier + key, haxe.Serializer.run(value));
+		else
+			Cookie.remove (identifier + key);
 		
-		try
-		{
-			return haxe.Unserializer.run(value);
-		}
-		catch(e:Dynamic)
-		{
-			return cast value;
-		}
 	}
 }
+
+#end
