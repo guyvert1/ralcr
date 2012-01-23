@@ -377,25 +377,92 @@ RCGradient.prototype.tx = null;
 RCGradient.prototype.ty = null;
 RCGradient.prototype.matrixRotation = null;
 RCGradient.prototype.__class__ = RCGradient;
-RCColor = function(fillColor,borderColor,a) {
+RCColor = function(fillColor,strokeColor,a) {
 	if( fillColor === $_ ) return;
-	this.borderColor = borderColor;
+	this.strokeColor = strokeColor;
 	this.fillColor = fillColor;
 	this.alpha = a == null?1.0:a;
+	this.redComponent = (fillColor >> 16 & 255) / 255;
+	this.greenComponent = (fillColor >> 8 & 255) / 255;
+	this.blueComponent = (fillColor & 255) / 255;
+	this.fillColorStyle = RCColor.HEXtoString(fillColor);
+	this.strokeColorStyle = RCColor.HEXtoString(strokeColor);
 }
 RCColor.__name__ = ["RCColor"];
-RCColor.initWithColor = function(fillColor,borderColor) {
+RCColor.blackColor = function() {
+	return RCColor.colorWithWhite(0);
+}
+RCColor.darkGrayColor = function() {
+	return RCColor.colorWithWhite(0.333);
+}
+RCColor.lightGrayColor = function() {
+	return RCColor.colorWithWhite(0.667);
+}
+RCColor.whiteColor = function() {
+	return RCColor.colorWithWhite(1);
+}
+RCColor.grayColor = function() {
+	return RCColor.colorWithWhite(0.5);
+}
+RCColor.redColor = function() {
+	return RCColor.colorWithRGBA(1,0,0);
+}
+RCColor.greenColor = function() {
+	return RCColor.colorWithRGBA(0,1,0);
+}
+RCColor.blueColor = function() {
+	return RCColor.colorWithRGBA(0,0,1);
+}
+RCColor.cyanColor = function() {
+	return RCColor.colorWithRGBA(0,1,1);
+}
+RCColor.yellowColor = function() {
+	return RCColor.colorWithRGBA(1,1,0);
+}
+RCColor.magentaColor = function() {
+	return RCColor.colorWithRGBA(1,0,1);
+}
+RCColor.orangeColor = function() {
+	return RCColor.colorWithRGBA(1,0.5,0);
+}
+RCColor.purpleColor = function() {
+	return RCColor.colorWithRGBA(0.5,0,0.5);
+}
+RCColor.brownColor = function() {
+	return RCColor.colorWithRGBA(0.6,0.4,0.2);
+}
+RCColor.clearColor = function() {
+	return RCColor.colorWithWhite(0,0);
+}
+RCColor.colorWithWhite = function(white,alpha) {
+	if(alpha == null) alpha = 1.0;
+	return new RCColor(RCColor.RGBtoHEX(white,white,white),null,alpha);
+}
+RCColor.colorWithRGBA = function(red,green,blue,alpha) {
+	if(alpha == null) alpha = 1.0;
+	return new RCColor(RCColor.RGBtoHEX(red,green,blue),null,alpha);
+}
+RCColor.colorWithHSBA = function(hue,saturation,brightness,alpha) {
+	if(alpha == null) alpha = 1.0;
+	return new RCColor(RCColor.RGBtoHEX(hue,saturation,brightness),null,alpha);
+}
+RCColor.colorWithFillAndStroke = function(fillColor,borderColor) {
 	return new RCColor(fillColor,borderColor);
 }
-RCColor.toHexStyle = function(color) {
+RCColor.HEXtoString = function(color) {
 	return "#" + StringTools.lpad(StringTools.hex(color),"0",6);
 }
-RCColor.prototype.alpha = null;
-RCColor.prototype.borderColor = null;
-RCColor.prototype.fillColor = null;
-RCColor.prototype.hexFillColor = function() {
-	return RCColor.toHexStyle(this.fillColor);
+RCColor.RGBtoHEX = function(r,g,b) {
+	return Math.round(r * 255) << 16 | Math.round(g * 255) << 8 | Math.round(b * 255);
 }
+RCColor.prototype.fillColor = null;
+RCColor.prototype.strokeColor = null;
+RCColor.prototype.fillColorStyle = null;
+RCColor.prototype.strokeColorStyle = null;
+RCColor.prototype.redComponent = null;
+RCColor.prototype.greenComponent = null;
+RCColor.prototype.blueComponent = null;
+RCColor.prototype.alpha = null;
 RCColor.prototype.__class__ = RCColor;
 if(typeof js=='undefined') js = {}
 js.Cookie = function() { }
@@ -533,17 +600,25 @@ JSView.prototype.scaleY_ = null;
 JSView.prototype.alpha_ = null;
 JSView.prototype.caobj = null;
 JSView.prototype.graphics = null;
-JSView.prototype.viewDidAppear = function(_) {
+JSView.prototype.viewWillAppear = function() {
 }
-JSView.prototype.viewDidDisappear = function(_) {
+JSView.prototype.viewWillDisappear = function() {
+}
+JSView.prototype.viewDidAppear = function() {
+}
+JSView.prototype.viewDidDisappear = function() {
 }
 JSView.prototype.addChild = function(child) {
+	child.viewWillAppear();
 	child.parent = this.view;
 	this.view.appendChild(child.view);
+	child.viewDidAppear();
 }
 JSView.prototype.removeChild = function(child) {
+	child.viewWillDisappear();
 	child.parent = null;
 	this.view.removeChild(child.view);
+	child.viewDidDisappear();
 }
 JSView.prototype.setBackgroundColor = function(color) {
 	if(color == null) {
@@ -560,6 +635,8 @@ JSView.prototype.setBackgroundColor = function(color) {
 }
 JSView.prototype.setCenter = function(pos) {
 	this.center = pos;
+	this.setX(Std["int"](pos.x - this.size.width / 2));
+	this.setY(Std["int"](pos.y - this.size.height / 2));
 	return this.center;
 }
 JSView.prototype.setClipsToBounds = function(clip) {
@@ -581,24 +658,24 @@ JSView.prototype.setClipsToBounds = function(clip) {
 JSView.prototype.scaleToFit = function(w,h) {
 	if(this.size.width / w > this.size.height / h && this.size.width > w) {
 		this.setWidth(w);
-		this.setHeight(this.width * this.size.height / this.size.width);
+		this.setHeight(this.getWidth() * this.size.height / this.size.width);
 	} else if(this.size.height > h) {
 		this.setHeight(h);
-		this.setWidth(this.height * this.size.width / this.size.height);
+		this.setWidth(this.getHeight() * this.size.width / this.size.height);
 	} else if(this.size.width > this.lastW && this.size.height > this.lastH) {
 		this.setWidth(this.size.width);
 		this.setHeight(this.size.height);
 	} else this.resetScale();
-	this.lastW = this.width;
-	this.lastH = this.height;
+	this.lastW = this.getWidth();
+	this.lastH = this.getHeight();
 }
 JSView.prototype.scaleToFill = function(w,h) {
 	if(w / this.size.width > h / this.size.height) {
 		this.setWidth(w);
-		this.setHeight(this.width * this.size.height / this.size.width);
+		this.setHeight(this.getWidth() * this.size.height / this.size.width);
 	} else {
 		this.setHeight(h);
-		this.setWidth(this.height * this.size.width / this.size.height);
+		this.setWidth(this.getHeight() * this.size.width / this.size.height);
 	}
 }
 JSView.prototype.resetScale = function() {
@@ -634,10 +711,22 @@ JSView.prototype.setY = function(y) {
 	this.view.style.top = Std.string(y) + "px";
 	return y;
 }
+JSView.prototype.getWidth = function() {
+	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the width would be 0",{ fileName : "JSView.hx", lineNumber : 219, className : "JSView", methodName : "getWidth"});
+	return this.view.offsetWidth;
+	return this.view.scrollWidth;
+	return this.view.clientWidth;
+}
 JSView.prototype.setWidth = function(w) {
 	this.width = w;
 	this.view.style.width = w + "px";
 	return w;
+}
+JSView.prototype.getHeight = function() {
+	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the height would be 0",{ fileName : "JSView.hx", lineNumber : 230, className : "JSView", methodName : "getHeight"});
+	return this.view.offsetHeight;
+	return this.view.scrollHeight;
+	return this.view.clientHeight;
 }
 JSView.prototype.setHeight = function(h) {
 	this.height = h;
@@ -730,7 +819,7 @@ RCTextView.prototype.redraw = function() {
 		this.view.style.height = this.size.height + "px";
 	}
 	this.view.innerHTML = "";
-	this.view.style.color = RCColor.toHexStyle(this.properties.color);
+	this.view.style.color = RCColor.HEXtoString(this.properties.color);
 	this.view.style.fontFamily = this.properties.font;
 	this.view.style.fontWeight = this.properties.bold;
 	this.view.style.fontSize = this.properties.size;
@@ -742,15 +831,7 @@ RCTextView.prototype.getText = function() {
 	return this.view.innerHTML;
 }
 RCTextView.prototype.setText = function(str) {
-	if(this.properties.html) this.view.innerHTML = str; else {
-		var content = Std.string(str);
-		content = content.split("\n").join("~~~NEWLINE~~~");
-		content = content.split("\t").join("~~~TAB~~~");
-		content = StringTools.htmlEscape(content);
-		content = content.split("~~~NEWLINE~~~").join("<br/>");
-		content = content.split("~~~TAB~~~").join("<span style='letter-spacing:1.3em'>&nbsp;</span>");
-		this.view.innerHTML = content;
-	}
+	if(this.properties.html) this.view.innerHTML = str; else this.view.innerHTML = str;
 	return str;
 }
 RCTextView.prototype.wheelHandler = function(e) {
@@ -1103,13 +1184,13 @@ RCPhoto.prototype.destroy = function() {
 }
 RCPhoto.prototype.scaleToFit = function(w,h) {
 	JSView.prototype.scaleToFit.call(this,w,h);
-	this.loader.style.width = this.width + "px";
-	this.loader.style.height = this.height + "px";
+	this.loader.style.width = this.getWidth() + "px";
+	this.loader.style.height = this.getHeight() + "px";
 }
 RCPhoto.prototype.scaleToFill = function(w,h) {
 	JSView.prototype.scaleToFill.call(this,w,h);
-	this.loader.style.width = this.width + "px";
-	this.loader.style.height = this.height + "px";
+	this.loader.style.width = this.getWidth() + "px";
+	this.loader.style.height = this.getHeight() + "px";
 }
 RCPhoto.prototype.__class__ = RCPhoto;
 RCDrawInterface = function() { }
@@ -1394,7 +1475,13 @@ RCRectangle.__super__ = RCDraw;
 for(var k in RCDraw.prototype ) RCRectangle.prototype[k] = RCDraw.prototype[k];
 RCRectangle.prototype.roundness = null;
 RCRectangle.prototype.redraw = function() {
-	this.view.innerHTML = "<div style=\"position:absolute;overflow:hidden;left:0px;top:0px;width:" + this.size.width + "px;height:" + this.size.height + "px;background-color:" + this.color.hexFillColor() + "\"></div>";
+	this.view.innerHTML = "<div style=\"position:absolute;overflow:hidden;left:0px;top:0px;width:" + this.size.width + "px;height:" + this.size.height + "px;background-color:" + ((function($this) {
+		var $r;
+		var $t = $this.color;
+		if(Std["is"]($t,RCColor)) $t; else throw "Class cast error";
+		$r = $t;
+		return $r;
+	}(this))).fillColorStyle + "\"></div>";
 }
 RCRectangle.prototype.__class__ = RCRectangle;
 RCRectangle.__interfaces__ = [RCDrawInterface];
@@ -1927,7 +2014,13 @@ RCEllipse.prototype.fillEllipse = function(xc,yc,width,height) {
 	var iHtml = new Array();
 	var a = Math.round(width / 2);
 	var b = Math.round(height / 2);
-	var hexColor = this.color.hexFillColor();
+	var hexColor = ((function($this) {
+		var $r;
+		var $t = $this.color;
+		if(Std["is"]($t,RCColor)) $t; else throw "Class cast error";
+		$r = $t;
+		return $r;
+	}(this))).fillColorStyle;
 	var x = 0;
 	var y = b;
 	var a2 = a * a;
@@ -2030,6 +2123,82 @@ RCNotificationCenter.list = function() {
 	}
 }
 RCNotificationCenter.prototype.__class__ = RCNotificationCenter;
+RCTextRoll = function(x,y,w,h,str,properties) {
+	if( x === $_ ) return;
+	JSView.call(this,x,y);
+	this.size.width = w;
+	this.continuous = true;
+	this.txt1 = new RCTextView(0,0,null,h,str,properties);
+	this.addChild(this.txt1);
+	this.size.height = 20;
+}
+RCTextRoll.__name__ = ["RCTextRoll"];
+RCTextRoll.__super__ = JSView;
+for(var k in JSView.prototype ) RCTextRoll.prototype[k] = JSView.prototype[k];
+RCTextRoll.prototype.txt1 = null;
+RCTextRoll.prototype.txt2 = null;
+RCTextRoll.prototype.timer = null;
+RCTextRoll.prototype.timerLoop = null;
+RCTextRoll.prototype.continuous = null;
+RCTextRoll.prototype.text = null;
+RCTextRoll.prototype.viewDidAppear = function() {
+	if(this.txt1.getWidth() > this.size.width) {
+		this.txt2 = new RCTextView(Math.round(this.txt1.getWidth() + 20),0,null,this.size.height,this.getText(),this.txt1.properties);
+		this.addChild(this.txt2);
+		haxe.Log.trace(this.size.width + ", " + this.size.height,{ fileName : "RCTextRoll.hx", lineNumber : 41, className : "RCTextRoll", methodName : "viewDidAppear"});
+	}
+}
+RCTextRoll.prototype.getText = function() {
+	return this.txt1.getText();
+}
+RCTextRoll.prototype.setText = function(str) {
+	return str;
+}
+RCTextRoll.prototype.start = function() {
+	if(this.txt2 == null) return;
+	if(this.continuous) this.startRolling(); else this.timer = haxe.Timer.delay($closure(this,"startRolling"),3000);
+}
+RCTextRoll.prototype.stop = function() {
+	if(this.txt2 == null) return;
+	this.stopRolling();
+	this.reset();
+}
+RCTextRoll.prototype.stopRolling = function() {
+	if(this.timerLoop != null) this.timerLoop.stop();
+	this.timerLoop = null;
+}
+RCTextRoll.prototype.startRolling = function() {
+	this.stopRolling();
+	this.timerLoop = new haxe.Timer(20);
+	this.timerLoop.run = $closure(this,"loop");
+}
+RCTextRoll.prototype.loop = function() {
+	var _g = this.txt1, _g1 = _g.x;
+	_g.setX(_g1 - 1);
+	_g1;
+	var _g = this.txt2, _g1 = _g.x;
+	_g.setX(_g1 - 1);
+	_g1;
+	if(!this.continuous && this.txt2.x <= 0) {
+		this.stop();
+		this.timer = haxe.Timer.delay($closure(this,"startRolling"),3000);
+	}
+	if(this.txt1.x < -this.txt1.getWidth()) this.txt1.setX(Math.round(this.txt2.x + this.txt2.getWidth() + 20));
+	if(this.txt2.x < -this.txt2.getWidth()) this.txt2.setX(Math.round(this.txt1.x + this.txt1.getWidth() + 20));
+}
+RCTextRoll.prototype.reset = function() {
+	if(this.timer != null) {
+		this.timer.stop();
+		this.timer = null;
+	}
+	this.txt1.setX(0);
+	this.txt2.setX(Math.round(this.txt1.getWidth() + 20));
+}
+RCTextRoll.prototype.destroy = function() {
+	this.stop();
+	JSView.prototype.destroy.call(this);
+}
+RCTextRoll.prototype.__class__ = RCTextRoll;
 EVResize = function(p) {
 	if( p === $_ ) return;
 	RCSignal.call(this);
@@ -2102,7 +2271,7 @@ RCWindow.init = function() {
 	js.Lib.document.body.style.position = "absolute";
 	RCWindow.width = js.Lib.document.body.scrollWidth;
 	RCWindow.height = js.Lib.document.body.scrollHeight;
-	RCWindow.set_backgroundColor(3355443);
+	RCWindow.setBackgroundColor(3355443);
 	var url = RCWindow.URL.split("/");
 	url.pop();
 	RCWindow.URL = url.join("/") + "/";
@@ -2125,15 +2294,25 @@ RCWindow.normal = function() {
 RCWindow.isFullScreen = function() {
 	return false;
 }
-RCWindow.set_backgroundColor = function(color) {
-	js.Lib.document.body.style.backgroundColor = RCColor.toHexStyle(color);
+RCWindow.setBackgroundColor = function(color) {
+	js.Lib.document.body.style.backgroundColor = RCColor.HEXtoString(color);
 	return color;
 }
 RCWindow.addChild = function(child) {
-	if(child != null) js.Lib.document.body.appendChild(child.view);
+	if(child != null) {
+		child.viewWillAppear();
+		child.parent = js.Lib.document.body;
+		js.Lib.document.body.appendChild(child.view);
+		child.viewDidAppear();
+	}
 }
 RCWindow.removeChild = function(child) {
-	if(child != null) js.Lib.document.body.removeChild(child.view);
+	if(child != null) {
+		child.viewWillDisappear();
+		child.parent = null;
+		js.Lib.document.body.removeChild(child.view);
+		child.viewDidDisappear();
+	}
 }
 RCWindow.prototype.__class__ = RCWindow;
 StringBuf = function(p) {
@@ -2245,7 +2424,13 @@ RCLine.prototype.redraw = function() {
 	this.drawLine(0,0,Math.round(this.size.width),Math.round(this.size.height));
 }
 RCLine.prototype.drawLine = function(x0,y0,x1,y1) {
-	var hexColor = this.color.hexFillColor();
+	var hexColor = ((function($this) {
+		var $r;
+		var $t = $this.color;
+		if(Std["is"]($t,RCColor)) $t; else throw "Class cast error";
+		$r = $t;
+		return $r;
+	}(this))).fillColorStyle;
 	if(y0 == y1) {
 		if(x0 <= x1) this.view.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:" + x0 + "px;top:" + y0 + "px;width:" + (x1 - x0 + 1) + "px;height:" + this.lineWeight + ";background-color:" + hexColor + "\"></DIV>"; else if(x0 > x1) this.view.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:" + x1 + "px;top:" + y0 + "px;width:" + (x0 - x1 + 1) + "px;height:" + this.lineWeight + ";background-color:" + hexColor + "\"></DIV>";
 		return this.view;
@@ -2752,11 +2937,11 @@ Main.signal = null;
 Main.main = function() {
 	haxe.Firebug.redirectTraces();
 	RCWindow.init();
-	RCWindow.set_backgroundColor(14540253);
+	RCWindow.setBackgroundColor(14540253);
 	var rect = new RCRectangle(200,30,300,150,16724736);
 	RCWindow.addChild(rect);
 	rect.setClipsToBounds(true);
-	Main.circ = new RCEllipse(800,300,100,100,16724736);
+	Main.circ = new RCEllipse(800,300,100,100,RCColor.darkGrayColor());
 	RCWindow.addChild(Main.circ);
 	var anim = new CATween(rect,{ x : 50, y : 120},1,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 31, className : "Main", methodName : "main"});
 	CoreAnimation.add(anim);
@@ -2769,12 +2954,17 @@ Main.main = function() {
 	f.color = 16777215;
 	f.font = "Arial";
 	f.size = 30;
-	var t = new RCTextView(50,30,200,null,"IMAGIN",f);
+	var t = new RCTextView(50,30,null,null,"IMAGIN",f);
+	haxe.Log.trace(t.getWidth(),{ fileName : "Main.hx", lineNumber : 47, className : "Main", methodName : "main"});
 	RCWindow.addChild(t);
+	haxe.Log.trace(t.getWidth(),{ fileName : "Main.hx", lineNumber : 49, className : "Main", methodName : "main"});
+	t.setText("IMAGIN 2");
+	haxe.Log.trace(t.getWidth(),{ fileName : "Main.hx", lineNumber : 51, className : "Main", methodName : "main"});
 	var f2 = f.copy();
 	f2.size = 16;
-	var r = new RCTextView(50,60,null,null,"We are working on the HTML5 version of the gallery...",f2);
+	var r = new RCTextRoll(50,60,200,null,"We are working on the HTML5 version of the gallery...",f2);
 	RCWindow.addChild(r);
+	r.setBackgroundColor(16777215);
 	var k = new RCKeys();
 	k.onLeft = Main.moveLeft;
 	k.onRight = Main.moveRight;
@@ -2786,13 +2976,12 @@ Main.main = function() {
 	var _g = 0;
 	while(_g < 5) {
 		var i = _g++;
-		Main.signal.dispatch([Math.random()],{ fileName : "Main.hx", lineNumber : 65, className : "Main", methodName : "main"});
+		Main.signal.dispatch([Math.random()],{ fileName : "Main.hx", lineNumber : 70, className : "Main", methodName : "main"});
 	}
 	RCUserDefaults.init("com.ralcr.html5.");
-	haxe.Log.trace(RCUserDefaults.stringForKey("key1"),{ fileName : "Main.hx", lineNumber : 70, className : "Main", methodName : "main"});
+	haxe.Log.trace(RCUserDefaults.stringForKey("key1"),{ fileName : "Main.hx", lineNumber : 75, className : "Main", methodName : "main"});
 	RCUserDefaults.set("key1","blah blah");
-	RCUserDefaults.set("key2","blah blah 2");
-	haxe.Log.trace(RCUserDefaults.stringForKey("key1"),{ fileName : "Main.hx", lineNumber : 73, className : "Main", methodName : "main"});
+	haxe.Log.trace(RCUserDefaults.stringForKey("key1"),{ fileName : "Main.hx", lineNumber : 77, className : "Main", methodName : "main"});
 }
 Main.moveLine = function(e) {
 	Main.lin.size.width = e.clientX - Main.lin.x;
@@ -2800,20 +2989,20 @@ Main.moveLine = function(e) {
 	Main.lin.redraw();
 }
 Main.resizePhoto = function() {
-	haxe.Log.trace("onComplete",{ fileName : "Main.hx", lineNumber : 81, className : "Main", methodName : "resizePhoto"});
-	haxe.Log.trace(Main.ph.width,{ fileName : "Main.hx", lineNumber : 82, className : "Main", methodName : "resizePhoto"});
-	haxe.Log.trace(Main.ph.size.width,{ fileName : "Main.hx", lineNumber : 83, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace("onComplete",{ fileName : "Main.hx", lineNumber : 85, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace(Main.ph.getWidth(),{ fileName : "Main.hx", lineNumber : 86, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace(Main.ph.size.width,{ fileName : "Main.hx", lineNumber : 87, className : "Main", methodName : "resizePhoto"});
 	Main.ph.scaleToFill(298,148);
-	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.width, toValue : Main.ph.width}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 87, className : "Main", methodName : "resizePhoto"});
+	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 91, className : "Main", methodName : "resizePhoto"});
 	anim.repeatCount = 5;
 	anim.autoreverses = true;
 	CoreAnimation.add(anim);
 }
 Main.printNr = function(nr) {
-	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 95, className : "Main", methodName : "printNr"});
+	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 99, className : "Main", methodName : "printNr"});
 }
 Main.printNr2 = function(nr) {
-	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 98, className : "Main", methodName : "printNr2"});
+	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 102, className : "Main", methodName : "printNr2"});
 }
 Main.moveLeft = function() {
 	var _g = Main.circ;
@@ -3411,12 +3600,17 @@ if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 haxe.Serializer.USE_CACHE = false;
 haxe.Serializer.USE_ENUM_INDEX = false;
 haxe.Serializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";
+RCColor.BLACK = 0;
+RCColor.WHITE = 16777215;
 RCColor.RED = 16711680;
 RCColor.GREEN = 65280;
 RCColor.BLUE = 255;
+RCColor.CYAN = 65535;
+RCColor.YELLOW = 16776960;
 CoreAnimation.defaultTimingFunction = caequations.Linear.NONE;
 CoreAnimation.defaultDuration = 0.8;
 haxe.remoting.ExternalConnection.connections = new Hash();
+RCTextRoll.GAP = 20;
 js.Lib.onerror = null;
 RCWindow.target = js.Lib.document.body;
 RCWindow.stage = js.Lib.document.body;

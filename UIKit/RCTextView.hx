@@ -111,7 +111,7 @@ class RCTextView extends RCView {
 		}
 		
 		view.innerHTML = "";
-		view.style.color = RCColor.toHexStyle ( properties.color );
+		view.style.color = RCColor.HEXtoString ( properties.color );
 		view.style.fontFamily = properties.font;
 		view.style.fontWeight = properties.bold;
     	view.style.fontSize = properties.size;
@@ -129,30 +129,26 @@ class RCTextView extends RCView {
 	}
 	
 	public function setText (str:String) :String {
-#if flash
-	
-		if (properties.html)
-			target.htmlText = str;
-		else
-			target.text = str;
+		#if flash
+			if (properties.html)
+				target.htmlText = str;
+			else
+				target.text = str;
+		#elseif js
+			if (properties.html) {
+				view.innerHTML = str;
+			}
+			else {
+/*				var content:String = Std.string(str);
+				content = content.split("\n").join("~~~NEWLINE~~~");
+				content = content.split("\t").join("~~~TAB~~~");
+				content = StringTools.htmlEscape(content);
+				content = content.split("~~~NEWLINE~~~").join("<br/>");
+				content = content.split("~~~TAB~~~").join("<span style='letter-spacing:1.3em'>&nbsp;</span>");*/
+				view.innerHTML = str;
+			}
+		#end
 		
-#elseif js
-		
-	if (properties.html) {
-		view.innerHTML = str;
-	}
-	else {
-		// this is just horrible. fix at some point.
-		var content:String = Std.string(str);
-		content = content.split("\n").join("~~~NEWLINE~~~");
-		content = content.split("\t").join("~~~TAB~~~");
-		content = StringTools.htmlEscape(content);
-		content = content.split("~~~NEWLINE~~~").join("<br/>");
-		content = content.split("~~~TAB~~~").join("<span style='letter-spacing:1.3em'>&nbsp;</span>");
-		view.innerHTML = content;
-	}
-		
-#end
 		return str;
 	}
 	function wheelHandler (e:MouseEvent) :Void {

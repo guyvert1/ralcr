@@ -39,21 +39,22 @@ class RCWindow {
 
 	public static var width :Int;
 	public static var height :Int;
-	public static var backgroundColor (null, set_backgroundColor) :Int;
+	public static var backgroundColor (null, setBackgroundColor) :Int;
 	
 	
 	public static function init () {
-#if flash
-		stage.scaleMode = StageScaleMode.NO_SCALE;
-		stage.align = StageAlign.TOP_LEFT;
-		width = stage.stageWidth;
-		height = stage.stageHeight;
-#elseif js
-		target.style.position = "absolute";
-		width = target.scrollWidth;
-		height = target.scrollHeight;
-		backgroundColor = 0x333333;
-#end
+		#if flash
+			stage.scaleMode = StageScaleMode.NO_SCALE;
+			stage.align = StageAlign.TOP_LEFT;
+			width = stage.stageWidth;
+			height = stage.stageHeight;
+		#elseif js
+			target.style.position = "absolute";
+			width = target.scrollWidth;
+			height = target.scrollHeight;
+			backgroundColor = 0x333333;
+		#end
+		
 		// Create the url without swf name
 		var url = URL.split("/");
 			url.pop();
@@ -81,15 +82,15 @@ class RCWindow {
 	
 	
 	public static function fullscreen () {
-#if flash stage.displayState = StageDisplayState.FULL_SCREEN; #end
+		#if flash stage.displayState = StageDisplayState.FULL_SCREEN; #end
 	}
 	public static function normal () {
-#if flash stage.displayState = StageDisplayState.NORMAL; #end
+		#if flash stage.displayState = StageDisplayState.NORMAL; #end
 	}
 	public static function isFullScreen () :Bool {
-#if flash
-		return stage.displayState == StageDisplayState.FULL_SCREEN;
-#end
+		#if flash
+			return stage.displayState == StageDisplayState.FULL_SCREEN;
+		#end
 		return false;
 	}
 	
@@ -109,28 +110,40 @@ class RCWindow {
 			ExternalInterface.call ("swffit.configure", {target:ID, maxHei:h, maxWid:width, hCenter:false});
 	}
 */
-	public static function set_backgroundColor (color:Int) :Int {
-#if js
-		target.style.backgroundColor = RCColor.toHexStyle(color);
-#end
+	public static function setBackgroundColor (color:Int) :Int {
+		#if js
+			target.style.backgroundColor = RCColor.HEXtoString(color);
+		#end
 		return color;
 	}
 	
 	
 	/**
-	 *	Add and remove views into stage
+	 *	Add and remove views
 	 */
 	public static function addChild (child:DisplayObjectContainer) :Void {
-		if (child != null)
-#if flash
-			target.addChild ( child );
-#elseif js
-			target.appendChild ( child.view );
-#end
+		if (child != null) {
+			#if flash
+				target.addChild ( child );
+			#elseif js
+				child.viewWillAppear();
+				child.parent = target;
+				target.appendChild ( child.view );
+				child.viewDidAppear();
+			#end
+		}
 	}
 	public static function removeChild (child:DisplayObjectContainer) :Void {
-		if (child != null)
-#if flash	if (target.contains ( child )) #end
-			target.removeChild ( #if flash child #elseif js child.view #end );
+		if (child != null) {
+			#if flash
+				if (target.contains ( child ))
+					target.removeChild ( child );
+			#elseif js
+				child.viewWillDisappear();
+				child.parent = null;
+				target.removeChild ( child.view );
+				child.viewDidDisappear();
+			#end
+		}
 	}
 }

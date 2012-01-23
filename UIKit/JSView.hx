@@ -19,8 +19,8 @@ class JSView {
 	public var y (default, setY) :Float;
 	public var scaleX (default, setScaleX) :Float;
 	public var scaleY (default, setScaleY) :Float;
-	public var width (default, setWidth) :Float;
-	public var height (default, setHeight) :Float;
+	public var width (getWidth, setWidth) :Float;
+	public var height (getHeight, setHeight) :Float;
 	public var alpha (default, setAlpha) :Float;
 	public var visible (default, setVisible) :Bool;
 	
@@ -33,6 +33,11 @@ class JSView {
 	var caobj :CAObject;
 	var graphics :CanvasContext;
 	
+	dynamic public function viewWillAppear () :Void {}
+	dynamic public function viewWillDisappear () :Void {}
+	dynamic public function viewDidAppear () :Void {}
+	dynamic public function viewDidDisappear () :Void {}
+	
 	
 	public function new (x, y) {
 		
@@ -42,29 +47,29 @@ class JSView {
 		alpha_ = 1;
 		//visible = true;
 		
-#if canvas
-		view = Lib.document.createElement("canvas");
-		graphics = untyped view.getContext('2d');
-#else
-		view = Lib.document.createElement("div");
-#end
+		#if canvas
+			view = Lib.document.createElement("canvas");
+			graphics = untyped view.getContext('2d');
+		#else
+			view = Lib.document.createElement("div");
+		#end
+		
 		view.style.position = "absolute";
 		
 		setX(x);
 		setY(y);
 	}
-	//function viewWillAppear (_) :Void {}
-	//function viewWillDisappear (_) :Void {}
-	function viewDidAppear (_) :Void {}
-	function viewDidDisappear (_) :Void {}
-	
 	public function addChild (child:JSView) :Void {
+		child.viewWillAppear();
 		child.parent = view;
 		view.appendChild ( child.view );
+		child.viewDidAppear();
 	}
 	public function removeChild (child:JSView) :Void {
+		child.viewWillDisappear();
 		child.parent = null;
 		view.removeChild ( child.view );
+		child.viewDidDisappear();
 	}
 	
 	/**
@@ -89,8 +94,8 @@ class JSView {
 	
 	public function setCenter (pos:RCPoint) :RCPoint {
 		this.center = pos;
-/*		this.view.x = Std.int (point.x - size.width/2);
-		this.view.y = Std.int (point.y - size.height/2);*/
+		setX ( Std.int (pos.x - size.width/2) );
+		setY ( Std.int (pos.y - size.height/2) );
 		return this.center;
 	}
 	
@@ -102,7 +107,7 @@ class JSView {
 			viewMask.style.height = size.height+"px";
 			
 			while (view.hasChildNodes()) {
-				viewMask.appendChild ( view.removeChild (view.firstChild));
+				viewMask.appendChild ( view.removeChild ( view.firstChild));
 			}
 
 			view.appendChild ( viewMask );
@@ -112,7 +117,7 @@ class JSView {
 			view.removeChild ( viewMask );
 
 			while (viewMask.hasChildNodes()) {
-				view.appendChild ( viewMask.removeChild (viewMask.firstChild));
+				view.appendChild ( viewMask.removeChild ( viewMask.firstChild));
 			}
 
 			viewMask = view;
@@ -210,10 +215,22 @@ class JSView {
 		view.style.top = Std.string(y) + "px";
 		return y;
 	}
+	public function getWidth () :Float {
+		if (parent == null) trace("This view doesn't have a parent, the width would be 0");
+		return view.offsetWidth;
+		return view.scrollWidth;
+		return view.clientWidth;
+	}
 	public function setWidth (w:Float) :Float {
 		width = w;
 		view.style.width = w + "px";
 		return w;
+	}
+	public function getHeight () :Float {
+		if (parent == null) trace("This view doesn't have a parent, the height would be 0");
+		return view.offsetHeight;
+		return view.scrollHeight;
+		return view.clientHeight;
 	}
 	public function setHeight (h:Float) :Float {
 		height = h;

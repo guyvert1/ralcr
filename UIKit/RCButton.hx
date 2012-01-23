@@ -25,6 +25,34 @@ class RCButton extends RCControl {
 	var symbolColorOver :Null<Int>;
 	
 	
+	setTitle:(NSString *)title forState:(UIControlState)state;            // default is nil. title is assumed to be single line
+	setTitleColor:(UIColor *)color forState:(UIControlState)state;        // default if nil. use opaque white
+	- (void)setTitleShadowColor:(UIColor *)color forState:(UIControlState)state;  // default is nil. use 50% black
+	- (void)setImage:(UIImage *)image forState:(UIControlState)state;             // default is nil. should be same size if different for different states
+	- (void)setBackgroundImage:(UIImage *)image forState:(UIControlState)state;   // default is nil
+
+	- (NSString *)titleForState:(UIControlState)state;          // these getters only take a single state value
+	- (UIColor *)titleColorForState:(UIControlState)state;
+	- (UIColor *)titleShadowColorForState:(UIControlState)state;
+	- (UIImage *)imageForState:(UIControlState)state;
+	- (UIImage *)backgroundImageForState:(UIControlState)state;
+
+	// these are the values that will be used for the current state. you can also use these for overrides. a heuristic will be used to
+	// determine what image to choose based on the explict states set. For example, the 'normal' state value will be used for all states
+	// that don't have their own image defined.
+
+	@property(nonatomic,readonly,retain) NSString *currentTitle;             // normal/highlighted/selected/disabled. can return nil
+	@property(nonatomic,readonly,retain) UIColor  *currentTitleColor;        // normal/highlighted/selected/disabled. always returns non-nil. default is white(1,1)
+	@property(nonatomic,readonly,retain) UIColor  *currentTitleShadowColor;  // normal/highlighted/selected/disabled. default is white(0,0.5).
+	@property(nonatomic,readonly,retain) UIImage  *currentImage;             // normal/highlighted/selected/disabled. can return nil
+	@property(nonatomic,readonly,retain) UIImage  *currentBackgroundImage;   // normal/highlighted/selected/disabled. can return nil
+
+	// return title and image views. will always create them if necessary. always returns nil for system buttons
+	@property(nonatomic,readonly,retain) UILabel     *titleLabel __OSX_AVAILABLE_STARTING(__MAC_NA,__IPHONE_3_0);
+	@property(nonatomic,readonly,retain) UIImageView *imageView  __OSX_AVAILABLE_STARTING(__MAC_NA,__IPHONE_3_0);
+	
+	
+	
 	public function new (x, y, skin:RCSkin) {
 		super (x, y);
 		

@@ -9,6 +9,7 @@ import flash.display.DisplayObjectContainer;
 
 class RCSkin implements RCSkinInterface {
 	
+	public var 
 	public var background :DisplayObjectContainer;
 	public var up :DisplayObjectContainer;
 	public var over :DisplayObjectContainer;

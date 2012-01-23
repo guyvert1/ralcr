@@ -70,6 +70,13 @@ class RCView extends Sprite {
 	}
 	
 	public function setClipsToBounds (clip:Bool) :Bool {
+		view.cacheAsBitmap = clip;
+		
+		if (clip)
+			view.scrollRect = new flash.geom.Rectangle (0, 0, size.width, size.height);
+		else
+			view.scrollRect = null;
+		
 		return clip;
 	}
 	

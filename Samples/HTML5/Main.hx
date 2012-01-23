@@ -25,7 +25,7 @@ class Main {
 	 	RCWindow.addChild ( rect );
 		rect.clipsToBounds = true;
 		
-		circ = new RCEllipse(800,300, 100, 100, 0xff3300);
+		circ = new RCEllipse(800,300, 100, 100, RCColor.darkGrayColor());
 	 	RCWindow.addChild ( circ );
 		
 		var anim = new CATween (rect, {x:50, y:120}, 1, 0, caequations.Cubic.IN_OUT);
@@ -43,13 +43,18 @@ class Main {
 			f.color = 0xffffff;
 			f.font = "Arial";
 			f.size = 30;
-		var t = new RCTextView (50, 30, 200, null, "IMAGIN", f);
+		var t = new RCTextView (50, 30, null, null, "IMAGIN", f);
+		trace(t.width);
 		RCWindow.addChild ( t );
+		trace(t.width);
+		t.text = "IMAGIN 2";
+		trace(t.width);
 		
 		var f2 = f.copy();
 		f2.size = 16;
-		var r = new RCTextView (50, 60, null, null, "We are working on the HTML5 version of the gallery...", f2);
+		var r = new RCTextRoll (50, 60, 200, null, "We are working on the HTML5 version of the gallery...", f2);
 		RCWindow.addChild ( r );
+		r.backgroundColor = 0xFFFFFF;
 		
 		var k = new RCKeys();
 			k.onLeft = moveLeft;
@@ -69,7 +74,6 @@ class Main {
 		RCUserDefaults.init("com.ralcr.html5.");
 		trace(RCUserDefaults.stringForKey("key1"));
 		RCUserDefaults.set ("key1", "blah blah");
-		RCUserDefaults.set ("key2", "blah blah 2");
 		trace(RCUserDefaults.stringForKey("key1"));
     }
 	static function moveLine(e:Event){

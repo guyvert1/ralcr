@@ -1,23 +1,23 @@
 //
-//  RollingText
+//  RCTextRoll
 //
 //  Created by Baluta Cristian on 2007-10-02.
-//  Copyright (c) 2007-2011 http://imagin.ro. All rights reserved.
+//  Copyright (c) 2007-2012 http://imagin.ro. All rights reserved.
 //
+
 import RCView;
 
 class RCTextRoll extends RCView {
 	
 	inline static var GAP :Int = 20; // space between the two text fields
 	
-	var maskSprite :RCRectangle;
 	var txt1 :RCTextView;
 	var txt2 :RCTextView;
-	var w :Float; // maximum visible surface
 	var timer :haxe.Timer;
 	var timerLoop :haxe.Timer;
 	
 	public var continuous :Bool;
+	public var text (getText, setText) :String;
 	
 	
 	public function new (x, y, w:Float, h:Null<Float>, str:String, properties:RCFont) {
@@ -28,16 +28,27 @@ class RCTextRoll extends RCView {
 		// add first textfield
 		txt1 = new RCTextView (0, 0, null, h, str, properties);
 		this.addChild ( txt1 );
-		
-		// add the second textfield
-		if (txt1.width > w) {
-			txt2 = new RCTextView (Math.round (txt1.width + GAP), 0, null, h, str, properties);
+		//trace(txt1.width);trace(txt1.size.width);trace(w);
+
+		this.size.height = 20;
+	}
+	
+	// Add the second textfield
+	override public function viewDidAppear () :Void {
+		if (txt1.width > size.width) {
+			txt2 = new RCTextView (Math.round (txt1.width + GAP), 0, null, size.height, text, txt1.properties);
 			this.addChild ( txt2 );
+			trace(size.width+", "+size.height);
 			//this.clipsToBounds = true;
 		}
 	}
 	
-	
+	public function getText() :String {
+		return txt1.text;
+	}
+	public function setText (str:String) :String {
+		return str;
+	}
 	/**
 	 *  Start and stop the rolling text
 	 **/
