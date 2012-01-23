@@ -6,9 +6,14 @@
 //
 
 #if flash
-import flash.events.MouseEvent;
-import flash.events.IEventDispatcher;
+	import flash.events.MouseEvent;
+	import flash.events.IEventDispatcher;
+#elseif js
+	import js.Dom;
+	private typedef MouseEvent = Event;
+	private typedef IEventDispatcher = Dynamic;
 #end
+
 
 enum RCControlState {
 	NORMAL;
@@ -17,9 +22,10 @@ enum RCControlState {
 	SELECTED;
 }
 
+
 class RCControl extends RCView {
 	
-	public var touchDown :RCSignal<Void>;// on all touch downs
+/*	public var touchDown :RCSignal<Void>;// on all touch downs
 	public var touchDownRepeat :RCSignal<Void>;// on multiple touchdowns (tap count > 1)
 	public var touchDragInside :RCSignal<Void>;
 	public var touchDragOutside :RCSignal<Void>;
@@ -27,33 +33,32 @@ class RCControl extends RCView {
 	public var touchDragExit :RCSignal<Void>;
 	public var touchUpInside :RCSignal<Void>;
 	public var touchUpOutside :RCSignal<Void>;
-	public var touchCancel :RCSignal<Void>;
+	public var touchCancel :RCSignal<Void>;*/
+	public var click :RCSignal<RCControl->Void>;// RCButton events
+	public var press :RCSignal<RCControl->Void>;
+	public var release :RCSignal<RCControl->Void>;
+	public var over :RCSignal<RCControl->Void>;
+	public var out :RCSignal<RCControl->Void>;
 
-	public var valueChanged :RCSignal<Void>;// sliders, etc.
+	public var valueChanged :RCSignal<RCControl->Void>;// sliders, etc.
 
-	public var editingDidBegin :RCSignal<Void>;// UITextField
-	public var editingChanged :RCSignal<Void>;
-	public var editingDidEnd :RCSignal<Void>;
-	public var editingDidEndOnExit :RCSignal<Void>;// 'return key' ending editing
+	public var editingDidBegin :RCSignal<RCControl->Void>;// RCTextInput
+	public var editingChanged :RCSignal<RCControl->Void>;
+	public var editingDidEnd :RCSignal<RCControl->Void>;
+	public var editingDidEndOnExit :RCSignal<RCControl->Void>;// 'return key' ending editing
 	
 	
-	public var locked (getLocked, null) :Bool;
-	public var toggled (getToggled, null) :Bool;
-	public var toggable (getToggable, setToggable) :Bool;
-	public var clickable (getClickable, setClickable) :Bool;
-	public var lockable (getLockable, setLockable) :Bool;
+	public var enabled (getEnabled, setEnabled) :Bool;// default is YES. if NO, ignores mouse/touch events
+	public var highlighted (getHighlighted, setHighlighted) :Bool;// default is NO.
+	public var selected (getSelected, null) :Bool;// default is NO
 	
-	public var enabled :Bool;// default is YES. if NO, ignores touch events and subclasses may draw differently
-	public var selected :Bool;// default is NO may be used by some subclasses or by application
-	public var highlighted :Bool;// default is NO. this gets set/cleared automatically when touch enters/exits during tracking and cleared on up
-	
-	var _toggled :Bool;
-	var _toggable :Bool;
-	var _clickable :Bool; // weather you can click the button or not
-	var _lockable :Bool; // weather you can make the button clickagle or not
+	var enabled_ :Bool;
+	var highlighted_ :Bool;
+	var selected_ :Bool;
+	var state_ :RCControlState;
 	
 	/**
-	 * Dispatch events by replacing this functions
+	 * The classical way of listening to events, override this methods from outside of the object
 	 */
 	dynamic public function onClick () :Void {}
 	dynamic public function onPress () :Void {}
@@ -65,34 +70,51 @@ class RCControl extends RCView {
 	public function new (x, y) {
 		super(x, y);
 		
-		_toggled = false;
-		_toggable = false;
-		_clickable = true;
-		_lockable = true;
+		enabled_ = true;
+		highlighted_ = false;
+		selected_ = false;
 		
-		this.useHandCursor = true;
-		this.buttonMode = true;
-		//this.mouseChildren = false;
+		#if flash
+			this.useHandCursor = true;
+			this.buttonMode = true;
+			//this.mouseChildren = false;
+		#end
 		
 		configureListeners ( this );
 	}
 	function configureListeners (dispatcher:IEventDispatcher) :Void {
-		this.useHandCursor = true;
-		this.buttonMode = true;
-		dispatcher.addEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
-		dispatcher.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
-		dispatcher.addEventListener (MouseEvent.ROLL_OVER, rollOverHandler);
-		dispatcher.addEventListener (MouseEvent.ROLL_OUT, rollOutHandler);
-		dispatcher.addEventListener (MouseEvent.CLICK, clickHandler);
+		#if flash
+			this.useHandCursor = true;
+			this.buttonMode = true;
+			dispatcher.addEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
+			dispatcher.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
+			dispatcher.addEventListener (MouseEvent.ROLL_OVER, rollOverHandler);
+			dispatcher.addEventListener (MouseEvent.ROLL_OUT, rollOutHandler);
+			dispatcher.addEventListener (MouseEvent.CLICK, clickHandler);
+		#elseif js
+			view.onmousedown = mouseDownHandler;
+			view.onmouseup = mouseUpHandler;
+			view.onmouseover = rollOverHandler;
+			view.onmouseout = rollOutHandler;
+			view.onclick = clickHandler;
+		#end
 	}
 	function removeListeners (dispatcher:IEventDispatcher) :Void {
-		this.useHandCursor = false;
-		this.buttonMode = false;
-		dispatcher.removeEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
-		dispatcher.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
-		dispatcher.removeEventListener (MouseEvent.ROLL_OVER, rollOverHandler);
-		dispatcher.removeEventListener (MouseEvent.ROLL_OUT, rollOutHandler);
-		dispatcher.removeEventListener (MouseEvent.CLICK, clickHandler);
+		#if flash
+			this.useHandCursor = false;
+			this.buttonMode = false;
+			dispatcher.removeEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
+			dispatcher.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
+			dispatcher.removeEventListener (MouseEvent.ROLL_OVER, rollOverHandler);
+			dispatcher.removeEventListener (MouseEvent.ROLL_OUT, rollOutHandler);
+			dispatcher.removeEventListener (MouseEvent.CLICK, clickHandler);
+		#elseif js
+			view.onmousedown = null;
+			view.onmouseup = null;
+			view.onmouseover = null;
+			view.onmouseout = null;
+			view.onclick = null;
+		#end
 	}
 	
 	
@@ -105,16 +127,16 @@ class RCControl extends RCView {
 	function mouseUpHandler (e:MouseEvent) :Void {
 		onRelease();
 	}
-	function clickHandler (e:MouseEvent) :Void {
-		onClick();
-	}
 	function rollOverHandler (e:MouseEvent) :Void {
-		if (_toggled) return;
+		highlighted_ = true;
 		onOver();
 	}
 	function rollOutHandler (e:MouseEvent) :Void {
-		if (_toggled) return;
+		highlighted_ = false;
 		onOut();
+	}
+	function clickHandler (e:MouseEvent) :Void {
+		onClick();
 	}
 	
 	
@@ -122,49 +144,38 @@ class RCControl extends RCView {
 	/**
 	 * Getter and setter
 	 */
-	function getToggled () :Bool {
-		return _toggled;
-	}
-	function getLocked () :Bool {
-		return !_clickable;
+	function getSelected () :Bool {
+		return selected_;
 	}
 	//
-	function getToggable () :Bool {
-		return _toggable;
+	function getEnabled () :Bool {
+		return enabled_;
 	}
-	function setToggable (t:Bool) :Bool {
-		return _toggable = t;
-	}
-	//
-	function getClickable () :Bool {
-		return _clickable;
-	}
-	function setClickable (c:Bool) :Bool {
-		if (!_lockable) return c;
+	function setEnabled (c:Bool) :Bool {
 		c ? configureListeners ( this ) : removeListeners ( this );
-		return _clickable = c;
+		return enabled_ = c;
 	}
 	//
-	function getLockable () :Bool {
-		return _lockable;
+	function getHighlighted () :Bool {
+		return highlighted_;
 	}
-	function setLockable (l:Bool) :Bool {
-		return _lockable = l;
+	function setHighlighted (h:Bool) :Bool {
+		return highlighted_ = h;
 	}
 	
 	
 	/**
 	 * lock = If the button is locked, you are no longer able to click it,
-	 * 			onClock, onPress, onRelease will not by dispactched
-	 *			hand cursor is also disabled
-	 *			You can lock/unlock a button only if is lockable
+	 * onClick, onPress, onRelease will not by dispactched
+	 * hand cursor is also disabled
+	 * You can lock/unlock a button only if is lockable
 	 * unlock = Events are dispatched again
 	 */
 	public function lock () :Void {
-		setClickable ( false );
+		setEnabled ( false );
 	}
 	public function unlock () :Void {
-		setClickable ( true );
+		setEnabled ( true );
 	}
 	
 	
@@ -172,22 +183,22 @@ class RCControl extends RCView {
 	 * toggle = Change the state of the button to Over
 	 * untoggle = Change the state of the button to Normal
 	 */
-	public function toggle () :Void {
-		if (_toggable && _lockable) {
+/*	public function toggle () :Void {
+		if (toggable_ && _lockable) {
 			// Set the state to Over than make the button toggled so you can't go to normal state when you rollout
 			toggledState ();
-			_toggled = true;
+			toggled_ = true;
 		}
 	}
 	public function untoggle () :Void {
-		if (_toggable && _lockable) {
+		if (toggable_ && _lockable) {
 			// Change first the variable to untoggled, then change the state of the button to normal
-			_toggled = false;
+			toggled_ = false;
 			untoggledState ();
 		}
 	}
 	function toggledState () :Void {}
-	function untoggledState () :Void {}
+	function untoggledState () :Void {}*/
 	
 	
 	// Clean mess
