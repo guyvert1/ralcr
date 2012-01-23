@@ -44,11 +44,7 @@ class Main {
 			f.font = "Arial";
 			f.size = 30;
 		var t = new RCTextView (50, 30, null, null, "IMAGIN", f);
-		trace(t.width);
-		RCWindow.addChild ( t );
-		trace(t.width);
-		t.text = "IMAGIN 2";
-		trace(t.width);
+		//RCWindow.addChild ( t );
 		
 		var f2 = f.copy();
 		f2.size = 16;
@@ -75,7 +71,23 @@ class Main {
 		trace(RCUserDefaults.stringForKey("key1"));
 		RCUserDefaults.set ("key1", "blah blah");
 		trace(RCUserDefaults.stringForKey("key1"));
+		
+		
+		// Add some buttons
+		var b = new RCControl(0,0);
+		b.onClick = function(){trace("click");}
+		b.onOver = function(){trace("over");}
+		b.onOut = function(){trace("out");}
+		b.onPress = function(){trace("press");}
+		b.onRelease = function(){trace("release");}
+		RCWindow.addChild ( b );b.addChild ( t );
     }
+	
+	
+	
+	
+	
+	
 	static function moveLine(e:Event){
 		lin.size.width = e.clientX - lin.x;
 		lin.size.height = e.clientY - lin.y;
