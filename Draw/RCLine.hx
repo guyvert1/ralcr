@@ -32,9 +32,8 @@ class RCLine extends RCDraw, implements RCDrawInterface {
 
 #if js
 	//Draw Line between the 2 specified points based on Mid point Algorithm.
-	function drawLine(x0:Int, y0:Int, x1:Int, y1:Int)
-	{	
-	 	var hexColor = color.hexFillColor();
+	function drawLine (x0:Int, y0:Int, x1:Int, y1:Int) {
+		var hexColor = cast (color, RCColor).fillColorStyle;
    	 	//For Horizontal line
 	 	if(y0==y1) {
 	 		if(x0<=x1)

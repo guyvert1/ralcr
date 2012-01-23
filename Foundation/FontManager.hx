@@ -151,7 +151,7 @@ class FontManager {
 				var def = e.applicationDomain.getDefinition ( str );
 				var LoadedFont :Class<Dynamic> = cast (def, Class<Dynamic>);
 				try {
-					 Font.registerFont ( LoadedFont );
+					Font.registerFont ( LoadedFont );
 				}
 				catch (e:Dynamic) { trace(e); return false; }
 
@@ -169,9 +169,9 @@ class FontManager {
 		fontsSwfList.push ( e );
 	}
 	function setCSSFile (css:String) {
-	    var cssStyleSheet = new StyleSheet();
-	    cssStyleSheet.parseCSS ( css );
-		
+		var cssStyleSheet = new StyleSheet();
+		cssStyleSheet.parseCSS ( css );
+
 		// Store the css stylesheet
 		hash_style.set ("css", cssStyleSheet);
 	}

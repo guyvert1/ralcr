@@ -32,7 +32,7 @@ class RCEllipse extends RCDraw, implements RCDrawInterface {
         var iHtml=new Array<String>();
 	    var a=Math.round(width/2);
 	    var b=Math.round(height/2);
-	    var hexColor = color.hexFillColor();
+	    var hexColor = cast (color, RCColor).fillColorStyle;
     	
 	    var x=0;
 	    var y=b;
