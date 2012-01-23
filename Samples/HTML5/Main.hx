@@ -24,14 +24,11 @@ class Main {
 		var rect = new RCRectangle(200,30, 300, 150, 0xff3300);
 	 	RCWindow.addChild ( rect );
 		rect.clipsToBounds = true;
-		rect.scaleX = 1;
 		
 		circ = new RCEllipse(800,300, 100, 100, 0xff3300);
 	 	RCWindow.addChild ( circ );
 		
-		var anim = new CATween (rect, {x:50, y:50, scaleX:0.3}, 1, 0, caequations.Cubic.IN_OUT);
-			anim.repeatCount = 12;
-			anim.autoreverses = true;
+		var anim = new CATween (rect, {x:50, y:120}, 1, 0, caequations.Cubic.IN_OUT);
 		CoreAnimation.add ( anim );
 		
 		lin = new RCLine(30,300, 400, 600, 0xff3300);
@@ -40,18 +37,19 @@ class Main {
 		
 		ph = new RCPhoto(1, 1, "../CoreAnimation/3134265_large.jpg");
 		ph.onComplete = resizePhoto;
-		//rect.addChild ( ph );
+		rect.addChild ( ph );
 		
 		var f = new RCFont();
 			f.color = 0xffffff;
 			f.font = "Arial";
-			f.size = 20;
+			f.size = 30;
 		var t = new RCTextView (50, 30, 200, null, "IMAGIN", f);
 		RCWindow.addChild ( t );
 		
-		var r = new RCTextView (50, 60, null, null, "We are working on the HTML5 version of the gallery...", f);
+		var f2 = f.copy();
+		f2.size = 16;
+		var r = new RCTextView (50, 60, null, null, "We are working on the HTML5 version of the gallery...", f2);
 		RCWindow.addChild ( r );
-		//r.clipsToBounds = true;
 		
 		var k = new RCKeys();
 			k.onLeft = moveLeft;
@@ -85,6 +83,12 @@ class Main {
 		trace(ph.size.width);
 		ph.scaleToFill (300-2, 150-2);
 		//ph.scaleToFit (300-2, 150-2);
+		
+		var anim = new CATween (ph, {x:{fromValue:-ph.width, toValue:ph.width}}, 2, 0, caequations.Cubic.IN_OUT);
+			anim.repeatCount = 5;
+			anim.autoreverses = true;
+		CoreAnimation.add ( anim );
+		
 	}
 	
 	static function printNr(nr:Int){

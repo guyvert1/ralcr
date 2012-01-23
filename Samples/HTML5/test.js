@@ -2077,6 +2077,65 @@ haxe.remoting.Context.prototype.call = function(path,params) {
 	return m.apply(o,params);
 }
 haxe.remoting.Context.prototype.__class__ = haxe.remoting.Context;
+js.Lib = function() { }
+js.Lib.__name__ = ["js","Lib"];
+js.Lib.isIE = null;
+js.Lib.isOpera = null;
+js.Lib.document = null;
+js.Lib.window = null;
+js.Lib.alert = function(v) {
+	alert(js.Boot.__string_rec(v,""));
+}
+js.Lib.eval = function(code) {
+	return eval(code);
+}
+js.Lib.setErrorHandler = function(f) {
+	js.Lib.onerror = f;
+}
+js.Lib.prototype.__class__ = js.Lib;
+RCWindow = function() { }
+RCWindow.__name__ = ["RCWindow"];
+RCWindow.width = null;
+RCWindow.height = null;
+RCWindow.backgroundColor = null;
+RCWindow.init = function() {
+	js.Lib.document.body.style.position = "absolute";
+	RCWindow.width = js.Lib.document.body.scrollWidth;
+	RCWindow.height = js.Lib.document.body.scrollHeight;
+	RCWindow.set_backgroundColor(3355443);
+	var url = RCWindow.URL.split("/");
+	url.pop();
+	RCWindow.URL = url.join("/") + "/";
+	RCNotificationCenter.addObserver("resize",RCWindow.resizeHandler);
+}
+RCWindow.resizeHandler = function(w,h) {
+	RCWindow.width = w;
+	RCWindow.height = h;
+}
+RCWindow.getCenterX = function(w) {
+	return Math.round(RCWindow.width / 2 - w / 2);
+}
+RCWindow.getCenterY = function(h) {
+	return Math.round(RCWindow.height / 2 - h / 2);
+}
+RCWindow.fullscreen = function() {
+}
+RCWindow.normal = function() {
+}
+RCWindow.isFullScreen = function() {
+	return false;
+}
+RCWindow.set_backgroundColor = function(color) {
+	js.Lib.document.body.style.backgroundColor = RCColor.toHexStyle(color);
+	return color;
+}
+RCWindow.addChild = function(child) {
+	if(child != null) js.Lib.document.body.appendChild(child.view);
+}
+RCWindow.removeChild = function(child) {
+	if(child != null) js.Lib.document.body.removeChild(child.view);
+}
+RCWindow.prototype.__class__ = RCWindow;
 StringBuf = function(p) {
 	if( p === $_ ) return;
 	this.b = new Array();
@@ -2692,30 +2751,30 @@ Main.circ = null;
 Main.signal = null;
 Main.main = function() {
 	haxe.Firebug.redirectTraces();
-	RCStage.init();
-	RCStage.set_backgroundColor(14540253);
+	RCWindow.init();
+	RCWindow.set_backgroundColor(14540253);
 	var rect = new RCRectangle(200,30,300,150,16724736);
-	RCStage.addChild(rect);
+	RCWindow.addChild(rect);
 	rect.setClipsToBounds(true);
-	rect.setScaleX(1);
 	Main.circ = new RCEllipse(800,300,100,100,16724736);
-	RCStage.addChild(Main.circ);
-	var anim = new CATween(rect,{ x : 50, y : 50, scaleX : 0.3},1,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 32, className : "Main", methodName : "main"});
-	anim.repeatCount = 12;
-	anim.autoreverses = true;
+	RCWindow.addChild(Main.circ);
+	var anim = new CATween(rect,{ x : 50, y : 120},1,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 31, className : "Main", methodName : "main"});
 	CoreAnimation.add(anim);
 	Main.lin = new RCLine(30,300,400,600,16724736);
-	RCStage.addChild(Main.lin);
+	RCWindow.addChild(Main.lin);
 	Main.ph = new RCPhoto(1,1,"../CoreAnimation/3134265_large.jpg");
 	Main.ph.onComplete = Main.resizePhoto;
+	rect.addChild(Main.ph);
 	var f = new RCFont();
 	f.color = 16777215;
 	f.font = "Arial";
-	f.size = 20;
+	f.size = 30;
 	var t = new RCTextView(50,30,200,null,"IMAGIN",f);
-	RCStage.addChild(t);
-	var r = new RCTextView(50,60,null,null,"We are working on the HTML5 version of the gallery...",f);
-	RCStage.addChild(r);
+	RCWindow.addChild(t);
+	var f2 = f.copy();
+	f2.size = 16;
+	var r = new RCTextView(50,60,null,null,"We are working on the HTML5 version of the gallery...",f2);
+	RCWindow.addChild(r);
 	var k = new RCKeys();
 	k.onLeft = Main.moveLeft;
 	k.onRight = Main.moveRight;
@@ -2727,13 +2786,13 @@ Main.main = function() {
 	var _g = 0;
 	while(_g < 5) {
 		var i = _g++;
-		Main.signal.dispatch([Math.random()],{ fileName : "Main.hx", lineNumber : 67, className : "Main", methodName : "main"});
+		Main.signal.dispatch([Math.random()],{ fileName : "Main.hx", lineNumber : 65, className : "Main", methodName : "main"});
 	}
 	RCUserDefaults.init("com.ralcr.html5.");
-	haxe.Log.trace(RCUserDefaults.stringForKey("key1"),{ fileName : "Main.hx", lineNumber : 72, className : "Main", methodName : "main"});
+	haxe.Log.trace(RCUserDefaults.stringForKey("key1"),{ fileName : "Main.hx", lineNumber : 70, className : "Main", methodName : "main"});
 	RCUserDefaults.set("key1","blah blah");
 	RCUserDefaults.set("key2","blah blah 2");
-	haxe.Log.trace(RCUserDefaults.stringForKey("key1"),{ fileName : "Main.hx", lineNumber : 75, className : "Main", methodName : "main"});
+	haxe.Log.trace(RCUserDefaults.stringForKey("key1"),{ fileName : "Main.hx", lineNumber : 73, className : "Main", methodName : "main"});
 }
 Main.moveLine = function(e) {
 	Main.lin.size.width = e.clientX - Main.lin.x;
@@ -2741,16 +2800,20 @@ Main.moveLine = function(e) {
 	Main.lin.redraw();
 }
 Main.resizePhoto = function() {
-	haxe.Log.trace("onComplete",{ fileName : "Main.hx", lineNumber : 83, className : "Main", methodName : "resizePhoto"});
-	haxe.Log.trace(Main.ph.width,{ fileName : "Main.hx", lineNumber : 84, className : "Main", methodName : "resizePhoto"});
-	haxe.Log.trace(Main.ph.size.width,{ fileName : "Main.hx", lineNumber : 85, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace("onComplete",{ fileName : "Main.hx", lineNumber : 81, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace(Main.ph.width,{ fileName : "Main.hx", lineNumber : 82, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace(Main.ph.size.width,{ fileName : "Main.hx", lineNumber : 83, className : "Main", methodName : "resizePhoto"});
 	Main.ph.scaleToFill(298,148);
+	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.width, toValue : Main.ph.width}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 87, className : "Main", methodName : "resizePhoto"});
+	anim.repeatCount = 5;
+	anim.autoreverses = true;
+	CoreAnimation.add(anim);
 }
 Main.printNr = function(nr) {
-	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 91, className : "Main", methodName : "printNr"});
+	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 95, className : "Main", methodName : "printNr"});
 }
 Main.printNr2 = function(nr) {
-	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 94, className : "Main", methodName : "printNr2"});
+	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 98, className : "Main", methodName : "printNr2"});
 }
 Main.moveLeft = function() {
 	var _g = Main.circ;
@@ -3041,65 +3104,6 @@ haxe.io.Error.OutsideBounds = ["OutsideBounds",2];
 haxe.io.Error.OutsideBounds.toString = $estr;
 haxe.io.Error.OutsideBounds.__enum__ = haxe.io.Error;
 haxe.io.Error.Custom = function(e) { var $x = ["Custom",3,e]; $x.__enum__ = haxe.io.Error; $x.toString = $estr; return $x; }
-js.Lib = function() { }
-js.Lib.__name__ = ["js","Lib"];
-js.Lib.isIE = null;
-js.Lib.isOpera = null;
-js.Lib.document = null;
-js.Lib.window = null;
-js.Lib.alert = function(v) {
-	alert(js.Boot.__string_rec(v,""));
-}
-js.Lib.eval = function(code) {
-	return eval(code);
-}
-js.Lib.setErrorHandler = function(f) {
-	js.Lib.onerror = f;
-}
-js.Lib.prototype.__class__ = js.Lib;
-RCStage = function() { }
-RCStage.__name__ = ["RCStage"];
-RCStage.width = null;
-RCStage.height = null;
-RCStage.backgroundColor = null;
-RCStage.init = function() {
-	js.Lib.document.body.style.position = "absolute";
-	RCStage.width = js.Lib.document.body.scrollWidth;
-	RCStage.height = js.Lib.document.body.scrollHeight;
-	RCStage.set_backgroundColor(3355443);
-	var url = RCStage.URL.split("/");
-	url.pop();
-	RCStage.URL = url.join("/") + "/";
-	RCNotificationCenter.addObserver("resize",RCStage.resizeHandler);
-}
-RCStage.resizeHandler = function(w,h) {
-	RCStage.width = w;
-	RCStage.height = h;
-}
-RCStage.getCenterX = function(w) {
-	return Math.round(RCStage.width / 2 - w / 2);
-}
-RCStage.getCenterY = function(h) {
-	return Math.round(RCStage.height / 2 - h / 2);
-}
-RCStage.fullscreen = function() {
-}
-RCStage.normal = function() {
-}
-RCStage.isFullScreen = function() {
-	return false;
-}
-RCStage.set_backgroundColor = function(color) {
-	js.Lib.document.body.style.backgroundColor = RCColor.toHexStyle(color);
-	return color;
-}
-RCStage.addChild = function(child) {
-	if(child != null) js.Lib.document.body.appendChild(child.view);
-}
-RCStage.removeChild = function(child) {
-	if(child != null) js.Lib.document.body.removeChild(child.view);
-}
-RCStage.prototype.__class__ = RCStage;
 haxe.io.Bytes = function(length,b) {
 	if( length === $_ ) return;
 	this.length = length;
@@ -3337,6 +3341,16 @@ js.Boot.__init();
 }
 if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 {
+	js.Lib.document = document;
+	js.Lib.window = window;
+	onerror = function(msg,url,line) {
+		var f = js.Lib.onerror;
+		if( f == null )
+			return false;
+		return f(msg,[url+":"+line]);
+	}
+}
+{
 	String.prototype.__class__ = String;
 	String.__name__ = ["String"];
 	Array.prototype.__class__ = Array;
@@ -3349,16 +3363,6 @@ if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 	Class = { __name__ : ["Class"]};
 	Enum = { };
 	Void = { __ename__ : ["Void"]};
-}
-{
-	js.Lib.document = document;
-	js.Lib.window = window;
-	onerror = function(msg,url,line) {
-		var f = js.Lib.onerror;
-		if( f == null )
-			return false;
-		return f(msg,[url+":"+line]);
-	}
 }
 {
 	var d = Date;
@@ -3413,6 +3417,13 @@ RCColor.BLUE = 255;
 CoreAnimation.defaultTimingFunction = caequations.Linear.NONE;
 CoreAnimation.defaultDuration = 0.8;
 haxe.remoting.ExternalConnection.connections = new Hash();
+js.Lib.onerror = null;
+RCWindow.target = js.Lib.document.body;
+RCWindow.stage = js.Lib.document.body;
+RCWindow.SCREEN_W = js.Lib.window.screen.width;
+RCWindow.SCREEN_H = js.Lib.window.screen.height;
+RCWindow.URL = "";
+RCWindow.ID = "";
 Keyboard.LEFT = 37;
 Keyboard.RIGHT = 39;
 Keyboard.UP = 38;
@@ -3424,12 +3435,5 @@ DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
 haxe.Unserializer.DEFAULT_RESOLVER = Type;
 haxe.Unserializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";
 haxe.Unserializer.CODES = null;
-js.Lib.onerror = null;
-RCStage.target = js.Lib.document.body;
-RCStage.stage = js.Lib.document.body;
-RCStage.SCREEN_W = js.Lib.window.screen.width;
-RCStage.SCREEN_H = js.Lib.window.screen.height;
-RCStage.URL = "";
-RCStage.ID = "";
 _RCDraw.LineScaleMode.NONE = null;
 Main.main()
