@@ -4,7 +4,7 @@
 //  Created by Baluta Cristian on 2008-12-29.
 //  Copyright (c) 2008 http://ralcr.com. All rights reserved.
 //
-#if flash
+#if (flash || nme)
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.ui.Mouse;

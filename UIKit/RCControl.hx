@@ -5,7 +5,7 @@
 //  Copyright (c) 2008-2012 www.ralcr.com. All rights reserved.
 //
 
-#if flash
+#if (flash || nme)
 	import flash.events.MouseEvent;
 	import flash.events.IEventDispatcher;
 #elseif js
@@ -74,7 +74,7 @@ class RCControl extends RCView {
 		highlighted_ = false;
 		selected_ = false;
 		
-		#if flash
+		#if (flash || nme)
 			this.useHandCursor = true;
 			this.buttonMode = true;
 			//this.mouseChildren = false;
@@ -83,7 +83,7 @@ class RCControl extends RCView {
 		configureListeners ( this );
 	}
 	function configureListeners (dispatcher:IEventDispatcher) :Void {
-		#if flash
+		#if (flash || nme)
 			this.useHandCursor = true;
 			this.buttonMode = true;
 			dispatcher.addEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
@@ -100,7 +100,7 @@ class RCControl extends RCView {
 		#end
 	}
 	function removeListeners (dispatcher:IEventDispatcher) :Void {
-		#if flash
+		#if (flash || nme)
 			this.useHandCursor = false;
 			this.buttonMode = false;
 			dispatcher.removeEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);

@@ -5,7 +5,7 @@
 //  Copyright (c) 2008-2012 ralcr.com. All rights reserved.
 //
 
-#if flash
+#if (flash || nme)
 	import flash.display.DisplayObjectContainer;
 #elseif js
 	import js.Dom;

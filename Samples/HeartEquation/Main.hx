@@ -1,4 +1,4 @@
-#if flash
+#if (flash || nme)
 import flash.display.Sprite;
 import flash.events.TimerEvent;
 import flash.utils.Timer;
@@ -12,7 +12,7 @@ class Main {
 	
 	inline static var PARTICLES = 200;
 	
-	#if flash
+	#if (flash || nme)
 		var root : flash.display.MovieClip;
 		var defaultFrameRate : Float;
 	#elseif js
@@ -23,7 +23,7 @@ class Main {
 	
 	static function main() {
 		haxe.Firebug.redirectTraces();
-#if flash
+#if (flash || nme)
 		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 		var root = flash.Lib.current;
 #elseif js
@@ -36,7 +36,7 @@ class Main {
 	
 	
 	public function new ( root ) {
-#if flash
+#if (flash || nme)
 		this.root = root;
 		this.root.graphics.lineStyle (1, 0x000000);
 		this.root.graphics.moveTo (0, 0);
@@ -91,7 +91,7 @@ class Main {
 
 
 
-class Particle #if flash extends Sprite #end {
+class Particle #if (flash || nme) extends Sprite #end {
 	
 	var timer :haxe.Timer;
 	var o_x :Float;
@@ -104,7 +104,7 @@ class Particle #if flash extends Sprite #end {
 	
 	
 	public function new (x, y, t, s) {
-#if flash	super(); #end
+#if (flash || nme)	super(); #end
 		
 		this.x = o_x = x;
 		this.y = o_y = y;
@@ -120,7 +120,7 @@ class Particle #if flash extends Sprite #end {
 		
 		timer = new haxe.Timer ( 40/*Math.round (50*t)*/ );
 		timer.run = advanceTheta;
-#if flash
+#if (flash || nme)
 		this.addEventListener (flash.events.Event.ENTER_FRAME, loopTheta);
 #end
 	}
@@ -131,7 +131,7 @@ class Particle #if flash extends Sprite #end {
 		if (Math.abs(current_theta - theta) <= 0.001) {
 			current_theta = theta;
 			timer.stop();
-#if flash
+#if (flash || nme)
 			this.removeEventListener (flash.events.Event.ENTER_FRAME, loopTheta);
 #end
 			fxy();
@@ -139,7 +139,7 @@ class Particle #if flash extends Sprite #end {
 			o_y = o_y - f_y*500;
 			
 			changeDirection();
-#if flash
+#if (flash || nme)
 			this.addEventListener (flash.events.Event.ENTER_FRAME, loop);
 #end
 		}

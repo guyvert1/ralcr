@@ -5,15 +5,14 @@
 //  Copyright (c) 2008-2012 http://imagin.ro. All rights reserved.
 //
 
-#if flash
+#if (flash || nme)
 	import flash.display.DisplayObjectContainer;
 	import flash.events.MouseEvent;
 #elseif js
 	import js.Dom;
-	private typedef DisplayObjectContainer = JSView;
+	private typedef DisplayObjectContainer = HtmlDom;
 	private typedef MouseEvent = Event;
 #end
-
 
 private enum Position {
 	left;
@@ -65,18 +64,19 @@ class RCMouse {
 		_w = MIDDLE_W;
 		_parent = parent;
 		_target = target;
-		_over = target_over == null ? target : target_over;//use a different area to attach MouseEvents
+		_over = (target_over == null) ? target : target_over;//use a different area to attach MouseEvents
 		_is_idle = false;
 		
 		//_target.buttonMode = true;
 		//_over.buttonMode = true;
 		//_parent.doubleClickEnabled = true;
 		
-		if (_parent != RCWindow.target)
-			_parent.mouseEnabled = true;
-			
-		if (_over != RCWindow.target)
-			_over.mouseEnabled = true;
+		#if (flash || nme)
+			if (_parent != RCWindow.target)
+				_parent.mouseEnabled = true;
+			if (_over != RCWindow.target)
+				_over.mouseEnabled = true;
+		#end
 		
 		resume();
 	}
@@ -89,13 +89,13 @@ class RCMouse {
 		
 		_interval = new haxe.Timer ( IDLE_TIME );
 		
-		#if flash
+		#if (flash || nme)
 			_over.addEventListener (MouseEvent.ROLL_OVER, mouseOverHandler);
 			_over.addEventListener (MouseEvent.ROLL_OUT, mouseOutHandler);
 			_over.addEventListener (MouseEvent.CLICK, clickHandler);
 		#elseif js
 			_over.onmouseover = mouseOverHandler;
-			_over.onmouseout = mouseOutHandler;
+			//_over.onmouseout = mouseOutHandler;
 			_over.onclick = clickHandler;
 		#end
 	}
@@ -109,7 +109,7 @@ class RCMouse {
 		_interval.stop();
 		_interval = null;
 		
-		#if flash
+		#if (flash || nme)
 			_over.removeEventListener (MouseEvent.ROLL_OVER, mouseOverHandler);
 			_over.removeEventListener (MouseEvent.ROLL_OUT, mouseOutHandler);
 			_over.removeEventListener (MouseEvent.CLICK, clickHandler);
@@ -127,8 +127,8 @@ class RCMouse {
 	function mouseOverHandler (e:MouseEvent) :Void {
 		_last_position = over;
 		onOver();
-		
-		#if flash
+		trace("mouseOver");
+		#if (flash || nme)
 			_parent.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 			_parent.addEventListener (MouseEvent.DOUBLE_CLICK, doubleClickHandler);
 		#elseif js
@@ -137,7 +137,8 @@ class RCMouse {
 		#end
 	}
 	function mouseOutHandler (e:MouseEvent) :Void {
-		#if flash
+		trace("mouseOut");
+		#if (flash || nme)
 			_parent.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 			_parent.removeEventListener (MouseEvent.DOUBLE_CLICK, doubleClickHandler);
 		#elseif js
@@ -153,10 +154,10 @@ class RCMouse {
 		_interval.stop();
 		_interval = new haxe.Timer ( IDLE_TIME );
 		_interval.run = goIdle;
-		
+		trace(e.clientX+", "+e.screenX);
 		if (_is_idle) resumeIdle();
 		
-		var position = getPosition();
+		var position = getPosition(e);
 		
 		if (_last_position == middle && position != middle)
 			onMiddleOut();
@@ -167,7 +168,7 @@ class RCMouse {
 	}
 	
 	function clickHandler (e:MouseEvent) :Void {
-		switch ( getPosition() ) {
+		switch ( getPosition(e) ) {
 			case left:		onClickLeft();		onClick();
 			case right:		onClickRight();		onClick();
 			case middle:	onClickMiddle();	onClick();
@@ -209,16 +210,29 @@ class RCMouse {
 	/**
 	 * Returns the position of the mouse to the target
 	 */
-	function getPosition () :Position {
-		if (_parent.mouseX > _target.x && _parent.mouseX < _target.x + _target.width &&
-			_parent.mouseY > _target.y && _parent.mouseY < _target.y + _target.height) {
+	function getPosition (e:MouseEvent) :Position {
+		#if (flash || nme)
+			if (_parent.mouseX > _target.x && _parent.mouseX < _target.x + _target.width &&
+				_parent.mouseY > _target.y && _parent.mouseY < _target.y + _target.height)
+			{
+				var realX = _parent.mouseX - _target.x;
 				
-			var realX = _parent.mouseX - _target.x;
-			
-			if (realX < (_target.width - _w) / 2)				return left;
-			else if (realX > (_target.width - _w) / 2 + _w)		return right;
-			else												return middle;
-		}
+				if (realX < (_target.width - _w) / 2)				return left;
+				else if (realX > (_target.width - _w) / 2 + _w)		return right;
+				else												return middle;
+			}
+		#elseif js
+			trace([e.clientX, _target.offsetLeft, _target.offsetWidth]);
+			if (e.clientX > _target.offsetLeft && e.clientX < _target.offsetLeft + _target.offsetWidth &&
+				e.clientY > _target.offsetTop && e.clientY < _target.offsetTop + _target.offsetHeight)
+			{
+				var realX = e.clientX - _target.offsetLeft;
+				
+				if (realX < (_target.offsetWidth - _w) / 2)				return left;
+				else if (realX > (_target.offsetWidth - _w) / 2 + _w)	return right;
+				else													return middle;
+			}
+		#end
 		return outside;
 	}
 	

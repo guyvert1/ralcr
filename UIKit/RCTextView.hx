@@ -5,7 +5,7 @@
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
 
-#if flash
+#if (flash || nme)
 	import flash.display.Sprite;
 	import flash.text.TextField;
 	import flash.text.TextFieldType;
@@ -48,7 +48,7 @@ class RCTextView extends RCView {
 		//target.addEventListener (MouseEvent.MOUSE_WHEEL, wheelHandler);
 	}
 	
-#if flash
+#if (flash || nme)
 	
 	public function redraw () :Void {
 		
@@ -125,11 +125,11 @@ class RCTextView extends RCView {
 #end
 	
 	public function getText() :String {
-		return #if flash target.text #elseif js view.innerHTML #end;
+		return #if (flash || nme) target.text #elseif js view.innerHTML #end;
 	}
 	
 	public function setText (str:String) :String {
-		#if flash
+		#if (flash || nme)
 			if (properties.html)
 				target.htmlText = str;
 			else
@@ -152,7 +152,7 @@ class RCTextView extends RCView {
 		return str;
 	}
 	function wheelHandler (e:MouseEvent) :Void {
-		#if flash
+		#if (flash || nme)
 			//trace(target.maxScrollV +", "+target.scrollV);
 			if (target.maxScrollV == 2)
 				target.scrollV = 0;
@@ -160,7 +160,7 @@ class RCTextView extends RCView {
 	}
 	
 	override public function destroy () :Void {
-		#if flash
+		#if (flash || nme)
 			target.removeEventListener (MouseEvent.MOUSE_WHEEL, wheelHandler);
 		#end
 		target = null;

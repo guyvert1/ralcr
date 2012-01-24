@@ -5,7 +5,7 @@
 //  Copyright (c) 2009-2011 http://ralcr.com. All rights reserved.
 //
 
-#if flash
+#if (flash || nme)
 
 import flash.display.Sprite;
 import flash.display.DisplayObjectContainer;

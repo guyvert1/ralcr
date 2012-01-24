@@ -58,6 +58,9 @@ class Main {
 			k.onLeft = moveLeft;
 			k.onRight = moveRight;
 		
+		var m = new RCMouse( RCWindow.target, rect.view );
+			m.onLeft = function(){ trace("onLeft"); }
+		
 		signal = new RCSignal<Int->Void>();
 		signal.add ( printNr );
 		signal.addOnce ( printNr2 );
@@ -96,12 +99,12 @@ class Main {
 		lin.redraw();
 	}
 	static function resizePhoto(){
-		trace("onComplete");
+/*		trace("onComplete");
 		trace(ph.width);
-		trace(ph.size.width);
+		trace(ph.size.width);*/
 		ph.scaleToFill (300-2, 150-2);
 		//ph.scaleToFit (300-2, 150-2);
-		
+		return;
 		var anim = new CATween (ph, {x:{fromValue:-ph.width, toValue:ph.width}}, 2, 0, caequations.Cubic.IN_OUT);
 			anim.repeatCount = 5;
 			anim.autoreverses = true;

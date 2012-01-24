@@ -5,7 +5,7 @@
 //  Copyright (c) 2007-2012 http://ralcr.com. All rights reserved.
 //
 
-#if flash
+#if (flash || nme)
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
 #elseif js
@@ -52,7 +52,7 @@ class RCKeys {
 			case Keyboard.SPACE :	onSpace();
 			case Keyboard.ESCAPE :	onEsc();
 		}
-#if flash
+#if (flash || nme)
 		e.updateAfterEvent();
 #end
 
@@ -69,7 +69,7 @@ class RCKeys {
 	 * Add or remove the keyboard listener
 	 */
 	public function resume () :Void {
-		#if flash
+		#if (flash || nme)
 			flash.Lib.current.stage.addEventListener (KeyboardEvent.KEY_DOWN, keyDownHandler);
 			flash.Lib.current.stage.addEventListener (KeyboardEvent.KEY_UP, keyUpHandler);
 		#elseif js
@@ -79,7 +79,7 @@ class RCKeys {
 	}
 	
 	public function hold () :Void {
-		#if flash
+		#if (flash || nme)
 			flash.Lib.current.stage.removeEventListener (KeyboardEvent.KEY_DOWN, keyDownHandler);
 			flash.Lib.current.stage.removeEventListener (KeyboardEvent.KEY_UP, keyUpHandler);
 		#elseif js

@@ -4,6 +4,175 @@ CATransitionInterface.__name__ = ["CATransitionInterface"];
 CATransitionInterface.prototype.init = null;
 CATransitionInterface.prototype.animate = null;
 CATransitionInterface.prototype.__class__ = CATransitionInterface;
+if(typeof _RCMouse=='undefined') _RCMouse = {}
+_RCMouse.Position = { __ename__ : ["_RCMouse","Position"], __constructs__ : ["left","middle","right","outside","over"] }
+_RCMouse.Position.left = ["left",0];
+_RCMouse.Position.left.toString = $estr;
+_RCMouse.Position.left.__enum__ = _RCMouse.Position;
+_RCMouse.Position.middle = ["middle",1];
+_RCMouse.Position.middle.toString = $estr;
+_RCMouse.Position.middle.__enum__ = _RCMouse.Position;
+_RCMouse.Position.right = ["right",2];
+_RCMouse.Position.right.toString = $estr;
+_RCMouse.Position.right.__enum__ = _RCMouse.Position;
+_RCMouse.Position.outside = ["outside",3];
+_RCMouse.Position.outside.toString = $estr;
+_RCMouse.Position.outside.__enum__ = _RCMouse.Position;
+_RCMouse.Position.over = ["over",4];
+_RCMouse.Position.over.toString = $estr;
+_RCMouse.Position.over.__enum__ = _RCMouse.Position;
+RCMouse = function(parent,target,target_over) {
+	if( parent === $_ ) return;
+	this._w = 200;
+	this._parent = parent;
+	this._target = target;
+	this._over = target_over == null?target:target_over;
+	this._is_idle = false;
+	this.resume();
+}
+RCMouse.__name__ = ["RCMouse"];
+RCMouse.prototype._parent = null;
+RCMouse.prototype._target = null;
+RCMouse.prototype._over = null;
+RCMouse.prototype._last_position = null;
+RCMouse.prototype._interval = null;
+RCMouse.prototype._is_idle = null;
+RCMouse.prototype._is_over = null;
+RCMouse.prototype._w = null;
+RCMouse.prototype.onOver = function() {
+}
+RCMouse.prototype.onOut = function() {
+}
+RCMouse.prototype.onLeft = function() {
+}
+RCMouse.prototype.onMiddle = function() {
+}
+RCMouse.prototype.onMiddleOut = function() {
+}
+RCMouse.prototype.onRight = function() {
+}
+RCMouse.prototype.onClick = function() {
+}
+RCMouse.prototype.onDoubleClick = function() {
+}
+RCMouse.prototype.onClickLeft = function() {
+}
+RCMouse.prototype.onClickMiddle = function() {
+}
+RCMouse.prototype.onClickRight = function() {
+}
+RCMouse.prototype.onIdle = function() {
+}
+RCMouse.prototype.onResume = function() {
+}
+RCMouse.prototype.resume = function() {
+	this._interval = new haxe.Timer(3000);
+	this._over.onmouseover = $closure(this,"mouseOverHandler");
+	this._over.onclick = $closure(this,"clickHandler");
+}
+RCMouse.prototype.hold = function() {
+	this._interval.stop();
+	this._interval = null;
+	this._over.onmouseover = null;
+	this._over.onmouseout = null;
+	this._over.onclick = null;
+}
+RCMouse.prototype.mouseOverHandler = function(e) {
+	this._last_position = _RCMouse.Position.over;
+	this.onOver();
+	haxe.Log.trace("mouseOver",{ fileName : "RCMouse.hx", lineNumber : 130, className : "RCMouse", methodName : "mouseOverHandler"});
+	this._over.onmousemove = $closure(this,"mouseMoveHandler");
+	this._over.ondblclick = $closure(this,"doubleClickHandler");
+}
+RCMouse.prototype.mouseOutHandler = function(e) {
+	haxe.Log.trace("mouseOut",{ fileName : "RCMouse.hx", lineNumber : 140, className : "RCMouse", methodName : "mouseOutHandler"});
+	this._over.onmousemove = null;
+	this._over.ondblclick = null;
+	this.onOut();
+}
+RCMouse.prototype.mouseMoveHandler = function(e) {
+	this._interval.stop();
+	this._interval = new haxe.Timer(3000);
+	this._interval.run = $closure(this,"goIdle");
+	haxe.Log.trace(e.clientX + ", " + e.screenX,{ fileName : "RCMouse.hx", lineNumber : 157, className : "RCMouse", methodName : "mouseMoveHandler"});
+	if(this._is_idle) this.resumeIdle();
+	var position = this.getPosition(e);
+	if(this._last_position == _RCMouse.Position.middle && position != _RCMouse.Position.middle) this.onMiddleOut();
+	if(this._last_position != position) {
+		this._last_position = position;
+		this.dispatchPosition(position);
+	}
+}
+RCMouse.prototype.clickHandler = function(e) {
+	switch( (this.getPosition(e))[1] ) {
+	case 0:
+		this.onClickLeft();
+		this.onClick();
+		break;
+	case 2:
+		this.onClickRight();
+		this.onClick();
+		break;
+	case 1:
+		this.onClickMiddle();
+		this.onClick();
+		break;
+	case 3:
+		return;
+	case 4:
+		return;
+	}
+}
+RCMouse.prototype.doubleClickHandler = function(e) {
+	this.onDoubleClick();
+}
+RCMouse.prototype.dispatchPosition = function(position) {
+	switch( (position)[1] ) {
+	case 0:
+		this.onLeft();
+		break;
+	case 1:
+		this.onMiddle();
+		break;
+	case 2:
+		this.onRight();
+		break;
+	case 3:
+		this.mouseOutHandler(null);
+		break;
+	case 4:
+		null;
+		break;
+	}
+}
+RCMouse.prototype.refresh = function() {
+	this.mouseMoveHandler(null);
+}
+RCMouse.prototype.setMiddleWidth = function(w) {
+	this._w = w;
+}
+RCMouse.prototype.getPosition = function(e) {
+	haxe.Log.trace([e.clientX,this._target.offsetLeft,this._target.offsetWidth],{ fileName : "RCMouse.hx", lineNumber : 225, className : "RCMouse", methodName : "getPosition"});
+	if(e.clientX > this._target.offsetLeft && e.clientX < this._target.offsetLeft + this._target.offsetWidth && e.clientY > this._target.offsetTop && e.clientY < this._target.offsetTop + this._target.offsetHeight) {
+		var realX = e.clientX - this._target.offsetLeft;
+		if(realX < (this._target.offsetWidth - this._w) / 2) return _RCMouse.Position.left; else if(realX > (this._target.offsetWidth - this._w) / 2 + this._w) return _RCMouse.Position.right; else return _RCMouse.Position.middle;
+	}
+	return _RCMouse.Position.outside;
+}
+RCMouse.prototype.goIdle = function() {
+	this._interval.stop();
+	this._is_idle = true;
+	this.onIdle();
+}
+RCMouse.prototype.resumeIdle = function() {
+	this._is_idle = false;
+	this.onResume();
+}
+RCMouse.prototype.destroy = function() {
+	this.hold();
+	this.mouseOutHandler(null);
+}
+RCMouse.prototype.__class__ = RCMouse;
 List = function(p) {
 	if( p === $_ ) return;
 	this.length = 0;
@@ -608,17 +777,31 @@ JSView.prototype.viewDidAppear = function() {
 }
 JSView.prototype.viewDidDisappear = function() {
 }
+JSView.prototype.viewWillAppearHandler = function() {
+	this.viewWillAppear();
+}
+JSView.prototype.viewWillDisappearHandler = function() {
+	this.viewWillDisappear();
+}
+JSView.prototype.viewDidAppearHandler = function() {
+	this.viewDidAppear();
+}
+JSView.prototype.viewDidDisappearHandler = function() {
+	this.viewDidDisappear();
+}
 JSView.prototype.addChild = function(child) {
-	child.viewWillAppear();
+	if(child == null) return;
+	child.viewWillAppearHandler();
 	child.parent = this.view;
 	this.view.appendChild(child.view);
-	child.viewDidAppear();
+	child.viewDidAppearHandler();
 }
 JSView.prototype.removeChild = function(child) {
-	child.viewWillDisappear();
+	if(child == null) return;
+	child.viewWillDisappearHandler();
 	child.parent = null;
 	this.view.removeChild(child.view);
-	child.viewDidDisappear();
+	child.viewDidDisappearHandler();
 }
 JSView.prototype.setBackgroundColor = function(color) {
 	if(color == null) {
@@ -689,7 +872,7 @@ JSView.prototype.destroy = function() {
 	CoreAnimation.remove(this.caobj);
 }
 JSView.prototype.removeFromSuperView = function() {
-	var parent = null;
+	if(this.parent != null) this.parent.removeChild(this.view);
 }
 JSView.prototype.setVisible = function(v) {
 	this.visible = v;
@@ -712,7 +895,7 @@ JSView.prototype.setY = function(y) {
 	return y;
 }
 JSView.prototype.getWidth = function() {
-	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the width would be 0",{ fileName : "JSView.hx", lineNumber : 219, className : "JSView", methodName : "getWidth"});
+	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the width would be 0",{ fileName : "JSView.hx", lineNumber : 223, className : "JSView", methodName : "getWidth"});
 	return this.view.offsetWidth;
 	return this.view.scrollWidth;
 	return this.view.clientWidth;
@@ -723,7 +906,7 @@ JSView.prototype.setWidth = function(w) {
 	return w;
 }
 JSView.prototype.getHeight = function() {
-	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the height would be 0",{ fileName : "JSView.hx", lineNumber : 230, className : "JSView", methodName : "getHeight"});
+	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the height would be 0",{ fileName : "JSView.hx", lineNumber : 234, className : "JSView", methodName : "getHeight"});
 	return this.view.offsetHeight;
 	return this.view.scrollHeight;
 	return this.view.clientHeight;
@@ -3050,12 +3233,9 @@ Main.main = function() {
 	var rect = new RCRectangle(200,30,300,150,16724736);
 	RCWindow.addChild(rect);
 	rect.setClipsToBounds(true);
-	Main.circ = new RCEllipse(800,300,100,100,RCColor.darkGrayColor());
+	rect.setCenter(new RCPoint(RCWindow.width / 2,RCWindow.height / 2));
+	Main.circ = new RCEllipse(0,0,100,100,RCColor.darkGrayColor());
 	RCWindow.addChild(Main.circ);
-	var anim = new CATween(rect,{ x : 50, y : 120},1,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 31, className : "Main", methodName : "main"});
-	CoreAnimation.add(anim);
-	Main.lin = new RCLine(30,300,400,600,16724736);
-	RCWindow.addChild(Main.lin);
 	Main.ph = new RCPhoto(1,1,"../CoreAnimation/3134265_large.jpg");
 	Main.ph.onComplete = Main.resizePhoto;
 	rect.addChild(Main.ph);
@@ -3072,6 +3252,10 @@ Main.main = function() {
 	var k = new RCKeys();
 	k.onLeft = Main.moveLeft;
 	k.onRight = Main.moveRight;
+	var m = new RCMouse(js.Lib.document.body,rect.view);
+	m.onLeft = function() {
+		haxe.Log.trace("onLeft",{ fileName : "Main.hx", lineNumber : 62, className : "Main", methodName : "main"});
+	};
 	Main.signal = new RCSignal();
 	Main.signal.add(Main.printNr);
 	Main.signal.addOnce(Main.printNr2);
@@ -3080,27 +3264,27 @@ Main.main = function() {
 	var _g = 0;
 	while(_g < 5) {
 		var i = _g++;
-		Main.signal.dispatch([Math.random()],{ fileName : "Main.hx", lineNumber : 66, className : "Main", methodName : "main"});
+		Main.signal.dispatch([Math.random()],{ fileName : "Main.hx", lineNumber : 71, className : "Main", methodName : "main"});
 	}
 	RCUserDefaults.init("com.ralcr.html5.");
-	haxe.Log.trace(RCUserDefaults.stringForKey("key1"),{ fileName : "Main.hx", lineNumber : 71, className : "Main", methodName : "main"});
+	haxe.Log.trace(RCUserDefaults.stringForKey("key1"),{ fileName : "Main.hx", lineNumber : 76, className : "Main", methodName : "main"});
 	RCUserDefaults.set("key1","blah blah");
-	haxe.Log.trace(RCUserDefaults.stringForKey("key1"),{ fileName : "Main.hx", lineNumber : 73, className : "Main", methodName : "main"});
+	haxe.Log.trace(RCUserDefaults.stringForKey("key1"),{ fileName : "Main.hx", lineNumber : 78, className : "Main", methodName : "main"});
 	var b = new RCControl(0,0);
 	b.onClick = function() {
-		haxe.Log.trace("click",{ fileName : "Main.hx", lineNumber : 78, className : "Main", methodName : "main"});
+		haxe.Log.trace("click",{ fileName : "Main.hx", lineNumber : 83, className : "Main", methodName : "main"});
 	};
 	b.onOver = function() {
-		haxe.Log.trace("over",{ fileName : "Main.hx", lineNumber : 79, className : "Main", methodName : "main"});
+		haxe.Log.trace("over",{ fileName : "Main.hx", lineNumber : 84, className : "Main", methodName : "main"});
 	};
 	b.onOut = function() {
-		haxe.Log.trace("out",{ fileName : "Main.hx", lineNumber : 80, className : "Main", methodName : "main"});
+		haxe.Log.trace("out",{ fileName : "Main.hx", lineNumber : 85, className : "Main", methodName : "main"});
 	};
 	b.onPress = function() {
-		haxe.Log.trace("press",{ fileName : "Main.hx", lineNumber : 81, className : "Main", methodName : "main"});
+		haxe.Log.trace("press",{ fileName : "Main.hx", lineNumber : 86, className : "Main", methodName : "main"});
 	};
 	b.onRelease = function() {
-		haxe.Log.trace("release",{ fileName : "Main.hx", lineNumber : 82, className : "Main", methodName : "main"});
+		haxe.Log.trace("release",{ fileName : "Main.hx", lineNumber : 87, className : "Main", methodName : "main"});
 	};
 	RCWindow.addChild(b);
 	b.addChild(t);
@@ -3111,20 +3295,18 @@ Main.moveLine = function(e) {
 	Main.lin.redraw();
 }
 Main.resizePhoto = function() {
-	haxe.Log.trace("onComplete",{ fileName : "Main.hx", lineNumber : 97, className : "Main", methodName : "resizePhoto"});
-	haxe.Log.trace(Main.ph.getWidth(),{ fileName : "Main.hx", lineNumber : 98, className : "Main", methodName : "resizePhoto"});
-	haxe.Log.trace(Main.ph.size.width,{ fileName : "Main.hx", lineNumber : 99, className : "Main", methodName : "resizePhoto"});
 	Main.ph.scaleToFill(298,148);
-	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 103, className : "Main", methodName : "resizePhoto"});
+	return;
+	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 108, className : "Main", methodName : "resizePhoto"});
 	anim.repeatCount = 5;
 	anim.autoreverses = true;
 	CoreAnimation.add(anim);
 }
 Main.printNr = function(nr) {
-	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 111, className : "Main", methodName : "printNr"});
+	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 116, className : "Main", methodName : "printNr"});
 }
 Main.printNr2 = function(nr) {
-	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 114, className : "Main", methodName : "printNr2"});
+	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 119, className : "Main", methodName : "printNr2"});
 }
 Main.moveLeft = function() {
 	var _g = Main.circ;
@@ -3719,6 +3901,8 @@ if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 	d.prototype.__class__ = d;
 	d.__name__ = ["Date"];
 }
+RCMouse.IDLE_TIME = 3000;
+RCMouse.MIDDLE_W = 200;
 haxe.Serializer.USE_CACHE = false;
 haxe.Serializer.USE_ENUM_INDEX = false;
 haxe.Serializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";

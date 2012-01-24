@@ -5,7 +5,7 @@
 //  Copyright (c) 2008-2012 http://ralcr.com. All rights reserved.
 //
 
-#if flash
+#if (flash || nme)
 	import flash.display.Stage;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
@@ -21,7 +21,7 @@
 
 class RCWindow {
 
-#if flash
+#if (flash || nme)
 	inline public static var target = flash.Lib.current;
 	inline public static var stage :Stage = flash.Lib.current.stage;
 	public static var SCREEN_W :Float = flash.system.Capabilities.screenResolutionX;
@@ -43,7 +43,7 @@ class RCWindow {
 	
 	
 	public static function init () {
-		#if flash
+		#if (flash || nme)
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
 			width = stage.stageWidth;
@@ -82,13 +82,13 @@ class RCWindow {
 	
 	
 	public static function fullscreen () {
-		#if flash stage.displayState = StageDisplayState.FULL_SCREEN; #end
+		#if (flash || nme) stage.displayState = StageDisplayState.FULL_SCREEN; #end
 	}
 	public static function normal () {
-		#if flash stage.displayState = StageDisplayState.NORMAL; #end
+		#if (flash || nme) stage.displayState = StageDisplayState.NORMAL; #end
 	}
 	public static function isFullScreen () :Bool {
-		#if flash
+		#if (flash || nme)
 			return stage.displayState == StageDisplayState.FULL_SCREEN;
 		#end
 		return false;
@@ -123,7 +123,7 @@ class RCWindow {
 	 */
 	public static function addChild (child:DisplayObjectContainer) :Void {
 		if (child != null) {
-			#if flash
+			#if (flash || nme)
 				target.addChild ( child );
 			#elseif js
 				child.viewWillAppear();
@@ -135,7 +135,7 @@ class RCWindow {
 	}
 	public static function removeChild (child:DisplayObjectContainer) :Void {
 		if (child != null) {
-			#if flash
+			#if (flash || nme)
 				if (target.contains ( child ))
 					target.removeChild ( child );
 			#elseif js
