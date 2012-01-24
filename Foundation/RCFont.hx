@@ -2,10 +2,10 @@
 //  RCFont
 //
 //  Created by Cristi Baluta on 2010-10-15.
-//  Copyright (c) 2010 ralcr.com. All rights reserved.
+//  Copyright (c) 2010-2012 ralcr.com. All rights reserved.
 //
 
-#if flash
+#if (flash || nme)
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
@@ -84,7 +84,7 @@ class RCFont {
 		embedFonts = true;
 		autoSize = true;//TextFieldAutoSize.LEFT;
 		selectable = false;
-#if flash
+#if (flash || nme)
 		type = TextFieldType.DYNAMIC;
 		antiAliasType = AntiAliasType.ADVANCED;// ADVANCED-normal fonts(<40px), NORMAL-pixel fonts
 		
@@ -113,7 +113,7 @@ class RCFont {
 			}
 		}
 		
-		rcfont.format = #if flash new TextFormat() #elseif js {} #end;
+		rcfont.format = #if (flash || nme) new TextFormat() #elseif js {} #end;
 		rcfont.format.align = rcfont.align;
 		rcfont.format.blockIndent = rcfont.blockIndent;
 		rcfont.format.bold = rcfont.bold;

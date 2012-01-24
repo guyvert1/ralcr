@@ -6,7 +6,7 @@
 //  Copyright (c) 2009-2012 http://ralcr.com. All rights reserved.
 //
 
-#if flash
+#if (flash || nme)
 	import flash.display.Sprite;
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
@@ -21,7 +21,7 @@
 	import flash.display.BitmapData;
 	import flash.display.PixelSnapping;
 #elseif js
-	
+	import js.Dom;
 #end
 
 
@@ -215,7 +215,7 @@ class RCLib {
 		else if (swfList.exists ( key )) {
 			return swfList.get( key );// Returns RCSwf
 		}
-		
+		#if (flash || nme)
 		// Search for assets in each of the loaded swfList, in they loaded order
 		else {
 			var classInstance :Dynamic = createInstance ( key );
@@ -226,12 +226,12 @@ class RCLib {
 			else
 				return classInstance;
 		}
-		
+		#end
 		// No class was found with this definition name
 		return null;
 	}
 	
-	
+#if (flash || nme)
 	/**
 	 *  Create an instance of a class from an external swf
 	 */
@@ -264,4 +264,5 @@ class RCLib {
 		
 		return d;
 	}
+#end
 }

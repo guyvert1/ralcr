@@ -4,7 +4,7 @@
 //  Created by Baluta Cristian on 2008-04-01.
 //  Copyright (c) 2008 http://ralcr.com. All rights reserved.
 //
-#if flash
+#if (flash || nme)
 import flash.display.Sprite;
 import flash.display.Loader;
 import flash.system.LoaderContext;
@@ -48,7 +48,7 @@ class RCPhoto extends RCView {
 	public function load (URL:String) {
 		isLoaded = false;
 		percentLoaded = 0;
-#if flash
+#if (flash || nme)
 		loader = new Loader();
 		loader.load ( new URLRequest ( URL ), new LoaderContext (true) );
 #elseif js
@@ -62,7 +62,7 @@ class RCPhoto extends RCView {
 	 *	Handlers.
 	 */
 	function completeHandler (e:Event) :Void {
-#if flash
+#if (flash || nme)
 		this.size.width = this.lastW = loader.content.width;
 		this.size.height = this.lastH = loader.content.height;
 		this.isLoaded = true;
@@ -77,7 +77,7 @@ class RCPhoto extends RCView {
 #end
 		onComplete();
 	}
-#if flash
+#if (flash || nme)
 	function progressHandler (e:ProgressEvent) :Void {
 		percentLoaded = Math.round (e.target.bytesLoaded * 100 / e.target.bytesTotal);
 		onProgress ();
@@ -93,7 +93,7 @@ class RCPhoto extends RCView {
 		onError();
 	}
 	
-#if flash	
+#if (flash || nme)	
 	/**
 	 * Bitmapize the loaded photo. This will prevent pixelizing when photo is scaled
 	 */
@@ -127,7 +127,7 @@ class RCPhoto extends RCView {
 #end	
 	
 	function addListeners () :Void {
-#if flash
+#if (flash || nme)
 		loader.contentLoaderInfo.addEventListener (Event.COMPLETE, completeHandler);
 		loader.contentLoaderInfo.addEventListener (ProgressEvent.PROGRESS, progressHandler);
 		loader.contentLoaderInfo.addEventListener (ErrorEvent.ERROR, errorHandler);
@@ -139,7 +139,7 @@ class RCPhoto extends RCView {
 	}
 	
 	function removeListeners () :Void {
-#if flash
+#if (flash || nme)
 		loader.contentLoaderInfo.removeEventListener (Event.COMPLETE, completeHandler);
 		loader.contentLoaderInfo.removeEventListener (ProgressEvent.PROGRESS, progressHandler);
 		loader.contentLoaderInfo.removeEventListener (ErrorEvent.ERROR, errorHandler);
@@ -154,7 +154,7 @@ class RCPhoto extends RCView {
 	override public function destroy() :Void {
 		removeListeners();
 		//loader.close();
-#if flash		loader.unload(); #end
+#if (flash || nme)		loader.unload(); #end
 		loader = null;
 	}
 	

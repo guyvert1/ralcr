@@ -4,7 +4,7 @@
 //  Created by Cristi Baluta on 2010-02-19.
 //  Copyright (c) 2010 ralcr.com. All rights reserved.
 //
-#if flash
+#if (flash || nme)
 	import flash.geom.Matrix;
 	import flash.display.LineScaleMode;
 #elseif js
@@ -71,7 +71,7 @@ class RCDraw extends RCView {
 											miterLimit);
 			}
 		}
-#if flash
+#if (flash || nme)
 		else if (Std.is (color, RCGradient)) {
 			
 			var m = new Matrix();

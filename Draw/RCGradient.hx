@@ -4,7 +4,7 @@
 //  Created by Cristi Baluta on 2010-10-13.
 //  Copyright (c) 2010 ralcr.com. All rights reserved.
 //
-#if flash
+#if (flash || nme)
 import flash.geom.Matrix;
 import flash.display.LineScaleMode;
 import flash.display.GradientType;
@@ -38,7 +38,7 @@ class RCGradient {
 		this.gradientColors = colors;
 		this.gradientAlphas = alphas == null ? [1.0, 1.0] : alphas;
 		this.gradientRatios = [0, 255];
-#if flash
+#if (flash || nme)
 		this.spreadMethod = SpreadMethod.PAD;// REPEAT, REFLECT, PAD
 		this.interpolationMethod = InterpolationMethod.RGB;// RGB, LINEAR_RGB
 		this.gradientType = linear ? GradientType.LINEAR : GradientType.RADIAL;

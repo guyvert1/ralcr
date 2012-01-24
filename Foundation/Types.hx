@@ -4,7 +4,7 @@
 //  Created by Baluta Cristian on 2009-01-13.
 //  Copyright (c) 2009 http://ralcr.com. All rights reserved.
 //
-#if flash
+#if (flash || nme)
 	typedef Sprite = flash.display.Sprite;
 	typedef MovieClip = flash.display.MovieClip;
 	typedef DisplayObject = flash.display.DisplayObject;

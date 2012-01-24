@@ -19,7 +19,7 @@ class RCRectangle extends RCDraw, implements RCDrawInterface {
 	
 	public function redraw() :Void {
 		
-#if flash
+#if (flash || nme)
 		this.graphics.clear();
 		this.configure();
 		

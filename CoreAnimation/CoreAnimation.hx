@@ -4,7 +4,7 @@
 //  Created by Baluta Cristian on 2008-09-28.
 //  Copyright (c) 2008 ralcr.com. All rights reserved.
 //
-#if flash
+#if (flash || nme)
 typedef Ticker = flash.display.Sprite;
 #elseif (js || cpp || neko)
 typedef Ticker = haxe.Timer;
@@ -47,7 +47,7 @@ class CoreAnimation {
 		obj.initTime();
 		
 		if (ticker == null) {
-#if flash
+#if (flash || nme)
 			ticker = new Ticker();
 			ticker.addEventListener (flash.events.Event.ENTER_FRAME, updateAnimations);
 #elseif js
@@ -87,7 +87,7 @@ class CoreAnimation {
 	
 	static function removeTimer () :Void {
 		if (latest == null && ticker != null) {
-#if flash
+#if (flash || nme)
 			ticker.removeEventListener (flash.events.Event.ENTER_FRAME, updateAnimations);
 #elseif (js || neko || cpp)
 			ticker.stop();
@@ -109,7 +109,7 @@ class CoreAnimation {
 	/**
 	 *	Update the animations
 	 */
-	static function updateAnimations (#if flash _ #end) :Void {
+	static function updateAnimations (#if (flash || nme) _ #end) :Void {
 		
 		var current_time = timestamp();
 		var time_diff = 0.0;

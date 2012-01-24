@@ -1,4 +1,4 @@
-#if flash
+#if (flash || nme)
 import flash.events.FullScreenEvent;
 import flash.display.StageDisplayState;
 #end
@@ -6,7 +6,7 @@ import flash.display.StageDisplayState;
 
 class EVFullScreen extends RCSignal<Bool->Void> {
 
-#if flash
+#if (flash || nme)
 	public function new () {
 		super();
 		flash.Lib.current.stage.addEventListener (FullScreenEvent.FULL_SCREEN, fullScreenHandler);

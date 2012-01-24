@@ -6,7 +6,7 @@
 //  Copyright (c) 2009-2012 http://ralcr.com. All rights reserved.
 //
 
-#if flash
+#if (flash || nme)
 	import flash.net.SharedObject;
 #end
 
