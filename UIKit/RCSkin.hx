@@ -1,16 +1,22 @@
 //
-//  Common
+//  RCSkin
 //
 //  Created by Baluta Cristian on 2008-07-03.
-//  Copyright (c) 2008 milc.ro. All rights reserved.
+//  Copyright (c) 2008-2012 ralcr.com. All rights reserved.
 //
-import flash.display.DisplayObjectContainer;
 
+#if flash
+	import flash.display.DisplayObjectContainer;
+#elseif js
+	import js.Dom;
+	private typedef DisplayObjectContainer = HtmlDom;
+#end
 
 class RCSkin implements RCSkinInterface {
 	
+	// NORMAL / HIGHLIGHTED / DISABLED / SELECTED / HIT_AREA
 	public var 
-	public var background :DisplayObjectContainer;
+	public var backgroundNormal :DisplayObjectContainer;
 	public var up :DisplayObjectContainer;
 	public var over :DisplayObjectContainer;
 	public var down :DisplayObjectContainer;

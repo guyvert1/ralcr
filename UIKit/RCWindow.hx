@@ -15,7 +15,7 @@
 #elseif js
 	import js.Dom;
 	private typedef DisplayObjectContainer = JSView;
-	typedef ExternalInterface = haxe.remoting.ExternalConnection;
+	private typedef ExternalInterface = haxe.remoting.ExternalConnection;
 #end
 
 

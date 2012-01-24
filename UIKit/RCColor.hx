@@ -6,7 +6,7 @@
 //
 
 #if js
-	typedef UInt = Int;
+	private typedef UInt = Int;
 #end
 
 class RCColor {

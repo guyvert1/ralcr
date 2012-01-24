@@ -1,13 +1,18 @@
 //
-//  The class of a standard button
+//  RCButton
 //
 //  Created by Baluta Cristian on 2008-03-23.
-//  Copyright (c) 2008 www.ralcr.com. All rights reserved.
+//  Copyright (c) 2008-2012 www.ralcr.com. All rights reserved.
 //
-import flash.display.Sprite;
-import flash.display.DisplayObjectContainer;
-import flash.events.MouseEvent;
 
+#if flash
+	import flash.display.Sprite;
+	import flash.display.DisplayObjectContainer;
+	import flash.events.MouseEvent;
+#elseif js
+	import js.Dom;
+	import RCControl;
+#end
 
 class RCButton extends RCControl {
 	
@@ -24,32 +29,34 @@ class RCButton extends RCControl {
 	var symbolColorUp :Null<Int>;
 	var symbolColorOver :Null<Int>;
 	
+	public var toggable (getToggable, setToggable) :Bool;
+	public var lockable (getLockable, setLockable) :Bool;
 	
-	setTitle:(NSString *)title forState:(UIControlState)state;            // default is nil. title is assumed to be single line
-	setTitleColor:(UIColor *)color forState:(UIControlState)state;        // default if nil. use opaque white
-	- (void)setTitleShadowColor:(UIColor *)color forState:(UIControlState)state;  // default is nil. use 50% black
-	- (void)setImage:(UIImage *)image forState:(UIControlState)state;             // default is nil. should be same size if different for different states
-	- (void)setBackgroundImage:(UIImage *)image forState:(UIControlState)state;   // default is nil
+	public function setTitle (title:String, state:RCControlState) {
+		
+	}
+	public function setTitleColor:(UIColor *)color forState:(UIControlState)state;        // default if nil. use opaque white
+	public function setTitleShadowColor:(UIColor *)color forState:(UIControlState)state;  // default is nil. use 50% black
+	public function setImage:(UIImage *)image forState:(UIControlState)state;             // default is nil. should be same size if different for different states
+	public function setBackgroundImage:(UIImage *)image forState:(UIControlState)state;   // default is nil
 
-	- (NSString *)titleForState:(UIControlState)state;          // these getters only take a single state value
-	- (UIColor *)titleColorForState:(UIControlState)state;
-	- (UIColor *)titleShadowColorForState:(UIControlState)state;
-	- (UIImage *)imageForState:(UIControlState)state;
-	- (UIImage *)backgroundImageForState:(UIControlState)state;
+	public function titleForState:(UIControlState)state;          // these getters only take a single state value
+	public function titleColorForState:(UIControlState)state;
+	public function titleShadowColorForState:(UIControlState)state;
+	public function imageForState:(UIControlState)state;
+	public function backgroundImageForState:(UIControlState)state;
 
-	// these are the values that will be used for the current state. you can also use these for overrides. a heuristic will be used to
-	// determine what image to choose based on the explict states set. For example, the 'normal' state value will be used for all states
-	// that don't have their own image defined.
+	// these are the values that will be used for the current state. you can also use these for overrides. a heuristic will be used to determine what image to choose based on the explict states set. For example, the 'normal' state value will be used for all states that don't have their own image defined.
 
-	@property(nonatomic,readonly,retain) NSString *currentTitle;             // normal/highlighted/selected/disabled. can return nil
-	@property(nonatomic,readonly,retain) UIColor  *currentTitleColor;        // normal/highlighted/selected/disabled. always returns non-nil. default is white(1,1)
-	@property(nonatomic,readonly,retain) UIColor  *currentTitleShadowColor;  // normal/highlighted/selected/disabled. default is white(0,0.5).
-	@property(nonatomic,readonly,retain) UIImage  *currentImage;             // normal/highlighted/selected/disabled. can return nil
-	@property(nonatomic,readonly,retain) UIImage  *currentBackgroundImage;   // normal/highlighted/selected/disabled. can return nil
+	public var currentTitle :String;// normal/highlighted/selected/disabled. can return nil
+	public var currentTitleColor :Int;// normal/highlighted/selected/disabled. always returns non-nil. default is white(1,1)
+	public var currentTitleShadowColor;  // normal/highlighted/selected/disabled. default is white(0,0.5).
+	public var currentImage;             // normal/highlighted/selected/disabled. can return nil
+	public var currentBackgroundImage;   // normal/highlighted/selected/disabled. can return nil
 
 	// return title and image views. will always create them if necessary. always returns nil for system buttons
-	@property(nonatomic,readonly,retain) UILabel     *titleLabel __OSX_AVAILABLE_STARTING(__MAC_NA,__IPHONE_3_0);
-	@property(nonatomic,readonly,retain) UIImageView *imageView  __OSX_AVAILABLE_STARTING(__MAC_NA,__IPHONE_3_0);
+	public var titleLabel __OSX_AVAILABLE_STARTING(__MAC_NA,__IPHONE_3_0);
+	public var imageView  __OSX_AVAILABLE_STARTING(__MAC_NA,__IPHONE_3_0);
 	
 	
 	
@@ -133,7 +140,8 @@ class RCButton extends RCControl {
 			setObjectColor (up, symbolColorUp);
 		
 		// Remove and add the coresponding objects for this state of the button
-		Fugu.safeRemove ([over, down]);
+		over.removeFromSuperView();
+		down.removeFromSuperView();
 		Fugu.safeAdd (this, [up, hit]);
 	}
 	

@@ -19,10 +19,18 @@ class RCView extends Sprite {
 	public var clipsToBounds (default, setClipsToBounds) :Bool;
 	public var backgroundColor (default, setBackgroundColor) :Null<Int>;
 	
-	var viewMask :Sprite;
 	var lastW :Float;
 	var lastH :Float;
 	var caobj :CAObject;
+	
+	dynamic public function viewWillAppear () :Void {}
+	dynamic public function viewWillDisappear () :Void {}
+	dynamic public function viewDidAppear () :Void {}
+	dynamic public function viewDidDisappear () :Void {}
+	public function viewWillAppearHandler (_) :Void { viewWillAppear(); }
+	public function viewWillDisappearHandler (_) :Void { viewWillDisappear(); }
+	public function viewDidAppearHandler (_) :Void { viewDidAppear(); }
+	public function viewDidDisappearHandler (_) :Void { viewDidDisappear(); }
 	
 	
 	public function new (x, y) {
@@ -36,10 +44,6 @@ class RCView extends Sprite {
 		view.x = x;
 		view.y = y;
 	}
-	//function viewWillAppear (_) :Void {}
-	//function viewWillDisappear (_) :Void {}
-	function viewDidAppear (_) :Void {}
-	function viewDidDisappear (_) :Void {}
 	
 	
 	/**
@@ -131,8 +135,8 @@ class RCView extends Sprite {
 	 */
 	public function destroy () :Void {
 		CoreAnimation.remove ( caobj );
-		view.removeEventListener (Event.ADDED_TO_STAGE, viewDidAppear);
-		view.removeEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappear);
+		view.removeEventListener (Event.ADDED_TO_STAGE, viewDidAppearHandler);
+		view.removeEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappearHandler);
 	}
 	
 	

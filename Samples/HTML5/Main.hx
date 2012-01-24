@@ -24,15 +24,17 @@ class Main {
 		var rect = new RCRectangle(200,30, 300, 150, 0xff3300);
 	 	RCWindow.addChild ( rect );
 		rect.clipsToBounds = true;
+		rect.center = new RCPoint(RCWindow.width/2,RCWindow.height/2);
 		
-		circ = new RCEllipse(800,300, 100, 100, RCColor.darkGrayColor());
+		circ = new RCEllipse(0,0, 100, 100, RCColor.darkGrayColor());
 	 	RCWindow.addChild ( circ );
+		//circ.center = new RCPoint(120,120);
 		
-		var anim = new CATween (rect, {x:50, y:120}, 1, 0, caequations.Cubic.IN_OUT);
-		CoreAnimation.add ( anim );
+/*		var anim = new CATween (rect, {x:50, y:120}, 1, 0, caequations.Cubic.IN_OUT);
+		CoreAnimation.add ( anim );*/
 		
-		lin = new RCLine(30,300, 400, 600, 0xff3300);
-		RCWindow.addChild ( lin );
+/*		lin = new RCLine(30,300, 400, 600, 0xff3300);
+		RCWindow.addChild ( lin );*/
 		//js.Lib.document.onmousemove = moveLine;
 		
 		ph = new RCPhoto(1, 1, "../CoreAnimation/3134265_large.jpg");

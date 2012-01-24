@@ -2,7 +2,7 @@
 //  Mouse
 //
 //  Created by Baluta Cristian on 2008-09-14.
-//  Copyright (c) 2008 http://imagin.ro. All rights reserved.
+//  Copyright (c) 2008-2012 http://imagin.ro. All rights reserved.
 //
 
 #if flash
@@ -10,7 +10,8 @@
 	import flash.events.MouseEvent;
 #elseif js
 	import js.Dom;
-	typedef DisplayObjectContainer = JSView;
+	private typedef DisplayObjectContainer = JSView;
+	private typedef MouseEvent = Event;
 #end
 
 
@@ -21,6 +22,7 @@ private enum Position {
 	outside;
 	over;
 }
+
 class RCMouse {
 	
 	var _parent :DisplayObjectContainer;
@@ -87,9 +89,15 @@ class RCMouse {
 		
 		_interval = new haxe.Timer ( IDLE_TIME );
 		
-		_over.addEventListener (MouseEvent.ROLL_OVER, mouseOverHandler);
-		_over.addEventListener (MouseEvent.ROLL_OUT, mouseOutHandler);
-		_over.addEventListener (MouseEvent.CLICK, clickHandler);
+		#if flash
+			_over.addEventListener (MouseEvent.ROLL_OVER, mouseOverHandler);
+			_over.addEventListener (MouseEvent.ROLL_OUT, mouseOutHandler);
+			_over.addEventListener (MouseEvent.CLICK, clickHandler);
+		#elseif js
+			_over.onmouseover = mouseOverHandler;
+			_over.onmouseout = mouseOutHandler;
+			_over.onclick = clickHandler;
+		#end
 	}
 	
 	
@@ -101,9 +109,15 @@ class RCMouse {
 		_interval.stop();
 		_interval = null;
 		
-		_over.removeEventListener (MouseEvent.ROLL_OVER, mouseOverHandler);
-		_over.removeEventListener (MouseEvent.ROLL_OUT, mouseOutHandler);
-		_over.removeEventListener (MouseEvent.CLICK, clickHandler);
+		#if flash
+			_over.removeEventListener (MouseEvent.ROLL_OVER, mouseOverHandler);
+			_over.removeEventListener (MouseEvent.ROLL_OUT, mouseOutHandler);
+			_over.removeEventListener (MouseEvent.CLICK, clickHandler);
+		#elseif js
+			_over.onmouseover = null;
+			_over.onmouseout = null;
+			_over.onclick = null;
+		#end
 	}
 	
 	
@@ -113,13 +127,24 @@ class RCMouse {
 	function mouseOverHandler (e:MouseEvent) :Void {
 		_last_position = over;
 		onOver();
-		_parent.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
-		_parent.addEventListener (MouseEvent.DOUBLE_CLICK, doubleClickHandler);
+		
+		#if flash
+			_parent.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+			_parent.addEventListener (MouseEvent.DOUBLE_CLICK, doubleClickHandler);
+		#elseif js
+			_over.onmousemove = mouseMoveHandler;
+			_over.ondblclick = doubleClickHandler;
+		#end
 	}
-	
 	function mouseOutHandler (e:MouseEvent) :Void {
-		_parent.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
-		_parent.removeEventListener (MouseEvent.DOUBLE_CLICK, doubleClickHandler);
+		#if flash
+			_parent.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+			_parent.removeEventListener (MouseEvent.DOUBLE_CLICK, doubleClickHandler);
+		#elseif js
+			_over.onmousemove = null;
+			_over.ondblclick = null;
+		#end
+		
 		onOut();
 	}
 	
@@ -191,7 +216,7 @@ class RCMouse {
 			var realX = _parent.mouseX - _target.x;
 			
 			if (realX < (_target.width - _w) / 2)				return left;
-			else if (realX > (_target.width - _w) / 2 + _w) 	return right;
+			else if (realX > (_target.width - _w) / 2 + _w)		return right;
 			else												return middle;
 		}
 		return outside;

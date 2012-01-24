@@ -10,7 +10,7 @@
 	import flash.ui.Keyboard;
 #elseif js
 	import js.Dom;
-	typedef KeyboardEvent = Event;
+	private typedef KeyboardEvent = Event;
 #end
 
 
@@ -69,23 +69,23 @@ class RCKeys {
 	 * Add or remove the keyboard listener
 	 */
 	public function resume () :Void {
-#if flash
-		flash.Lib.current.stage.addEventListener (KeyboardEvent.KEY_DOWN, keyDownHandler);
-		flash.Lib.current.stage.addEventListener (KeyboardEvent.KEY_UP, keyUpHandler);
-#elseif js
-		js.Lib.document.onkeydown = keyDownHandler;
-		js.Lib.document.onkeyup = keyUpHandler;
-#end
+		#if flash
+			flash.Lib.current.stage.addEventListener (KeyboardEvent.KEY_DOWN, keyDownHandler);
+			flash.Lib.current.stage.addEventListener (KeyboardEvent.KEY_UP, keyUpHandler);
+		#elseif js
+			js.Lib.document.onkeydown = keyDownHandler;
+			js.Lib.document.onkeyup = keyUpHandler;
+		#end
 	}
 	
 	public function hold () :Void {
-#if flash
-		flash.Lib.current.stage.removeEventListener (KeyboardEvent.KEY_DOWN, keyDownHandler);
-		flash.Lib.current.stage.removeEventListener (KeyboardEvent.KEY_UP, keyUpHandler);
-#elseif js
-		js.Lib.document.onkeydown = null;
-		js.Lib.document.onkeyup = null;
-#end
+		#if flash
+			flash.Lib.current.stage.removeEventListener (KeyboardEvent.KEY_DOWN, keyDownHandler);
+			flash.Lib.current.stage.removeEventListener (KeyboardEvent.KEY_UP, keyUpHandler);
+		#elseif js
+			js.Lib.document.onkeydown = null;
+			js.Lib.document.onkeyup = null;
+		#end
 	}
 	
 	

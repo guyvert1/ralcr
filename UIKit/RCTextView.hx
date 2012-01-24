@@ -16,8 +16,8 @@
 #elseif js
 	import js.Dom;
 	import RCView;
-	typedef MouseEvent = Event;
-	typedef TextField = RCView;
+	private typedef MouseEvent = Event;
+	private typedef TextField = RCView;
 #end
 
 
@@ -152,17 +152,17 @@ class RCTextView extends RCView {
 		return str;
 	}
 	function wheelHandler (e:MouseEvent) :Void {
-#if flash
-		//trace(target.maxScrollV +", "+target.scrollV);
-		if (target.maxScrollV == 2)
-			target.scrollV = 0;
-#end
+		#if flash
+			//trace(target.maxScrollV +", "+target.scrollV);
+			if (target.maxScrollV == 2)
+				target.scrollV = 0;
+		#end
 	}
 	
 	override public function destroy () :Void {
-#if flash
-		target.removeEventListener (MouseEvent.MOUSE_WHEEL, wheelHandler);
-#end
+		#if flash
+			target.removeEventListener (MouseEvent.MOUSE_WHEEL, wheelHandler);
+		#end
 		target = null;
 		super.destroy();
 	}

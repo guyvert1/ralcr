@@ -37,6 +37,11 @@ class JSView {
 	dynamic public function viewWillDisappear () :Void {}
 	dynamic public function viewDidAppear () :Void {}
 	dynamic public function viewDidDisappear () :Void {}
+	public function viewWillAppearHandler () :Void { viewWillAppear(); }
+	public function viewWillDisappearHandler () :Void { viewWillDisappear(); }
+	public function viewDidAppearHandler () :Void { viewDidAppear(); }
+	public function viewDidDisappearHandler () :Void { viewDidDisappear(); }
+	
 	
 	
 	public function new (x, y) {
@@ -60,16 +65,18 @@ class JSView {
 		setY(y);
 	}
 	public function addChild (child:JSView) :Void {
-		child.viewWillAppear();
+		if (child == null) return;
+		child.viewWillAppearHandler();
 		child.parent = view;
 		view.appendChild ( child.view );
-		child.viewDidAppear();
+		child.viewDidAppearHandler();
 	}
 	public function removeChild (child:JSView) :Void {
-		child.viewWillDisappear();
+		if (child == null) return;
+		child.viewWillDisappearHandler();
 		child.parent = null;
 		view.removeChild ( child.view );
-		child.viewDidDisappear();
+		child.viewDidDisappearHandler();
 	}
 	
 	/**
@@ -180,11 +187,8 @@ class JSView {
 	
 	
 	public function removeFromSuperView () :Void {
-		var parent = null;
-/*		try{parent = view.parent; } catch (e:Dynamic) { null; }
 		if (parent != null)
-		if (parent.contains ( view ))
-			parent.removeChild ( view );*/
+			parent.removeChild ( this.view );
 	}
 	
 	
