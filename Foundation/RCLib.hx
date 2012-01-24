@@ -3,21 +3,26 @@
 //	
 //
 //  Created by Baluta Cristian on 2009-01-09.
-//  Copyright (c) 2009 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2009-2012 http://ralcr.com. All rights reserved.
 //
-import flash.display.Sprite;
-import flash.system.ApplicationDomain;
-import flash.system.LoaderContext;
-import flash.events.ProgressEvent;
-import flash.events.ErrorEvent;
-import flash.events.IOErrorEvent;
-import flash.events.SecurityErrorEvent;
-import flash.events.Event;
-import flash.display.Loader;
-import flash.net.URLRequest;
-import flash.display.Bitmap;
-import flash.display.BitmapData;
-import flash.display.PixelSnapping;
+
+#if flash
+	import flash.display.Sprite;
+	import flash.system.ApplicationDomain;
+	import flash.system.LoaderContext;
+	import flash.events.ProgressEvent;
+	import flash.events.ErrorEvent;
+	import flash.events.IOErrorEvent;
+	import flash.events.SecurityErrorEvent;
+	import flash.events.Event;
+	import flash.display.Loader;
+	import flash.net.URLRequest;
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
+	import flash.display.PixelSnapping;
+#elseif js
+	
+#end
 
 
 class RCLib {
