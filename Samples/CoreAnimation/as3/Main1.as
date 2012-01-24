@@ -26,16 +26,16 @@ package  {
 		static protected var timer : haxe.Timer;
 		static public function main() : void {
 			haxe.Firebug.redirectTraces();
-			RCStage.init();
+			RCWindow.init();
 			FontManager.init();
 			Main1.menu = new RCGroupButtons(50,50,null,10,Main1.constructButton);
 			menu.add(["CoreAnimation","HTween","TweenerHX","GTweenHX","","start","stop","up","down"]);
 			menu.addEventListener("group_click",Main1.clickHandler);
 			menu.select("CoreAnimation");
-			RCStage.addChild(menu);
-			RCStage.addChild(new RCStats(5,5));
+			RCWindow.addChild(menu);
+			RCWindow.addChild(new RCStats(5,5));
 			Main1.particlesTxt = new RCTextView(5,50 + menu.height,null,null,"Particles: " + c + "->50ms",FontManager.getRCFont("system",{ embedFonts : false}));
-			RCStage.addChild(particlesTxt);
+			RCWindow.addChild(particlesTxt);
 			Main1.timer = new haxe.Timer(50);
 			timer.run = Main1.genParticles;
 		}
@@ -46,11 +46,11 @@ package  {
 			container.y = 50;
 			Main1.photo = new RCPhoto(200,0,"3134265_large.jpg");
 			photo.onComplete = Main1.fadePhoto;
-			RCStage.addChild(container);
+			RCWindow.addChild(container);
 			Main1.m = new RCRectangle(200,50,500,500,0,0.3);
-			RCStage.addChild(m);
+			RCWindow.addChild(m);
 			container.mask = m;
-			RCStage.addChild(new LayerOldTV(200,50,500,500));
+			RCWindow.addChild(new LayerOldTV(200,50,500,500));
 		}
 		
 		static protected function fadePhoto() : void {
@@ -90,8 +90,8 @@ package  {
 				var _g1 : int = 0, _g : int = c;
 				while(_g1 < _g) {
 					var i : int = _g1++;
-					var obj : RCEllipse = new RCEllipse(RCStage.width / 2,RCStage.height / 2,2,2,16777215,0.6);
-					RCStage.addChild(obj);
+					var obj : RCEllipse = new RCEllipse(RCWindow.width / 2,RCWindow.height / 2,2,2,16777215,0.6);
+					RCWindow.addChild(obj);
 					t5(obj);
 				}
 			}
@@ -166,8 +166,8 @@ package  {
 		
 		static protected function t5(obj : RCEllipse) : void {
 			Main1.timeIn = 0.2 + Math.random();
-			var nx : Number = RCStage.width - Math.random() * RCStage.width * 2;
-			var ny : Number = RCStage.height - Math.random() * RCStage.height * 2;
+			var nx : Number = RCWindow.width - Math.random() * RCWindow.width * 2;
+			var ny : Number = RCWindow.height - Math.random() * RCWindow.height * 2;
 			switch(tweener) {
 			case ["CoreAnimation","HTween","TweenerHX","GTweenHX","","start","stop","up","down"][0]:{
 				var anim : CATween = new CATween(obj,{ x : nx, y : ny, scaleX : 3, scaleY : 3},timeIn,0,caequations.Linear.NONE,{ fileName : "Main1.hx", lineNumber : 194, className : "Main1", methodName : "t5"});
@@ -188,12 +188,12 @@ package  {
 		}
 		
 		static protected function remove(obj : RCEllipse) : void {
-			RCStage.removeChild(obj);
+			RCWindow.removeChild(obj);
 			obj = null;
 		}
 		
 		static protected function remove2(tween : com.gskinner.motion.GTween) : void {
-			RCStage.removeChild(tween.target);
+			RCWindow.removeChild(tween.target);
 			tween.target = null;
 		}
 		

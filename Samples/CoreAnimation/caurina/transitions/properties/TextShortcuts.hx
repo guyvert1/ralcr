@@ -11,7 +11,7 @@ package caurina.transitions.properties;
 import caurina.transitions.Tweener;
 import caurina.transitions.AuxFunctions;
 
-#if flash8
+#if (flash || nme)8
 import flash.TextFormat;
 #elseif flash9
 import flash.text.TextFormat;

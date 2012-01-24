@@ -35,7 +35,7 @@ http://lib.haxe.org/
 */
 package caurina.transitions;
 
-#if flash8
+#if (flash || nme)8
 import flash.MovieClip;
 #elseif flash9
 import flash.display.MovieClip;
@@ -989,7 +989,7 @@ if (tProperty == null) return false;
 	static function startEngine () : Void {//trace(">>>>>>>>>>>>>>>>>>>START ENGINE<<<<<<<<<<<<<<<<<");
 		_engineExists = true;
 		_tweenList = new List<TweenListObj>();
-#if flash8
+#if (flash || nme)8
 		var randomDepth = Math.floor (Math.random() * 999999);
 		__tweener_controller__ = flash.Lib._root.createEmptyMovieClip (getControllerName(), 31338+randomDepth);
 		__tweener_controller__.onEnterFrame = onEnterFrame;
@@ -1009,7 +1009,7 @@ if (tProperty == null) return false;
 		_tweenList = null;
 		_currentTime = 0;
 		_currentTimeFrame = 0;
-#if flash8
+#if (flash || nme)8
 		__tweener_controller__.onEnterFrame = null;
 		__tweener_controller__.removeMovieClip();
 #elseif flash9
@@ -1035,7 +1035,7 @@ if (tProperty == null) return false;
 	/**
 	 * Ran once every frame. It's the main engine, updates all existing tweenings.
 	 */
-#if flash8
+#if (flash || nme)8
 	public static function onEnterFrame () : Void {
 #elseif flash9
 	public static function onEnterFrame (e:Event) : Void {

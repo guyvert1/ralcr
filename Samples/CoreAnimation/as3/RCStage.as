@@ -8,7 +8,7 @@ package  {
 	import flash.display.StageAlign;
 	import flash.system.Capabilities;
 	import flash.display.StageDisplayState;
-	public class RCStage {
+	public class RCWindow {
 		static public var target : flash.display.MovieClip = flash.Lib.current;
 		static public var stage : flash.display.Stage = flash.Lib.current.stage;
 		static public var SCREEN_W : Number = flash.system.Capabilities.screenResolutionX;
@@ -20,25 +20,25 @@ package  {
 		static public function init() : void {
 			flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 			flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
-			RCStage.width = flash.Lib.current.stage.stageWidth;
-			RCStage.height = flash.Lib.current.stage.stageHeight;
+			RCWindow.width = flash.Lib.current.stage.stageWidth;
+			RCWindow.height = flash.Lib.current.stage.stageHeight;
 			var url : Array = URL.split("/");
 			url.pop();
-			RCStage.URL = url.join("/") + "/";
-			RCNotificationCenter.addObserver("resize",RCStage.resizeHandler);
+			RCWindow.URL = url.join("/") + "/";
+			RCNotificationCenter.addObserver("resize",RCWindow.resizeHandler);
 		}
 		
 		static protected function resizeHandler(w : *,h : *) : void {
-			RCStage.width = flash.Lib.current.stage.stageWidth;
-			RCStage.height = flash.Lib.current.stage.stageHeight;
+			RCWindow.width = flash.Lib.current.stage.stageWidth;
+			RCWindow.height = flash.Lib.current.stage.stageHeight;
 		}
 		
 		static public function getCenterX(w : Number) : int {
-			return Math.round(RCStage.width / 2 - w / 2);
+			return Math.round(RCWindow.width / 2 - w / 2);
 		}
 		
 		static public function getCenterY(h : Number) : int {
-			return Math.round(RCStage.height / 2 - h / 2);
+			return Math.round(RCWindow.height / 2 - h / 2);
 		}
 		
 		static public function fullscreen() : void {

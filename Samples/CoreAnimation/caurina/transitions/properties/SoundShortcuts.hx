@@ -44,7 +44,7 @@ class SoundShortcuts {
 	 * @return							Number		The current volume
 	 */
 	public static function _sound_volume_get (p_obj:Dynamic, p_parameters:Array<Dynamic>, ?p_extra:Dynamic = null) : Float {
-#if flash8
+#if (flash || nme)8
 		return p_obj.getVolume();
 #elseif flash9
 		return p_obj.soundTransform.volume;
@@ -58,7 +58,7 @@ class SoundShortcuts {
 	 * @param		p_value				Number		New volume
 	 */
 	public static function _sound_volume_set (p_obj:Dynamic, p_value:Float, p_parameters:Array<Dynamic>, ?p_extra:Dynamic = null) : Void {
-#if flash8
+#if (flash || nme)8
 		p_obj.setVolume (p_value);
 #elseif flash9
 		var sndTransform : flash.media.SoundTransform = p_obj.soundTransform;
@@ -78,7 +78,7 @@ class SoundShortcuts {
 	 * @return							Number		The current pan
 	 */
 	public static function _sound_pan_get (p_obj:Dynamic, p_parameters:Array<Dynamic>, ?p_extra:Dynamic = null) : Float {
-#if flash8
+#if (flash || nme)8
 		return p_obj.getPan();
 #elseif flash9
 		return p_obj.soundTransform.pan;
@@ -92,7 +92,7 @@ class SoundShortcuts {
 	 * @param		p_value				Number		New pan
 	 */
 	public static function _sound_pan_set (p_obj:Dynamic, p_value:Float, p_parameters:Array<Dynamic>, ?p_extra:Dynamic = null) : Void {
-#if flash8
+#if (flash || nme)8
 		p_obj.setPan (p_value);
 #elseif flash9
 		var sndTransform : flash.media.SoundTransform = p_obj.soundTransform;

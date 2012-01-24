@@ -58,7 +58,7 @@ class DisplayShortcuts {
 	// scale
 	public static function _scale_splitter (p_value:Float, ?p_parameters:Array<Dynamic>) : Array<Dynamic> {
 		var nArray = new Array<Dynamic>();
-#if flash8
+#if (flash || nme)8
 		nArray.push ({name:"_xscale", value: p_value});
 		nArray.push ({name:"_yscale", value: p_value});
 #elseif flash9
@@ -109,7 +109,7 @@ class DisplayShortcuts {
 	 * @return							Number		The current frame
 	 */
 	public static function _frame_get (p_obj:Dynamic, p_parameters:Array<Dynamic>, ?p_extra:Dynamic) : Int {
-#if flash8
+#if (flash || nme)8
 		return p_obj._currentframe;
 #elseif flash9
 		return p_obj.currentFrame;
@@ -137,7 +137,7 @@ class DisplayShortcuts {
 	 * @return							Number		The current alpha
 	 */
 	public static function _autoAlpha_get (p_obj:Dynamic, p_parameters:Array<Dynamic>, ?p_extra:Dynamic) : Float {
-#if flash8
+#if (flash || nme)8
 		return p_obj._alpha;
 #elseif flash9
 		return p_obj.alpha;
@@ -151,7 +151,7 @@ class DisplayShortcuts {
 	 * @param		p_value				Number		New alpha
 	 */
 	public static function _autoAlpha_set (p_obj:Dynamic, p_value:Float, p_parameters:Array<Dynamic>, ?p_extra:Dynamic) : Void {
-#if flash8
+#if (flash || nme)8
 		p_obj._alpha = p_value;
 		p_obj._visible = p_value > 0;
 #elseif flash9

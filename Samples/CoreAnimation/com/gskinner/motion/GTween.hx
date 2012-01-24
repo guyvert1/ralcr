@@ -34,7 +34,7 @@
 
 package com.gskinner.motion;
 	
-	#if flash
+	#if (flash || nme)
 	import flash.utils.Dictionary;
 	import flash.display.Shape;
 	#end
@@ -205,7 +205,7 @@ package com.gskinner.motion;
 		private static function staticInit():Void {
 			
 			if(!_sInited){
-			#if flash
+			#if (flash || nme)
 				(ticker = new Shape()).addEventListener(Event.ENTER_FRAME,staticTick);
 				time = Timer.stamp();
 				_sInited=true;
@@ -288,7 +288,7 @@ package com.gskinner.motion;
 		/** @private **/
 		private var _rangeValues:Hash<Float>;
 		/** @private **/
-		#if flash
+		#if (flash || nme)
 		//private var _proxy:TargetProxy;
 		//public var proxy (getProxy,never): TargetProxy;
 		#end
@@ -646,7 +646,7 @@ package com.gskinner.motion;
 		* <b>Example 6:</b> Method calls are passed through to target:<br/>
 		* <code>myGTween.proxy.gotoAndStop(30); // gotoAndStop(30) will be called on the target</code>
 		**/
-		#if flash
+		#if (flash || nme)
 		/*public function getProxy():TargetProxy {
 			if (_proxy == null) { _proxy = new TargetProxy(this); }
 			return _proxy;
@@ -776,7 +776,7 @@ package com.gskinner.motion;
 				if(plugins.exists(n)){
 					pluginArr = plugins.get(n);
 					var value:Float;
-					#if flash
+					#if (flash || nme)
 						value = Reflect.hasField(target,n)?Reflect.field(target,n):Math.NaN; //this works with BlurPlugin in Flash
 					#else
 						value = Reflect.field(target,n); //this works with AutoHidePlugin in CPP
@@ -872,7 +872,7 @@ package com.gskinner.motion;
 		}
 	}
 
-#if flash
+#if (flash || nme)
 
 /**
 * Still working on proxy feature. This will be Flash only.

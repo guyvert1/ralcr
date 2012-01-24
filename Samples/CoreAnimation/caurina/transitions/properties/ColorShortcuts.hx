@@ -10,7 +10,7 @@ package caurina.transitions.properties;
 
 import flash.geom.ColorTransform;
 import flash.filters.ColorMatrixFilter;
-#if flash8
+#if (flash || nme)8
 import flash.Color;
 #end
 
@@ -41,7 +41,7 @@ class ColorShortcuts {
 	 */
 	public static function init () : Void {
 		// Normal properties
-#if flash8
+#if (flash || nme)8
 		Tweener.registerSpecialProperty ("_color_ra", _oldColor_property_get, _oldColor_property_set, ["ra"]);
 		Tweener.registerSpecialProperty ("_color_rb", _oldColor_property_get, _oldColor_property_set, ["rb"]);
 		Tweener.registerSpecialProperty ("_color_ga", _oldColor_property_get, _oldColor_property_set, ["ga"]);
@@ -173,14 +173,14 @@ class ColorShortcuts {
 	 * Generic function for the ra/rb/etc components of the deprecated colorTransform object
 	 */
 	public static function _oldColor_property_get (p_obj:Dynamic, p_parameters:Array<Dynamic>, ?p_extra:Dynamic=null) : Int {
-#if flash8
+#if (flash || nme)8
 		return Reflect.field ((new Color(p_obj)).getTransform(), p_parameters[0]);
 #elseif flash9
 		return Math.round (Reflect.field (p_obj.transform.colorTransform, p_parameters[0]) * 100);
 #end
 	}
 	public static function _oldColor_property_set (p_obj:Dynamic, p_value:Int, p_parameters:Array<Dynamic>, ?p_extra:Dynamic=null) : Void {
-#if flash8
+#if (flash || nme)8
 		var cfObj:Dynamic = {};
 		Reflect.setField (cfObj, p_parameters[0], p_value); // Math.round(p_value);
 		(new Color(p_obj)).setTransform(cfObj);
@@ -229,7 +229,7 @@ class ColorShortcuts {
 		var mc:Float = 1 - ((mtx[0] + mtx[6] + mtx[12]) / 3); // Brightness as determined by the main channels
 		var co:Float = (mtx[4] + mtx[9] + mtx[14]) / 3; // Brightness as determined by the offset channels
 		*/
-#if flash8
+#if (flash || nme)8
 		var cfm:Dynamic = (new Color(p_obj)).getTransform();
 		var mc:Float = 1 - ((cfm.ra + cfm.ga + cfm.ba) / 300); // Brightness as determined by the main channels
 		var co:Float = (cfm.rb + cfm.gb + cfm.bb) / 3;
@@ -273,7 +273,7 @@ class ColorShortcuts {
 		];
 		setObjectMatrix(p_obj, mtx);
 		*/
-#if flash8
+#if (flash || nme)8
 		var cfm:Dynamic = {ra:mc * 100, rb:co, ga:mc * 100, gb:co, ba:mc * 100, bb:co};
 		(new Color(p_obj)).setTransform (cfm);
 #elseif flash9
@@ -334,14 +334,14 @@ class ColorShortcuts {
 		var mc:Float = ((mtx[0] + mtx[6] + mtx[12]) / 3) - 1;		// Contrast as determined by the main channels
 		var co:Float = (mtx[4] + mtx[9] + mtx[14]) / 3 / -128;		// Contrast as determined by the offset channel
 		*/
-#if flash8
+#if (flash || nme)8
 		var cfm:Dynamic = (new Color(p_obj)).getTransform();
 #elseif flash9		
 		var cfm:ColorTransform = p_obj.transform.colorTransform;
 #end
 		var mc:Float;	// Contrast as determined by the main channels
 		var co:Float;	// Contrast as determined by the offset channel
-#if flash8
+#if (flash || nme)8
 		mc = ((cfm.ra + cfm.ga + cfm.ba) / 300) - 1;
 		co = (cfm.rb + cfm.gb + cfm.bb) / 3 / -128;
 #elseif flash9
@@ -393,7 +393,7 @@ class ColorShortcuts {
 		];
 		setObjectMatrix(p_obj, mtx);
 		*/
-#if flash8
+#if (flash || nme)8
 		var cfm:Dynamic = {ra:mc * 100, rb:co, ga:mc * 100, gb:co, ba:mc * 100, bb:co};
 		(new Color(p_obj)).setTransform (cfm);
 #elseif flash9
