@@ -6,106 +6,113 @@
 //
 
 #if (flash || nme)
-	import flash.display.Sprite;
 	import flash.display.DisplayObjectContainer;
-	import flash.events.MouseEvent;
 #elseif js
 	import js.Dom;
 	import RCControl;
+	private typedef DisplayObjectContainer = JSView;
 #end
 
 class RCButton extends RCControl {
 	
-	public var background :DisplayObjectContainer;
-	public var up :DisplayObjectContainer;
-	public var over :DisplayObjectContainer;
-	public var down :DisplayObjectContainer;
-	public var hit :DisplayObjectContainer;
+	public var skin :RCSkin;
 	
-	public var autoBrightness :Bool;
-	
-	var backgroundColorUp :Null<Int>;
-	var backgroundColorOver :Null<Int>;
-	var symbolColorUp :Null<Int>;
-	var symbolColorOver :Null<Int>;
-	
-	public var toggable (getToggable, setToggable) :Bool;
-	public var lockable (getLockable, setLockable) :Bool;
+	var toggable_ :Bool;
+	//public var toggable (getToggable, setToggable) :Bool;
+	//public var lockable (getLockable, setLockable) :Bool;
 	
 	public function setTitle (title:String, state:RCControlState) {
 		
 	}
-	public function setTitleColor:(UIColor *)color forState:(UIControlState)state;        // default if nil. use opaque white
-	public function setTitleShadowColor:(UIColor *)color forState:(UIControlState)state;  // default is nil. use 50% black
-	public function setImage:(UIImage *)image forState:(UIControlState)state;             // default is nil. should be same size if different for different states
-	public function setBackgroundImage:(UIImage *)image forState:(UIControlState)state;   // default is nil
-
-	public function titleForState:(UIControlState)state;          // these getters only take a single state value
-	public function titleColorForState:(UIControlState)state;
-	public function titleShadowColorForState:(UIControlState)state;
-	public function imageForState:(UIControlState)state;
-	public function backgroundImageForState:(UIControlState)state;
-
-	// these are the values that will be used for the current state. you can also use these for overrides. a heuristic will be used to determine what image to choose based on the explict states set. For example, the 'normal' state value will be used for all states that don't have their own image defined.
+	public function setTitleColor (color:Int, state:RCControlState) {
+		
+	}
+	//public function setBackgroundImage:(UIImage *)image forState:(UIControlState)state;
 
 	public var currentTitle :String;// normal/highlighted/selected/disabled. can return nil
 	public var currentTitleColor :Int;// normal/highlighted/selected/disabled. always returns non-nil. default is white(1,1)
-	public var currentTitleShadowColor;  // normal/highlighted/selected/disabled. default is white(0,0.5).
-	public var currentImage;             // normal/highlighted/selected/disabled. can return nil
-	public var currentBackgroundImage;   // normal/highlighted/selected/disabled. can return nil
-
-	// return title and image views. will always create them if necessary. always returns nil for system buttons
-	public var titleLabel __OSX_AVAILABLE_STARTING(__MAC_NA,__IPHONE_3_0);
-	public var imageView  __OSX_AVAILABLE_STARTING(__MAC_NA,__IPHONE_3_0);
-	
+	public var currentImage :DisplayObjectContainer;             // normal/highlighted/selected/disabled. can return nil
+	public var currentBackground :DisplayObjectContainer;   // normal/highlighted/selected/disabled. can return nil
 	
 	
 	public function new (x, y, skin:RCSkin) {
+		
+		this.skin = skin;
+		this.skin.hit.alpha = 0;
+		fixSkin();
+		
 		super (x, y);
-		
-		backgroundColorUp = skin.backgroundColorUp;
-		backgroundColorOver = skin.backgroundColorOver;
-		symbolColorUp = skin.symbolColorUp;
-		symbolColorOver = skin.symbolColorOver;
-		
-		autoBrightness = true;
-		
-		// display skin (background, symbol, hit)
-		background = skin.background;
-		up = skin.up;
-		over = skin.over == null ? skin.up : skin.over;
-		down = skin.down == null ? skin.up : skin.down;
-		hit = skin.hit;
-		hit.alpha = 0;
-		
-		this.addChild ( background );
-		this.addChild ( up );
-		this.addChild ( hit );
-		// end skin
-		
-		// go to out state
-		rollOutHandler ( null );
 	}
 	
-	
-	
-	/**
-	 * Handlers
-	 */
-	override function rollOverHandler (e:MouseEvent) :Void {
-		toggledState();
-		onOver();
+	override public function setState (state:RCControlState) {
+		//trace("setState "+state);
+		if (state_ == state) return;
+		
+		// Remove current state from display list
+		if (currentBackground != null)
+			currentBackground.removeFromSuperView();
+		
+		switch (state) {
+			case NORMAL :
+				currentBackground = skin.normal.background;
+				currentImage = skin.normal.label;
+				
+			case HIGHLIGHTED :
+				currentBackground = skin.highlighted.background;
+				currentImage = skin.highlighted.label;
+				
+			case DISABLED :
+				currentBackground = skin.disabled.background;
+				currentImage = skin.disabled.label;
+				
+			case SELECTED :
+				currentBackground = skin.selected.background;
+				currentImage = skin.selected.label;
+		}
+		addChild ( currentBackground );
+		addChild ( currentImage );
+		addChild ( skin.hit );
+		
+		super.setState ( state );
 	}
-	override function rollOutHandler (e:MouseEvent) :Void {
-		untoggledState();
-		onOut();
-	}
 	
-	override function toggledState () {
-		if (_toggled) return;
+	// Make sure that all the properties of the skin are filled
+	function fixSkin () {
+		
+		//if (skin.normal.background == null) trace("The skin of this button must contain a background");
+		
+		// The properties of the HIGHLIGHTED state inherits from the NORMAL state
+		if (skin.highlighted.background == null)
+			skin.highlighted.background = skin.normal.background;
+		if (skin.highlighted.label == null)
+			skin.highlighted.label = skin.normal.label;
+		if (skin.highlighted.image == null)
+			skin.highlighted.image = skin.normal.image;
+		if (skin.highlighted.otherView == null)
+			skin.highlighted.otherView = skin.normal.otherView;
+		
+		// The properties of the SELECTED state inherits from the HIGHLIGHTED state
+		if (skin.selected.background == null)
+			skin.selected.background = skin.highlighted.background;
+		if (skin.selected.label == null)
+			skin.selected.label = skin.highlighted.label;
+		if (skin.selected.image == null)
+			skin.selected.image = skin.highlighted.image;
+		if (skin.selected.otherView == null)
+			skin.selected.otherView = skin.highlighted.otherView;
+		
+		// The properties of the DISABLED state inherits from the NORMAL state
+		if (skin.disabled.background == null)
+			skin.disabled.background = skin.normal.background;
+		if (skin.disabled.label == null)
+			skin.disabled.label = skin.normal.label;
+		if (skin.disabled.image == null)
+			skin.disabled.image = skin.normal.image;
+		if (skin.disabled.otherView == null)
+			skin.disabled.otherView = skin.normal.otherView;
 		
 		// Change the color of the background
-		//background.visible = _background_color_over != null ? true : false;
+/*		skin.normal.background = (skin.normal.colors.background != null) ? true : false;
 		if (backgroundColorOver == null)
 			setObjectBrightness (background, 30);
 		else
@@ -118,13 +125,6 @@ class RCButton extends RCControl {
 		else
 			setObjectColor (over, symbolColorOver);
 		
-		// Remove and add the coresponding objects for this state of the button
-		Fugu.safeRemove ([up, down]);
-		Fugu.safeAdd (this, [over, hit]);
-	}
-	
-	override function untoggledState () {
-		if (_toggled) return;
 		
 		// Change the color of the background
 		//background.visible = _background_color_over != null ? true : false;
@@ -138,12 +138,27 @@ class RCButton extends RCControl {
 			setObjectBrightness (up, 0);
 		else
 			setObjectColor (up, symbolColorUp);
-		
-		// Remove and add the coresponding objects for this state of the button
-		over.removeFromSuperView();
-		down.removeFromSuperView();
-		Fugu.safeAdd (this, [up, hit]);
+		*/
 	}
+	/**
+	 * toggle = Change the state of the button permanently to SELECTED
+	 * untoggle = Change the state of the button to NORMAL
+	 */
+/*	public function toggle () :Void {
+		if (toggable_ && _lockable) {
+			// Set the state to Over than make the button toggled so you can't go to normal state when you rollout
+			toggledState ();
+			toggled_ = true;
+		}
+	}
+	public function untoggle () :Void {
+		if (toggable_ && _lockable) {
+			// Change first the variable to untoggled, then change the state of the button to normal
+			toggled_ = false;
+			untoggledState ();
+		}
+	}*/
+	
 	
 	
 	/**
@@ -151,10 +166,10 @@ class RCButton extends RCControl {
 	 */
 	public function setObjectColor (obj:DisplayObjectContainer, color:Null<Int>) {
 		if (obj == null || color == null) return;
-		Fugu.color (obj, color);
+		//Fugu.color (obj, color);
 	}
 	public function setObjectBrightness (obj:DisplayObjectContainer, brightness:Int) {
-		if (obj == null || !autoBrightness) return;
-		Fugu.brightness (obj, brightness);
+/*		if (obj == null || !autoBrightness) return;
+		Fugu.brightness (obj, brightness);*/
 	}
 }

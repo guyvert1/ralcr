@@ -34,7 +34,8 @@ class RCControl extends RCView {
 	public var touchUpInside :RCSignal<Void>;
 	public var touchUpOutside :RCSignal<Void>;
 	public var touchCancel :RCSignal<Void>;*/
-	public var click :RCSignal<RCControl->Void>;// RCButton events
+
+	public var click :RCSignal<RCControl->Void>;
 	public var press :RCSignal<RCControl->Void>;
 	public var release :RCSignal<RCControl->Void>;
 	public var over :RCSignal<RCControl->Void>;
@@ -49,12 +50,10 @@ class RCControl extends RCView {
 	
 	
 	public var enabled (getEnabled, setEnabled) :Bool;// default is YES. if NO, ignores mouse/touch events
-	public var highlighted (getHighlighted, setHighlighted) :Bool;// default is NO.
+	public var highlighted (getHighlighted, null) :Bool;// default is NO.
 	public var selected (getSelected, null) :Bool;// default is NO
 	
 	var enabled_ :Bool;
-	var highlighted_ :Bool;
-	var selected_ :Bool;
 	var state_ :RCControlState;
 	
 	/**
@@ -70,17 +69,15 @@ class RCControl extends RCView {
 	public function new (x, y) {
 		super(x, y);
 		
-		enabled_ = true;
-		highlighted_ = false;
-		selected_ = false;
-		
 		#if (flash || nme)
 			this.useHandCursor = true;
 			this.buttonMode = true;
 			//this.mouseChildren = false;
 		#end
 		
-		configureListeners ( this );
+		configureDispatchers();
+		setEnabled ( true );// This will configure the right mouse listeners
+		setState ( NORMAL );
 	}
 	function configureListeners (dispatcher:IEventDispatcher) :Void {
 		#if (flash || nme)
@@ -116,51 +113,60 @@ class RCControl extends RCView {
 			view.onclick = null;
 		#end
 	}
-	
+	function configureDispatchers () {
+		click = new RCSignal<RCControl->Void>();
+		press = new RCSignal<RCControl->Void>();
+		release = new RCSignal<RCControl->Void>();
+		over = new RCSignal<RCControl->Void>();
+		out = new RCSignal<RCControl->Void>();
+	}
 	
 	/**
 	 * Mouse Handlers
 	 */
 	function mouseDownHandler (e:MouseEvent) :Void {
+		setState ( SELECTED );
 		onPress();
 	}
 	function mouseUpHandler (e:MouseEvent) :Void {
+		setState ( HIGHLIGHTED );
 		onRelease();
 	}
 	function rollOverHandler (e:MouseEvent) :Void {
-		highlighted_ = true;
+		setState ( HIGHLIGHTED );
 		onOver();
 	}
 	function rollOutHandler (e:MouseEvent) :Void {
-		highlighted_ = false;
+		setState ( NORMAL );
 		onOut();
 	}
-	function clickHandler (e:MouseEvent) :Void {
+	function clickHandler (e:MouseEvent) :Void {trace("click");
+		//setState ( SELECTED );
 		onClick();
 	}
-	
+	public function setState (state:RCControlState) {
+		state_ = state;
+	}
 	
 	
 	/**
 	 * Getter and setter
 	 */
 	function getSelected () :Bool {
-		return selected_;
+		return state_ == SELECTED;
 	}
 	//
 	function getEnabled () :Bool {
 		return enabled_;
 	}
 	function setEnabled (c:Bool) :Bool {
-		c ? configureListeners ( this ) : removeListeners ( this );
-		return enabled_ = c;
+		enabled_ = c;
+		enabled_ ? configureListeners ( this ) : removeListeners ( this );
+		return enabled_;
 	}
 	//
 	function getHighlighted () :Bool {
-		return highlighted_;
-	}
-	function setHighlighted (h:Bool) :Bool {
-		return highlighted_ = h;
+		return state_ == HIGHLIGHTED;
 	}
 	
 	
@@ -177,28 +183,6 @@ class RCControl extends RCView {
 	public function unlock () :Void {
 		setEnabled ( true );
 	}
-	
-	
-	/**
-	 * toggle = Change the state of the button to Over
-	 * untoggle = Change the state of the button to Normal
-	 */
-/*	public function toggle () :Void {
-		if (toggable_ && _lockable) {
-			// Set the state to Over than make the button toggled so you can't go to normal state when you rollout
-			toggledState ();
-			toggled_ = true;
-		}
-	}
-	public function untoggle () :Void {
-		if (toggable_ && _lockable) {
-			// Change first the variable to untoggled, then change the state of the button to normal
-			toggled_ = false;
-			untoggledState ();
-		}
-	}
-	function toggledState () :Void {}
-	function untoggledState () :Void {}*/
 	
 	
 	// Clean mess

@@ -1,5 +1,5 @@
 //
-//  Slider
+//  Scroll
 //
 //  Created by Baluta Cristian on 2008-06-25.
 //  Copyright (c) 2008-2012 milc.ro. All rights reserved.
@@ -16,8 +16,13 @@
 
 class RCSlider extends RCControl {
 	
+	var background :DisplayObjectContainer;
+	var symbol :Dynamic;
+	var symbolColorNormal :Null<Int>;
+	var symbolColorOver :Null<Int>;
+	var direction_ :Direction;
 	var value_ :Float;
-	var moving_ :Bool;
+	var moving :Bool;
 	
 	public var minValue :Float;
 	public var maxValue :Float;
@@ -26,14 +31,31 @@ class RCSlider extends RCControl {
 	public var maximumValueImage :RCView;
 	
 	
-	public function new (x, y, skin:RCSkin) {
+	public function new (x, y, w:Null<Int>, h:Null<Int>, skin:RCSkin) {
 		super(x,y);
 		
-		this.moving_ = false;
+		this.moving = false;
 		this.minValue = 0.0;
 		this.maxValue = 100.0;
 		this.value_ = 0.0;
-		this.skin = skin;
+		
+		// Decide the direction of movement
+		if (w != null) direction = horizontal;
+		if (h != null) direction = vertical;
+		
+		if (direction == null) return;
+		
+		// Skin
+		symbolColorNormal = skin.symbolColorUp;
+		symbolColorOver = skin.symbolColorOver;
+		
+		// display skin (background, symbol, hit)
+		background = skin.background;
+		this.addChild ( background );
+		symbol = skin.up;
+		symbol.buttonMode = true;
+		this.addChild ( symbol );
+		// end skin
 		
 		// When the symbol is pressed start to move the slider
 		#if flash

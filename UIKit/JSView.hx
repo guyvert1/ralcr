@@ -60,6 +60,8 @@ class JSView {
 		#end
 		
 		view.style.position = "absolute";
+		view.style.paddingTop = "0px";
+		view.style.paddingLeft = "0px";
 		
 		setX(x);
 		setY(y);

@@ -1,5 +1,5 @@
 //
-//  RCSkin
+//  RCSkin - A collection of organized views that will get displayed in a RCControl
 //
 //  Created by Baluta Cristian on 2008-07-03.
 //  Copyright (c) 2008-2012 ralcr.com. All rights reserved.
@@ -9,46 +9,48 @@
 	import flash.display.DisplayObjectContainer;
 #elseif js
 	import js.Dom;
-	private typedef DisplayObjectContainer = HtmlDom;
+	private typedef DisplayObjectContainer = JSView;
 #end
 
-class RCSkin implements RCSkinInterface {
+typedef RCSkinElements = {
+	var background :DisplayObjectContainer;
+	var label :DisplayObjectContainer;
+	var image :DisplayObjectContainer;
+	var otherView :DisplayObjectContainer;
+	var colors :RCSkinColors;
+}
+typedef RCSkinColors = {
+	var background :Null<Int>;
+	var label :Null<Int>;
+	var image :Null<Int>;
+	var otherView :Null<Int>;
+}
+
+class RCSkin {
 	
 	// NORMAL / HIGHLIGHTED / DISABLED / SELECTED / HIT_AREA
-	public var 
-	public var backgroundNormal :DisplayObjectContainer;
-	public var up :DisplayObjectContainer;
-	public var over :DisplayObjectContainer;
-	public var down :DisplayObjectContainer;
+	public var normal :RCSkinElements;
+	public var highlighted :RCSkinElements;
+	public var disabled :RCSkinElements;
+	public var selected :RCSkinElements;
+	
 	public var hit :DisplayObjectContainer;
 	
-	public var colors :Array<Null<Int>>;
-	public var backgroundColorUp :Null<Int>;
-	public var backgroundColorOver :Null<Int>;
-	public var symbolColorUp :Null<Int>;
-	public var symbolColorOver :Null<Int>;
 	
-	
-	public function new (	?colors : Array<Null<Int>>,
-							?background : DisplayObjectContainer,
-							?up : DisplayObjectContainer,
-							?over : DisplayObjectContainer,
-							?down : DisplayObjectContainer,
-							?hit : DisplayObjectContainer)
+	public function new (?colors : Array<Null<Int>>)
 	{
-		this.background = background;
-		this.up = up;
-		this.over = over;
-		this.down = down;
-		this.hit = hit;
+		normal		= {background:null, label:null, image:null, otherView:null, colors:{background:null, label:null, image:null, otherView:null}};
+		highlighted	= {background:null, label:null, image:null, otherView:null, colors:{background:null, label:null, image:null, otherView:null}};
+		disabled	= {background:null, label:null, image:null, otherView:null, colors:{background:null, label:null, image:null, otherView:null}};
+		selected	= {background:null, label:null, image:null, otherView:null, colors:{background:null, label:null, image:null, otherView:null}};
 		
-		if (colors == null)
-			colors = [null, null, null, null];
-			
-		this.colors = colors;
-		this.backgroundColorUp = colors[0];
-		this.backgroundColorOver = colors[1];
-		this.symbolColorUp = colors[2];
-		this.symbolColorOver = colors[3];
+		if (colors != null) {
+			normal.colors.background = colors[0];
+			normal.colors.label = colors[1];
+			highlighted.colors.background = colors[2];
+			highlighted.colors.label = colors[3];
+			disabled.colors.background = colors[2];
+			disabled.colors.label = colors[3];
+		}
 	}
 }

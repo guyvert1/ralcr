@@ -740,6 +740,8 @@ JSView = function(x,y) {
 	this.alpha_ = 1;
 	this.view = js.Lib.document.createElement("div");
 	this.view.style.position = "absolute";
+	this.view.style.paddingTop = "0px";
+	this.view.style.paddingLeft = "0px";
 	this.setX(x);
 	this.setY(y);
 }
@@ -895,7 +897,7 @@ JSView.prototype.setY = function(y) {
 	return y;
 }
 JSView.prototype.getWidth = function() {
-	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the width would be 0",{ fileName : "JSView.hx", lineNumber : 223, className : "JSView", methodName : "getWidth"});
+	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the width would be 0",{ fileName : "JSView.hx", lineNumber : 225, className : "JSView", methodName : "getWidth"});
 	return this.view.offsetWidth;
 	return this.view.scrollWidth;
 	return this.view.clientWidth;
@@ -906,7 +908,7 @@ JSView.prototype.setWidth = function(w) {
 	return w;
 }
 JSView.prototype.getHeight = function() {
-	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the height would be 0",{ fileName : "JSView.hx", lineNumber : 234, className : "JSView", methodName : "getHeight"});
+	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the height would be 0",{ fileName : "JSView.hx", lineNumber : 236, className : "JSView", methodName : "getHeight"});
 	return this.view.offsetHeight;
 	return this.view.scrollHeight;
 	return this.view.clientHeight;
@@ -959,6 +961,176 @@ JSView.prototype.lineTo = function(x,y) {
 	this.graphics.lineTo(x,y);
 }
 JSView.prototype.__class__ = JSView;
+RCControl = function(x,y) {
+	if( x === $_ ) return;
+	JSView.call(this,x,y);
+	this.configureDispatchers();
+	this.setEnabled(true);
+	this.setState(RCControlState.NORMAL);
+}
+RCControl.__name__ = ["RCControl"];
+RCControl.__super__ = JSView;
+for(var k in JSView.prototype ) RCControl.prototype[k] = JSView.prototype[k];
+RCControl.prototype.click = null;
+RCControl.prototype.press = null;
+RCControl.prototype.release = null;
+RCControl.prototype.over = null;
+RCControl.prototype.out = null;
+RCControl.prototype.valueChanged = null;
+RCControl.prototype.editingDidBegin = null;
+RCControl.prototype.editingChanged = null;
+RCControl.prototype.editingDidEnd = null;
+RCControl.prototype.editingDidEndOnExit = null;
+RCControl.prototype.enabled = null;
+RCControl.prototype.highlighted = null;
+RCControl.prototype.selected = null;
+RCControl.prototype.enabled_ = null;
+RCControl.prototype.state_ = null;
+RCControl.prototype.onClick = function() {
+}
+RCControl.prototype.onPress = function() {
+}
+RCControl.prototype.onRelease = function() {
+}
+RCControl.prototype.onOver = function() {
+}
+RCControl.prototype.onOut = function() {
+}
+RCControl.prototype.configureListeners = function(dispatcher) {
+	this.view.onmousedown = $closure(this,"mouseDownHandler");
+	this.view.onmouseup = $closure(this,"mouseUpHandler");
+	this.view.onmouseover = $closure(this,"rollOverHandler");
+	this.view.onmouseout = $closure(this,"rollOutHandler");
+	this.view.onclick = $closure(this,"clickHandler");
+}
+RCControl.prototype.removeListeners = function(dispatcher) {
+	this.view.onmousedown = null;
+	this.view.onmouseup = null;
+	this.view.onmouseover = null;
+	this.view.onmouseout = null;
+	this.view.onclick = null;
+}
+RCControl.prototype.configureDispatchers = function() {
+	this.click = new RCSignal();
+	this.press = new RCSignal();
+	this.release = new RCSignal();
+	this.over = new RCSignal();
+	this.out = new RCSignal();
+}
+RCControl.prototype.mouseDownHandler = function(e) {
+	this.setState(RCControlState.SELECTED);
+	this.onPress();
+}
+RCControl.prototype.mouseUpHandler = function(e) {
+	this.setState(RCControlState.HIGHLIGHTED);
+	this.onRelease();
+}
+RCControl.prototype.rollOverHandler = function(e) {
+	this.setState(RCControlState.HIGHLIGHTED);
+	this.onOver();
+}
+RCControl.prototype.rollOutHandler = function(e) {
+	this.setState(RCControlState.NORMAL);
+	this.onOut();
+}
+RCControl.prototype.clickHandler = function(e) {
+	haxe.Log.trace("click",{ fileName : "RCControl.hx", lineNumber : 143, className : "RCControl", methodName : "clickHandler"});
+	this.onClick();
+}
+RCControl.prototype.setState = function(state) {
+	this.state_ = state;
+}
+RCControl.prototype.getSelected = function() {
+	return this.state_ == RCControlState.SELECTED;
+}
+RCControl.prototype.getEnabled = function() {
+	return this.enabled_;
+}
+RCControl.prototype.setEnabled = function(c) {
+	this.enabled_ = c;
+	if(this.enabled_) this.configureListeners(this); else this.removeListeners(this);
+	return this.enabled_;
+}
+RCControl.prototype.getHighlighted = function() {
+	return this.state_ == RCControlState.HIGHLIGHTED;
+}
+RCControl.prototype.lock = function() {
+	this.setEnabled(false);
+}
+RCControl.prototype.unlock = function() {
+	this.setEnabled(true);
+}
+RCControl.prototype.destroy = function() {
+	this.removeListeners(this);
+	JSView.prototype.destroy.call(this);
+}
+RCControl.prototype.__class__ = RCControl;
+RCButton = function(x,y,skin) {
+	if( x === $_ ) return;
+	this.skin = skin;
+	this.skin.hit.setAlpha(0);
+	this.fixSkin();
+	RCControl.call(this,x,y);
+}
+RCButton.__name__ = ["RCButton"];
+RCButton.__super__ = RCControl;
+for(var k in RCControl.prototype ) RCButton.prototype[k] = RCControl.prototype[k];
+RCButton.prototype.skin = null;
+RCButton.prototype.toggable_ = null;
+RCButton.prototype.setTitle = function(title,state) {
+}
+RCButton.prototype.setTitleColor = function(color,state) {
+}
+RCButton.prototype.currentTitle = null;
+RCButton.prototype.currentTitleColor = null;
+RCButton.prototype.currentImage = null;
+RCButton.prototype.currentBackground = null;
+RCButton.prototype.setState = function(state) {
+	if(this.state_ == state) return;
+	if(this.currentBackground != null) this.currentBackground.removeFromSuperView();
+	switch( (state)[1] ) {
+	case 0:
+		this.currentBackground = this.skin.normal.background;
+		this.currentImage = this.skin.normal.label;
+		break;
+	case 1:
+		this.currentBackground = this.skin.highlighted.background;
+		this.currentImage = this.skin.highlighted.label;
+		break;
+	case 2:
+		this.currentBackground = this.skin.disabled.background;
+		this.currentImage = this.skin.disabled.label;
+		break;
+	case 3:
+		this.currentBackground = this.skin.selected.background;
+		this.currentImage = this.skin.selected.label;
+		break;
+	}
+	this.addChild(this.currentBackground);
+	this.addChild(this.currentImage);
+	this.addChild(this.skin.hit);
+	RCControl.prototype.setState.call(this,state);
+}
+RCButton.prototype.fixSkin = function() {
+	if(this.skin.highlighted.background == null) this.skin.highlighted.background = this.skin.normal.background;
+	if(this.skin.highlighted.label == null) this.skin.highlighted.label = this.skin.normal.label;
+	if(this.skin.highlighted.image == null) this.skin.highlighted.image = this.skin.normal.image;
+	if(this.skin.highlighted.otherView == null) this.skin.highlighted.otherView = this.skin.normal.otherView;
+	if(this.skin.selected.background == null) this.skin.selected.background = this.skin.highlighted.background;
+	if(this.skin.selected.label == null) this.skin.selected.label = this.skin.highlighted.label;
+	if(this.skin.selected.image == null) this.skin.selected.image = this.skin.highlighted.image;
+	if(this.skin.selected.otherView == null) this.skin.selected.otherView = this.skin.highlighted.otherView;
+	if(this.skin.disabled.background == null) this.skin.disabled.background = this.skin.normal.background;
+	if(this.skin.disabled.label == null) this.skin.disabled.label = this.skin.normal.label;
+	if(this.skin.disabled.image == null) this.skin.disabled.image = this.skin.normal.image;
+	if(this.skin.disabled.otherView == null) this.skin.disabled.otherView = this.skin.normal.otherView;
+}
+RCButton.prototype.setObjectColor = function(obj,color) {
+	if(obj == null || color == null) return;
+}
+RCButton.prototype.setObjectBrightness = function(obj,brightness) {
+}
+RCButton.prototype.__class__ = RCButton;
 RCTextView = function(x,y,w,h,str,properties) {
 	if( x === $_ ) return;
 	JSView.call(this,Math.round(x),Math.round(y));
@@ -1120,6 +1292,32 @@ Reflect.makeVarArgs = function(f) {
 	};
 }
 Reflect.prototype.__class__ = Reflect;
+CASequence = function(objs) {
+	if( objs === $_ ) return;
+	this.objs = objs;
+}
+CASequence.__name__ = ["CASequence"];
+CASequence.prototype.objs = null;
+CASequence.prototype.start = function() {
+	var obj = this.objs.shift();
+	if(this.objs.length > 0) {
+		var arguments = obj.delegate.animationDidStop;
+		obj.delegate.animationDidStop = $closure(this,"animationDidStop");
+		obj.delegate.arguments = [arguments];
+	}
+	CoreAnimation.add(obj);
+}
+CASequence.prototype.animationDidStop = function(func) {
+	if(func != null) {
+		if(Reflect.isFunction(func)) try {
+			func.apply(null,[]);
+		} catch( e ) {
+			haxe.Log.trace(e,{ fileName : "CASequence.hx", lineNumber : 31, className : "CASequence", methodName : "animationDidStop"});
+		}
+	}
+	if(this.objs.length > 0) this.start();
+}
+CASequence.prototype.__class__ = CASequence;
 RCPoint = function(x,y) {
 	if( x === $_ ) return;
 	this.x = x;
@@ -2429,6 +2627,45 @@ haxe.remoting.Context.prototype.call = function(path,params) {
 	return m.apply(o,params);
 }
 haxe.remoting.Context.prototype.__class__ = haxe.remoting.Context;
+RCSkin = function(colors) {
+	if( colors === $_ ) return;
+	this.normal = { background : null, label : null, image : null, otherView : null, colors : { background : null, label : null, image : null, otherView : null}};
+	this.highlighted = { background : null, label : null, image : null, otherView : null, colors : { background : null, label : null, image : null, otherView : null}};
+	this.disabled = { background : null, label : null, image : null, otherView : null, colors : { background : null, label : null, image : null, otherView : null}};
+	this.selected = { background : null, label : null, image : null, otherView : null, colors : { background : null, label : null, image : null, otherView : null}};
+	if(colors != null) {
+		this.normal.colors.background = colors[0];
+		this.normal.colors.label = colors[1];
+		this.highlighted.colors.background = colors[2];
+		this.highlighted.colors.label = colors[3];
+		this.disabled.colors.background = colors[2];
+		this.disabled.colors.label = colors[3];
+	}
+}
+RCSkin.__name__ = ["RCSkin"];
+RCSkin.prototype.normal = null;
+RCSkin.prototype.highlighted = null;
+RCSkin.prototype.disabled = null;
+RCSkin.prototype.selected = null;
+RCSkin.prototype.hit = null;
+RCSkin.prototype.__class__ = RCSkin;
+HXButton = function(label_str,colors) {
+	if( label_str === $_ ) return;
+	RCSkin.call(this,colors);
+	var f = new RCFont();
+	f.color = 0;
+	f.font = "Arial";
+	f.bold = true;
+	f.size = 12;
+	this.normal.label = new RCTextView(0,0,70,20,label_str,f);
+	this.normal.background = new RCRectangle(0,0,70,20,16763904);
+	this.highlighted.background = new RCRectangle(0,0,70,20,16770816);
+	this.hit = new RCRectangle(0,0,70,20,16777215,0);
+}
+HXButton.__name__ = ["HXButton"];
+HXButton.__super__ = RCSkin;
+for(var k in RCSkin.prototype ) HXButton.prototype[k] = RCSkin.prototype[k];
+HXButton.prototype.__class__ = HXButton;
 js.Lib = function() { }
 js.Lib.__name__ = ["js","Lib"];
 js.Lib.isIE = null;
@@ -2530,102 +2767,6 @@ RCControlState.DISABLED.__enum__ = RCControlState;
 RCControlState.SELECTED = ["SELECTED",3];
 RCControlState.SELECTED.toString = $estr;
 RCControlState.SELECTED.__enum__ = RCControlState;
-RCControl = function(x,y) {
-	if( x === $_ ) return;
-	JSView.call(this,x,y);
-	this.enabled_ = true;
-	this.highlighted_ = false;
-	this.selected_ = false;
-	this.configureListeners(this);
-}
-RCControl.__name__ = ["RCControl"];
-RCControl.__super__ = JSView;
-for(var k in JSView.prototype ) RCControl.prototype[k] = JSView.prototype[k];
-RCControl.prototype.click = null;
-RCControl.prototype.press = null;
-RCControl.prototype.release = null;
-RCControl.prototype.over = null;
-RCControl.prototype.out = null;
-RCControl.prototype.valueChanged = null;
-RCControl.prototype.editingDidBegin = null;
-RCControl.prototype.editingChanged = null;
-RCControl.prototype.editingDidEnd = null;
-RCControl.prototype.editingDidEndOnExit = null;
-RCControl.prototype.enabled = null;
-RCControl.prototype.highlighted = null;
-RCControl.prototype.selected = null;
-RCControl.prototype.enabled_ = null;
-RCControl.prototype.highlighted_ = null;
-RCControl.prototype.selected_ = null;
-RCControl.prototype.state_ = null;
-RCControl.prototype.onClick = function() {
-}
-RCControl.prototype.onPress = function() {
-}
-RCControl.prototype.onRelease = function() {
-}
-RCControl.prototype.onOver = function() {
-}
-RCControl.prototype.onOut = function() {
-}
-RCControl.prototype.configureListeners = function(dispatcher) {
-	this.view.onmousedown = $closure(this,"mouseDownHandler");
-	this.view.onmouseup = $closure(this,"mouseUpHandler");
-	this.view.onmouseover = $closure(this,"rollOverHandler");
-	this.view.onmouseout = $closure(this,"rollOutHandler");
-	this.view.onclick = $closure(this,"clickHandler");
-}
-RCControl.prototype.removeListeners = function(dispatcher) {
-	this.view.onmousedown = null;
-	this.view.onmouseup = null;
-	this.view.onmouseover = null;
-	this.view.onmouseout = null;
-	this.view.onclick = null;
-}
-RCControl.prototype.mouseDownHandler = function(e) {
-	this.onPress();
-}
-RCControl.prototype.mouseUpHandler = function(e) {
-	this.onRelease();
-}
-RCControl.prototype.rollOverHandler = function(e) {
-	this.highlighted_ = true;
-	this.onOver();
-}
-RCControl.prototype.rollOutHandler = function(e) {
-	this.highlighted_ = false;
-	this.onOut();
-}
-RCControl.prototype.clickHandler = function(e) {
-	this.onClick();
-}
-RCControl.prototype.getSelected = function() {
-	return this.selected_;
-}
-RCControl.prototype.getEnabled = function() {
-	return this.enabled_;
-}
-RCControl.prototype.setEnabled = function(c) {
-	if(c) this.configureListeners(this); else this.removeListeners(this);
-	return this.enabled_ = c;
-}
-RCControl.prototype.getHighlighted = function() {
-	return this.highlighted_;
-}
-RCControl.prototype.setHighlighted = function(h) {
-	return this.highlighted_ = h;
-}
-RCControl.prototype.lock = function() {
-	this.setEnabled(false);
-}
-RCControl.prototype.unlock = function() {
-	this.setEnabled(true);
-}
-RCControl.prototype.destroy = function() {
-	this.removeListeners(this);
-	JSView.prototype.destroy.call(this);
-}
-RCControl.prototype.__class__ = RCControl;
 RCKeys = function(p) {
 	if( p === $_ ) return;
 	this.resume();
@@ -3234,8 +3375,14 @@ Main.main = function() {
 	RCWindow.addChild(rect);
 	rect.setClipsToBounds(true);
 	rect.setCenter(new RCPoint(RCWindow.width / 2,RCWindow.height / 2));
-	Main.circ = new RCEllipse(0,0,100,100,RCColor.darkGrayColor());
+	Main.circ = new RCEllipse(50,50,100,100,RCColor.darkGrayColor());
 	RCWindow.addChild(Main.circ);
+	var a1 = new CATween(Main.circ,{ x : RCWindow.width - 50, y : 50},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 34, className : "Main", methodName : "main"});
+	var a2 = new CATween(Main.circ,{ x : RCWindow.width - 50, y : RCWindow.height - 50},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 35, className : "Main", methodName : "main"});
+	var a3 = new CATween(Main.circ,{ x : 50, y : RCWindow.height - 50},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 36, className : "Main", methodName : "main"});
+	var a4 = new CATween(Main.circ,{ x : 50, y : 50},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 37, className : "Main", methodName : "main"});
+	var seq = new CASequence([a1,a2,a3,a4]);
+	seq.start();
 	Main.ph = new RCPhoto(1,1,"../CoreAnimation/3134265_large.jpg");
 	Main.ph.onComplete = Main.resizePhoto;
 	rect.addChild(Main.ph);
@@ -3244,6 +3391,7 @@ Main.main = function() {
 	f.font = "Arial";
 	f.size = 30;
 	var t = new RCTextView(50,30,null,null,"IMAGIN",f);
+	RCWindow.addChild(t);
 	var f2 = f.copy();
 	f2.size = 16;
 	var r = new RCTextRoll(50,60,200,null,"We are working on the HTML5 version of the gallery...",f2);
@@ -3254,7 +3402,7 @@ Main.main = function() {
 	k.onRight = Main.moveRight;
 	var m = new RCMouse(js.Lib.document.body,rect.view);
 	m.onLeft = function() {
-		haxe.Log.trace("onLeft",{ fileName : "Main.hx", lineNumber : 62, className : "Main", methodName : "main"});
+		haxe.Log.trace("onLeft",{ fileName : "Main.hx", lineNumber : 68, className : "Main", methodName : "main"});
 	};
 	Main.signal = new RCSignal();
 	Main.signal.add(Main.printNr);
@@ -3264,30 +3412,30 @@ Main.main = function() {
 	var _g = 0;
 	while(_g < 5) {
 		var i = _g++;
-		Main.signal.dispatch([Math.random()],{ fileName : "Main.hx", lineNumber : 71, className : "Main", methodName : "main"});
+		Main.signal.dispatch([Math.random()],{ fileName : "Main.hx", lineNumber : 77, className : "Main", methodName : "main"});
 	}
 	RCUserDefaults.init("com.ralcr.html5.");
-	haxe.Log.trace(RCUserDefaults.stringForKey("key1"),{ fileName : "Main.hx", lineNumber : 76, className : "Main", methodName : "main"});
+	haxe.Log.trace(RCUserDefaults.stringForKey("key1"),{ fileName : "Main.hx", lineNumber : 82, className : "Main", methodName : "main"});
 	RCUserDefaults.set("key1","blah blah");
-	haxe.Log.trace(RCUserDefaults.stringForKey("key1"),{ fileName : "Main.hx", lineNumber : 78, className : "Main", methodName : "main"});
-	var b = new RCControl(0,0);
+	haxe.Log.trace(RCUserDefaults.stringForKey("key1"),{ fileName : "Main.hx", lineNumber : 84, className : "Main", methodName : "main"});
+	var s = new HXButton("PLAY");
+	var b = new RCButton(50,200,s);
 	b.onClick = function() {
-		haxe.Log.trace("click",{ fileName : "Main.hx", lineNumber : 83, className : "Main", methodName : "main"});
+		haxe.Log.trace("click",{ fileName : "Main.hx", lineNumber : 90, className : "Main", methodName : "main"});
 	};
 	b.onOver = function() {
-		haxe.Log.trace("over",{ fileName : "Main.hx", lineNumber : 84, className : "Main", methodName : "main"});
+		haxe.Log.trace("over",{ fileName : "Main.hx", lineNumber : 91, className : "Main", methodName : "main"});
 	};
 	b.onOut = function() {
-		haxe.Log.trace("out",{ fileName : "Main.hx", lineNumber : 85, className : "Main", methodName : "main"});
+		haxe.Log.trace("out",{ fileName : "Main.hx", lineNumber : 92, className : "Main", methodName : "main"});
 	};
 	b.onPress = function() {
-		haxe.Log.trace("press",{ fileName : "Main.hx", lineNumber : 86, className : "Main", methodName : "main"});
+		haxe.Log.trace("press",{ fileName : "Main.hx", lineNumber : 93, className : "Main", methodName : "main"});
 	};
 	b.onRelease = function() {
-		haxe.Log.trace("release",{ fileName : "Main.hx", lineNumber : 87, className : "Main", methodName : "main"});
+		haxe.Log.trace("release",{ fileName : "Main.hx", lineNumber : 94, className : "Main", methodName : "main"});
 	};
 	RCWindow.addChild(b);
-	b.addChild(t);
 }
 Main.moveLine = function(e) {
 	Main.lin.size.width = e.clientX - Main.lin.x;
@@ -3296,17 +3444,16 @@ Main.moveLine = function(e) {
 }
 Main.resizePhoto = function() {
 	Main.ph.scaleToFill(298,148);
-	return;
-	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 108, className : "Main", methodName : "resizePhoto"});
+	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 115, className : "Main", methodName : "resizePhoto"});
 	anim.repeatCount = 5;
 	anim.autoreverses = true;
 	CoreAnimation.add(anim);
 }
 Main.printNr = function(nr) {
-	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 116, className : "Main", methodName : "printNr"});
+	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 123, className : "Main", methodName : "printNr"});
 }
 Main.printNr2 = function(nr) {
-	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 119, className : "Main", methodName : "printNr2"});
+	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 126, className : "Main", methodName : "printNr2"});
 }
 Main.moveLeft = function() {
 	var _g = Main.circ;

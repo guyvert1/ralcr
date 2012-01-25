@@ -26,12 +26,18 @@ class Main {
 		rect.clipsToBounds = true;
 		rect.center = new RCPoint(RCWindow.width/2,RCWindow.height/2);
 		
-		circ = new RCEllipse(0,0, 100, 100, RCColor.darkGrayColor());
+		circ = new RCEllipse(50,50, 100, 100, RCColor.darkGrayColor());
 	 	RCWindow.addChild ( circ );
 		//circ.center = new RCPoint(120,120);
 		
-/*		var anim = new CATween (rect, {x:50, y:120}, 1, 0, caequations.Cubic.IN_OUT);
-		CoreAnimation.add ( anim );*/
+		
+		var a1=new CATween (circ, {x:RCWindow.width-50, y:50}, 2, 0, caequations.Cubic.IN_OUT);
+		var a2=new CATween (circ, {x:RCWindow.width-50, y:RCWindow.height-50}, 2, 0, caequations.Cubic.IN_OUT);
+		var a3=new CATween (circ, {x:50, y:RCWindow.height-50}, 2, 0, caequations.Cubic.IN_OUT);
+		var a4=new CATween (circ, {x:50, y:50}, 2, 0, caequations.Cubic.IN_OUT);
+		
+		var seq = new CASequence ([cast a1, cast a2, cast a3, cast a4]);
+		seq.start();
 		
 /*		lin = new RCLine(30,300, 400, 600, 0xff3300);
 		RCWindow.addChild ( lin );*/
@@ -46,7 +52,7 @@ class Main {
 			f.font = "Arial";
 			f.size = 30;
 		var t = new RCTextView (50, 30, null, null, "IMAGIN", f);
-		//RCWindow.addChild ( t );
+		RCWindow.addChild ( t );
 		
 		var f2 = f.copy();
 		f2.size = 16;
@@ -79,13 +85,14 @@ class Main {
 		
 		
 		// Add some buttons
-		var b = new RCControl(0,0);
+		var s = new HXButton("PLAY");
+		var b = new RCButton(50, 200, s);
 		b.onClick = function(){trace("click");}
 		b.onOver = function(){trace("over");}
 		b.onOut = function(){trace("out");}
 		b.onPress = function(){trace("press");}
 		b.onRelease = function(){trace("release");}
-		RCWindow.addChild ( b );b.addChild ( t );
+		RCWindow.addChild ( b );
     }
 	
 	
@@ -104,7 +111,7 @@ class Main {
 		trace(ph.size.width);*/
 		ph.scaleToFill (300-2, 150-2);
 		//ph.scaleToFit (300-2, 150-2);
-		return;
+		//return;
 		var anim = new CATween (ph, {x:{fromValue:-ph.width, toValue:ph.width}}, 2, 0, caequations.Cubic.IN_OUT);
 			anim.repeatCount = 5;
 			anim.autoreverses = true;
