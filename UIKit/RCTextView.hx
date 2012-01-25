@@ -61,7 +61,7 @@ class RCTextView extends RCView {
 		target = new TextField();
 		target.embedFonts = properties.embedFonts;
 		target.type = properties.type;
-		target.autoSize = properties.autoSize;
+		target.autoSize = properties.autoSize ? flash.text.TextFieldAutoSize.LEFT : null;
 		target.antiAliasType = properties.antiAliasType;
 		target.wordWrap = (size.width == null) ? false : true;
 		target.multiline = (size.height == 0) ? false : true;

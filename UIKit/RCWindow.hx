@@ -29,8 +29,8 @@ class RCWindow {
 	public static var URL :String = flash.Lib.current.loaderInfo.url;
 	public static var ID :String = flash.Lib.current.loaderInfo.parameters.id;
 #elseif js
-	inline public static var target = js.Lib.document.body;//js.Lib.document.getElementById("main");
-	inline public static var stage = target;
+	public static var target :HtmlDom = js.Lib.document.body;
+	public static var stage :HtmlDom = target;
 	public static var SCREEN_W :Float = js.Lib.window.screen.width;
 	public static var SCREEN_H :Float = js.Lib.window.screen.height;
 	public static var URL :String = "";
@@ -50,6 +50,7 @@ class RCWindow {
 			height = stage.stageHeight;
 		#elseif js
 			target.style.position = "absolute";
+			target.style.margin = "0px 0px 0px 0px";
 			width = target.scrollWidth;
 			height = target.scrollHeight;
 			backgroundColor = 0x333333;
@@ -115,6 +116,12 @@ class RCWindow {
 			target.style.backgroundColor = RCColor.HEXtoString(color);
 		#end
 		return color;
+	}
+	// JS can permit to change the container of the RCWindow
+	public static function setTarget (id:String) :Void {
+		#if js
+			target = js.Lib.document.getElementById( id );trace(target);
+		#end
 	}
 	
 	

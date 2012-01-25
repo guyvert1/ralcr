@@ -38,8 +38,8 @@ class RCView extends Sprite {
 		size = new RCSize (0, 0);
 		
 		view = new flash.display.Sprite();
-		view.addEventListener (Event.ADDED_TO_STAGE, viewDidAppear);
-		view.addEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappear);
+		view.addEventListener (Event.ADDED_TO_STAGE, viewDidAppearHandler);
+		view.addEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappearHandler);
 		view = this;
 		view.x = x;
 		view.y = y;
@@ -64,6 +64,7 @@ class RCView extends Sprite {
 		
 		view.transform.colorTransform = new flash.geom.ColorTransform  (1,	1,	1,	1,
 																		0,	0,	0,	0);
+		return color;
 	}
 	
 	public function setCenter (point:RCPoint) :RCPoint {

@@ -4,7 +4,7 @@
 //  Created by Cristi Baluta on 2010-05-28.
 //  Copyright (c) 2010 ralcr.com. All rights reserved.
 //
-import js.Dom;
+//import js.Dom;
 import RCView;
 import RCWindow;
 
@@ -18,30 +18,32 @@ class Main {
 	// change the HTML content of a DIV based on its ID
 	static function main() {
 		haxe.Firebug.redirectTraces();
+		trace(#if flash "FLASH" #else "JS" #end);
+		try{
 		RCWindow.init();
+		//RCWindow.setTarget ("js");
 		RCWindow.backgroundColor = 0xDDDDDD;
 		
-		var rect = new RCRectangle(200,30, 300, 150, 0xff3300);
-	 	RCWindow.addChild ( rect );
+		var rect = new RCRectangle(0,0, 300, 150, RCColor.greenColor());
+	 	//RCWindow.addChild ( rect );
 		rect.clipsToBounds = true;
-		rect.center = new RCPoint(RCWindow.width/2,RCWindow.height/2);
+		rect.center = new RCPoint(RCWindow.width/2 - #if flash 0 #else RCWindow.width/4 #end, RCWindow.height/2);
 		
-		circ = new RCEllipse(50,50, 100, 100, RCColor.darkGrayColor());
+		circ = new RCEllipse(0,0, 100, 100, RCColor.darkGrayColor());
 	 	RCWindow.addChild ( circ );
 		//circ.center = new RCPoint(120,120);
 		
 		
-		var a1=new CATween (circ, {x:RCWindow.width-50, y:50}, 2, 0, caequations.Cubic.IN_OUT);
-		var a2=new CATween (circ, {x:RCWindow.width-50, y:RCWindow.height-50}, 2, 0, caequations.Cubic.IN_OUT);
-		var a3=new CATween (circ, {x:50, y:RCWindow.height-50}, 2, 0, caequations.Cubic.IN_OUT);
-		var a4=new CATween (circ, {x:50, y:50}, 2, 0, caequations.Cubic.IN_OUT);
+		var a1=new CATween (circ, {x:RCWindow.width-100, y:0}, 2, 0, caequations.Cubic.IN_OUT);
+		var a2=new CATween (circ, {x:RCWindow.width-100, y:RCWindow.height-100}, 2, 0, caequations.Cubic.IN_OUT);
+		var a3=new CATween (circ, {x:0, y:RCWindow.height-100}, 2, 0, caequations.Cubic.IN_OUT);
+		var a4=new CATween (circ, {x:0, y:0}, 2, 0, caequations.Cubic.IN_OUT);
 		
 		var seq = new CASequence ([cast a1, cast a2, cast a3, cast a4]);
 		seq.start();
 		
 /*		lin = new RCLine(30,300, 400, 600, 0xff3300);
 		RCWindow.addChild ( lin );*/
-		//js.Lib.document.onmousemove = moveLine;
 		
 		ph = new RCPhoto(1, 1, "../CoreAnimation/3134265_large.jpg");
 		ph.onComplete = resizePhoto;
@@ -51,7 +53,8 @@ class Main {
 			f.color = 0xffffff;
 			f.font = "Arial";
 			f.size = 30;
-		var t = new RCTextView (50, 30, null, null, "IMAGIN", f);
+			f.embedFonts = false;
+		var t = new RCTextView (50, 30, null, null, "HTML5", f);
 		RCWindow.addChild ( t );
 		
 		var f2 = f.copy();
@@ -78,14 +81,14 @@ class Main {
 		
 		
 		// Shared objects
-		RCUserDefaults.init("com.ralcr.html5.");
+/*		RCUserDefaults.init("com.ralcr.html5.");
 		trace(RCUserDefaults.stringForKey("key1"));
 		RCUserDefaults.set ("key1", "blah blah");
-		trace(RCUserDefaults.stringForKey("key1"));
+		trace(RCUserDefaults.stringForKey("key1"));*/
 		
 		
 		// Add some buttons
-		var s = new HXButton("PLAY");
+		var s = new haxe.SKButton("Play");
 		var b = new RCButton(50, 200, s);
 		b.onClick = function(){trace("click");}
 		b.onOver = function(){trace("over");}
@@ -93,6 +96,14 @@ class Main {
 		b.onPress = function(){trace("press");}
 		b.onRelease = function(){trace("release");}
 		RCWindow.addChild ( b );
+		
+		// Add slider
+		var s = new haxe.SKSlider(160, 8);
+		var sl = new RCSlider(50, 250, s);
+		//sl.valueChanged.add ( function(e:RCSlider){trace(e.value);} );
+		RCWindow.addChild ( sl );
+		
+		}catch(e:Dynamic){trace(e);}
     }
 	
 	
@@ -100,23 +111,22 @@ class Main {
 	
 	
 	
-	static function moveLine(e:Event){
+/*	static function moveLine(e:Event){
 		lin.size.width = e.clientX - lin.x;
 		lin.size.height = e.clientY - lin.y;
 		lin.redraw();
-	}
+	}*/
 	static function resizePhoto(){
 /*		trace("onComplete");
 		trace(ph.width);
 		trace(ph.size.width);*/
 		ph.scaleToFill (300-2, 150-2);
 		//ph.scaleToFit (300-2, 150-2);
-		//return;
+		return;
 		var anim = new CATween (ph, {x:{fromValue:-ph.width, toValue:ph.width}}, 2, 0, caequations.Cubic.IN_OUT);
 			anim.repeatCount = 5;
 			anim.autoreverses = true;
 		CoreAnimation.add ( anim );
-		
 	}
 	
 	static function printNr(nr:Int){
@@ -133,23 +143,7 @@ class Main {
 	}
 	
 	
-/*	static function Hi(){
-		trace("psst");
-	}
-	
-	//
-	static function setContent(id, content) {
-        var d = js.Lib.document.getElementById(id);
-        if( d == null )
-            js.Lib.alert("Unknown element : "+id);
-        d.innerHTML = content;
-    }
-	
-    // create a javascript HTML link
-    static function makeLink(title, code) {
-        return '<a href="javascript:'+code+'">'+title+'</a>';
-    }
-	
+/*
     // function called when the user click on the link
     static function click() {
         //setContent("main","Congratulations !");

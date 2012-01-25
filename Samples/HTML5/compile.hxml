@@ -2,3 +2,10 @@
 -cp Samples/HTML5
 all.hxml
 -main Main
+
+--next
+-swf Samples/HTML5/test.swf
+-swf-header 1000:600:60:dedede
+-cp Samples/HTML5
+all.hxml
+-main Main

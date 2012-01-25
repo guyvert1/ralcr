@@ -25,21 +25,20 @@ class RCTextRoll extends RCView {
 		this.size.width = w;
 		this.continuous = true;
 		
-		// add first textfield
+		// Add the first TextField
 		txt1 = new RCTextView (0, 0, null, h, str, properties);
 		this.addChild ( txt1 );
-		//trace(txt1.width);trace(txt1.size.width);trace(w);
-
-		this.size.height = 20;
 	}
 	
-	// Add the second textfield
+	// JS target is not able to get elements dimensions if they are not on the display list
+	// So before we decide if we need a second textfield
 	override public function viewDidAppear () :Void {
+		trace("viewdidappear");
+		this.size.height = txt1.height;trace(size);
 		if (txt1.width > size.width) {
 			txt2 = new RCTextView (Math.round (txt1.width + GAP), 0, null, size.height, text, txt1.properties);
 			this.addChild ( txt2 );
-			trace(size.width+", "+size.height);
-			//this.clipsToBounds = true;
+			this.clipsToBounds = true;
 		}
 	}
 	

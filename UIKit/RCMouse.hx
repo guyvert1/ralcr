@@ -95,7 +95,7 @@ class RCMouse {
 			_over.addEventListener (MouseEvent.CLICK, clickHandler);
 		#elseif js
 			_over.onmouseover = mouseOverHandler;
-			//_over.onmouseout = mouseOutHandler;
+			_over.onmouseout = mouseOutHandler;
 			_over.onclick = clickHandler;
 		#end
 	}
@@ -127,7 +127,7 @@ class RCMouse {
 	function mouseOverHandler (e:MouseEvent) :Void {
 		_last_position = over;
 		onOver();
-		trace("mouseOver");
+		
 		#if (flash || nme)
 			_parent.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 			_parent.addEventListener (MouseEvent.DOUBLE_CLICK, doubleClickHandler);
@@ -137,7 +137,7 @@ class RCMouse {
 		#end
 	}
 	function mouseOutHandler (e:MouseEvent) :Void {
-		trace("mouseOut");
+		
 		#if (flash || nme)
 			_parent.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 			_parent.removeEventListener (MouseEvent.DOUBLE_CLICK, doubleClickHandler);
@@ -154,7 +154,7 @@ class RCMouse {
 		_interval.stop();
 		_interval = new haxe.Timer ( IDLE_TIME );
 		_interval.run = goIdle;
-		trace(e.clientX+", "+e.screenX);
+		
 		if (_is_idle) resumeIdle();
 		
 		var position = getPosition(e);
@@ -222,7 +222,6 @@ class RCMouse {
 				else												return middle;
 			}
 		#elseif js
-			trace([e.clientX, _target.offsetLeft, _target.offsetWidth]);
 			if (e.clientX > _target.offsetLeft && e.clientX < _target.offsetLeft + _target.offsetWidth &&
 				e.clientY > _target.offsetTop && e.clientY < _target.offsetTop + _target.offsetHeight)
 			{

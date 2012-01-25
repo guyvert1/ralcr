@@ -58,8 +58,8 @@ class RCColor {
 	public static function colorWithHSBA (hue:Float, saturation:Float, brightness:Float, alpha:Float=1.0) :RCColor {
 		return new RCColor ( RGBtoHEX (hue, saturation, brightness), null, alpha);
 	}
-	public static function colorWithFillAndStroke (fillColor:Null<UInt>, ?borderColor:Null<UInt>) {
-		return new RCColor (fillColor, borderColor);
+	public static function colorWithFillAndStroke (fillColor:Null<UInt>, ?strokeColor:Null<UInt>) {
+		return new RCColor (fillColor, strokeColor);
 	}
 	
 	
@@ -67,8 +67,8 @@ class RCColor {
 	
 	public function new (fillColor:Null<UInt>, ?strokeColor:Null<UInt>, ?a:Null<Float>) {
 		
-		this.strokeColor = strokeColor;
 		this.fillColor = fillColor;
+		this.strokeColor = strokeColor;
 		this.alpha = (a == null) ? 1.0 : a;
 		
 		redComponent = (fillColor >> 16 & 0xFF) / 0xFF;
@@ -81,7 +81,8 @@ class RCColor {
 	}
 	
 	
-	public static function HEXtoString (color:Int) :String {
+	public static function HEXtoString (color:Null<UInt>) :String {
+		if (color == null) return null;
 		return "#" + StringTools.lpad(StringTools.hex(color), "0", 6);
 	}
 	public static function RGBtoHEX (r:Float, g:Float, b:Float) :Int {
