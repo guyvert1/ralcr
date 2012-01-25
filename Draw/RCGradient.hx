@@ -20,7 +20,7 @@ typedef GradientType = Dynamic;
 
 class RCGradient {
 	
-	public var borderColor :Null<Int>;
+	public var strokeColor :Null<Int>;
 	public var gradientColors :Array<Int>;// This 3 arrays should have the same number of elements
 	public var gradientAlphas :Array<Float>;
 	public var gradientRatios :Array<Int>;

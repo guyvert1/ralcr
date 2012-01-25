@@ -41,7 +41,7 @@ class RCFont {
 	public var thickness :Float;
 	
 	// TextFormat properties
-	public var align : TextFormatAlign;
+	public var align : String;// TextFormatAlign; center, left, right
 	public var blockIndent : Null<Float>;
 	public var bold : Null<Bool>;
 	public var bullet : Null<Bool>;
@@ -114,7 +114,16 @@ class RCFont {
 		}
 		
 		rcfont.format = #if (flash || nme) new TextFormat() #elseif js {} #end;
-		rcfont.format.align = rcfont.align;
+		rcfont.format.align = #if flash switch(rcfont.align)
+		{
+			case "center": TextFormatAlign.CENTER;
+			case "left": TextFormatAlign.LEFT;
+			case "right": TextFormatAlign.RIGHT;
+		};
+		#elseif js
+			rcfont.align;
+		#end
+			trace(rcfont.align+", "+rcfont.format.align);
 		rcfont.format.blockIndent = rcfont.blockIndent;
 		rcfont.format.bold = rcfont.bold;
 		rcfont.format.bullet = rcfont.bullet;

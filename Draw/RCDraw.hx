@@ -54,7 +54,7 @@ class RCDraw extends RCView {
 			if (color.fillColor != null)
 				this.graphics.beginFill (color.fillColor, color.alpha);
 			
-			if (color.borderColor != null) {
+			if (color.strokeColor != null) {
 				var pixelHinting = true;
 				var scaleMode = LineScaleMode.NONE;
 				var caps = null;
@@ -62,7 +62,7 @@ class RCDraw extends RCView {
 				var miterLimit = 3;
 				
 				this.graphics.lineStyle (	borderThickness,
-											color.borderColor,
+											color.strokeColor,
 											color.alpha,
 											pixelHinting,
 											scaleMode,

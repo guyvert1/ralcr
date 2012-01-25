@@ -15,22 +15,26 @@
 - set StyleSheet properties
 
 */
-import flash.system.ApplicationDomain;
-import flash.events.Event;
-import flash.text.Font;
-import flash.text.TextFormat;
-import flash.text.TextFormatAlign;
-import flash.text.StyleSheet;
 
+#if flash
+	import flash.system.ApplicationDomain;
+	import flash.events.Event;
+	import flash.text.Font;
+	import flash.text.TextFormat;
+	import flash.text.TextFormatAlign;
+	import flash.text.StyleSheet;
+#elseif js
+	import js.Dom;
+#end
 
 class FontManager {
 	
 	static var INSTANCE :FontManager;
 	var fontsDomain :ApplicationDomain;
-	var fontsSwfList :Array<Event>;// Keep a reference to the loaded font event
+	var fontsSwfList :Array<Event>;// Keep a reference to the loaded font event (Flash only)
 	var event :Event;
-	var _defaultStyleSheetData :Dynamic;//StyleSheet
-	var _defaultRCFont :RCFont;//TextFormat;
+	var _defaultStyleSheetData :Dynamic;// StyleSheet
+	var _defaultRCFont :RCFont;// TextFormat;
 	
 	// Store the name of the format and the object with properties
 	// that should later be converted to TextFormat or StyleSheet

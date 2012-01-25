@@ -1,8 +1,8 @@
 //
-//  DashedLine
+//  RCRectangle
 //
 //  Created by Baluta Cristian on 2008-10-11.
-//  Copyright (c) 2008 ralcr.com. All rights reserved.
+//  Copyright (c) 2008-2012 ralcr.com. All rights reserved.
 //
 
 class RCRectangle extends RCDraw, implements RCDrawInterface {
@@ -29,7 +29,20 @@ class RCRectangle extends RCDraw, implements RCDrawInterface {
 		
 		this.graphics.endFill();
 #elseif js
-	    view.innerHTML = "<div style=\"position:absolute;overflow:hidden;left:0px;top:0px;width:" + size.width +  "px;height:" + size.height + "px;background-color:" + cast (color, RCColor).fillColorStyle + "\"></div>";
+		var fillColorStyle = cast (color, RCColor).fillColorStyle;
+		var strokeColorStyle = cast (color, RCColor).strokeColorStyle;
+		var html = "<div style=\"position:absolute; overflow:hidden;";
+			html += "left:0px; top:0px;";
+			html += "margin:0px 0px 0px 0px;";
+			html += "width:" + size.width + "px;";
+			html += "height:" + size.height + "px;";
+			html += "background-color:" + fillColorStyle + ";";
+			if (strokeColorStyle != null)
+			html += "border-style:solid; border-width:" + borderThickness + "px; border-color:" + strokeColorStyle + ";";
+			if (roundness != null)
+			html += "-moz-border-radius:" + roundness + "px; border-radius:" + roundness + "px;";
+			html += "\"></div>";
+		view.innerHTML = html;
 #end
 	}
 }

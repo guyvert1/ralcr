@@ -22,7 +22,7 @@ class RCEllipse extends RCDraw, implements RCDrawInterface {
 		this.graphics.drawEllipse (0, 0, size.width, size.height);
 		this.graphics.endFill();
 #elseif js
-		fillEllipse (0, 0, size.width, size.height);
+		fillEllipse (Math.round(size.width/2), Math.round(size.height/2), size.width, size.height);
 #end
 	}
 	

@@ -4,8 +4,13 @@
 //  Created by Baluta Cristian on 2008-10-13.
 //  Copyright (c) 2008 http://ralcr.com. All rights reserved.
 //
-import flash.display.DisplayObjectContainer;
 
+#if flash
+	import flash.display.DisplayObjectContainer;
+#elseif js
+	import js.Dom;
+	typedef DisplayObjectContainer = JSView;
+#end
 
 class Fugu {
 	
@@ -62,8 +67,10 @@ class Fugu {
 									blur:Null<Float>,
 									strength:Float=0.6)
 	{
+		#if flash
 		var filter = new flash.filters.GlowFilter (color, alpha, blur, blur, strength, 3, false, false);
 		target.filters = blur==null ? null : [filter];
+		#end
 	}
 	
 	
@@ -71,19 +78,23 @@ class Fugu {
 	 * Changes the color of the targeted object
 	 */
 	public static function color (target:DisplayObjectContainer, color:Int) :Void {
+		#if flash
 		var red   = color >> 16 & 0xFF; 
 		var green = color >> 8 & 0xFF; 
 		var blue  = color & 0xFF;
 		target.transform.colorTransform = new flash.geom.ColorTransform (0, 0, 0, 1, red, green, blue, 1);
+		#end
 	}
 	
 	public static function resetColor (target:DisplayObjectContainer) :Void {
+		#if flash
 		target.transform.colorTransform = new flash.geom.ColorTransform (1,	1,	1,	1, 0,	0,	0,	0);
+		#end
 	}
 	
 	
 	public static function brightness (target:DisplayObjectContainer, brightness:Int) :Void {
-		
+		#if flash
         var m =  [	1,0,0,0,brightness,
 					0,1,0,0,brightness,
 					0,0,1,0,brightness,
@@ -107,6 +118,7 @@ class Fugu {
 		}
 		
 		target.filters = [new flash.filters.ColorMatrixFilter ( matrix )];
+		#end
 	}
 	
 	
