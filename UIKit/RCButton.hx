@@ -7,6 +7,7 @@
 
 #if (flash || nme)
 	import flash.display.DisplayObjectContainer;
+	import RCControl;// Imports RCControlState
 #elseif js
 	import js.Dom;
 	import RCControl;
@@ -31,8 +32,8 @@ class RCButton extends RCControl {
 
 	public var currentTitle :String;// normal/highlighted/selected/disabled. can return nil
 	public var currentTitleColor :Int;// normal/highlighted/selected/disabled. always returns non-nil. default is white(1,1)
-	public var currentImage :DisplayObjectContainer;             // normal/highlighted/selected/disabled. can return nil
-	public var currentBackground :DisplayObjectContainer;   // normal/highlighted/selected/disabled. can return nil
+	public var currentImage :DisplayObjectContainer;// normal/highlighted/selected/disabled. can return nil
+	public var currentBackground :DisplayObjectContainer;// normal/highlighted/selected/disabled. can return nil
 	
 	
 	public function new (x, y, skin:RCSkin) {
@@ -49,8 +50,7 @@ class RCButton extends RCControl {
 		if (state_ == state) return;
 		
 		// Remove current state from display list
-		if (currentBackground != null)
-			currentBackground.removeFromSuperView();
+		Fugu.safeRemove ( currentBackground );//.removeFromSuperView();
 		
 		switch (state) {
 			case NORMAL :
@@ -79,66 +79,28 @@ class RCButton extends RCControl {
 	// Make sure that all the properties of the skin are filled
 	function fixSkin () {
 		
-		//if (skin.normal.background == null) trace("The skin of this button must contain a background");
+		// We need a label, if missing substitute it with the image or otherView
+		if (skin.normal.label == null)
+			skin.normal.label = skin.normal.image;
+		if (skin.normal.label == null)
+			skin.normal.label = skin.normal.otherView;
 		
-		// The properties of the HIGHLIGHTED state inherits from the NORMAL state
-		if (skin.highlighted.background == null)
-			skin.highlighted.background = skin.normal.background;
-		if (skin.highlighted.label == null)
-			skin.highlighted.label = skin.normal.label;
-		if (skin.highlighted.image == null)
-			skin.highlighted.image = skin.normal.image;
-		if (skin.highlighted.otherView == null)
-			skin.highlighted.otherView = skin.normal.otherView;
-		
-		// The properties of the SELECTED state inherits from the HIGHLIGHTED state
-		if (skin.selected.background == null)
-			skin.selected.background = skin.highlighted.background;
-		if (skin.selected.label == null)
-			skin.selected.label = skin.highlighted.label;
-		if (skin.selected.image == null)
-			skin.selected.image = skin.highlighted.image;
-		if (skin.selected.otherView == null)
-			skin.selected.otherView = skin.highlighted.otherView;
-		
-		// The properties of the DISABLED state inherits from the NORMAL state
-		if (skin.disabled.background == null)
-			skin.disabled.background = skin.normal.background;
-		if (skin.disabled.label == null)
-			skin.disabled.label = skin.normal.label;
-		if (skin.disabled.image == null)
-			skin.disabled.image = skin.normal.image;
-		if (skin.disabled.otherView == null)
-			skin.disabled.otherView = skin.normal.otherView;
-		
-		// Change the color of the background
-/*		skin.normal.background = (skin.normal.colors.background != null) ? true : false;
-		if (backgroundColorOver == null)
-			setObjectBrightness (background, 30);
-		else
-			setObjectColor (background, backgroundColorOver);
-		
-		// Change the color of the active symbol
-		if (symbolColorOver == null) {
-			if (up == over) setObjectBrightness (over, 30);
+		// Iterate over all states of the button
+		for (key in Reflect.fields(skin.normal)) {
+			if (key == "colors") continue;
+			
+			// The properties of the HIGHLIGHTED state inherits from the NORMAL state
+			if (Reflect.field (skin.highlighted, key) == null)
+				Reflect.setField (skin.highlighted, key, Reflect.field (skin.normal, key));
+			
+			// The properties of the SELECTED state inherits from the HIGHLIGHTED state
+			if (Reflect.field (skin.selected, key) == null)
+				Reflect.setField (skin.selected, key, Reflect.field (skin.highlighted, key));
+			
+			// The properties of the DISABLED state inherits from the NORMAL state
+			if (Reflect.field (skin.disabled, key) == null)
+				Reflect.setField (skin.disabled, key, Reflect.field (skin.normal, key));
 		}
-		else
-			setObjectColor (over, symbolColorOver);
-		
-		
-		// Change the color of the background
-		//background.visible = _background_color_over != null ? true : false;
-		if (backgroundColorUp == null)
-			setObjectBrightness (background, 0);
-		else
-			setObjectColor (background, backgroundColorUp);
-		
-		// Change the color of the active symbol
-		if (symbolColorOver == null)
-			setObjectBrightness (up, 0);
-		else
-			setObjectColor (up, symbolColorUp);
-		*/
 	}
 	/**
 	 * toggle = Change the state of the button permanently to SELECTED

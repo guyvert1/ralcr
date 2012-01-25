@@ -10,20 +10,35 @@
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.geom.Rectangle;
 #elseif js
 	import js.Dom;
+	import RCControl;
+	private typedef DisplayObjectContainer = JSView;
+	private typedef MouseEvent = Event;
 #end
+
+private enum Direction {
+	horizontal;
+	vertical;
+}
 
 class RCSlider extends RCControl {
 	
 	var value_ :Float;
 	var moving_ :Bool;
+	var direction_ :Direction;
 	
+	public var skin :RCSkin;
 	public var minValue :Float;
 	public var maxValue :Float;
 	public var value (getValue, setValue) :Float;// default 0.0. this value will be pinned to min/max
 	public var minimumValueImage :RCView;// default is nil
 	public var maximumValueImage :RCView;
+	public var background :DisplayObjectContainer;
+	public var scrubber :DisplayObjectContainer;
+
+	public var valueChanged :RCSignal<RCSlider->Void>;// sliders, etc.
 	
 	
 	public function new (x, y, skin:RCSkin) {
@@ -35,18 +50,33 @@ class RCSlider extends RCControl {
 		this.value_ = 0.0;
 		this.skin = skin;
 		
+		this.size.width = skin.normal.background.width;
+		this.size.height = skin.normal.background.height;
+		this.scrubber = skin.normal.otherView;
+		
+		addChild ( skin.normal.background );
+		addChild ( scrubber );
+		trace(size.width+" > "+size.height);
+		// Decide the direction of movement
+		direction_ = (size.width > size.height) ? horizontal : vertical;
+		
 		// When the symbol is pressed start to move the slider
 		#if flash
-			symbol.addEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
-			symbol.addEventListener (MouseEvent.MOUSE_OVER, overHandler);
-			symbol.addEventListener (MouseEvent.MOUSE_OUT, outHandler);
+			skin.normal.otherView.addEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
+			skin.normal.otherView.addEventListener (MouseEvent.MOUSE_OVER, rollOverHandler);
+			skin.normal.otherView.addEventListener (MouseEvent.MOUSE_OUT, rollOutHandler);
 		#elseif js
-			
+			cast(scrubber).onmousedown = mouseDownHandler;
+			cast(scrubber).onmouseover = rollOverHandler;
+			cast(scrubber).onmouseout = rollOutHandler;
 		#end
 	}
 	override function configureDispatchers () {
 		super.configureDispatchers();
-		valueChanged = new RCSignal<RCControl->Void>();
+		valueChanged = new RCSignal<RCSlider->Void>();
+	}
+	override function setEnabled (c:Bool) :Bool {
+		return enabled_ = false;// The slider does not listen for the events on the entire object, but for the scrubber
 	}
 	
 	
@@ -54,26 +84,36 @@ class RCSlider extends RCControl {
 	 * Step 1
 	 * Make the scroller object dragable
 	 */
-	function mouseDownHandler (e:MouseEvent) {
+	override function mouseDownHandler (e:MouseEvent) {
+		trace("mouseDownHandler");
+		var bounds_w:Int=0, bounds_h:Int=0;
 		
-		var bound_w:Int=0, bound_h:Int=0;
-		
-		switch (direction) {
-			case horizontal:	bound_w = Math.round (_w - symbol.width);
-			case vertical:		bound_h = Math.round (_h - symbol.height);
+		switch (direction_) {
+			case horizontal:	bounds_w = Math.round (size.width - scrubber.width);
+			case vertical:		bounds_h = Math.round (size.height - scrubber.height);
 		}
 		
-		symbol.startDrag (false, new Rectangle (0, 0, bound_w, bound_h));
-		
-		RCWindow.target.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
-		RCWindow.target.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+		#if flash
+			cast(scrubber).startDrag (false, new Rectangle (0, 0, bounds_w, bounds_h));
+			RCWindow.target.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
+			RCWindow.target.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+		#elseif js
+			RCWindow.target.onmouseup = mouseUpHandler;
+			RCWindow.target.onmousemove = mouseMoveHandler;
+		#end
 	}
-	function mouseUpHandler (e:MouseEvent) {
+	override function mouseUpHandler (e:MouseEvent) {
 		// When the mouse is released stop dragging the symbol
-		symbol.stopDrag ();
+		trace("mouseUpHandler");
 		
-		RCWindow.target.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
-		RCWindow.target.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+		#if flash
+			cast(scrubber).stopDrag();
+			RCWindow.target.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
+			RCWindow.target.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+		#elseif js
+			RCWindow.target.onmouseup = null;
+			RCWindow.target.onmousemove = null;
+		#end
 	}
 	
 	
@@ -83,21 +123,23 @@ class RCSlider extends RCControl {
 	function mouseMoveHandler (e:MouseEvent) {
 		var y0=0.0, y1=0.0, y2=0.0;
 		
-		switch (direction) {
+		switch (direction_) {
 			case horizontal:
-				y0 = symbol.x;
-				y2 = _w - symbol.width;
+				y0 = scrubber.x;
+				y2 = size.width - scrubber.width;
 			case vertical:
-				y0 = symbol.y;
-				y2 = _h - symbol.height;
+				y0 = scrubber.y;
+				y2 = size.height - scrubber.height;
 		}
 		
 		// set the new percent
-		_value = Zeta.lineEquation (minValue, maxValue,  y0, y1, y2);
+		value_ = Zeta.lineEquation (minValue, maxValue,  y0, y1, y2);
 		
-		this.dispatchEvent ( new SliderEvent (SliderEvent.ON_MOVE, _value));
+		valueChanged.dispatch ( [this] );
 		
-		e.updateAfterEvent();
+		#if flash
+			e.updateAfterEvent();
+		#end
 	}
 	
 	
@@ -105,23 +147,23 @@ class RCSlider extends RCControl {
 	 * Set the symbol correct position when the content changed his position
 	 */
 	function getValue () :Float {
-		return _value;
+		return value_;
 	}
-	function setValue (percent:Float) :Float {
+	function setValue (v:Float) :Float {
 		var x1=0.0, x2=0.0;
 		
-		if (!moving) {
-			switch (direction) {
+		if (!moving_) {
+			switch (direction_) {
 				case horizontal:
-					x2 = _w - symbol.width;
-					symbol.x = Zeta.lineEquationInt (x1, x2,  percent, minValue, maxValue);
+					x2 = size.width - scrubber.width;
+					scrubber.x = Zeta.lineEquationInt (x1, x2,  v, minValue, maxValue);
 				case vertical:
-					x2 = _h - symbol.height;
-					symbol.y = Zeta.lineEquationInt (x1, x2,  percent, minValue, maxValue);
+					x2 = size.height - scrubber.height;
+					scrubber.y = Zeta.lineEquationInt (x1, x2,  v, minValue, maxValue);
 			}
 		}
 		
-		return value;
+		return value_ = v;
 	}
 	
 	
@@ -129,37 +171,42 @@ class RCSlider extends RCControl {
 	 *	Scale the background and the symbol
 	 *	
 	 */
-	function setW (w:Int) :Int {
-		if (_w == null) return w;
-		_w = w;
+/*	function setW (w:Int) :Int {
+		if (size.width == null) return w;
+		size.width = w;
 		//TO DO
 		
 		return w;
 	}
 	function setH (h:Int) :Int {
-		if (_h == null) return h;
-		_h = h;
+		if (size.height == null) return h;
+		size.height = h;
 		//TO DO
 		
 		return h;
-	}
+	}*/
 	
 	
 	/**
 	 *  Mouse Over and out effects
 	 */
 	function overHandler (e:MouseEvent) {
-		Fugu.color ( symbol, symbolColorOver );
+		//Fugu.color ( symbol, symbolColorOver );
 	}
 	function outHandler (e:MouseEvent) {
-		Fugu.color ( symbol, symbolColorNormal );
+		//Fugu.color ( symbol, symbolColorNormal );
 	}
 	
 	
 	
 	// clean mess
-	public function destroy () :Void {
+	override public function destroy () :Void {
 		mouseUpHandler ( null );
-		symbol.removeEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
+		#if flash
+			scrubber.removeEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
+		#elseif js
+			cast(scrubber).onmousedown = null;
+		#end
+		super.destroy();
 	}
 }

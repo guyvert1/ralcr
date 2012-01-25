@@ -41,8 +41,6 @@ class RCControl extends RCView {
 	public var over :RCSignal<RCControl->Void>;
 	public var out :RCSignal<RCControl->Void>;
 
-	public var valueChanged :RCSignal<RCControl->Void>;// sliders, etc.
-
 	public var editingDidBegin :RCSignal<RCControl->Void>;// RCTextInput
 	public var editingChanged :RCSignal<RCControl->Void>;
 	public var editingDidEnd :RCSignal<RCControl->Void>;
