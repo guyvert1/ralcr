@@ -277,7 +277,7 @@ class JSView {
 	
 	
 	// Drawing
-
+	/*
 	static inline function COL( color : Int ) {
 		return "rgb("+(color>>16)+","+((color>>8)&0xFF)+","+(color&0xFF)+")";
 	}
@@ -316,7 +316,7 @@ class JSView {
 
 	public inline function lineTo( x : Float, y : Float ) {
 		graphics.lineTo(x,y);
-	}
+		}*/
 }
 
 

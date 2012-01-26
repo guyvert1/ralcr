@@ -24,12 +24,12 @@ class Main {
 		//RCWindow.setTarget ("js");
 		RCWindow.backgroundColor = 0xDDDDDD;
 		
-		RCLib.loadFileWithKey("photo", "../CoreAnimation/3134265_large.jpg");
+		//RCLib.loadFileWithKey("photo", "../CoreAnimation/3134265_large.jpg");
 		
 		var rect = new RCRectangle(0,0, 300, 150, RCColor.greenColor());
-	 	//RCWindow.addChild ( rect );
+	 	RCWindow.addChild ( rect );
 		rect.clipsToBounds = true;
-		rect.center = new RCPoint(RCWindow.width/2 - #if flash 0 #else RCWindow.width/4 #end, RCWindow.height/2);
+		rect.center = new RCPoint(RCWindow.width/2 /* - #if flash 0 #else RCWindow.width/4 #end*/, RCWindow.height/2);
 		
 		circ = new RCEllipse(0,0, 100, 100, RCColor.darkGrayColor());
 	 	RCWindow.addChild ( circ );
@@ -101,19 +101,32 @@ class Main {
 		b.onRelease = function(){trace("release");}
 		RCWindow.addChild ( b );
 		
-		var s = new haxe.SKRadioButton();
-		var b = new RCButton(200, 200, s);
+		var s = new haxe.SKButtonRadio();
+		var b = new RCButtonRadio(200, 200, s);
 		RCWindow.addChild ( b );
+		
+		var group = new RCGroup<RCButtonRadio> (200,230,10,null,createRadioButton);
+		RCWindow.addChild ( group );
+		group.add([1,2,3,4,5,5]);
 		
 		// Add slider
 		var s = new haxe.SKSlider(160, 8);
 		var sl = new RCSlider(50, 250, s);
-		//sl.valueChanged.add ( function(e:RCSlider){trace(e.value);} );
+		sl.valueChanged.add ( function(e:RCSlider){trace(e.value);} );
 		RCWindow.addChild ( sl );
+		//sl.maxValue = 500;
+		
+/*		var swf = new RCSwf(200,0,"../HeartEquation/heart.swf");
+		RCWindow.addChild(swf);*/
 		
 		}catch(e:Dynamic){trace(e);}
     }
-	
+	static function createRadioButton (indexPath:RCIndexPath) :RCButtonRadio {
+		trace("create button at "+indexPath);
+		var s = new haxe.SKButtonRadio();
+		var b = new RCButtonRadio(0,0,s);
+		return b;
+	}
 	
 	
 	

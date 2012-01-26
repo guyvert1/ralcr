@@ -1,12 +1,9 @@
 //
-//  Grup_items
+//  RCGroupButtons - Group buttons and keep their label into an ordered hash
 //
 //  Created by Baluta Cristian on 2008-04-06.
-//  Copyright (c) 2008 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2008-2012 http://ralcr.com. All rights reserved.
 //
-import flash.display.Sprite;
-import flash.display.DisplayObject;
-
 
 class RCGroupButtons<T:RCControl> extends RCView {
 	
@@ -15,7 +12,7 @@ class RCGroupButtons<T:RCControl> extends RCView {
 	var constructButton :String->RCControl;
 	var items :HashArray<RCControl>;
 	
-	dynamic public function onClick () :Void {}
+	public var click :RCSignal<RCGroupButtons->RCIndexPath->Void>;
 	public var label :String;// currently selected item label
 	
 	
@@ -110,7 +107,7 @@ class RCGroupButtons<T:RCControl> extends RCView {
 		this.dispatchEvent ( new GroupEvent (GroupEvent.UPDATED, null, -1));
 	}
 	
-	public function getPositionForLabel (label:String) :Int {
+	public function getIndexPathForLabel (label:String) :Int {
 		for (i in 0...items.arr.length)
 			if (items.arr[i] == label)
 				return i;

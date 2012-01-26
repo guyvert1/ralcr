@@ -2,7 +2,7 @@
 //  RCSwf
 //
 //  Created by Baluta Cristian on 2007-07-20.
-//  Copyright (c) 2007 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2007-2012 http://ralcr.com. All rights reserved.
 //
 
 #if flash
@@ -20,10 +20,12 @@ class RCSwf extends RCPhoto {
 	public var target :Dynamic;
 	public var event :Event;
 	var newDomain :Bool;
+	var id_ :String;// Generate an unique id (JS)
 	
 	
 	public function new (x, y, URL:String, ?newDomain:Bool=true) {
 		this.newDomain = newDomain;
+		this.id_ = "swf_";//Date.now().toString();
 		super (x, y, URL);
 	}
 	
@@ -39,21 +41,29 @@ class RCSwf extends RCPhoto {
 			else
 				loader.load ( new URLRequest ( URL ) );
 		#elseif js
-			loader = cast js.Lib.document.createElement("img");
-			loader.src = URL;
+			// For JS target use the view element to add the swf
+			view.id = id_;
+			RCWindow.target.appendChild(view);
+			target = new js.SWFObject (URL, id_, 500, 400, "9", "#cecece");
+			//target.addVariable("texto", "hello from...");
+			target.addParam("AllowScriptAccess","always");
+			target.addParam("AllowNetworking","all");
+			target.addParam("wmode", "transparent");
+			target.write(id_);
 		#end
 	}
 	
-	// do not bitmapize the swf
+	// Do not bitmapize the swf
 	override function completeHandler (e:Event) :Void {
-		//trace("swf loaded");
-		this.isLoaded = true;
-		this.event = e;
-		this.target = loader.content;
-		this.size.width = loader.content.width;
-		this.size.height = loader.content.height;
-		this.view.addChild ( loader );
-		
+		#if flash
+			//trace("swf loaded");
+			this.isLoaded = true;
+			this.event = e;
+			this.target = loader.content;
+			this.size.width = loader.content.width;
+			this.size.height = loader.content.height;
+			this.view.addChild ( loader );
+		#end
 		onComplete();
 	}
 	
@@ -77,7 +87,9 @@ class RCSwf extends RCPhoto {
 			trace ( haxe.Stack.toString ( stack ) );
 		}
 		//loader.close();
-		loader.unload();
-		loader = null;
+		#if swf
+			loader.unload();
+			loader = null;
+		#end
 	}
 }

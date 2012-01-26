@@ -9,19 +9,26 @@
 class RCGroup<T:RCView> extends RCView {
 	
 	var items :Array<T>;
-	var constructor :Dynamic->T;
+	var constructor_ :RCIndexPath->T;
 	var gapX :Null<Int>;
 	var gapY :Null<Int>;
 	
+	//public var click :RCSignal<RCGroup->RCIndexPath->Void>;
+	public var itemPush :RCSignal<RCGroup->RCIndexPath->Void>;
+	public var itemRemove :RCSignal<RCGroup->RCIndexPath->Void>;
 	
-	public function new (x, y, gapX:Null<Int>, gapY:Null<Int>, constructor:Dynamic->T) {
+	
+	public function new (x, y, gapX:Null<Int>, gapY:Null<Int>, constructor_:RCIndexPath->T) {
 		
 		super(x,y);
 		
 		this.gapX = gapX;
 		this.gapY = gapY;
-		this.constructor = constructor;
+		this.constructor_ = constructor_;
 		this.items = new Array<T>();
+		//click = new RCSignal<RCGroup->RCIndexPath->Void>();
+		itemPush = new RCSignal<RCGroup->RCIndexPath->Void>();
+		itemRemove = new RCSignal<RCGroup->RCIndexPath->Void>();
 	}
 	
 	
@@ -29,43 +36,43 @@ class RCGroup<T:RCView> extends RCView {
 	 *	Add and remove buttons
 	 *	params = a list of parameters to pass to the function that returns our sprite
 	 */
-	public function add (params:Array<Dynamic>, ?sprite:Dynamic->RCView) :Void {
+	public function add (params:Array<Dynamic>, ?alternativeConstructor:RCIndexPath->T) :Void {
 		
-		if (!Reflect.isFunction (this.createRCView) && !Reflect.isFunction (sprite)) return;
-		if (sprite != null) this.createRCView = sprite;
+		if (!Reflect.isFunction (constructor_) && !Reflect.isFunction (alternativeConstructor)) return;
+		if (alternativeConstructor != null) this.constructor_ = alternativeConstructor;
 		
 		// push the new values into main array
+		var i = 0;
 		for (param in params) {
 			// Create a new sprite with the passed function
-			var s = this.createRCView ( param );
+			var s = this.constructor_ ( new RCIndexPath(0,i) );
 			this.addChild ( s );
-			
-			// keep the sprite into an array
 			items.push ( s );
 			
 			// dispatch an event that the buttons structure has changed
-			this.dispatchEvent ( new GroupEvent (GroupEvent.PUSH, null, -1) );
+			//this.dispatchEvent ( new GroupEvent (GroupEvent.PUSH, null, -1) );
+			i++;
 		}
 		
 		// Keep all items arranged
-		align();
+		keepButtonsArranged();
 	}
 	
 	public function remove (i:Int) :Void {
 		
 		Fugu.safeDestroy ( items[i] );
 		
-		align();
+		keepButtonsArranged();
 		
 		// dispatch an event that the buttons structure has changed
-		this.dispatchEvent ( new GroupEvent (GroupEvent.REMOVE, null, i) );
+		itemRemove.dispatch ( [this, new RCIndexPath(0,i)] );
 	}
 	
 	
 	/**
-	 *	Keep all the items arranged after an update operation
+	 *	Keep all the buttons arranged after an update operation
 	 */
-	function align () :Void {
+	public function keepButtonsArranged () :Void {
 		
 		// iterate over items
 		for (i in 0...items.length) {
@@ -82,7 +89,7 @@ class RCGroup<T:RCView> extends RCView {
 			new_s.y = newY;
 		}
 		
-		this.dispatchEvent ( new GroupEvent (GroupEvent.UPDATED, null, -1) );
+		//this.dispatchEvent ( new GroupEvent (GroupEvent.UPDATED, null, -1) );
 	}
 	
 	
@@ -108,7 +115,7 @@ class RCGroup<T:RCView> extends RCView {
 	}
 	
 	
-	public function destroy() :Void {
+	override public function destroy() :Void {
 		Fugu.safeDestroy ( items );
 		items = null;
 	}

@@ -7,21 +7,15 @@
 
 #if (flash || nme)
 	import flash.display.DisplayObjectContainer;
-	import RCControl;// Imports RCControlState
 #elseif js
 	import js.Dom;
-	import RCControl;
 	private typedef DisplayObjectContainer = JSView;
 #end
+import RCControl;// Imports RCControlState
 
 class RCButton extends RCControl {
 	
 	public var skin :RCSkin;
-	
-	var toggable_ :Bool;
-	//public var toggable (getToggable, setToggable) :Bool;
-	//public var lockable (getLockable, setLockable) :Bool;
-	
 	public function setTitle (title:String, state:RCControlState) {
 		
 	}
@@ -50,7 +44,7 @@ class RCButton extends RCControl {
 		if (state_ == state) return;
 		
 		// Remove current state from display list
-		Fugu.safeRemove ( currentBackground );//.removeFromSuperView();
+		Fugu.safeRemove ( [currentBackground, currentImage] );//.removeFromSuperView();
 		
 		switch (state) {
 			case NORMAL :
@@ -102,26 +96,6 @@ class RCButton extends RCControl {
 				Reflect.setField (skin.disabled, key, Reflect.field (skin.normal, key));
 		}
 	}
-	/**
-	 * toggle = Change the state of the button permanently to SELECTED
-	 * untoggle = Change the state of the button to NORMAL
-	 */
-/*	public function toggle () :Void {
-		if (toggable_ && _lockable) {
-			// Set the state to Over than make the button toggled so you can't go to normal state when you rollout
-			toggledState ();
-			toggled_ = true;
-		}
-	}
-	public function untoggle () :Void {
-		if (toggable_ && _lockable) {
-			// Change first the variable to untoggled, then change the state of the button to normal
-			toggled_ = false;
-			untoggledState ();
-		}
-	}*/
-	
-	
 	
 	/**
 	 *	Function to safely set color for objects in the button

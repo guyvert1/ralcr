@@ -26,15 +26,17 @@ private enum Direction {
 class RCSlider extends RCControl {
 	
 	var value_ :Float;
+	var minValue_ :Float;
+	var maxValue_ :Float;
 	var moving_ :Bool;
 	var direction_ :Direction;
 	
 	public var skin :RCSkin;
-	public var minValue :Float;
-	public var maxValue :Float;
+	public var minValue (default, setMinValue) :Float;
+	public var maxValue (default, setMaxValue) :Float;
 	public var value (getValue, setValue) :Float;// default 0.0. this value will be pinned to min/max
-	public var minimumValueImage :RCView;// default is nil
-	public var maximumValueImage :RCView;
+	public var minimumValueImage (default, setMinimumValueImage) :RCView;// default is nil
+	public var maximumValueImage (default, setMaximumValueImage) :RCView;
 	public var background :DisplayObjectContainer;
 	public var scrubber :DisplayObjectContainer;
 
@@ -45,8 +47,8 @@ class RCSlider extends RCControl {
 		super(x,y);
 		
 		this.moving_ = false;
-		this.minValue = 0.0;
-		this.maxValue = 100.0;
+		this.minValue_ = 0.0;
+		this.maxValue_ = 100.0;
 		this.value_ = 0.0;
 		this.skin = skin;
 		
@@ -99,7 +101,7 @@ class RCSlider extends RCControl {
 		
 		#if flash
 			RCWindow.stage.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
-			RCWindow.target.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+			RCWindow.stage.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 		#elseif js
 			RCWindow.target.onmouseup = mouseUpHandler;
 			RCWindow.target.onmousemove = mouseMoveHandler;
@@ -113,7 +115,7 @@ class RCSlider extends RCControl {
 		
 		#if flash
 			RCWindow.stage.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
-			RCWindow.target.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+			RCWindow.stage.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 		#elseif js
 			RCWindow.target.onmouseup = null;
 			RCWindow.target.onmousemove = null;
@@ -137,7 +139,7 @@ class RCSlider extends RCControl {
 		}
 		
 		// set the new percent
-		value_ = Zeta.lineEquation (minValue, maxValue,  y0, y1, y2);
+		value_ = Zeta.lineEquation (minValue_, maxValue_,  y0, y1, y2);
 		
 		valueChanged.dispatch ( [this] );
 		
@@ -153,21 +155,37 @@ class RCSlider extends RCControl {
 	function getValue () :Float {
 		return value_;
 	}
-	function setValue (v:Float) :Float {
+	public function setValue (v:Float) :Float {
 		var x1=0.0, x2=0.0;
 		
 		if (!moving_) {
 			switch (direction_) {
 				case horizontal:
 					x2 = size.width - scrubber.width;
-					scrubber.x = Zeta.lineEquationInt (x1, x2,  v, minValue, maxValue);
+					scrubber.x = Zeta.lineEquationInt (x1, x2,  v, minValue_, maxValue_);
 				case vertical:
 					x2 = size.height - scrubber.height;
-					scrubber.y = Zeta.lineEquationInt (x1, x2,  v, minValue, maxValue);
+					scrubber.y = Zeta.lineEquationInt (x1, x2,  v, minValue_, maxValue_);
 			}
 		}
 		
 		return value_ = v;
+	}
+	public function setMinValue (v:Float) :Float {trace("set min "+v);
+		minValue_ = v;
+		setValue ( value_ );
+		return v;
+	}
+	public function setMaxValue (v:Float) :Float {trace("set max "+v);
+		maxValue_ = v;
+		setValue ( value_ );
+		return v;
+	}
+	public function setMinimumValueImage (v:RCView) :RCView {
+		return v;
+	}
+	public function setMaximumValueImage (v:RCView) :RCView {
+		return v;
 	}
 	
 	

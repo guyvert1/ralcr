@@ -4,6 +4,9 @@
 //  Created by Baluta Cristian on 2008-07-09.
 //  Copyright (c) 2008 http://ralcr.com. All rights reserved.
 //
+
+#if flash
+
 import flash.events.Event;
 import flash.events.ProgressEvent;
 import flash.events.ErrorEvent;
@@ -175,3 +178,9 @@ class RCMp3 implements RCAudioInterface {
 		timer = null;
 	}
 }
+
+#elseif js
+
+typedef RCMp3 = JSAudio;
+
+#end

@@ -49,13 +49,13 @@ class RCPhoto extends RCView {
 	public function load (URL:String) {
 		isLoaded = false;
 		percentLoaded = 0;
-#if (flash || nme)
-		loader = new Loader();
-		loader.load ( new URLRequest ( URL ), new LoaderContext (true) );
-#elseif js
-		loader = cast js.Lib.document.createElement("img");
-		loader.src = URL;
-#end
+		#if (flash || nme)
+			loader = new Loader();
+			loader.load ( new URLRequest ( URL ), new LoaderContext (true) );
+		#elseif js
+			loader = cast js.Lib.document.createElement("img");
+			loader.src = URL;
+		#end
 	}
 	
 	
@@ -94,7 +94,7 @@ class RCPhoto extends RCView {
 		onError();
 	}
 	
-#if (flash || nme)	
+#if (flash || nme)
 	/**
 	 * Bitmapize the loaded photo. This will prevent pixelizing when photo is scaled
 	 */
@@ -125,30 +125,30 @@ class RCPhoto extends RCView {
 		
 		return d;
 	}
-#end	
+#end
 	
 	function addListeners () :Void {
-#if (flash || nme)
-		loader.contentLoaderInfo.addEventListener (Event.COMPLETE, completeHandler);
-		loader.contentLoaderInfo.addEventListener (ProgressEvent.PROGRESS, progressHandler);
-		loader.contentLoaderInfo.addEventListener (ErrorEvent.ERROR, errorHandler);
-		loader.contentLoaderInfo.addEventListener (IOErrorEvent.IO_ERROR, ioErrorHandler);
-#elseif js
-		loader.onload = completeHandler;
-		loader.onerror = errorHandler;
-#end
+		#if (flash || nme)
+			loader.contentLoaderInfo.addEventListener (Event.COMPLETE, completeHandler);
+			loader.contentLoaderInfo.addEventListener (ProgressEvent.PROGRESS, progressHandler);
+			loader.contentLoaderInfo.addEventListener (ErrorEvent.ERROR, errorHandler);
+			loader.contentLoaderInfo.addEventListener (IOErrorEvent.IO_ERROR, ioErrorHandler);
+		#elseif js
+			loader.onload = completeHandler;
+			loader.onerror = errorHandler;
+		#end
 	}
 	
 	function removeListeners () :Void {
-#if (flash || nme)
-		loader.contentLoaderInfo.removeEventListener (Event.COMPLETE, completeHandler);
-		loader.contentLoaderInfo.removeEventListener (ProgressEvent.PROGRESS, progressHandler);
-		loader.contentLoaderInfo.removeEventListener (ErrorEvent.ERROR, errorHandler);
-		loader.contentLoaderInfo.removeEventListener (IOErrorEvent.IO_ERROR, ioErrorHandler);
-#elseif js
-		loader.onload = null;
-		loader.onerror = null;
-#end
+		#if (flash || nme)
+			loader.contentLoaderInfo.removeEventListener (Event.COMPLETE, completeHandler);
+			loader.contentLoaderInfo.removeEventListener (ProgressEvent.PROGRESS, progressHandler);
+			loader.contentLoaderInfo.removeEventListener (ErrorEvent.ERROR, errorHandler);
+			loader.contentLoaderInfo.removeEventListener (IOErrorEvent.IO_ERROR, ioErrorHandler);
+		#elseif js
+			loader.onload = null;
+			loader.onerror = null;
+		#end
 	}
 	
 	
