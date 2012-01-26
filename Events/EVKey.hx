@@ -13,13 +13,13 @@ class EVKey extends RCSignal<EVKey->Void> {
 	public var keyCode :Int;
 	
 	public function new () {
-#if (flash || nme)
-		flash.Lib.current.stage.addEventListener (KeyboardEvent.KEY_DOWN, keyDownHandler);
-		flash.Lib.current.stage.addEventListener (KeyboardEvent.KEY_UP, keyUpHandler);
-#elseif js
-		js.Lib.document.onkeydown = keyDownHandler;
-		js.Lib.document.onkeyup = keyUpHandler;
-#end
+		#if (flash || nme)
+			flash.Lib.current.stage.addEventListener (KeyboardEvent.KEY_DOWN, keyDownHandler);
+			flash.Lib.current.stage.addEventListener (KeyboardEvent.KEY_UP, keyUpHandler);
+		#elseif js
+			js.Lib.document.onkeydown = keyDownHandler;
+			js.Lib.document.onkeyup = keyUpHandler;
+		#end
 }
 	
 	function keyDownHandler (e:KeyboardEvent) {
@@ -34,12 +34,12 @@ class EVKey extends RCSignal<EVKey->Void> {
 	}
 	
 	override public function destroy () :Void {
-#if (flash || nme)
-		flash.Lib.current.stage.removeEventListener (KeyboardEvent.KEY_DOWN, keyDownHandler);
-		flash.Lib.current.stage.removeEventListener (KeyboardEvent.KEY_UP, keyUpHandler);
-#elseif js
-		js.Lib.document.onkeydown = null;
-		js.Lib.document.onkeyup = null;
-#end
+		#if (flash || nme)
+			flash.Lib.current.stage.removeEventListener (KeyboardEvent.KEY_DOWN, keyDownHandler);
+			flash.Lib.current.stage.removeEventListener (KeyboardEvent.KEY_UP, keyUpHandler);
+		#elseif js
+			js.Lib.document.onkeydown = null;
+			js.Lib.document.onkeyup = null;
+		#end
 	}
 }

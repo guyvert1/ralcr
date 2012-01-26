@@ -1,3 +1,4 @@
+// Simple implementation of the Signal events system
 
 class RCSignal<T> {
 	

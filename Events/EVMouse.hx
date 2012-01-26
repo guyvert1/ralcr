@@ -1,18 +1,43 @@
+
 #if (flash || nme)
-import flash.events.FullScreenEvent;
-import flash.display.StageDisplayState;
+	import flash.events.MouseEvent;
+	import flash.display.StageDisplayState;
+#elseif js
+	import js.Dom;
+	typedef MouseEvent = Event;
 #end
 
 
-class EVFullScreen extends RCSignal<Bool->Void> {
-
-#if (flash || nme)
+class EVMouse extends RCSignal<Bool->Void> {
+	
+	static var instance :EVMouse;
+	
 	public function new () {
+		
+		if (instance != null) throw "You can't instantiate EVMouse";
+			instance = this;
+			
 		super();
-		flash.Lib.current.stage.addEventListener (FullScreenEvent.FULL_SCREEN, fullScreenHandler);
+		
+		#if (flash || nme)
+			RCWindow.stage.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
+			RCWindow.stage.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+		#elseif js
+			js.Lib.document.onmouseup = mouseUpHandler;
+			js.Lib.document.onmousemove = mouseMoveHandler;
+		#end
 	}
-	function fullScreenHandler (e:FullScreenEvent) {
-		dispatch ( [flash.Lib.current.stage.displayState == StageDisplayState.FULL_SCREEN] );
+	function mouseUpHandler (e:MouseEvent) {
+		trace("mouseUp");
 	}
-#end
+	function mouseMoveHandler (e:MouseEvent) {
+		#if (flash || nme)
+			var w = flash.Lib.current.stage.stageWidth;
+			var h = flash.Lib.current.stage.stageHeight;
+		#elseif js
+			var w = js.Lib.document.body.scrollWidth;
+			var h = js.Lib.document.body.scrollHeight;
+		#end
+		dispatch ( [w, h] );
+	}
 }
