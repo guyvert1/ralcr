@@ -17,6 +17,7 @@ class SKSlider extends RCSkin {
 		
 		normal.otherView = new RCEllipse(0,-h/2, h*2, h*2, 0x333333);
 		normal.otherView.addChild ( new RCEllipse(1,1, h*2-2, h*2-2, 0xFFCC00) );
+		normal.otherView.addChild ( new RCEllipse(3,3, h*2-6, h*2-6, 0xFFFFFF, 0.1) );
 		
 		// Creates a transparent background for mouse hit area
 		hit = new RCView(0,0);
