@@ -14,8 +14,8 @@ class RCGroup<T:RCView> extends RCView {
 	var gapY :Null<Int>;
 	
 	//public var click :RCSignal<RCGroup->RCIndexPath->Void>;
-	public var itemPush :RCSignal<RCGroup->RCIndexPath->Void>;
-	public var itemRemove :RCSignal<RCGroup->RCIndexPath->Void>;
+	public var itemPush :RCSignal<RCIndexPath->Void>;
+	public var itemRemove :RCSignal<RCIndexPath->Void>;
 	
 	
 	public function new (x, y, gapX:Null<Int>, gapY:Null<Int>, constructor_:RCIndexPath->T) {
@@ -27,8 +27,8 @@ class RCGroup<T:RCView> extends RCView {
 		this.constructor_ = constructor_;
 		this.items = new Array<T>();
 		//click = new RCSignal<RCGroup->RCIndexPath->Void>();
-		itemPush = new RCSignal<RCGroup->RCIndexPath->Void>();
-		itemRemove = new RCSignal<RCGroup->RCIndexPath->Void>();
+		itemPush = new RCSignal<RCIndexPath->Void>();
+		itemRemove = new RCSignal<RCIndexPath->Void>();
 	}
 	
 	
