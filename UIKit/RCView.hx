@@ -27,10 +27,10 @@ class RCView extends Sprite {
 	dynamic public function viewWillDisappear () :Void {}
 	dynamic public function viewDidAppear () :Void {}
 	dynamic public function viewDidDisappear () :Void {}
-	public function viewWillAppearHandler (_) :Void { viewWillAppear(); }
-	public function viewWillDisappearHandler (_) :Void { viewWillDisappear(); }
-	public function viewDidAppearHandler (_) :Void { viewDidAppear(); }
-	public function viewDidDisappearHandler (_) :Void { viewDidDisappear(); }
+	public function viewWillAppearHandler (e:Event) :Void { viewWillAppear(); }
+	public function viewWillDisappearHandler (e:Event) :Void { viewWillDisappear(); }
+	public function viewDidAppearHandler (e:Event) :Void { viewDidAppear(); }
+	public function viewDidDisappearHandler (e:Event) :Void { viewDidDisappear(); }
 	
 	
 	public function new (x, y) {

@@ -1,27 +1,28 @@
 //
-//  TableView
+//  RCTableView
 //
 //  Created by Baluta Cristian on 2011-06-15.
 //  Copyright (c) 2011 ralcr.com. All rights reserved.
 //
-import flash.display.Sprite;
-import flash.events.Event;
-import flash.events.MouseEvent;
-
+#if flash
+	import flash.events.Event;
+	import flash.events.MouseEvent;
+#elseif js
+	import js.Dom;
+	import RCView;
+#end
 
 class RCTableView<T:RCControl> extends RCView {
 	
-	
 	public var backgroundView :RCRectangle;
-	var contentView :Sprite;
-	var contentMask :RCRectangle;
+	var contentView :RCView;
 	var scrollIndicator :RCRectangle;
 	
 	var cells :Array<RCTableViewCell>;
 	public var indexes :Array<String>;
 	public var delegate :Dynamic;
-	var anim :CATween;
 	public var indexPath :RCIndexPath;
+	var anim :CATween;
 	var maxCells :Int;
 	
 	// Dragging and Throwing variables

@@ -6,7 +6,6 @@
 //
 
 #if flash
-	import flash.display.Sprite;
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -16,6 +15,7 @@
 	import RCControl;
 	private typedef DisplayObjectContainer = JSView;
 	private typedef MouseEvent = Event;
+	private typedef Rectangle = RCRect;
 #end
 
 private enum Direction {
@@ -56,15 +56,15 @@ class RCSlider extends RCControl {
 		
 		addChild ( skin.normal.background );
 		addChild ( scrubber );
-		trace(size.width+" > "+size.height);
+		
 		// Decide the direction of movement
 		direction_ = (size.width > size.height) ? horizontal : vertical;
 		
 		// When the symbol is pressed start to move the slider
 		#if flash
-			skin.normal.otherView.addEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
-			skin.normal.otherView.addEventListener (MouseEvent.MOUSE_OVER, rollOverHandler);
-			skin.normal.otherView.addEventListener (MouseEvent.MOUSE_OUT, rollOutHandler);
+			scrubber.addEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
+			scrubber.addEventListener (MouseEvent.MOUSE_OVER, rollOverHandler);
+			scrubber.addEventListener (MouseEvent.MOUSE_OUT, rollOutHandler);
 		#elseif js
 			cast(scrubber).onmousedown = mouseDownHandler;
 			cast(scrubber).onmouseover = rollOverHandler;
@@ -82,20 +82,23 @@ class RCSlider extends RCControl {
 	
 	/**
 	 * Step 1
-	 * Make the scroller object dragable
+	 * Drag the scrubber and listen for mousemove events
 	 */
 	override function mouseDownHandler (e:MouseEvent) {
 		trace("mouseDownHandler");
-		var bounds_w:Int=0, bounds_h:Int=0;
+		var bounds_x:Int=0, bounds_y:Int=0, bounds_w:Int=0, bounds_h:Int=0;
 		
 		switch (direction_) {
 			case horizontal:	bounds_w = Math.round (size.width - scrubber.width);
+								bounds_y = Math.round (scrubber.y);
 			case vertical:		bounds_h = Math.round (size.height - scrubber.height);
+								bounds_x = Math.round (scrubber.x);
 		}
 		
+		cast(scrubber).startDrag (false, new Rectangle (bounds_x, bounds_y, bounds_w, bounds_h));
+		
 		#if flash
-			cast(scrubber).startDrag (false, new Rectangle (0, 0, bounds_w, bounds_h));
-			RCWindow.target.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
+			RCWindow.stage.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
 			RCWindow.target.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 		#elseif js
 			RCWindow.target.onmouseup = mouseUpHandler;
@@ -106,9 +109,10 @@ class RCSlider extends RCControl {
 		// When the mouse is released stop dragging the symbol
 		trace("mouseUpHandler");
 		
+		cast(scrubber).stopDrag();
+		
 		#if flash
-			cast(scrubber).stopDrag();
-			RCWindow.target.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
+			RCWindow.stage.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
 			RCWindow.target.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 		#elseif js
 			RCWindow.target.onmouseup = null;

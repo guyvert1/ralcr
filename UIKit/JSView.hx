@@ -256,6 +256,12 @@ class JSView {
 		untyped view.style.WebkitTransformOrigin = "top left";
 		untyped view.style.WebkitTransform = "scale(" + sx + "," + sy + ")";
 	}
+	public function startDrag (?lockCenter:Bool, ?rect:RCRect) :Void {
+		
+	}
+	public function stopDrag () :Void {
+		
+	}
 	
 /*	function get_mouseX():Float
 	{

@@ -1,15 +1,19 @@
 //
-//  Poza
+//  RCSwf
 //
 //  Created by Baluta Cristian on 2007-07-20.
 //  Copyright (c) 2007 http://ralcr.com. All rights reserved.
 //
-import flash.events.Event;
-import flash.system.LoaderContext;
-import flash.system.ApplicationDomain;
-import flash.display.Loader;
-import flash.net.URLRequest;
 
+#if flash
+	import flash.events.Event;
+	import flash.system.LoaderContext;
+	import flash.system.ApplicationDomain;
+	import flash.display.Loader;
+	import flash.net.URLRequest;
+#elseif js
+	import js.Dom;
+#end
 
 class RCSwf extends RCPhoto {
 	
@@ -27,12 +31,17 @@ class RCSwf extends RCPhoto {
 		isLoaded = false;
 		percentLoaded = 0;
 		
-		loader = new Loader();
+		#if flash
+			loader = new Loader();
 		
-		if (newDomain)
-		loader.load ( new URLRequest ( URL ), new LoaderContext (true, new ApplicationDomain()) );
-		else
-		loader.load ( new URLRequest ( URL ) );
+			if (newDomain)
+				loader.load ( new URLRequest ( URL ), new LoaderContext (true, new ApplicationDomain()) );
+			else
+				loader.load ( new URLRequest ( URL ) );
+		#elseif js
+			loader = cast js.Lib.document.createElement("img");
+			loader.src = URL;
+		#end
 	}
 	
 	// do not bitmapize the swf

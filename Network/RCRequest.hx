@@ -4,17 +4,21 @@
 //  Created by Baluta Cristian on 2008-06-25.
 //  Copyright (c) 2008 http://ralcr.com. All rights reserved.
 //
-import flash.events.Event;
-import flash.events.IEventDispatcher;
-import flash.events.ProgressEvent;
-import flash.events.SecurityErrorEvent;
-import flash.events.HTTPStatusEvent;
-import flash.events.IOErrorEvent;
-import flash.net.URLLoader;
-import flash.net.URLRequest;
-import flash.net.URLVariables;
-import flash.net.URLRequestMethod;
 
+#if flash
+	import flash.events.Event;
+	import flash.events.IEventDispatcher;
+	import flash.events.ProgressEvent;
+	import flash.events.SecurityErrorEvent;
+	import flash.events.HTTPStatusEvent;
+	import flash.events.IOErrorEvent;
+	import flash.net.URLLoader;
+	import flash.net.URLRequest;
+	import flash.net.URLVariables;
+	import flash.net.URLRequestMethod;
+#elseif js
+	
+#end
 
 class RCRequest {
 	

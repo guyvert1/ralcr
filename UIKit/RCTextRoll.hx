@@ -6,6 +6,11 @@
 //
 
 import RCView;
+#if flash
+	import flash.events.Event;
+#elseif js
+	import js.Dom;
+#end
 
 class RCTextRoll extends RCView {
 	

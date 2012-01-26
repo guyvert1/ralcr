@@ -40,7 +40,7 @@ class RCRectangle extends RCDraw, implements RCDrawInterface {
 			if (strokeColorStyle != null)
 			html += "border-style:solid; border-width:" + borderThickness + "px; border-color:" + strokeColorStyle + ";";
 			if (roundness != null)
-			html += "-moz-border-radius:" + roundness + "px; border-radius:" + roundness + "px;";
+			html += "-moz-border-radius:" + roundness/2 + "px; border-radius:" + roundness/2 + "px;";
 			html += "\"></div>";
 		view.innerHTML = html;
 #end

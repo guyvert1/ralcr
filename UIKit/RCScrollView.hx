@@ -2,16 +2,20 @@
 //  RCScrollView
 //
 //  Created by Cristi Baluta on 2011-02-08.
-//  Copyright (c) 2011 ralcr.com. All rights reserved.
+//  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
-import flash.display.DisplayObjectContainer;
 
+#if flash
+	import flash.display.DisplayObjectContainer;
+#elseif js
+	import js.Dom;
+#end
 
 class RCScrollView extends RCView {
 	
 	public var contentView :DisplayObjectContainer;// You can access directly the contentView, but be carefull
 	public var contentRect :RCRect;// You can access directly the contentView, but be carefull
-	var contentMask :RCRectangle;
+	
 	var verticalSliderIndicator :RCSlider;
 	var horizontalSliderIndicator :RCSlider;
 	var verticalSliderSync :RCSliderSync;

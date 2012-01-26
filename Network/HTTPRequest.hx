@@ -4,10 +4,14 @@
 //  Created by Baluta Cristian on 2008-09-06.
 //  Copyright (c) 2008 ralcr.com. All rights reserved.
 //
-import flash.net.URLVariables;
-import flash.net.URLRequest;
-import flash.net.URLRequestMethod;
 
+#if flash
+	import flash.net.URLVariables;
+	import flash.net.URLRequest;
+	import flash.net.URLRequestMethod;
+#elseif js
+	typedef URLVariables = Dynamic;
+#end
 
 class HTTPRequest extends RCRequest {
 	

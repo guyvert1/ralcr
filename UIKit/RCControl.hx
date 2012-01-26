@@ -143,7 +143,7 @@ class RCControl extends RCView {
 		onClick();
 	}
 	public function setState (state:RCControlState) {
-		state_ = state;
+		state_ = state;trace("current state is "+state_);
 	}
 	
 	

@@ -1,13 +1,17 @@
 //
 //  RCSliderSync
+//	Keep in sync a slider with it's target
 //
 //  Created by Cristi Baluta on 2011-02-09.
-//  Copyright (c) 2011 ralcr.com. All rights reserved.
+//  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
-import flash.events.MouseEvent;
-import flash.events.Event;
-import flash.display.DisplayObjectContainer;
-
+#if flash
+	import flash.events.MouseEvent;
+	import flash.events.Event;
+	import flash.display.DisplayObjectContainer;
+#elseif js
+	
+#end
 
 private enum Direction {
 	Horizontal;

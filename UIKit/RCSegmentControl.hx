@@ -2,7 +2,7 @@
 //  RCSegmentControl
 //
 //  Created by Baluta Cristian on 2011-08-18.
-//  Copyright (c) 2011 ralcr.com. All rights reserved.
+//  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
 
 class SegmentControl extends RCView {

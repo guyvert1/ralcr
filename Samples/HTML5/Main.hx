@@ -24,6 +24,8 @@ class Main {
 		//RCWindow.setTarget ("js");
 		RCWindow.backgroundColor = 0xDDDDDD;
 		
+		RCLib.loadFileWithKey("photo", "../CoreAnimation/3134265_large.jpg");
+		
 		var rect = new RCRectangle(0,0, 300, 150, RCColor.greenColor());
 	 	//RCWindow.addChild ( rect );
 		rect.clipsToBounds = true;
@@ -50,7 +52,7 @@ class Main {
 		rect.addChild ( ph );
 		
 		var f = new RCFont();
-			f.color = 0xffffff;
+			f.color = 0xFFFFFF;
 			f.font = "Arial";
 			f.size = 30;
 			f.embedFonts = false;
@@ -58,9 +60,11 @@ class Main {
 		RCWindow.addChild ( t );
 		
 		var f2 = f.copy();
+			f2.color = 0x333333;
 		f2.size = 16;
 		var r = new RCTextRoll (50, 60, 200, null, "We are working on the HTML5 version of the gallery...", f2);
 		RCWindow.addChild ( r );
+		r.start();
 		r.backgroundColor = 0xFFFFFF;
 		
 		var k = new RCKeys();
@@ -95,6 +99,10 @@ class Main {
 		b.onOut = function(){trace("out");}
 		b.onPress = function(){trace("press");}
 		b.onRelease = function(){trace("release");}
+		RCWindow.addChild ( b );
+		
+		var s = new haxe.SKRadioButton();
+		var b = new RCButton(200, 200, s);
 		RCWindow.addChild ( b );
 		
 		// Add slider

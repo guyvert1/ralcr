@@ -2,27 +2,28 @@
 //  Photo
 //
 //  Created by Baluta Cristian on 2008-04-01.
-//  Copyright (c) 2008 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2008-2012 http://ralcr.com. All rights reserved.
 //
+
 #if (flash || nme)
-import flash.display.Sprite;
-import flash.display.Loader;
-import flash.system.LoaderContext;
-import flash.display.Bitmap;
-import flash.display.BitmapData;
-import flash.display.PixelSnapping;
-import flash.net.URLRequest;
-import flash.events.Event;
-import flash.events.ProgressEvent;
-import flash.events.ErrorEvent;
-import flash.events.IOErrorEvent;
+	import flash.display.Sprite;
+	import flash.display.Loader;
+	import flash.system.LoaderContext;
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
+	import flash.display.PixelSnapping;
+	import flash.net.URLRequest;
+	import flash.events.Event;
+	import flash.events.ProgressEvent;
+	import flash.events.ErrorEvent;
+	import flash.events.IOErrorEvent;
 #elseif js
-import js.Dom;
-import RCView;
-typedef Loader = js.Dom.Image;
-typedef ProgressEvent = Event;
-typedef ErrorEvent = Event;
-typedef IOErrorEvent = Event;
+	import js.Dom;
+	import RCView;
+	typedef Loader = js.Dom.Image;
+	typedef ProgressEvent = Event;
+	typedef ErrorEvent = Event;
+	typedef IOErrorEvent = Event;
 #end
 
 class RCPhoto extends RCView {
