@@ -40,6 +40,7 @@ class RCWindow {
 	public static var width :Int;
 	public static var height :Int;
 	public static var backgroundColor (null, setBackgroundColor) :Int;
+	public static var stageMouse :EVMouse;
 	
 	
 	public static function init () {
@@ -55,6 +56,8 @@ class RCWindow {
 			height = target.scrollHeight;
 			backgroundColor = 0x333333;
 		#end
+		
+		stageMouse = new EVMouse();
 		
 		// Create the url without swf name
 		var url = URL.split("/");
