@@ -4,8 +4,6 @@
 //  Created by Baluta Cristian on 2008-12-01.
 //  Copyright (c) 2009 http://ralcr.com. All rights reserved.
 //
-import flash.events.Event;
-
 
 class RCActivityIndicator extends RCProgressIndicator {
 	

@@ -2,8 +2,9 @@
 //  RCTableView
 //
 //  Created by Baluta Cristian on 2011-06-15.
-//  Copyright (c) 2011 ralcr.com. All rights reserved.
+//  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
+
 #if flash
 	import flash.events.Event;
 	import flash.events.MouseEvent;

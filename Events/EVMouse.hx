@@ -14,9 +14,9 @@ class EVMouse extends RCSignal<Bool->Void> {
 	
 	public function new () {
 		
-		if (instance != null) throw "You can't instantiate EVMouse";
+		if (instance != null) throw "You can't instantiate EVMouse because it's used by the framework. ";
 			instance = this;
-			
+		
 		super();
 		
 		#if (flash || nme)
@@ -30,7 +30,7 @@ class EVMouse extends RCSignal<Bool->Void> {
 	function mouseUpHandler (e:MouseEvent) {
 		trace("mouseUp");
 	}
-	function mouseMoveHandler (e:MouseEvent) {
+	function mouseMoveHandler (e:MouseEvent) {return;
 		#if (flash || nme)
 			var w = flash.Lib.current.stage.stageWidth;
 			var h = flash.Lib.current.stage.stageHeight;

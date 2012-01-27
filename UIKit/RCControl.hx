@@ -24,17 +24,19 @@ enum RCControlState {
 
 
 class RCControl extends RCView {
-	
-/*	public var touchDown :RCSignal<Void>;// on all touch downs
-	public var touchDownRepeat :RCSignal<Void>;// on multiple touchdowns (tap count > 1)
-	public var touchDragInside :RCSignal<Void>;
-	public var touchDragOutside :RCSignal<Void>;
-	public var touchDragEnter :RCSignal<Void>;
-	public var touchDragExit :RCSignal<Void>;
-	public var touchUpInside :RCSignal<Void>;
-	public var touchUpOutside :RCSignal<Void>;
-	public var touchCancel :RCSignal<Void>;*/
 
+#if nme
+	// TODO
+	public var touchDown :RCSignal<CControl->Void>;// on all touch downs
+	public var touchDownRepeat :RCSignal<CControl->Void>;// on multiple touchdowns (tap count > 1)
+	public var touchDragInside :RCSignal<CControl->Void>;
+	public var touchDragOutside :RCSignal<CControl->Void>;
+	public var touchDragEnter :RCSignal<CControl->Void>;
+	public var touchDragExit :RCSignal<CControl->Void>;
+	public var touchUpInside :RCSignal<CControl->Void>;
+	public var touchUpOutside :RCSignal<CControl->Void>;
+	public var touchCancel :RCSignal<CControl->Void>;
+#end
 	public var click :RCSignal<RCControl->Void>;
 	public var press :RCSignal<RCControl->Void>;
 	public var release :RCSignal<RCControl->Void>;
@@ -56,6 +58,7 @@ class RCControl extends RCView {
 	
 	/**
 	 * The classical way of listening to events, override this methods from outside of the object
+	 *  You can redirect to only one function this events
 	 */
 	dynamic public function onClick () :Void {}
 	dynamic public function onPress () :Void {}
@@ -67,11 +70,7 @@ class RCControl extends RCView {
 	public function new (x, y) {
 		super(x, y);
 		
-		#if (flash || nme)
-			this.useHandCursor = true;
-			this.buttonMode = true;
-			//this.mouseChildren = false;
-		#end
+		//this.mouseChildren = false;
 		
 		configureDispatchers();
 		setEnabled ( true );// This will configure the right mouse listeners
@@ -120,8 +119,8 @@ class RCControl extends RCView {
 	}
 	
 	/**
-	 * Mouse Handlers
-	 */
+	* Mouse Handlers
+	*/
 	function mouseDownHandler (e:MouseEvent) :Void {
 		setState ( SELECTED );
 		onPress();
@@ -139,7 +138,7 @@ class RCControl extends RCView {
 		onOut();
 	}
 	function clickHandler (e:MouseEvent) :Void {trace("click");
-		//setState ( SELECTED );
+		setState ( SELECTED );
 		onClick();
 	}
 	public function setState (state:RCControlState) {

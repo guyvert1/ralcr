@@ -170,6 +170,419 @@ RCMouse.prototype.destroy = function() {
 	this.mouseOutHandler(null);
 }
 RCMouse.prototype.__class__ = RCMouse;
+JSView = function(x,y) {
+	if( x === $_ ) return;
+	this.size = new RCSize(0,0);
+	this.scaleX_ = 1;
+	this.scaleY_ = 1;
+	this.alpha_ = 1;
+	this.view = js.Lib.document.createElement("div");
+	this.view.style.position = "absolute";
+	this.view.style.margin = "0px 0px 0px 0px";
+	this.setX(x);
+	this.setY(y);
+}
+JSView.__name__ = ["JSView"];
+JSView.prototype.parent = null;
+JSView.prototype.view = null;
+JSView.prototype.size = null;
+JSView.prototype.center = null;
+JSView.prototype.clipsToBounds = null;
+JSView.prototype.backgroundColor = null;
+JSView.prototype.x = null;
+JSView.prototype.y = null;
+JSView.prototype.scaleX = null;
+JSView.prototype.scaleY = null;
+JSView.prototype.width = null;
+JSView.prototype.height = null;
+JSView.prototype.alpha = null;
+JSView.prototype.visible = null;
+JSView.prototype.viewMask = null;
+JSView.prototype.lastW = null;
+JSView.prototype.lastH = null;
+JSView.prototype.scaleX_ = null;
+JSView.prototype.scaleY_ = null;
+JSView.prototype.alpha_ = null;
+JSView.prototype.caobj = null;
+JSView.prototype.graphics = null;
+JSView.prototype.viewWillAppear = function() {
+}
+JSView.prototype.viewWillDisappear = function() {
+}
+JSView.prototype.viewDidAppear = function() {
+}
+JSView.prototype.viewDidDisappear = function() {
+}
+JSView.prototype.viewWillAppearHandler = function() {
+	this.viewWillAppear();
+}
+JSView.prototype.viewWillDisappearHandler = function() {
+	this.viewWillDisappear();
+}
+JSView.prototype.viewDidAppearHandler = function() {
+	this.viewDidAppear();
+}
+JSView.prototype.viewDidDisappearHandler = function() {
+	this.viewDidDisappear();
+}
+JSView.prototype.addChild = function(child) {
+	if(child == null) return;
+	child.viewWillAppearHandler();
+	child.parent = this.view;
+	this.view.appendChild(child.view);
+	child.viewDidAppearHandler();
+}
+JSView.prototype.removeChild = function(child) {
+	if(child == null) return;
+	child.viewWillDisappearHandler();
+	child.parent = null;
+	this.view.removeChild(child.view);
+	child.viewDidDisappearHandler();
+}
+JSView.prototype.setBackgroundColor = function(color) {
+	if(color == null) {
+		this.view.style.background = null;
+		return color;
+	}
+	var red = (color & 16711680) >> 16;
+	var green = (color & 65280) >> 8;
+	var blue = color & 255;
+	var alpha = 1;
+	var color_ = "rgba(" + red + "," + green + "," + blue + "," + alpha + ")";
+	this.view.style.background = color_;
+	return color;
+}
+JSView.prototype.setCenter = function(pos) {
+	this.center = pos;
+	this.setX(Std["int"](pos.x - this.size.width / 2));
+	this.setY(Std["int"](pos.y - this.size.height / 2));
+	return this.center;
+}
+JSView.prototype.setClipsToBounds = function(clip) {
+	if(clip) {
+		this.view.style.overflow = "hidden";
+		this.viewMask = js.Lib.document.createElement("div");
+		this.viewMask.style.width = this.size.width + "px";
+		this.viewMask.style.height = this.size.height + "px";
+		while(this.view.hasChildNodes()) this.viewMask.appendChild(this.view.removeChild(this.view.firstChild));
+		this.view.appendChild(this.viewMask);
+	} else {
+		this.view.style.overflow = null;
+		this.view.removeChild(this.viewMask);
+		while(this.viewMask.hasChildNodes()) this.view.appendChild(this.viewMask.removeChild(this.viewMask.firstChild));
+		this.viewMask = this.view;
+	}
+	return clip;
+}
+JSView.prototype.scaleToFit = function(w,h) {
+	if(this.size.width / w > this.size.height / h && this.size.width > w) {
+		this.setWidth(w);
+		this.setHeight(this.getWidth() * this.size.height / this.size.width);
+	} else if(this.size.height > h) {
+		this.setHeight(h);
+		this.setWidth(this.getHeight() * this.size.width / this.size.height);
+	} else if(this.size.width > this.lastW && this.size.height > this.lastH) {
+		this.setWidth(this.size.width);
+		this.setHeight(this.size.height);
+	} else this.resetScale();
+	this.lastW = this.getWidth();
+	this.lastH = this.getHeight();
+}
+JSView.prototype.scaleToFill = function(w,h) {
+	if(w / this.size.width > h / this.size.height) {
+		this.setWidth(w);
+		this.setHeight(this.getWidth() * this.size.height / this.size.width);
+	} else {
+		this.setHeight(h);
+		this.setWidth(this.getHeight() * this.size.width / this.size.height);
+	}
+}
+JSView.prototype.resetScale = function() {
+	this.setWidth(this.lastW);
+	this.setHeight(this.lastH);
+}
+JSView.prototype.animate = function(obj) {
+	CoreAnimation.add(this.caobj = obj);
+}
+JSView.prototype.destroy = function() {
+	CoreAnimation.remove(this.caobj);
+}
+JSView.prototype.removeFromSuperView = function() {
+	if(this.parent != null) this.parent.removeChild(this.view);
+}
+JSView.prototype.setVisible = function(v) {
+	this.visible = v;
+	this.view.style.visibility = v?"visible":"hidden";
+	return v;
+}
+JSView.prototype.setAlpha = function(a) {
+	this.alpha_ = a;
+	this.view.style.opacity = Std.string(a);
+	return a;
+}
+JSView.prototype.setX = function(x) {
+	this.x = x;
+	this.view.style.left = Std.string(x) + "px";
+	return x;
+}
+JSView.prototype.setY = function(y) {
+	this.y = y;
+	this.view.style.top = Std.string(y) + "px";
+	return y;
+}
+JSView.prototype.getWidth = function() {
+	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the width would be 0",{ fileName : "JSView.hx", lineNumber : 224, className : "JSView", methodName : "getWidth"});
+	return this.view.offsetWidth;
+	return this.view.scrollWidth;
+	return this.view.clientWidth;
+}
+JSView.prototype.setWidth = function(w) {
+	this.width = w;
+	this.view.style.width = w + "px";
+	return w;
+}
+JSView.prototype.getHeight = function() {
+	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the height would be 0",{ fileName : "JSView.hx", lineNumber : 235, className : "JSView", methodName : "getHeight"});
+	return this.view.offsetHeight;
+	return this.view.scrollHeight;
+	return this.view.clientHeight;
+}
+JSView.prototype.setHeight = function(h) {
+	this.height = h;
+	this.view.style.height = h + "px";
+	return h;
+}
+JSView.prototype.setScaleX = function(sx) {
+	this.scaleX_ = this.scaleX = sx;
+	this.scale(this.scaleX_,this.scaleY_);
+	return this.scaleX_;
+}
+JSView.prototype.setScaleY = function(sy) {
+	this.scaleY_ = this.scaleY = sy;
+	this.scale(this.scaleX_,this.scaleY_);
+	return this.scaleY_;
+}
+JSView.prototype.scale = function(sx,sy) {
+	this.view.style.WebkitTransformOrigin = "top left";
+	this.view.style.WebkitTransform = "scale(" + sx + "," + sy + ")";
+}
+JSView.prototype.startDrag = function(lockCenter,rect) {
+}
+JSView.prototype.stopDrag = function() {
+}
+JSView.prototype.__class__ = JSView;
+RCControl = function(x,y) {
+	if( x === $_ ) return;
+	JSView.call(this,x,y);
+	this.configureDispatchers();
+	this.setEnabled(true);
+	this.setState(RCControlState.NORMAL);
+}
+RCControl.__name__ = ["RCControl"];
+RCControl.__super__ = JSView;
+for(var k in JSView.prototype ) RCControl.prototype[k] = JSView.prototype[k];
+RCControl.prototype.click = null;
+RCControl.prototype.press = null;
+RCControl.prototype.release = null;
+RCControl.prototype.over = null;
+RCControl.prototype.out = null;
+RCControl.prototype.editingDidBegin = null;
+RCControl.prototype.editingChanged = null;
+RCControl.prototype.editingDidEnd = null;
+RCControl.prototype.editingDidEndOnExit = null;
+RCControl.prototype.enabled = null;
+RCControl.prototype.highlighted = null;
+RCControl.prototype.selected = null;
+RCControl.prototype.enabled_ = null;
+RCControl.prototype.state_ = null;
+RCControl.prototype.onClick = function() {
+}
+RCControl.prototype.onPress = function() {
+}
+RCControl.prototype.onRelease = function() {
+}
+RCControl.prototype.onOver = function() {
+}
+RCControl.prototype.onOut = function() {
+}
+RCControl.prototype.configureListeners = function(dispatcher) {
+	this.view.onmousedown = $closure(this,"mouseDownHandler");
+	this.view.onmouseup = $closure(this,"mouseUpHandler");
+	this.view.onmouseover = $closure(this,"rollOverHandler");
+	this.view.onmouseout = $closure(this,"rollOutHandler");
+	this.view.onclick = $closure(this,"clickHandler");
+}
+RCControl.prototype.removeListeners = function(dispatcher) {
+	this.view.onmousedown = null;
+	this.view.onmouseup = null;
+	this.view.onmouseover = null;
+	this.view.onmouseout = null;
+	this.view.onclick = null;
+}
+RCControl.prototype.configureDispatchers = function() {
+	this.click = new RCSignal();
+	this.press = new RCSignal();
+	this.release = new RCSignal();
+	this.over = new RCSignal();
+	this.out = new RCSignal();
+}
+RCControl.prototype.mouseDownHandler = function(e) {
+	this.setState(RCControlState.SELECTED);
+	this.onPress();
+}
+RCControl.prototype.mouseUpHandler = function(e) {
+	this.setState(RCControlState.HIGHLIGHTED);
+	this.onRelease();
+}
+RCControl.prototype.rollOverHandler = function(e) {
+	this.setState(RCControlState.HIGHLIGHTED);
+	this.onOver();
+}
+RCControl.prototype.rollOutHandler = function(e) {
+	this.setState(RCControlState.NORMAL);
+	this.onOut();
+}
+RCControl.prototype.clickHandler = function(e) {
+	haxe.Log.trace("click",{ fileName : "RCControl.hx", lineNumber : 140, className : "RCControl", methodName : "clickHandler"});
+	this.setState(RCControlState.SELECTED);
+	this.onClick();
+}
+RCControl.prototype.setState = function(state) {
+	this.state_ = state;
+	haxe.Log.trace("current state is " + this.state_,{ fileName : "RCControl.hx", lineNumber : 145, className : "RCControl", methodName : "setState"});
+}
+RCControl.prototype.getSelected = function() {
+	return this.state_ == RCControlState.SELECTED;
+}
+RCControl.prototype.getEnabled = function() {
+	return this.enabled_;
+}
+RCControl.prototype.setEnabled = function(c) {
+	this.enabled_ = c;
+	if(this.enabled_) this.configureListeners(this); else this.removeListeners(this);
+	return this.enabled_;
+}
+RCControl.prototype.getHighlighted = function() {
+	return this.state_ == RCControlState.HIGHLIGHTED;
+}
+RCControl.prototype.lock = function() {
+	this.setEnabled(false);
+}
+RCControl.prototype.unlock = function() {
+	this.setEnabled(true);
+}
+RCControl.prototype.destroy = function() {
+	this.removeListeners(this);
+	JSView.prototype.destroy.call(this);
+}
+RCControl.prototype.__class__ = RCControl;
+RCButton = function(x,y,skin) {
+	if( x === $_ ) return;
+	this.skin = skin;
+	this.skin.hit.setAlpha(0);
+	this.fixSkin();
+	RCControl.call(this,x,y);
+}
+RCButton.__name__ = ["RCButton"];
+RCButton.__super__ = RCControl;
+for(var k in RCControl.prototype ) RCButton.prototype[k] = RCControl.prototype[k];
+RCButton.prototype.skin = null;
+RCButton.prototype.setTitle = function(title,state) {
+}
+RCButton.prototype.setTitleColor = function(color,state) {
+}
+RCButton.prototype.currentTitle = null;
+RCButton.prototype.currentTitleColor = null;
+RCButton.prototype.currentImage = null;
+RCButton.prototype.currentBackground = null;
+RCButton.prototype.setState = function(state) {
+	if(this.state_ == state) return;
+	Fugu.safeRemove([this.currentBackground,this.currentImage]);
+	switch( (state)[1] ) {
+	case 0:
+		this.currentBackground = this.skin.normal.background;
+		this.currentImage = this.skin.normal.label;
+		break;
+	case 1:
+		this.currentBackground = this.skin.highlighted.background;
+		this.currentImage = this.skin.highlighted.label;
+		break;
+	case 2:
+		this.currentBackground = this.skin.disabled.background;
+		this.currentImage = this.skin.disabled.label;
+		break;
+	case 3:
+		this.currentBackground = this.skin.selected.background;
+		this.currentImage = this.skin.selected.label;
+		break;
+	}
+	this.addChild(this.currentBackground);
+	this.addChild(this.currentImage);
+	this.addChild(this.skin.hit);
+	RCControl.prototype.setState.call(this,state);
+}
+RCButton.prototype.fixSkin = function() {
+	if(this.skin.normal.label == null) this.skin.normal.label = this.skin.normal.image;
+	if(this.skin.normal.label == null) this.skin.normal.label = this.skin.normal.otherView;
+	var _g = 0, _g1 = Reflect.fields(this.skin.normal);
+	while(_g < _g1.length) {
+		var key = _g1[_g];
+		++_g;
+		if(key == "colors") continue;
+		if(Reflect.field(this.skin.highlighted,key) == null) this.skin.highlighted[key] = Reflect.field(this.skin.normal,key);
+		if(Reflect.field(this.skin.selected,key) == null) this.skin.selected[key] = Reflect.field(this.skin.highlighted,key);
+		if(Reflect.field(this.skin.disabled,key) == null) this.skin.disabled[key] = Reflect.field(this.skin.normal,key);
+	}
+}
+RCButton.prototype.setObjectColor = function(obj,color) {
+	if(obj == null || color == null) return;
+}
+RCButton.prototype.setObjectBrightness = function(obj,brightness) {
+}
+RCButton.prototype.__class__ = RCButton;
+RCButtonRadio = function(x,y,skin) {
+	if( x === $_ ) return;
+	RCButton.call(this,x,y,skin);
+	this.toggable_ = true;
+}
+RCButtonRadio.__name__ = ["RCButtonRadio"];
+RCButtonRadio.__super__ = RCButton;
+for(var k in RCButton.prototype ) RCButtonRadio.prototype[k] = RCButton.prototype[k];
+RCButtonRadio.prototype.toggable_ = null;
+RCButtonRadio.prototype.toggable = null;
+RCButtonRadio.prototype.mouseDownHandler = function(e) {
+	this.onPress();
+}
+RCButtonRadio.prototype.mouseUpHandler = function(e) {
+	this.onRelease();
+}
+RCButtonRadio.prototype.clickHandler = function(e) {
+	haxe.Log.trace("click",{ fileName : "RCButtonRadio.hx", lineNumber : 34, className : "RCButtonRadio", methodName : "clickHandler"});
+	this.setState(this.getSelected()?RCControlState.NORMAL:RCControlState.SELECTED);
+	this.onClick();
+}
+RCButtonRadio.prototype.rollOverHandler = function(e) {
+	if(!this.getSelected()) this.setState(RCControlState.HIGHLIGHTED);
+	this.onOut();
+}
+RCButtonRadio.prototype.rollOutHandler = function(e) {
+	if(!this.getSelected()) this.setState(RCControlState.NORMAL);
+	this.onOut();
+}
+RCButtonRadio.prototype.getToggable = function() {
+	return this.toggable_;
+}
+RCButtonRadio.prototype.setToggable = function(v) {
+	if(!v) this.setState(RCControlState.NORMAL);
+	return this.toggable_ = v;
+}
+RCButtonRadio.prototype.toggle = function() {
+	if(this.toggable_) this.setState(RCControlState.SELECTED);
+}
+RCButtonRadio.prototype.untoggle = function() {
+	if(this.toggable_) this.setState(RCControlState.NORMAL);
+}
+RCButtonRadio.prototype.__class__ = RCButtonRadio;
 List = function(p) {
 	if( p === $_ ) return;
 	this.length = 0;
@@ -674,7 +1087,7 @@ RCSignal.prototype.callMethod = function(listener,args,pos) {
 	try {
 		listener.apply(null,args);
 	} catch( e ) {
-		haxe.Log.trace("[RCSignal error: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 51, className : "RCSignal", methodName : "callMethod"});
+		haxe.Log.trace("[RCSignal error: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 52, className : "RCSignal", methodName : "callMethod"});
 	}
 }
 RCSignal.prototype.exists = function(listener) {
@@ -693,234 +1106,6 @@ EVFullScreen.__name__ = ["EVFullScreen"];
 EVFullScreen.__super__ = RCSignal;
 for(var k in RCSignal.prototype ) EVFullScreen.prototype[k] = RCSignal.prototype[k];
 EVFullScreen.prototype.__class__ = EVFullScreen;
-JSView = function(x,y) {
-	if( x === $_ ) return;
-	this.size = new RCSize(0,0);
-	this.scaleX_ = 1;
-	this.scaleY_ = 1;
-	this.alpha_ = 1;
-	this.view = js.Lib.document.createElement("div");
-	this.view.style.position = "absolute";
-	this.view.style.margin = "0px 0px 0px 0px";
-	this.setX(x);
-	this.setY(y);
-}
-JSView.__name__ = ["JSView"];
-JSView.COL = function(color) {
-	return "rgb(" + (color >> 16) + "," + (color >> 8 & 255) + "," + (color & 255) + ")";
-}
-JSView.prototype.parent = null;
-JSView.prototype.view = null;
-JSView.prototype.size = null;
-JSView.prototype.center = null;
-JSView.prototype.clipsToBounds = null;
-JSView.prototype.backgroundColor = null;
-JSView.prototype.x = null;
-JSView.prototype.y = null;
-JSView.prototype.scaleX = null;
-JSView.prototype.scaleY = null;
-JSView.prototype.width = null;
-JSView.prototype.height = null;
-JSView.prototype.alpha = null;
-JSView.prototype.visible = null;
-JSView.prototype.viewMask = null;
-JSView.prototype.lastW = null;
-JSView.prototype.lastH = null;
-JSView.prototype.scaleX_ = null;
-JSView.prototype.scaleY_ = null;
-JSView.prototype.alpha_ = null;
-JSView.prototype.caobj = null;
-JSView.prototype.graphics = null;
-JSView.prototype.viewWillAppear = function() {
-}
-JSView.prototype.viewWillDisappear = function() {
-}
-JSView.prototype.viewDidAppear = function() {
-}
-JSView.prototype.viewDidDisappear = function() {
-}
-JSView.prototype.viewWillAppearHandler = function() {
-	this.viewWillAppear();
-}
-JSView.prototype.viewWillDisappearHandler = function() {
-	this.viewWillDisappear();
-}
-JSView.prototype.viewDidAppearHandler = function() {
-	this.viewDidAppear();
-}
-JSView.prototype.viewDidDisappearHandler = function() {
-	this.viewDidDisappear();
-}
-JSView.prototype.addChild = function(child) {
-	if(child == null) return;
-	child.viewWillAppearHandler();
-	child.parent = this.view;
-	this.view.appendChild(child.view);
-	child.viewDidAppearHandler();
-}
-JSView.prototype.removeChild = function(child) {
-	if(child == null) return;
-	child.viewWillDisappearHandler();
-	child.parent = null;
-	this.view.removeChild(child.view);
-	child.viewDidDisappearHandler();
-}
-JSView.prototype.setBackgroundColor = function(color) {
-	if(color == null) {
-		this.view.style.background = null;
-		return color;
-	}
-	var red = (color & 16711680) >> 16;
-	var green = (color & 65280) >> 8;
-	var blue = color & 255;
-	var alpha = 1;
-	var color_ = "rgba(" + red + "," + green + "," + blue + "," + alpha + ")";
-	this.view.style.background = color_;
-	return color;
-}
-JSView.prototype.setCenter = function(pos) {
-	this.center = pos;
-	this.setX(Std["int"](pos.x - this.size.width / 2));
-	this.setY(Std["int"](pos.y - this.size.height / 2));
-	return this.center;
-}
-JSView.prototype.setClipsToBounds = function(clip) {
-	if(clip) {
-		this.view.style.overflow = "hidden";
-		this.viewMask = js.Lib.document.createElement("div");
-		this.viewMask.style.width = this.size.width + "px";
-		this.viewMask.style.height = this.size.height + "px";
-		while(this.view.hasChildNodes()) this.viewMask.appendChild(this.view.removeChild(this.view.firstChild));
-		this.view.appendChild(this.viewMask);
-	} else {
-		this.view.style.overflow = null;
-		this.view.removeChild(this.viewMask);
-		while(this.viewMask.hasChildNodes()) this.view.appendChild(this.viewMask.removeChild(this.viewMask.firstChild));
-		this.viewMask = this.view;
-	}
-	return clip;
-}
-JSView.prototype.scaleToFit = function(w,h) {
-	if(this.size.width / w > this.size.height / h && this.size.width > w) {
-		this.setWidth(w);
-		this.setHeight(this.getWidth() * this.size.height / this.size.width);
-	} else if(this.size.height > h) {
-		this.setHeight(h);
-		this.setWidth(this.getHeight() * this.size.width / this.size.height);
-	} else if(this.size.width > this.lastW && this.size.height > this.lastH) {
-		this.setWidth(this.size.width);
-		this.setHeight(this.size.height);
-	} else this.resetScale();
-	this.lastW = this.getWidth();
-	this.lastH = this.getHeight();
-}
-JSView.prototype.scaleToFill = function(w,h) {
-	if(w / this.size.width > h / this.size.height) {
-		this.setWidth(w);
-		this.setHeight(this.getWidth() * this.size.height / this.size.width);
-	} else {
-		this.setHeight(h);
-		this.setWidth(this.getHeight() * this.size.width / this.size.height);
-	}
-}
-JSView.prototype.resetScale = function() {
-	this.setWidth(this.lastW);
-	this.setHeight(this.lastH);
-}
-JSView.prototype.animate = function(obj) {
-	CoreAnimation.add(this.caobj = obj);
-}
-JSView.prototype.destroy = function() {
-	CoreAnimation.remove(this.caobj);
-}
-JSView.prototype.removeFromSuperView = function() {
-	if(this.parent != null) this.parent.removeChild(this.view);
-}
-JSView.prototype.setVisible = function(v) {
-	this.visible = v;
-	this.view.style.visibility = v?"visible":"hidden";
-	return v;
-}
-JSView.prototype.setAlpha = function(a) {
-	this.alpha_ = a;
-	this.view.style.opacity = Std.string(a);
-	return a;
-}
-JSView.prototype.setX = function(x) {
-	this.x = x;
-	this.view.style.left = Std.string(x) + "px";
-	return x;
-}
-JSView.prototype.setY = function(y) {
-	this.y = y;
-	this.view.style.top = Std.string(y) + "px";
-	return y;
-}
-JSView.prototype.getWidth = function() {
-	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the width would be 0",{ fileName : "JSView.hx", lineNumber : 224, className : "JSView", methodName : "getWidth"});
-	return this.view.offsetWidth;
-	return this.view.scrollWidth;
-	return this.view.clientWidth;
-}
-JSView.prototype.setWidth = function(w) {
-	this.width = w;
-	this.view.style.width = w + "px";
-	return w;
-}
-JSView.prototype.getHeight = function() {
-	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the height would be 0",{ fileName : "JSView.hx", lineNumber : 235, className : "JSView", methodName : "getHeight"});
-	return this.view.offsetHeight;
-	return this.view.scrollHeight;
-	return this.view.clientHeight;
-}
-JSView.prototype.setHeight = function(h) {
-	this.height = h;
-	this.view.style.height = h + "px";
-	return h;
-}
-JSView.prototype.setScaleX = function(sx) {
-	this.scaleX_ = this.scaleX = sx;
-	this.scale(this.scaleX_,this.scaleY_);
-	return this.scaleX_;
-}
-JSView.prototype.setScaleY = function(sy) {
-	this.scaleY_ = this.scaleY = sy;
-	this.scale(this.scaleX_,this.scaleY_);
-	return this.scaleY_;
-}
-JSView.prototype.scale = function(sx,sy) {
-	this.view.style.WebkitTransformOrigin = "top left";
-	this.view.style.WebkitTransform = "scale(" + sx + "," + sy + ")";
-}
-JSView.prototype.clear = function() {
-	this.graphics.clearRect(0,0,this.graphics.canvas.width,this.graphics.canvas.height);
-}
-JSView.prototype.lineStyle = function(width,color) {
-	if(width == null) return;
-	this.graphics.lineWidth = width;
-	this.graphics.strokeStyle = "rgb(" + (color >> 16) + "," + (color >> 8 & 255) + "," + (color & 255) + ")";
-}
-JSView.prototype.beginFill = function(color,alpha) {
-	this.graphics.fillStyle = "rgb(" + (color >> 16) + "," + (color >> 8 & 255) + "," + (color & 255) + ")";
-	this.graphics.beginPath();
-}
-JSView.prototype.endFill = function() {
-	this.graphics.fill();
-	this.graphics.stroke();
-}
-JSView.prototype.drawCircle = function(x,y,radius) {
-	this.graphics.arc(x,y,radius,0,6.29,true);
-}
-JSView.prototype.drawRect = function(x,y,w,h) {
-	this.graphics.rect(x,y,w,h);
-}
-JSView.prototype.moveTo = function(x,y) {
-	this.graphics.moveTo(x,y);
-}
-JSView.prototype.lineTo = function(x,y) {
-	this.graphics.lineTo(x,y);
-}
-JSView.prototype.__class__ = JSView;
 RCTextView = function(x,y,w,h,str,properties) {
 	if( x === $_ ) return;
 	JSView.call(this,Math.round(x),Math.round(y));
@@ -986,174 +1171,6 @@ RCTextView.prototype.destroy = function() {
 	JSView.prototype.destroy.call(this);
 }
 RCTextView.prototype.__class__ = RCTextView;
-RCControl = function(x,y) {
-	if( x === $_ ) return;
-	JSView.call(this,x,y);
-	this.configureDispatchers();
-	this.setEnabled(true);
-	this.setState(RCControlState.NORMAL);
-}
-RCControl.__name__ = ["RCControl"];
-RCControl.__super__ = JSView;
-for(var k in JSView.prototype ) RCControl.prototype[k] = JSView.prototype[k];
-RCControl.prototype.click = null;
-RCControl.prototype.press = null;
-RCControl.prototype.release = null;
-RCControl.prototype.over = null;
-RCControl.prototype.out = null;
-RCControl.prototype.editingDidBegin = null;
-RCControl.prototype.editingChanged = null;
-RCControl.prototype.editingDidEnd = null;
-RCControl.prototype.editingDidEndOnExit = null;
-RCControl.prototype.enabled = null;
-RCControl.prototype.highlighted = null;
-RCControl.prototype.selected = null;
-RCControl.prototype.enabled_ = null;
-RCControl.prototype.state_ = null;
-RCControl.prototype.onClick = function() {
-}
-RCControl.prototype.onPress = function() {
-}
-RCControl.prototype.onRelease = function() {
-}
-RCControl.prototype.onOver = function() {
-}
-RCControl.prototype.onOut = function() {
-}
-RCControl.prototype.configureListeners = function(dispatcher) {
-	this.view.onmousedown = $closure(this,"mouseDownHandler");
-	this.view.onmouseup = $closure(this,"mouseUpHandler");
-	this.view.onmouseover = $closure(this,"rollOverHandler");
-	this.view.onmouseout = $closure(this,"rollOutHandler");
-	this.view.onclick = $closure(this,"clickHandler");
-}
-RCControl.prototype.removeListeners = function(dispatcher) {
-	this.view.onmousedown = null;
-	this.view.onmouseup = null;
-	this.view.onmouseover = null;
-	this.view.onmouseout = null;
-	this.view.onclick = null;
-}
-RCControl.prototype.configureDispatchers = function() {
-	this.click = new RCSignal();
-	this.press = new RCSignal();
-	this.release = new RCSignal();
-	this.over = new RCSignal();
-	this.out = new RCSignal();
-}
-RCControl.prototype.mouseDownHandler = function(e) {
-	this.setState(RCControlState.SELECTED);
-	this.onPress();
-}
-RCControl.prototype.mouseUpHandler = function(e) {
-	this.setState(RCControlState.HIGHLIGHTED);
-	this.onRelease();
-}
-RCControl.prototype.rollOverHandler = function(e) {
-	this.setState(RCControlState.HIGHLIGHTED);
-	this.onOver();
-}
-RCControl.prototype.rollOutHandler = function(e) {
-	this.setState(RCControlState.NORMAL);
-	this.onOut();
-}
-RCControl.prototype.clickHandler = function(e) {
-	haxe.Log.trace("click",{ fileName : "RCControl.hx", lineNumber : 141, className : "RCControl", methodName : "clickHandler"});
-	this.onClick();
-}
-RCControl.prototype.setState = function(state) {
-	this.state_ = state;
-}
-RCControl.prototype.getSelected = function() {
-	return this.state_ == RCControlState.SELECTED;
-}
-RCControl.prototype.getEnabled = function() {
-	return this.enabled_;
-}
-RCControl.prototype.setEnabled = function(c) {
-	this.enabled_ = c;
-	if(this.enabled_) this.configureListeners(this); else this.removeListeners(this);
-	return this.enabled_;
-}
-RCControl.prototype.getHighlighted = function() {
-	return this.state_ == RCControlState.HIGHLIGHTED;
-}
-RCControl.prototype.lock = function() {
-	this.setEnabled(false);
-}
-RCControl.prototype.unlock = function() {
-	this.setEnabled(true);
-}
-RCControl.prototype.destroy = function() {
-	this.removeListeners(this);
-	JSView.prototype.destroy.call(this);
-}
-RCControl.prototype.__class__ = RCControl;
-RCButton = function(x,y,skin) {
-	if( x === $_ ) return;
-	this.skin = skin;
-	this.skin.hit.setAlpha(0);
-	this.fixSkin();
-	RCControl.call(this,x,y);
-}
-RCButton.__name__ = ["RCButton"];
-RCButton.__super__ = RCControl;
-for(var k in RCControl.prototype ) RCButton.prototype[k] = RCControl.prototype[k];
-RCButton.prototype.skin = null;
-RCButton.prototype.toggable_ = null;
-RCButton.prototype.setTitle = function(title,state) {
-}
-RCButton.prototype.setTitleColor = function(color,state) {
-}
-RCButton.prototype.currentTitle = null;
-RCButton.prototype.currentTitleColor = null;
-RCButton.prototype.currentImage = null;
-RCButton.prototype.currentBackground = null;
-RCButton.prototype.setState = function(state) {
-	if(this.state_ == state) return;
-	Fugu.safeRemove(this.currentBackground);
-	switch( (state)[1] ) {
-	case 0:
-		this.currentBackground = this.skin.normal.background;
-		this.currentImage = this.skin.normal.label;
-		break;
-	case 1:
-		this.currentBackground = this.skin.highlighted.background;
-		this.currentImage = this.skin.highlighted.label;
-		break;
-	case 2:
-		this.currentBackground = this.skin.disabled.background;
-		this.currentImage = this.skin.disabled.label;
-		break;
-	case 3:
-		this.currentBackground = this.skin.selected.background;
-		this.currentImage = this.skin.selected.label;
-		break;
-	}
-	this.addChild(this.currentBackground);
-	this.addChild(this.currentImage);
-	this.addChild(this.skin.hit);
-	RCControl.prototype.setState.call(this,state);
-}
-RCButton.prototype.fixSkin = function() {
-	if(this.skin.normal.label == null) this.skin.normal.label = this.skin.normal.image;
-	if(this.skin.normal.label == null) this.skin.normal.label = this.skin.normal.otherView;
-	var _g = 0, _g1 = Reflect.fields(this.skin.normal);
-	while(_g < _g1.length) {
-		var key = _g1[_g];
-		++_g;
-		if(key == "colors") continue;
-		if(Reflect.field(this.skin.highlighted,key) == null) this.skin.highlighted[key] = Reflect.field(this.skin.normal,key);
-		if(Reflect.field(this.skin.selected,key) == null) this.skin.selected[key] = Reflect.field(this.skin.highlighted,key);
-		if(Reflect.field(this.skin.disabled,key) == null) this.skin.disabled[key] = Reflect.field(this.skin.normal,key);
-	}
-}
-RCButton.prototype.setObjectColor = function(obj,color) {
-	if(obj == null || color == null) return;
-}
-RCButton.prototype.setObjectBrightness = function(obj,brightness) {
-}
-RCButton.prototype.__class__ = RCButton;
 RCSize = function(w,h) {
 	if( w === $_ ) return;
 	this.width = w;
@@ -1835,7 +1852,7 @@ RCRectangle.prototype.redraw = function() {
 	html += "height:" + this.size.height + "px;";
 	html += "background-color:" + fillColorStyle + ";";
 	if(strokeColorStyle != null) html += "border-style:solid; border-width:" + this.borderThickness + "px; border-color:" + strokeColorStyle + ";";
-	if(this.roundness != null) html += "-moz-border-radius:" + this.roundness + "px; border-radius:" + this.roundness + "px;";
+	if(this.roundness != null) html += "-moz-border-radius:" + this.roundness / 2 + "px; border-radius:" + this.roundness / 2 + "px;";
 	html += "\"></div>";
 	this.view.innerHTML = html;
 }
@@ -2053,6 +2070,28 @@ haxe.Firebug.trace = function(v,inf) {
 	console[type]((inf == null?"":inf.fileName + ":" + inf.lineNumber + " : ") + Std.string(v));
 }
 haxe.Firebug.prototype.__class__ = haxe.Firebug;
+EVMouse = function(p) {
+	if( p === $_ ) return;
+	if(EVMouse.instance != null) throw "You can't instantiate EVMouse because it's used by the framework. ";
+	EVMouse.instance = this;
+	RCSignal.call(this);
+	js.Lib.document.onmouseup = $closure(this,"mouseUpHandler");
+	js.Lib.document.onmousemove = $closure(this,"mouseMoveHandler");
+}
+EVMouse.__name__ = ["EVMouse"];
+EVMouse.__super__ = RCSignal;
+for(var k in RCSignal.prototype ) EVMouse.prototype[k] = RCSignal.prototype[k];
+EVMouse.instance = null;
+EVMouse.prototype.mouseUpHandler = function(e) {
+	haxe.Log.trace("mouseUp",{ fileName : "EVMouse.hx", lineNumber : 31, className : "EVMouse", methodName : "mouseUpHandler"});
+}
+EVMouse.prototype.mouseMoveHandler = function(e) {
+	return;
+	var w = js.Lib.document.body.scrollWidth;
+	var h = js.Lib.document.body.scrollHeight;
+	this.dispatch([w,h],{ fileName : "EVMouse.hx", lineNumber : 41, className : "EVMouse", methodName : "mouseMoveHandler"});
+}
+EVMouse.prototype.__class__ = EVMouse;
 haxe.Timer = function(time_ms) {
 	if( time_ms === $_ ) return;
 	var arr = haxe_timers;
@@ -2159,8 +2198,8 @@ RCSlider = function(x,y,skin) {
 	if( x === $_ ) return;
 	RCControl.call(this,x,y);
 	this.moving_ = false;
-	this.minValue = 0.0;
-	this.maxValue = 100.0;
+	this.minValue_ = 0.0;
+	this.maxValue_ = 100.0;
 	this.value_ = 0.0;
 	this.skin = skin;
 	this.size.width = skin.normal.background.getWidth();
@@ -2168,7 +2207,6 @@ RCSlider = function(x,y,skin) {
 	this.scrubber = skin.normal.otherView;
 	this.addChild(skin.normal.background);
 	this.addChild(this.scrubber);
-	haxe.Log.trace(this.size.width + " > " + this.size.height,{ fileName : "RCSlider.hx", lineNumber : 59, className : "RCSlider", methodName : "new"});
 	this.direction_ = this.size.width > this.size.height?_RCSlider.Direction.horizontal:_RCSlider.Direction.vertical;
 	this.scrubber.onmousedown = $closure(this,"mouseDownHandler");
 	this.scrubber.onmouseover = $closure(this,"rollOverHandler");
@@ -2178,6 +2216,8 @@ RCSlider.__name__ = ["RCSlider"];
 RCSlider.__super__ = RCControl;
 for(var k in RCControl.prototype ) RCSlider.prototype[k] = RCControl.prototype[k];
 RCSlider.prototype.value_ = null;
+RCSlider.prototype.minValue_ = null;
+RCSlider.prototype.maxValue_ = null;
 RCSlider.prototype.moving_ = null;
 RCSlider.prototype.direction_ = null;
 RCSlider.prototype.skin = null;
@@ -2197,21 +2237,25 @@ RCSlider.prototype.setEnabled = function(c) {
 	return this.enabled_ = false;
 }
 RCSlider.prototype.mouseDownHandler = function(e) {
-	haxe.Log.trace("mouseDownHandler",{ fileName : "RCSlider.hx", lineNumber : 88, className : "RCSlider", methodName : "mouseDownHandler"});
-	var bounds_w = 0, bounds_h = 0;
+	haxe.Log.trace("mouseDownHandler",{ fileName : "RCSlider.hx", lineNumber : 90, className : "RCSlider", methodName : "mouseDownHandler"});
+	var bounds_x = 0, bounds_y = 0, bounds_w = 0, bounds_h = 0;
 	switch( (this.direction_)[1] ) {
 	case 0:
 		bounds_w = Math.round(this.size.width - this.scrubber.getWidth());
+		bounds_y = Math.round(this.scrubber.y);
 		break;
 	case 1:
 		bounds_h = Math.round(this.size.height - this.scrubber.getHeight());
+		bounds_x = Math.round(this.scrubber.x);
 		break;
 	}
+	this.scrubber.startDrag(false,new RCRect(bounds_x,bounds_y,bounds_w,bounds_h));
 	RCWindow.target.onmouseup = $closure(this,"mouseUpHandler");
 	RCWindow.target.onmousemove = $closure(this,"mouseMoveHandler");
 }
 RCSlider.prototype.mouseUpHandler = function(e) {
-	haxe.Log.trace("mouseUpHandler",{ fileName : "RCSlider.hx", lineNumber : 107, className : "RCSlider", methodName : "mouseUpHandler"});
+	haxe.Log.trace("mouseUpHandler",{ fileName : "RCSlider.hx", lineNumber : 112, className : "RCSlider", methodName : "mouseUpHandler"});
+	this.scrubber.stopDrag();
 	RCWindow.target.onmouseup = null;
 	RCWindow.target.onmousemove = null;
 }
@@ -2227,8 +2271,8 @@ RCSlider.prototype.mouseMoveHandler = function(e) {
 		y2 = this.size.height - this.scrubber.getHeight();
 		break;
 	}
-	this.value_ = Zeta.lineEquation(this.minValue,this.maxValue,y0,y1,y2);
-	this.valueChanged.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 138, className : "RCSlider", methodName : "mouseMoveHandler"});
+	this.value_ = Zeta.lineEquation(this.minValue_,this.maxValue_,y0,y1,y2);
+	this.valueChanged.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 144, className : "RCSlider", methodName : "mouseMoveHandler"});
 }
 RCSlider.prototype.getValue = function() {
 	return this.value_;
@@ -2239,15 +2283,33 @@ RCSlider.prototype.setValue = function(v) {
 		switch( (this.direction_)[1] ) {
 		case 0:
 			x2 = this.size.width - this.scrubber.getWidth();
-			this.scrubber.setX(Zeta.lineEquationInt(x1,x2,v,this.minValue,this.maxValue));
+			this.scrubber.setX(Zeta.lineEquationInt(x1,x2,v,this.minValue_,this.maxValue_));
 			break;
 		case 1:
 			x2 = this.size.height - this.scrubber.getHeight();
-			this.scrubber.setY(Zeta.lineEquationInt(x1,x2,v,this.minValue,this.maxValue));
+			this.scrubber.setY(Zeta.lineEquationInt(x1,x2,v,this.minValue_,this.maxValue_));
 			break;
 		}
 	}
 	return this.value_ = v;
+}
+RCSlider.prototype.setMinValue = function(v) {
+	haxe.Log.trace("set min " + v,{ fileName : "RCSlider.hx", lineNumber : 174, className : "RCSlider", methodName : "setMinValue"});
+	this.minValue_ = v;
+	this.setValue(this.value_);
+	return v;
+}
+RCSlider.prototype.setMaxValue = function(v) {
+	haxe.Log.trace("set max " + v,{ fileName : "RCSlider.hx", lineNumber : 179, className : "RCSlider", methodName : "setMaxValue"});
+	this.maxValue_ = v;
+	this.setValue(this.value_);
+	return v;
+}
+RCSlider.prototype.setMinimumValueImage = function(v) {
+	return v;
+}
+RCSlider.prototype.setMaximumValueImage = function(v) {
+	return v;
 }
 RCSlider.prototype.overHandler = function(e) {
 }
@@ -2284,8 +2346,11 @@ RCSkin.prototype.__class__ = RCSkin;
 haxe.SKSlider = function(w,h,colors) {
 	if( w === $_ ) return;
 	RCSkin.call(this,colors);
-	this.normal.background = new RCRectangle(0,0,w,h,3355443,1,8);
-	this.normal.otherView = new RCEllipse(0,-h / 2,h * 2,h * 2,16763904);
+	this.normal.background = new RCRectangle(0,0,w,h,6710886,1,8);
+	this.normal.background.addChild(new RCRectangle(4,2,w - 8,2,16777215,0.2));
+	this.normal.otherView = new RCEllipse(0,-h / 2,h * 2,h * 2,3355443);
+	this.normal.otherView.addChild(new RCEllipse(1,1,h * 2 - 2,h * 2 - 2,16763904));
+	this.normal.otherView.addChild(new RCEllipse(3,3,h * 2 - 6,h * 2 - 6,16777215,0.1));
 	this.hit = new JSView(0,0);
 }
 haxe.SKSlider.__name__ = ["haxe","SKSlider"];
@@ -2643,9 +2708,9 @@ RCTextRoll.prototype.timerLoop = null;
 RCTextRoll.prototype.continuous = null;
 RCTextRoll.prototype.text = null;
 RCTextRoll.prototype.viewDidAppear = function() {
-	haxe.Log.trace("viewdidappear",{ fileName : "RCTextRoll.hx", lineNumber : 36, className : "RCTextRoll", methodName : "viewDidAppear"});
+	haxe.Log.trace("viewdidappear",{ fileName : "RCTextRoll.hx", lineNumber : 41, className : "RCTextRoll", methodName : "viewDidAppear"});
 	this.size.height = this.txt1.getHeight();
-	haxe.Log.trace(this.size,{ fileName : "RCTextRoll.hx", lineNumber : 37, className : "RCTextRoll", methodName : "viewDidAppear"});
+	haxe.Log.trace(this.size,{ fileName : "RCTextRoll.hx", lineNumber : 42, className : "RCTextRoll", methodName : "viewDidAppear"});
 	if(this.txt1.getWidth() > this.size.width) {
 		this.txt2 = new RCTextView(Math.round(this.txt1.getWidth() + 20),0,null,this.size.height,this.getText(),this.txt1.properties);
 		this.addChild(this.txt2);
@@ -2714,7 +2779,7 @@ for(var k in RCSignal.prototype ) EVResize.prototype[k] = RCSignal.prototype[k];
 EVResize.prototype.resizeHandler = function(e) {
 	var w = js.Lib.document.body.scrollWidth;
 	var h = js.Lib.document.body.scrollHeight;
-	this.dispatch([w,h],{ fileName : "EVResize.hx", lineNumber : 27, className : "EVResize", methodName : "resizeHandler"});
+	this.dispatch([w,h],{ fileName : "EVResize.hx", lineNumber : 26, className : "EVResize", methodName : "resizeHandler"});
 }
 EVResize.prototype.__class__ = EVResize;
 haxe.remoting.Context = function(p) {
@@ -2771,12 +2836,14 @@ RCWindow.__name__ = ["RCWindow"];
 RCWindow.width = null;
 RCWindow.height = null;
 RCWindow.backgroundColor = null;
+RCWindow.stageMouse = null;
 RCWindow.init = function() {
 	RCWindow.target.style.position = "absolute";
 	RCWindow.target.style.margin = "0px 0px 0px 0px";
 	RCWindow.width = RCWindow.target.scrollWidth;
 	RCWindow.height = RCWindow.target.scrollHeight;
 	RCWindow.setBackgroundColor(3355443);
+	RCWindow.stageMouse = new EVMouse();
 	var url = RCWindow.URL.split("/");
 	url.pop();
 	RCWindow.URL = url.join("/") + "/";
@@ -2805,7 +2872,7 @@ RCWindow.setBackgroundColor = function(color) {
 }
 RCWindow.setTarget = function(id) {
 	RCWindow.target = js.Lib.document.getElementById(id);
-	haxe.Log.trace(RCWindow.target,{ fileName : "RCWindow.hx", lineNumber : 123, className : "RCWindow", methodName : "setTarget"});
+	haxe.Log.trace(RCWindow.target,{ fileName : "RCWindow.hx", lineNumber : 126, className : "RCWindow", methodName : "setTarget"});
 }
 RCWindow.addChild = function(child) {
 	if(child != null) {
@@ -2929,6 +2996,84 @@ RCKeys.prototype.__class__ = RCKeys;
 Keyboard = function() { }
 Keyboard.__name__ = ["Keyboard"];
 Keyboard.prototype.__class__ = Keyboard;
+RCGroup = function(x,y,gapX,gapY,constructor_) {
+	if( x === $_ ) return;
+	JSView.call(this,x,y);
+	this.gapX = gapX;
+	this.gapY = gapY;
+	this.constructor_ = constructor_;
+	this.items = new Array();
+	this.itemPush = new RCSignal();
+	this.itemRemove = new RCSignal();
+}
+RCGroup.__name__ = ["RCGroup"];
+RCGroup.__super__ = JSView;
+for(var k in JSView.prototype ) RCGroup.prototype[k] = JSView.prototype[k];
+RCGroup.prototype.items = null;
+RCGroup.prototype.constructor_ = null;
+RCGroup.prototype.gapX = null;
+RCGroup.prototype.gapY = null;
+RCGroup.prototype.itemPush = null;
+RCGroup.prototype.itemRemove = null;
+RCGroup.prototype.add = function(params,alternativeConstructor) {
+	if(!Reflect.isFunction(this.constructor_) && !Reflect.isFunction(alternativeConstructor)) return;
+	if(alternativeConstructor != null) this.constructor_ = alternativeConstructor;
+	var i = 0;
+	var _g = 0;
+	while(_g < params.length) {
+		var param = params[_g];
+		++_g;
+		var s = this.constructor_(new RCIndexPath(0,i));
+		this.addChild(s);
+		this.items.push(s);
+		i++;
+	}
+	this.keepButtonsArranged();
+}
+RCGroup.prototype.remove = function(i) {
+	Fugu.safeDestroy(this.items[i],null,{ fileName : "RCGroup.hx", lineNumber : 63, className : "RCGroup", methodName : "remove"});
+	this.keepButtonsArranged();
+	this.itemRemove.dispatch([this,new RCIndexPath(0,i)],{ fileName : "RCGroup.hx", lineNumber : 68, className : "RCGroup", methodName : "remove"});
+}
+RCGroup.prototype.keepButtonsArranged = function() {
+	var _g1 = 0, _g = this.items.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var newX = 0.0, newY = 0.0;
+		var new_s = this.items[i];
+		var old_s = this.items[i - 1];
+		if(i != 0) {
+			if(this.gapX != null) newX = old_s.x + old_s.getWidth() + this.gapX;
+			if(this.gapY != null) newY = old_s.y + old_s.getHeight() + this.gapY;
+		}
+		new_s.setX(newX);
+		new_s.setY(newY);
+	}
+}
+RCGroup.prototype.get = function(i) {
+	return this.items[i];
+}
+RCGroup.prototype.iterator = function() {
+	var typedItems = new Array();
+	var _g = 0, _g1 = this.items;
+	while(_g < _g1.length) {
+		var s = _g1[_g];
+		++_g;
+		typedItems.push((function($this) {
+			var $r;
+			var $t = s;
+			if(Std["is"]($t,iterator.T)) $t; else throw "Class cast error";
+			$r = $t;
+			return $r;
+		}(this)));
+	}
+	return typedItems;
+}
+RCGroup.prototype.destroy = function() {
+	Fugu.safeDestroy(this.items,null,{ fileName : "RCGroup.hx", lineNumber : 119, className : "RCGroup", methodName : "destroy"});
+	this.items = null;
+}
+RCGroup.prototype.__class__ = RCGroup;
 RCLine = function(x1,y1,x2,y2,color,alpha,lineWeight) {
 	if( x1 === $_ ) return;
 	if(lineWeight == null) lineWeight = 1;
@@ -3134,6 +3279,24 @@ haxe.Log.clear = function() {
 	js.Boot.__clear_trace();
 }
 haxe.Log.prototype.__class__ = haxe.Log;
+RCIndexPath = function(section,row) {
+	if( section === $_ ) return;
+	this.section = section;
+	this.row = row;
+}
+RCIndexPath.__name__ = ["RCIndexPath"];
+RCIndexPath.prototype.section = null;
+RCIndexPath.prototype.row = null;
+RCIndexPath.prototype.hasNext = function() {
+	return true;
+}
+RCIndexPath.prototype.next = function() {
+	return this;
+}
+RCIndexPath.prototype.toString = function() {
+	return "[RCIndexPath section : " + this.section + ", row : " + this.row + "]";
+}
+RCIndexPath.prototype.__class__ = RCIndexPath;
 Std = function() { }
 Std.__name__ = ["Std"];
 Std["is"] = function(v,t) {
@@ -3388,14 +3551,15 @@ Main.main = function() {
 		RCWindow.init();
 		RCWindow.setBackgroundColor(14540253);
 		var rect = new RCRectangle(0,0,300,150,RCColor.greenColor());
+		RCWindow.addChild(rect);
 		rect.setClipsToBounds(true);
-		rect.setCenter(new RCPoint(RCWindow.width / 2 - RCWindow.width / 4,RCWindow.height / 2));
+		rect.setCenter(new RCPoint(RCWindow.width / 2,RCWindow.height / 2));
 		Main.circ = new RCEllipse(0,0,100,100,RCColor.darkGrayColor());
 		RCWindow.addChild(Main.circ);
-		var a1 = new CATween(Main.circ,{ x : RCWindow.width - 100, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 37, className : "Main", methodName : "main"});
-		var a2 = new CATween(Main.circ,{ x : RCWindow.width - 100, y : RCWindow.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 38, className : "Main", methodName : "main"});
-		var a3 = new CATween(Main.circ,{ x : 0, y : RCWindow.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 39, className : "Main", methodName : "main"});
-		var a4 = new CATween(Main.circ,{ x : 0, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 40, className : "Main", methodName : "main"});
+		var a1 = new CATween(Main.circ,{ x : RCWindow.width - 100, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 39, className : "Main", methodName : "main"});
+		var a2 = new CATween(Main.circ,{ x : RCWindow.width - 100, y : RCWindow.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 40, className : "Main", methodName : "main"});
+		var a3 = new CATween(Main.circ,{ x : 0, y : RCWindow.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 41, className : "Main", methodName : "main"});
+		var a4 = new CATween(Main.circ,{ x : 0, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 42, className : "Main", methodName : "main"});
 		var seq = new CASequence([a1,a2,a3,a4]);
 		seq.start();
 		Main.ph = new RCPhoto(1,1,"../CoreAnimation/3134265_large.jpg");
@@ -3409,16 +3573,18 @@ Main.main = function() {
 		var t = new RCTextView(50,30,null,null,"HTML5",f);
 		RCWindow.addChild(t);
 		var f2 = f.copy();
+		f2.color = 3355443;
 		f2.size = 16;
 		var r = new RCTextRoll(50,60,200,null,"We are working on the HTML5 version of the gallery...",f2);
 		RCWindow.addChild(r);
+		r.start();
 		r.setBackgroundColor(16777215);
 		var k = new RCKeys();
 		k.onLeft = Main.moveLeft;
 		k.onRight = Main.moveRight;
 		var m = new RCMouse(RCWindow.target,rect.view);
 		m.onLeft = function() {
-			haxe.Log.trace("onLeft",{ fileName : "Main.hx", lineNumber : 71, className : "Main", methodName : "main"});
+			haxe.Log.trace("onLeft",{ fileName : "Main.hx", lineNumber : 75, className : "Main", methodName : "main"});
 		};
 		Main.signal = new RCSignal();
 		Main.signal.add(Main.printNr);
@@ -3428,46 +3594,61 @@ Main.main = function() {
 		var _g = 0;
 		while(_g < 5) {
 			var i = _g++;
-			Main.signal.dispatch([Math.random()],{ fileName : "Main.hx", lineNumber : 80, className : "Main", methodName : "main"});
+			Main.signal.dispatch([Math.random()],{ fileName : "Main.hx", lineNumber : 84, className : "Main", methodName : "main"});
 		}
 		var s = new haxe.SKButton("Play");
 		var b = new RCButton(50,200,s);
 		b.onClick = function() {
-			haxe.Log.trace("click",{ fileName : "Main.hx", lineNumber : 93, className : "Main", methodName : "main"});
+			haxe.Log.trace("click",{ fileName : "Main.hx", lineNumber : 97, className : "Main", methodName : "main"});
 		};
 		b.onOver = function() {
-			haxe.Log.trace("over",{ fileName : "Main.hx", lineNumber : 94, className : "Main", methodName : "main"});
+			haxe.Log.trace("over",{ fileName : "Main.hx", lineNumber : 98, className : "Main", methodName : "main"});
 		};
 		b.onOut = function() {
-			haxe.Log.trace("out",{ fileName : "Main.hx", lineNumber : 95, className : "Main", methodName : "main"});
+			haxe.Log.trace("out",{ fileName : "Main.hx", lineNumber : 99, className : "Main", methodName : "main"});
 		};
 		b.onPress = function() {
-			haxe.Log.trace("press",{ fileName : "Main.hx", lineNumber : 96, className : "Main", methodName : "main"});
+			haxe.Log.trace("press",{ fileName : "Main.hx", lineNumber : 100, className : "Main", methodName : "main"});
 		};
 		b.onRelease = function() {
-			haxe.Log.trace("release",{ fileName : "Main.hx", lineNumber : 97, className : "Main", methodName : "main"});
+			haxe.Log.trace("release",{ fileName : "Main.hx", lineNumber : 101, className : "Main", methodName : "main"});
 		};
 		RCWindow.addChild(b);
-		var s1 = new haxe.SKSlider(160,8);
-		var sl = new RCSlider(50,250,s1);
+		var s1 = new haxe.SKButtonRadio();
+		var b1 = new RCButtonRadio(200,200,s1);
+		RCWindow.addChild(b1);
+		var group = new RCGroup(200,230,10,null,Main.createRadioButton);
+		RCWindow.addChild(group);
+		group.add([1,2,3,4,5,5]);
+		var s2 = new haxe.SKSlider(160,8);
+		var sl = new RCSlider(50,250,s2);
+		sl.valueChanged.add(function(e) {
+			haxe.Log.trace(e.getValue(),{ fileName : "Main.hx", lineNumber : 115, className : "Main", methodName : "main"});
+		});
 		RCWindow.addChild(sl);
 	} catch( e ) {
-		haxe.Log.trace(e,{ fileName : "Main.hx", lineNumber : 106, className : "Main", methodName : "main"});
+		haxe.Log.trace(e,{ fileName : "Main.hx", lineNumber : 122, className : "Main", methodName : "main"});
 	}
+}
+Main.createRadioButton = function(indexPath) {
+	haxe.Log.trace("create button at " + indexPath,{ fileName : "Main.hx", lineNumber : 125, className : "Main", methodName : "createRadioButton"});
+	var s = new haxe.SKButtonRadio();
+	var b = new RCButtonRadio(0,0,s);
+	return b;
 }
 Main.resizePhoto = function() {
 	Main.ph.scaleToFill(298,148);
 	return;
-	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 126, className : "Main", methodName : "resizePhoto"});
+	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 147, className : "Main", methodName : "resizePhoto"});
 	anim.repeatCount = 5;
 	anim.autoreverses = true;
 	CoreAnimation.add(anim);
 }
 Main.printNr = function(nr) {
-	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 133, className : "Main", methodName : "printNr"});
+	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 154, className : "Main", methodName : "printNr"});
 }
 Main.printNr2 = function(nr) {
-	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 136, className : "Main", methodName : "printNr2"});
+	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 157, className : "Main", methodName : "printNr2"});
 }
 Main.moveLeft = function() {
 	var _g = Main.circ;
@@ -3478,104 +3659,6 @@ Main.moveRight = function() {
 	_g.setX(_g.x + 10);
 }
 Main.prototype.__class__ = Main;
-Fugu = function() { }
-Fugu.__name__ = ["Fugu"];
-Fugu.safeDestroy = function(obj,destroy,pos) {
-	if(obj == null) return false;
-	var objs = Std["is"](obj,Array)?obj:[obj];
-	var _g = 0;
-	while(_g < objs.length) {
-		var o = objs[_g];
-		++_g;
-		if(o == null) continue;
-		if(destroy == true || destroy == null) try {
-			o.destroy();
-		} catch( e ) {
-			haxe.Log.trace("[Error when destroying object: " + o + ", called from " + Std.string(pos) + "]",{ fileName : "Fugu.hx", lineNumber : 33, className : "Fugu", methodName : "safeDestroy"});
-			haxe.Log.trace(haxe.Stack.toString(haxe.Stack.exceptionStack()),{ fileName : "Fugu.hx", lineNumber : 34, className : "Fugu", methodName : "safeDestroy"});
-		}
-		var parent = null;
-		try {
-			parent = o.parent;
-		} catch( e ) {
-			null;
-		}
-		if(parent != null) {
-			if(parent.contains(o)) parent.removeChild(o);
-		}
-	}
-	return true;
-}
-Fugu.safeRemove = function(obj) {
-	return Fugu.safeDestroy(obj,false,{ fileName : "Fugu.hx", lineNumber : 44, className : "Fugu", methodName : "safeRemove"});
-}
-Fugu.safeAdd = function(target,obj) {
-	if(target == null || obj == null) return false;
-	var objs = Std["is"](obj,Array)?obj:[obj];
-	var _g = 0;
-	while(_g < objs.length) {
-		var o = objs[_g];
-		++_g;
-		if(o != null) target.addChild(o);
-	}
-	return true;
-}
-Fugu.glow = function(target,color,alpha,blur,strength) {
-	if(strength == null) strength = 0.6;
-}
-Fugu.color = function(target,color) {
-}
-Fugu.resetColor = function(target) {
-}
-Fugu.brightness = function(target,brightness) {
-}
-Fugu.align = function(obj,alignment,constraint_w,constraint_h,obj_w,obj_h,delay_x,delay_y) {
-	if(delay_y == null) delay_y = 0;
-	if(delay_x == null) delay_x = 0;
-	if(obj == null) return;
-	var arr = alignment.toLowerCase().split(",");
-	if(obj_w == null) obj_w = obj.getWidth();
-	if(obj_h == null) obj_h = obj.getHeight();
-	obj.setX((function($this) {
-		var $r;
-		switch(arr[0]) {
-		case "l":
-			$r = delay_x;
-			break;
-		case "m":
-			$r = Math.round((constraint_w - obj_w) / 2);
-			break;
-		case "r":
-			$r = Math.round(constraint_w - obj_w - delay_x);
-			break;
-		default:
-			$r = Std.parseInt(arr[0]);
-		}
-		return $r;
-	}(this)));
-	obj.setY((function($this) {
-		var $r;
-		switch(arr[1]) {
-		case "t":
-			$r = delay_y;
-			break;
-		case "m":
-			$r = Math.round((constraint_h - obj_h) / 2);
-			break;
-		case "b":
-			$r = Math.round(constraint_h - obj_h - delay_y);
-			break;
-		default:
-			$r = Std.parseInt(arr[1]);
-		}
-		return $r;
-	}(this)));
-}
-Fugu.stack = function() {
-	var stack = haxe.Stack.exceptionStack();
-	haxe.Log.trace(haxe.Stack.toString(stack),{ fileName : "Fugu.hx", lineNumber : 157, className : "Fugu", methodName : "stack"});
-}
-Fugu.prototype.__class__ = Fugu;
 haxe.Unserializer = function(buf) {
 	if( buf === $_ ) return;
 	this.buf = buf;
@@ -3844,6 +3927,104 @@ haxe.Unserializer.prototype.unserialize = function() {
 	throw "Invalid char " + this.buf.charAt(this.pos) + " at position " + this.pos;
 }
 haxe.Unserializer.prototype.__class__ = haxe.Unserializer;
+Fugu = function() { }
+Fugu.__name__ = ["Fugu"];
+Fugu.safeDestroy = function(obj,destroy,pos) {
+	if(obj == null) return false;
+	var objs = Std["is"](obj,Array)?obj:[obj];
+	var _g = 0;
+	while(_g < objs.length) {
+		var o = objs[_g];
+		++_g;
+		if(o == null) continue;
+		if(destroy == true || destroy == null) try {
+			o.destroy();
+		} catch( e ) {
+			haxe.Log.trace("[Error when destroying object: " + o + ", called from " + Std.string(pos) + "]",{ fileName : "Fugu.hx", lineNumber : 33, className : "Fugu", methodName : "safeDestroy"});
+			haxe.Log.trace(haxe.Stack.toString(haxe.Stack.exceptionStack()),{ fileName : "Fugu.hx", lineNumber : 34, className : "Fugu", methodName : "safeDestroy"});
+		}
+		var parent = null;
+		try {
+			parent = o.parent;
+		} catch( e ) {
+			null;
+		}
+		if(parent != null) {
+			if(parent.contains(o)) parent.removeChild(o);
+		}
+	}
+	return true;
+}
+Fugu.safeRemove = function(obj) {
+	return Fugu.safeDestroy(obj,false,{ fileName : "Fugu.hx", lineNumber : 44, className : "Fugu", methodName : "safeRemove"});
+}
+Fugu.safeAdd = function(target,obj) {
+	if(target == null || obj == null) return false;
+	var objs = Std["is"](obj,Array)?obj:[obj];
+	var _g = 0;
+	while(_g < objs.length) {
+		var o = objs[_g];
+		++_g;
+		if(o != null) target.addChild(o);
+	}
+	return true;
+}
+Fugu.glow = function(target,color,alpha,blur,strength) {
+	if(strength == null) strength = 0.6;
+}
+Fugu.color = function(target,color) {
+}
+Fugu.resetColor = function(target) {
+}
+Fugu.brightness = function(target,brightness) {
+}
+Fugu.align = function(obj,alignment,constraint_w,constraint_h,obj_w,obj_h,delay_x,delay_y) {
+	if(delay_y == null) delay_y = 0;
+	if(delay_x == null) delay_x = 0;
+	if(obj == null) return;
+	var arr = alignment.toLowerCase().split(",");
+	if(obj_w == null) obj_w = obj.getWidth();
+	if(obj_h == null) obj_h = obj.getHeight();
+	obj.setX((function($this) {
+		var $r;
+		switch(arr[0]) {
+		case "l":
+			$r = delay_x;
+			break;
+		case "m":
+			$r = Math.round((constraint_w - obj_w) / 2);
+			break;
+		case "r":
+			$r = Math.round(constraint_w - obj_w - delay_x);
+			break;
+		default:
+			$r = Std.parseInt(arr[0]);
+		}
+		return $r;
+	}(this)));
+	obj.setY((function($this) {
+		var $r;
+		switch(arr[1]) {
+		case "t":
+			$r = delay_y;
+			break;
+		case "m":
+			$r = Math.round((constraint_h - obj_h) / 2);
+			break;
+		case "b":
+			$r = Math.round(constraint_h - obj_h - delay_y);
+			break;
+		default:
+			$r = Std.parseInt(arr[1]);
+		}
+		return $r;
+	}(this)));
+}
+Fugu.stack = function() {
+	var stack = haxe.Stack.exceptionStack();
+	haxe.Log.trace(haxe.Stack.toString(stack),{ fileName : "Fugu.hx", lineNumber : 157, className : "Fugu", methodName : "stack"});
+}
+Fugu.prototype.__class__ = Fugu;
 haxe.SKButton = function(label_str,colors) {
 	if( label_str === $_ ) return;
 	RCSkin.call(this,colors);
@@ -4010,6 +4191,25 @@ if(typeof _RCDraw=='undefined') _RCDraw = {}
 _RCDraw.LineScaleMode = function() { }
 _RCDraw.LineScaleMode.__name__ = ["_RCDraw","LineScaleMode"];
 _RCDraw.LineScaleMode.prototype.__class__ = _RCDraw.LineScaleMode;
+haxe.SKButtonRadio = function(colors) {
+	if( colors === $_ ) return;
+	RCSkin.call(this,colors);
+	var r = 14;
+	this.normal.background = new RCEllipse(0,0,r,r,10066329);
+	this.normal.background.addChild(new RCEllipse(1,1,r - 2,r - 2,16645629));
+	this.normal.label = new JSView(0,0);
+	this.highlighted.background = new RCEllipse(0,0,r,r,3355443);
+	this.highlighted.background.addChild(new RCEllipse(1,1,r - 2,r - 2,10066329));
+	this.highlighted.label = new RCEllipse(r / 2 - 4 / 2,r / 2 - 4 / 2,4,4,16777215);
+	this.selected.background = new RCEllipse(0,0,r,r,3355443);
+	this.selected.background.addChild(new RCEllipse(1,1,r - 2,r - 2,16770816));
+	this.selected.label = new RCEllipse(r / 2 - 4 / 2,r / 2 - 4 / 2,4,4,3355443);
+	this.hit = new RCRectangle(0,0,r,r,16777215);
+}
+haxe.SKButtonRadio.__name__ = ["haxe","SKButtonRadio"];
+haxe.SKButtonRadio.__super__ = RCSkin;
+for(var k in RCSkin.prototype ) haxe.SKButtonRadio.prototype[k] = RCSkin.prototype[k];
+haxe.SKButtonRadio.prototype.__class__ = haxe.SKButtonRadio;
 StringTools = function() { }
 StringTools.__name__ = ["StringTools"];
 StringTools.urlEncode = function(s) {

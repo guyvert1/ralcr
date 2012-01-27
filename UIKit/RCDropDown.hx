@@ -4,7 +4,7 @@
 //
 //  Created by Baluta Cristian on 2008-07-23.
 //  Copyright (c) 2008 milc.ro. All rights reserved.
-//  Copyright (c) 2010 ralcr.com. All rights reserved.
+//  Copyright (c) 2010-2012 ralcr.com. All rights reserved.
 //
 import flash.display.Sprite;
 import flash.display.DisplayObjectContainer;
@@ -13,7 +13,7 @@ import flash.events.Event;
 import flash.events.MouseEvent;
 
 
-class RCDropDown<T:RCControl> extends Sprite {
+class RCDropDown<T:RCControl> extends RCView {
 	
 	var background :DisplayObjectContainer;
 	var scrollView :RCScrollView;

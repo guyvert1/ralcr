@@ -5,7 +5,7 @@
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
 
-class SegmentControl extends RCView {
+class RCSegmentControl extends RCView {
 	
 	var values :Array<String>;
 	var buttons :RCGroupButtons<RCButton>;
@@ -15,9 +15,9 @@ class SegmentControl extends RCView {
 	
 	
 	public function new (x, y, w, h) {
-		super(x, y);
-		this.w = w;
-		this.h = h;
+		super (x, y);
+		this.size.width = w;
+		this.size.height = h;
 	}
 	public function init (values:Array<String>) :Void {
 		this.segmentWidth = Math.round (w / values.length);

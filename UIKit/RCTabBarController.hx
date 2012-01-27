@@ -2,10 +2,8 @@
 //  RCTabBarController
 //
 //  Created by Baluta Cristian on 2011-08-18.
-//  Copyright (c) 2011 ralcr.com. All rights reserved.
+//  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
-import Shortcuts;
-
 
 class TabBarController extends RCView {
 	
@@ -20,9 +18,7 @@ class TabBarController extends RCView {
 	
 	
 	public function new(x, y){
-		super();
-		this.x = x;
-		this.y = y;
+		super(x,y);
 		this.h = 98;
 		viewControllers = new Array<Dynamic>();
 		

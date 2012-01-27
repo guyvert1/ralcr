@@ -2,22 +2,24 @@
 //  RCProgressIndicator
 //
 //  Created by Baluta Cristian on 2009-01-18.
-//  Copyright (c) 2009 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2009-2012 http://ralcr.com. All rights reserved.
 //
-import Shortcuts;
-import flash.display.DisplayObjectContainer;
 
+#if flash
+	import flash.display.DisplayObjectContainer;
+#elseif js
+	typedef DisplayObjectContainer = JSView;
+#end
 
-class RCProgressIndicator extends Sprite {
+class RCProgressIndicator extends RCView {
 	
-	var background :DisplayObjectContainer;
+	public var skin :RCSkin;
+/*	var background :DisplayObjectContainer;
 	var symbol :DisplayObjectContainer;
-	var symbolMask :DisplayObjectContainer;
+	var symbolMask :DisplayObjectContainer;*/
 	
 	public function new (x, y, skin:RCSkin) {
-		super ();
-		this.x = x;
-		this.y = y;
+		super (x, y);
 		
 		// display skin (background, symbol, hit)
 		background = skin.background;
