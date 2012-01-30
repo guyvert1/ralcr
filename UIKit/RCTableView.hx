@@ -11,15 +11,16 @@
 #elseif js
 	import js.Dom;
 	import RCView;
+	private typedef MouseEvent = Event;
 #end
 
-class RCTableView<T:RCControl> extends RCView {
+class RCTableView<T:RCTableViewCell> extends RCView {
 	
 	public var backgroundView :RCRectangle;
 	var contentView :RCView;
 	var scrollIndicator :RCRectangle;
 	
-	var cells :Array<RCTableViewCell>;
+	var cells :Array<T>;
 	public var indexes :Array<String>;
 	public var delegate :Dynamic;
 	public var indexPath :RCIndexPath;
@@ -45,24 +46,23 @@ class RCTableView<T:RCControl> extends RCView {
 		this.oldY = 0;
 		
 		backgroundView = new RCRectangle (0, 0, size.width, size.height, 0x999999, 1, 32);
-		backgroundView.addChild ( new RCRectangle (1, 1, size.width-2, size.height-2, 0xFFFFFF, 1, 30) );
 		this.addChild ( backgroundView );
 		
-		contentView = new Sprite();
+		contentView = new RCRectangle (1, 1, size.width-2, size.height-2, 0xFFFFFF, 1, 30);
 		this.addChild ( contentView );
-		
-		contentMask = new RCRectangle (1, 1, size.width-2, size.height-2, 0xFFFFFF, 1, 30);
-		contentView.mask = contentMask;
-		this.addChild ( contentMask );
+		contentView.clipsToBounds = true;
 		
 		scrollIndicator = new RCRectangle (size.width-10, 1, 6, 50, 0xffffff, .6, 6);
 		scrollIndicator.alpha = 0;
 		this.addChild ( scrollIndicator );
 		
-		cells = new Array<RCTableViewCell>();
+		cells = [];
 		
-		
-		contentView.addEventListener (MouseEvent.MOUSE_DOWN, startDragCells);
+		#if flash
+			contentView.addEventListener (MouseEvent.MOUSE_DOWN, startDragCells);
+		#elseif js
+			contentView.onmousedown = startDragCells;
+		#end
 	}
 	
 	public function init () :Void {
@@ -87,7 +87,7 @@ class RCTableView<T:RCControl> extends RCView {
 	
 	// Table view delegate
 	function clickHandler (e:GroupEvent) :Void {
-		this.dispatchEvent ( e.duplicate() );
+		//this.dispatchEvent ( e.duplicate() );
 	}
 	
 	

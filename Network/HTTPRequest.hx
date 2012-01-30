@@ -1,8 +1,8 @@
 //
-//  Basic Read
+//  HTTPRequest
 //
 //  Created by Baluta Cristian on 2008-09-06.
-//  Copyright (c) 2008 ralcr.com. All rights reserved.
+//  Copyright (c) 2008-2012 ralcr.com. All rights reserved.
 //
 
 #if flash
@@ -10,7 +10,7 @@
 	import flash.net.URLRequest;
 	import flash.net.URLRequestMethod;
 #elseif js
-	typedef URLVariables = Dynamic;
+typedef URLVariables = class URLVariables extends Dynamic{};
 #end
 
 class HTTPRequest extends RCRequest {

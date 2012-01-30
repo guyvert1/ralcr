@@ -1,4 +1,4 @@
-// Used in RCTableView
+// Used in RCTableView and RCGroup
 
 class RCIndexPath {
 	

@@ -14,52 +14,16 @@
 	private typedef MouseEvent = Event;
 #end
 
-private enum Position {
-	left;
-	middle;
-	right;
-	outside;
-	over;
-}
-
 class RCMouse {
 	
-	var _parent :DisplayObjectContainer;
-	var _target :DisplayObjectContainer;
-	var _over	:DisplayObjectContainer;
-	
-	var _last_position :Position;
-	var _interval :haxe.Timer;
-	var _is_idle :Bool;
-	var _is_over :Bool; // mouse is over the "over" object
-	var _w :Int; // set the middle width area
-	
-	inline static var IDLE_TIME :Int = 3000;
-	inline static var MIDDLE_W :Int = 200;
-	
-	
-	/**
-	 * Custom events
-	 */
 	dynamic public function onOver () :Void {}
 	dynamic public function onOut () :Void {}
-	dynamic public function onLeft () :Void {}
-	dynamic public function onMiddle () :Void {}
-	dynamic public function onMiddleOut () :Void {}
-	dynamic public function onRight () :Void {}
 	dynamic public function onClick () :Void {}
 	dynamic public function onDoubleClick () :Void {}
-	dynamic public function onClickLeft () :Void {}
-	dynamic public function onClickMiddle () :Void {}
-	dynamic public function onClickRight () :Void {}
-	dynamic public function onIdle () :Void {}
-	dynamic public function onResume () :Void {}
+	dynamic public function onMove () :Void {}
 	
 	
-	public function new (	parent:DisplayObjectContainer,
-							target:DisplayObjectContainer,
-							?target_over:DisplayObjectContainer)
-	{
+	public function new (target:DisplayObjectContainer) {
 		
 		_w = MIDDLE_W;
 		_parent = parent;

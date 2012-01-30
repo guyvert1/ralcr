@@ -1,27 +1,35 @@
-import flash.display.Sprite;
-import flash.display.MovieClip;
+// Attach something from the assets library
+
+#if flash
+	import flash.display.MovieClip;
+#elseif js
+	import js.Dom;
+	private typedef MovieClip = HtmlDom;
+#end
 
 
-class RCAttach extends Sprite {
+class RCAttach extends RCView {
 	
 	public var target :MovieClip;
-	public var key :String;
+	public var id :String;
 	
 	
-	public function new (x, y, key:String) {
-		super();
-		this.x = x;
-		this.y = y;
-		this.key = key;
+	public function new (x, y, id:String) {
+		super(x,y);
+		this.id = id;
 		
-		try {
-			target = flash.Lib.attach ( key );
-			this.addChild ( target );
-		}
-		catch(e:Dynamic){trace(e);}
+		#if flash
+			try {
+				target = flash.Lib.attach ( id );
+				this.addChild ( target );
+			}
+			catch(e:Dynamic){trace(e);}
+		#elseif js
+			
+		#end
 	}
 	
 	public function clone () :RCAttach {
-		return new RCAttach (this.x, this.y, this.key);
+		return new RCAttach (this.x, this.y, this.id);
 	}
 }

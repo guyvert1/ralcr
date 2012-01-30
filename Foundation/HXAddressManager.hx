@@ -32,9 +32,10 @@ class HXAddressManager {
 	
 	
 	/**
-	 *	Change the page. Call this from anywhere in your application to produce the change
+	 *	Tell hxaddress to change the page.
+	 *  Call this from anywhere in your application to produce the change
 	 */
-	public static function deepLinking (addr:String) :Void {
+	public static function navigateToPage (addr:String) :Void {
 		HXAddress.setValue ("/" + addr);
 	}
 	
@@ -42,9 +43,9 @@ class HXAddressManager {
 	/**
 	 *	Call this function whenever the CHANGE event is dispatched from HXAddress
 	 */
-	static function onChangeHandler (value:String) :Void {
-        HXAddress.setTitle ( formatTitle ( value));
-		call ( HXAddress.getPathNames().shift());
+	static function onChangeHandler (pathNames:Array<String>) :Void {
+        HXAddress.setTitle ( formatTitle ( HXAddress.getValue()));
+		call ( pathNames.shift());
     }
 	
 	static function call (key:String="") :Void {

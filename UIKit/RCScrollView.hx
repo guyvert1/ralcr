@@ -35,7 +35,7 @@ class RCScrollView extends RCView {
 	dynamic public function scrollViewDidEndDragging():Void{}
 	dynamic public function scrollViewDidScrollToTop():Void{}
 	dynamic public function scrollViewDidEndScrollingAnimation():Void{}
-		
+	
 	
 	public function new (x, y, w, h) {
 		super(x, y);

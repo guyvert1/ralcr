@@ -1,5 +1,5 @@
 //
-//  Slider
+//  RCSlider
 //
 //  Created by Baluta Cristian on 2008-06-25.
 //  Copyright (c) 2008-2012 milc.ro. All rights reserved.
@@ -171,12 +171,12 @@ class RCSlider extends RCControl {
 		
 		return value_ = v;
 	}
-	public function setMinValue (v:Float) :Float {trace("set min "+v);
+	public function setMinValue (v:Float) :Float {
 		minValue_ = v;
 		setValue ( value_ );
 		return v;
 	}
-	public function setMaxValue (v:Float) :Float {trace("set max "+v);
+	public function setMaxValue (v:Float) :Float {
 		maxValue_ = v;
 		setValue ( value_ );
 		return v;
@@ -207,17 +207,6 @@ class RCSlider extends RCControl {
 		
 		return h;
 	}*/
-	
-	
-	/**
-	 *  Mouse Over and out effects
-	 */
-	function overHandler (e:MouseEvent) {
-		//Fugu.color ( symbol, symbolColorOver );
-	}
-	function outHandler (e:MouseEvent) {
-		//Fugu.color ( symbol, symbolColorNormal );
-	}
 	
 	
 	

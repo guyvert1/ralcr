@@ -10,7 +10,7 @@
  * @author Rostislav Hristov <http://www.asual.com>
  * @author Mark Ross <http://www.therossman.org>
  * @author Piotr Zema <http://felixz.mark-naegeli.com>
- * Ported to haXe by Baluta Cristian ( http://ralcr.com/ports/swfaddress/ )
+ * Ported to haXe by Baluta Cristian ( http://ralcr.com/projects/classes/address/ )
  */
 
 #if flash
@@ -20,7 +20,7 @@
 #end
 
 typedef HXAddressQueue = {fn:String, param:Dynamic};
-typedef HXAddressSignalListener = String->Void;
+typedef HXAddressSignalListener = Array<String>->Void;
 
 class HXAddress {
 
@@ -113,29 +113,28 @@ class HXAddress {
 	
 	static function _setValueInit (value:String) :Void {
 		_value = value;
-		
+		var pathNames = getPathNames();
 		if (!_init)
-			init.dispatch(_value);
+			init.dispatch(pathNames);
 		else {
-			change.dispatch(_value);
-			externalChange.dispatch(_value);
+			change.dispatch(pathNames);
+			externalChange.dispatch(pathNames);
 		}
 		_initChange = true;
 	}
 	
 	static function _setValue (value:String) :Void {
-		if (isNull (value)) value = '';trace("externalChange "+_value+"=="+value+" && _init="+_init);
+		if (isNull (value)) value = '';
 		if (_value == value && _init) return;
 		if (!_initChange) return;
 		_value = value;
-		
+		var pathNames = getPathNames();
 		if (!_init) {
 			_init = true;
-			init.dispatch(_value);
+			init.dispatch(pathNames);
 		}
-		change.dispatch(_value);
-		externalChange.dispatch(_value);
-		trace("fin");
+		change.dispatch(pathNames);
+		externalChange.dispatch(pathNames);
 	}
 	
 	static function _callQueue () :Void {
@@ -155,16 +154,13 @@ class HXAddress {
 				flash.Lib.getURL ( new flash.net.URLRequest ( URL ), '_self' );
 			#end
 		}
-		else {
+		else if (_queueTimer != null) {
 			_queueTimer.stop();
 			_queueTimer = null;
 		}
 	}
 	
-	static function _call (fn:String, param:Dynamic=null) :Void {
-		
-		if (isNull (param)) param = '';
-		
+	static function _call (fn:String, param:Dynamic='') :Void {
 		if (_availability) {
 			#if js
 				ExternalInterface.call (fn, param);
@@ -224,14 +220,13 @@ class HXAddress {
      * @param target Target window.
      */
 	public static function href (url:String, ?target:String="_self") :Void {
-		if (_availability && isActiveX()) {
+		var js_target = #if js true #else false #end;
+		if (_availability && (isActiveX() || js_target)) {
 			ExternalInterface.call ('SWFAddress.href', url, target);
 			return;
 		}
 		#if flash
 			flash.Lib.getURL (new flash.net.URLRequest(url), target);
-		#elseif js
-			ExternalInterface.call ('SWFAddress.href', url, target);
 		#end
 	}
 	
@@ -243,16 +238,17 @@ class HXAddress {
      * @param handler Optional JavsScript handler code for popup handling.
      */
 	public static function popup (url:String, ?name:String="popup", ?options:String='""', ?handler:String="") :Void {
-		if (_availability && isActiveX() ||
-			ExternalInterface.call ('asual.util.Browser.isSafari'))
+		var js_target = #if js true #else false #end;
+		if (_availability &&
+			(isActiveX() || js_target || ExternalInterface.call ('asual.util.Browser.isSafari')))
 		{
 			ExternalInterface.call ('SWFAddress.popup', url, name, options, handler);
 			return;
 		}
-		var URL = 'javascript:popup=window.open("' + url + '","' + name + '",' + options + ');' + handler + ';void(0);';
-#if flash
-		flash.Lib.getURL ( new flash.net.URLRequest ( URL ), '_self' );
-#end
+		#if flash
+			var URL = 'javascript:popup=window.open("' + url + '","' + name + '",' + options + ');' + handler + ';void(0);';
+			flash.Lib.getURL ( new flash.net.URLRequest ( URL ), '_self' );
+		#end
 	}
 	
 	/**
@@ -289,8 +285,11 @@ class HXAddress {
      * Provides the state of the history setting.
      */
 	public static function getHistory () :Bool {
-		var hasHistory :Dynamic = ExternalInterface.call ('SWFAddress.getHistory');
-		return (_availability) ? (hasHistory == 'true' || hasHistory == true) : false;
+		if (_availability) {
+			var hasHistory :Dynamic = ExternalInterface.call ('SWFAddress.getHistory');
+			return (hasHistory == 'true' || hasHistory == true);
+		}
+		return false;
 	}
 	
 	/**
@@ -322,7 +321,7 @@ class HXAddress {
 	public static function getTitle () :String {
 		var title:String = _availability ? Std.string (ExternalInterface.call ('SWFAddress.getTitle')) : '';
 		if (isNull (title)) title = '';
-		return StringTools.urlDecode ( title );
+		return StringTools.htmlUnescape ( title );
 	}
 	
 	/**
@@ -330,7 +329,7 @@ class HXAddress {
      * @param title Title value.
      */
 	public static function setTitle (title:String) :Void {
-		_call ('SWFAddress.setTitle', StringTools.urlEncode ( StringTools.urlDecode ( title )));
+		_call ('SWFAddress.setTitle', StringTools.htmlEscape ( StringTools.htmlUnescape ( title )));
 	}
 	
 	/**
@@ -339,7 +338,7 @@ class HXAddress {
 	public static function getStatus () :String {
 		var status:String = _availability ? Std.string (ExternalInterface.call ('SWFAddress.getStatus')) : '';
 		if (isNull (status)) status = '';
-		return StringTools.urlDecode ( status );
+		return StringTools.htmlUnescape ( status );
 	}
 	
 	/**
@@ -347,7 +346,7 @@ class HXAddress {
      * @param status Status value.
      */
 	public static function setStatus (status:String) :Void {
-		_call ('SWFAddress.setStatus', StringTools.urlEncode ( StringTools.urlDecode ( status )));
+		_call ('SWFAddress.setStatus', StringTools.htmlEscape ( StringTools.htmlUnescape ( status )));
 	}
 	
 	/**
@@ -361,7 +360,7 @@ class HXAddress {
      * Provides the current deep linking value.
      */
 	public static function getValue () :String {
-		return StringTools.urlDecode ( _strictCheck (_value, false) );//_strictCheck (_value, false);
+		return StringTools.htmlUnescape ( _strictCheck (_value, false) );
 	}
 	
 	/**
@@ -370,17 +369,16 @@ class HXAddress {
      */
 	public static function setValue (value:String) :Void {
 		if (isNull (value)) value = '';
-		//value = StringTools.urlEncode ( StringTools.urlDecode ( _strictCheck (value, true) ) );
-		value = _strictCheck (value, true);
-		trace("setValue "+_value+"=="+value);
+		value = StringTools.htmlEscape ( StringTools.htmlUnescape ( _strictCheck (value, true) ) );
 		if (_value == value) return;
 		_value = value;
 		
 		_call ('SWFAddress.setValue', value);
 		
 		if (_init) {
-			change.dispatch(_value);
-			internalChange.dispatch(_value);
+			var pathNames = getPathNames();
+			change.dispatch(pathNames);
+			internalChange.dispatch(pathNames);
 		} else
 			_initChanged = true;
 	}
@@ -423,7 +421,7 @@ class HXAddress {
 		if (index != -1 && index < value.length) {
 			return value.substr(index + 1);
 		}
-		return '';
+		return null;
 	}
 	
 	/**
@@ -446,7 +444,7 @@ class HXAddress {
 				}
 			}
 		}
-		return '';
+		return null;
 	}
 	
 	/**
@@ -515,10 +513,10 @@ class HXAddressSignal {
 	public function removeAll():Void {
 		listeners = new List<HXAddressSignalListener>();
 	}
-	public function dispatch (args:String) :Void {
+	public function dispatch (args:Array<String>) :Void {
 		for (listener in listeners)
 		try {
-			Reflect.callMethod (null, listener, [args]);
+			Reflect.callMethod (null, listener, [args.copy()]);
 		}
 		catch (e:Dynamic) {
 			trace ("[HXAddressEvent error calling: "+listener+"]");
@@ -530,9 +528,8 @@ class HXAddressSignal {
 class JSExternalInterface {
 	public static var available : Bool = true;
 	public static function addCallback(functionName:String, closure:Dynamic) :Void {
-		// Seems we don't need it
 		switch (functionName) {
-			//case "getSWFAddressValue" : null;
+			//case "getSWFAddressValue" : null;// this one seems is not used in the .js file
 			case "setSWFAddressValue" : SWFAddress.addEventListener ('change', function(e:Dynamic){closure(e.value);});
 		}
 	}
