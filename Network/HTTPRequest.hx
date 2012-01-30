@@ -10,7 +10,9 @@
 	import flash.net.URLRequest;
 	import flash.net.URLRequestMethod;
 #elseif js
-typedef URLVariables = class URLVariables extends Dynamic{};
+	private class URLVariables implements Dynamic { public function new(){} }
+	private typedef URLRequest = Dynamic;
+	private typedef URLRequestMethod = Dynamic;
 #end
 
 class HTTPRequest extends RCRequest {
@@ -28,7 +30,11 @@ class HTTPRequest extends RCRequest {
 	 * Reads a file and returns it's raw data in public "result" variable.
 	 */
 	public function readFile (file:String) :Void {
-		loader.load ( new URLRequest (file) );
+		#if flash
+			loader.load ( new URLRequest (file) );
+		#elseif js
+			load (file);
+		#end
 	}
 	
 	
@@ -47,7 +53,7 @@ class HTTPRequest extends RCRequest {
 	 * Call a custom script and pass some variables
 	 */
 	public function call (script:String, variables_list:Dynamic, ?method:String="POST") :Void {
-		
+		#if flash
 		var variables = new URLVariables();
 		if (variables_list != null)
 			for (f in Reflect.fields (variables_list)) {
@@ -59,5 +65,8 @@ class HTTPRequest extends RCRequest {
 			request.method = method=="POST" ? URLRequestMethod.POST : URLRequestMethod.GET;
 		
 		loader.load ( request );
+		#elseif js
+			
+		#end
 	}
 }

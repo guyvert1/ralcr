@@ -80,7 +80,7 @@ class RCLib {
 	}
 	
 	public function set (key:String, URL:String, ?newDomain:Bool=true) :Bool {
-		//trace("set "+key+", "+URL);
+		trace("set "+key+", "+URL);
 		max ++;
 		
 		if (key == null)
@@ -102,67 +102,25 @@ class RCLib {
 	function loadPhoto (key:String, URL:String) :Void {
 		//trace("load photo "+key+", "+URL);
 		var photo = new RCPhoto (0, 0, URL);
-			photo.onProgress = callback (progressPhoto, key, photo);
-			photo.onComplete = callback (completePhoto, key, photo);
+			photo.onProgress = callback (progressHandler, key, photo);
+			photo.onComplete = callback (completeHandler, key, photo);
 			photo.onError = callback (errorHandler, key, photo);
 	}
 	function loadSwf (key:String, URL:String, ?newDomain:Bool=true) :Void {
 		//trace("load swf "+key+", "+URL);
 		var swf = new RCSwf (0, 0, URL, newDomain);
-			swf.onProgress = callback (progressSwf, key, swf);
-			swf.onComplete = callback (completeSwf, key, swf);
+			swf.onProgress = callback (progressHandler, key, swf);
+			swf.onComplete = callback (completeHandler, key, swf);
 			swf.onError = callback (errorHandler, key, swf);
 	}
 	function loadText (key:String, URL:String) :Void {
 		//trace("load text "+key+", "+URL);
 		var data = new HTTPRequest();
-			data.onProgress = callback (progressData, key, data);
-			data.onComplete = callback (completeData, key, data);
+			data.onProgress = callback (progressHandler, key, data);
+			data.onComplete = callback (completeHandler, key, data);
 			data.onError = callback (errorHandler, key, data);
 			data.readFile ( URL );
 	}
-	
-	
-	/**
-	 *  Keep a reference to he loaded swf
-	 */
-	function progressSwf (key:String, swf:RCSwf) :Void {
-		currentPercentLoaded.set ( key, swf.percentLoaded );
-		totalProgress();
-	}
-	function completeSwf (key:String, swf:RCSwf) :Void {
-		swfList.set ( key, swf );
-		onCompleteHandler();
-	}
-	
-	
-	
-	/**
-	 *  Keep a reference to he loaded swf
-	 */
-	function progressData (key:String, data:HTTPRequest) :Void {
-		currentPercentLoaded.set ( key, data.percentLoaded );
-		totalProgress();
-	}
-	function completeData (key:String, data:HTTPRequest) :Void {
-		dataList.set ( key, data.result );
-		onCompleteHandler();
-	}
-	
-	
-	
-	/**
-	 *  RCPhoto events
-	 */
-	function progressPhoto (key:String, photo:RCPhoto) :Void {
-		currentPercentLoaded.set ( key, photo.percentLoaded );
-		totalProgress();
-	}
-	function completePhoto (key:String, photo:RCPhoto) :Void {
-		photoList.set ( key, photo );
-		onCompleteHandler();
-	}
-	
 	
 	
 	/**
@@ -175,12 +133,24 @@ class RCLib {
 		if (nr >= max)
 			onComplete();
 	}
+	function progressHandler (key:String, obj:Dynamic) :Void {
+		currentPercentLoaded.set ( key, obj.percentLoaded );// All supported objects have this property
+		totalProgress();
+	}
+	function completeHandler (key:String, obj:Dynamic) :Void {
+		switch (Type.getClass(obj)) {
+			case RCSwf : swfList.set ( key, obj );
+			case HTTPRequest : dataList.set ( key, obj.result );
+			case RCPhoto : photoList.set ( key, obj );
+			default : trace("this asset does not belong to any supported category");
+		}
+		onCompleteHandler();
+	}
 	function onCompleteHandler () :Void {
 		nr ++;
 		if (nr >= max)
 			onComplete();
 	}
-	
 	
 	
 	function totalProgress () :Void {

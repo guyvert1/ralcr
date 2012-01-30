@@ -1,8 +1,8 @@
 //
-//  Request a link
+//  Make a http request
 //
 //  Created by Baluta Cristian on 2008-06-25.
-//  Copyright (c) 2008 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2008-2012 http://ralcr.com. All rights reserved.
 //
 
 #if flash
@@ -16,8 +16,19 @@
 	import flash.net.URLRequest;
 	import flash.net.URLVariables;
 	import flash.net.URLRequestMethod;
+	private typedef Result = Event;
 #elseif js
-	
+	import js.Dom;
+	import haxe.Http;
+	private typedef URLLoader = Http;
+	private typedef URLRequest = Http;
+	private typedef URLVariables = Dynamic;
+	private typedef IEventDispatcher = Http;
+	private typedef ProgressEvent = Dynamic;
+	private typedef SecurityErrorEvent = String;
+	private typedef IOErrorEvent = String;
+	private typedef Result = String;
+	private typedef HTTPStatusEvent = Int;
 #end
 
 class RCRequest {
@@ -37,21 +48,24 @@ class RCRequest {
 	dynamic public function onStatus () :Void {}
 	
 	
-	public function new () {
-		loader = new URLLoader();
-		configureListeners ( loader );
-	}
+	public function new () {}
 	
 	/**
 	 * Execute a request
 	 */
-	public function load (URL:String, variables:URLVariables, ?method:String="POST") :Void {
-		
-		var request = new URLRequest ( URL );
-			request.data = variables;
-			request.method = method == "POST" ? URLRequestMethod.POST : URLRequestMethod.GET;
-		
-		loader.load ( request );
+	public function load (URL:String, ?variables:URLVariables, ?method:String="POST") :Void {
+		#if flash
+			loader = new URLLoader();
+			configureListeners ( loader );
+			var request = new URLRequest ( URL );
+				request.data = variables;
+				request.method = method == "POST" ? URLRequestMethod.POST : URLRequestMethod.GET;
+			loader.load ( request );
+		#elseif js
+			loader = new Http ( URL );
+			configureListeners ( loader );
+			loader.request ( method == "POST" ? true : false );
+		#end
 	}
 	
 	
@@ -59,21 +73,33 @@ class RCRequest {
 	 * Configure and remove listeners
 	 */
 	function configureListeners (dispatcher:IEventDispatcher) :Void {
-        dispatcher.addEventListener (Event.OPEN, openHandler);
-        dispatcher.addEventListener (Event.COMPLETE, completeHandler);
-        dispatcher.addEventListener (ProgressEvent.PROGRESS, progressHandler);
-        dispatcher.addEventListener (SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
-        dispatcher.addEventListener (HTTPStatusEvent.HTTP_STATUS, httpStatusHandler);
-        dispatcher.addEventListener (IOErrorEvent.IO_ERROR, ioErrorHandler);
+		#if flash
+			dispatcher.addEventListener (Event.OPEN, openHandler);
+			dispatcher.addEventListener (Event.COMPLETE, completeHandler);
+			dispatcher.addEventListener (ProgressEvent.PROGRESS, progressHandler);
+			dispatcher.addEventListener (SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+			dispatcher.addEventListener (HTTPStatusEvent.HTTP_STATUS, httpStatusHandler);
+			dispatcher.addEventListener (IOErrorEvent.IO_ERROR, ioErrorHandler);
+		#elseif js
+			dispatcher.onData = completeHandler;
+			dispatcher.onError = securityErrorHandler;
+			dispatcher.onStatus = httpStatusHandler;
+		#end
     }
 
 	function removeListeners (dispatcher:IEventDispatcher) :Void {
-        dispatcher.removeEventListener (Event.OPEN, openHandler);
-        dispatcher.removeEventListener (Event.COMPLETE, completeHandler);
-        dispatcher.removeEventListener (ProgressEvent.PROGRESS, progressHandler);
-        dispatcher.removeEventListener (SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
-        dispatcher.removeEventListener (HTTPStatusEvent.HTTP_STATUS, httpStatusHandler);
-        dispatcher.removeEventListener (IOErrorEvent.IO_ERROR, ioErrorHandler);
+		#if flash
+			dispatcher.removeEventListener (Event.OPEN, openHandler);
+			dispatcher.removeEventListener (Event.COMPLETE, completeHandler);
+			dispatcher.removeEventListener (ProgressEvent.PROGRESS, progressHandler);
+			dispatcher.removeEventListener (SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+			dispatcher.removeEventListener (HTTPStatusEvent.HTTP_STATUS, httpStatusHandler);
+			dispatcher.removeEventListener (IOErrorEvent.IO_ERROR, ioErrorHandler);
+		#elseif js
+			dispatcher.onData = null;
+			dispatcher.onError = null;
+			dispatcher.onStatus = null;
+		#end
     }
 	
 	
@@ -84,9 +110,12 @@ class RCRequest {
 		onOpen();
 	}
 	
-	function completeHandler (e:Event) :Void {
-		
-		result = e.target.data;
+	function completeHandler (e:Result) :Void {
+		#if flash
+			result = e.target.data;
+		#elseif js
+			result = e;
+		#end
 		
 		(result.indexOf("error::") != -1)
 		? {
@@ -97,22 +126,33 @@ class RCRequest {
 	}
 	
 	function progressHandler (e:ProgressEvent) :Void {
-		percentLoaded = Math.round ( e.bytesLoaded / e.bytesTotal * 100 );
-		onProgress ();
+		#if flash
+			percentLoaded = Math.round ( e.bytesLoaded / e.bytesTotal * 100 );
+			onProgress ();
+		#end
     }
-	
 	function securityErrorHandler (e:SecurityErrorEvent) :Void {
-		result = e.text;
+		#if flash
+			result = e.text;
+		#elseif js
+			result = e;
+		#end
 		onError();
     }
-	
 	function httpStatusHandler (e:HTTPStatusEvent) :Void {
-		status = e.status;
+		#if flash
+			status = e.status;
+		#elseif js
+			status = e;
+		#end
 		onStatus();
     }
-	
 	function ioErrorHandler (e:IOErrorEvent) :Void {
-		result = e.text;
+		#if flash
+			result = e.text;
+		#elseif js
+			result = e;
+		#end
 		onError();
     }
 	

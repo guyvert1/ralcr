@@ -25,6 +25,7 @@
 	import flash.text.StyleSheet;
 #elseif js
 	import js.Dom;
+	private typedef ApplicationDomain = Dynamic;
 #end
 
 class FontManager {
@@ -57,8 +58,7 @@ class FontManager {
 		_defaultRCFont.color = 0xDDDDDD;
 		_defaultRCFont.leading = 4;
 		_defaultRCFont.letterSpacing = 1;
-		_defaultRCFont.align = flash.text.TextFormatAlign.LEFT;
-		_defaultRCFont.antiAliasType = flash.text.AntiAliasType.ADVANCED;
+		_defaultRCFont.align = "left";
 		_defaultRCFont.html = true;
 		_defaultRCFont.selectable = true;
 		_defaultRCFont.embedFonts = false;
@@ -134,18 +134,18 @@ class FontManager {
 	public static function setCSS (css:String) :Void {
 		instance().setCSSFile ( css );
 	}
-	
+#if flash
 	public static function enumerateFonts () :Array<Dynamic> {
 		init();
 		return Font.enumerateFonts();
 	}
-	
+#end
 	
 	/**
 	 * Register a font that you know for shure exits in the loaded swf
 	 */
 	public static function registerFont (str:String) :Bool {
-		
+		#if flash
 		if (instance().fontsSwfList.length == 0) return false;
 		
 		// Iterate over each swf registered that has fonts inside
@@ -162,6 +162,7 @@ class FontManager {
 				return true;
 			}
 		}
+		#end
 		return false;
 	}
 	
@@ -173,11 +174,11 @@ class FontManager {
 		fontsSwfList.push ( e );
 	}
 	function setCSSFile (css:String) {
-		var cssStyleSheet = new StyleSheet();
-		cssStyleSheet.parseCSS ( css );
-
-		// Store the css stylesheet
-		hash_style.set ("css", cssStyleSheet);
+		#if flash
+			var cssStyleSheet = new StyleSheet();
+				cssStyleSheet.parseCSS ( css );
+			hash_style.set ("css", cssStyleSheet);
+		#end
 	}
 	
 	
@@ -185,6 +186,7 @@ class FontManager {
 	// 1. a:link should be a_link
 	// 2. .heading should be .... (not implemented yet)
 	function createStyle (properties:Dynamic, ?exceptions:Dynamic) :StyleSheet {
+		#if flash
 		// Create new styleSheet 
 		var style = new StyleSheet();
 		
@@ -193,8 +195,10 @@ class FontManager {
 			if (exceptions != null)
 			style.setStyle (StringTools.replace (field, "_", ":"), Reflect.field (exceptions, field));
 		}
+		#elseif js
+			var style = null;
+		#end
 		
 		return style;
 	}
 }
-	

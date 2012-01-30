@@ -55,6 +55,7 @@ class RCPhoto extends RCView {
 		#elseif js
 			loader = cast js.Lib.document.createElement("img");
 			loader.src = URL;
+			untyped loader.draggable = false;
 		#end
 	}
 	
@@ -63,19 +64,17 @@ class RCPhoto extends RCView {
 	 *	Handlers.
 	 */
 	function completeHandler (e:Event) :Void {
-#if (flash || nme)
-		this.size.width = this.lastW = loader.content.width;
-		this.size.height = this.lastH = loader.content.height;
+		#if (flash || nme)
+			this.size.width = this.lastW = loader.content.width;
+			this.size.height = this.lastH = loader.content.height;
+			this.view.addChild ( loader );
+			bitmapize();
+		#elseif js
+			this.size.width = this.lastW = this.width = loader.width;
+			this.size.height = this.lastH = this.height = loader.height;
+			this.view.appendChild ( loader );
+		#end
 		this.isLoaded = true;
-		this.view.addChild ( loader );
-		
-		bitmapize();
-#elseif js
-		this.size.width = this.lastW = this.width = loader.width;
-		this.size.height = this.lastH = this.height = loader.height;
-		this.isLoaded = true;
-		this.view.appendChild ( loader );
-#end
 		onComplete();
 	}
 #if (flash || nme)
@@ -99,7 +98,6 @@ class RCPhoto extends RCView {
 	 * Bitmapize the loaded photo. This will prevent pixelizing when photo is scaled
 	 */
 	function bitmapize () :Void {
-		
 		var d = duplicate();
 		if (d != null) {
 			this.view.removeChild ( loader );
@@ -124,6 +122,19 @@ class RCPhoto extends RCView {
 			d.addChild ( new Bitmap (bitmap, PixelSnapping.AUTO, true) );
 		
 		return d;
+	}
+	
+#elseif js
+	public function duplicate () :RCPhoto {
+/*		var v :Image = untyped js.Lib.document.createElement("img");
+			v.style.width = size.width+"px";
+			v.style.height = size.height+"px";
+			v.style.display = "inline";
+			//v.style.position = "absolute";
+			//v.src = loader.src;
+			v.style.backgroundImage = "url('" + loader.src + "')";
+		return v;*/
+		return new RCPhoto(0,0,loader.src);
 	}
 #end
 	
@@ -154,8 +165,10 @@ class RCPhoto extends RCView {
 	
 	override public function destroy() :Void {
 		removeListeners();
-		//loader.close();
-#if (flash || nme)		loader.unload(); #end
+		#if (flash || nme)
+			//loader.close();
+			loader.unload();
+		#end
 		loader = null;
 	}
 	
