@@ -6,26 +6,25 @@ import Files;
 import FontManager;
 import Fugu;
 import HashArray;
-import Local;
+import HXAddress;
+import HXAddressManager;
 import RCAppDelegate;
 import RCDateTools;
-import RCArray;
+import RCFont;
 import RCIterator;
 import RCLib;
 //import RCLocalization; // Do not compile it because it requires the xml to be present
-import RCNotification;
 import RCMath;
-import RCNotificationCenter;
-import RCSkin;
 import RCSize;
 import RCPoint;
 import RCRect;
-import RCSkinInterface;
-import RCView;
-import RCWindow;
 import RCStringTools;
 import RCUserDefaults;
 import Zeta;
+
+// Events
+import RCNotification;
+import RCNotificationCenter;
 
 // Draw
 import LayerOldTV;
@@ -82,7 +81,6 @@ import caequations.Quint;
 import caequations.Sine;
 // CAT = CoreAnimationTransition
 import CATween;
-//import CATBezier;
 import CATBrightness;
 import CATColors;
 import CATDistort;
@@ -96,6 +94,7 @@ import CATSlide;
 import CATSound;
 import CATText;
 import CATZoom;
+//import CATBezier;
 
 
 // Services
@@ -103,37 +102,39 @@ import Flickr;
 import FlickrURL;
 import YouTube;
 
-// SWFTools
-import SWFAddress;
-import SWFAddressEvent;
-import SWFPages;
-
 // UIKit
 import RCActivityIndicator;
 import RCAlertView;
 import RCAttach;
 import RCButton;
-import RCCheckBox;
+import RCButtonRadio;
 import RCCircularProgressIndicator;
+import RCColor;
 import RCControl;
 import RCCustomCursor;
-import RCGroup;
-import RCGroupButtons;
 import RCDropDown;
+import RCGroup;
+import RCIndexPath;
 import RCKeys;
 import RCMouse;
-import RCMouseGestures;
+import RCGestureRecognizer;
 import RCProgressIndicator;
 import RCRightClick;
 import RCScrollView;
+import RCScrollBar;
+import RCSegmentControl;
+import RCSkin;
 import RCSlider;
 import RCSliderSync;
+import RCSwitch;
 import RCTableView;
 import RCTableViewCell;
 import RCTextView;
 import RCTextInput;
 import RCTextRoll;
 import RCToolTip;
+import RCView;
+import RCWindow;
 
 // Utils
 import CollisionDetection;

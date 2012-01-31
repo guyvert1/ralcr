@@ -54,8 +54,8 @@ class RCPhoto extends RCView {
 			loader.load ( new URLRequest ( URL ), new LoaderContext (true) );
 		#elseif js
 			loader = cast js.Lib.document.createElement("img");
-			loader.src = URL;
 			untyped loader.draggable = false;
+			loader.src = URL;
 		#end
 	}
 	

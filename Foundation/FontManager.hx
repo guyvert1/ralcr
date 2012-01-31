@@ -68,7 +68,7 @@ class FontManager {
 									h1		:{size:16}
 		};
 		
-		registerRCFont ("system", _defaultRCFont); // use with embedFonts = false
+		registerFormat ("system", _defaultRCFont); // use with embedFonts = false
 		registerStyle ("default", _defaultStyleSheetData);
 	}
 	
@@ -91,7 +91,7 @@ class FontManager {
 	 * Register formats and stylesheets
 	 * Data is stored as Objects
 	 */
-	public static function registerRCFont (key:String, data:RCFont) :Void {
+	public static function registerFormat (key:String, data:RCFont) :Void {
 		instance().hash_rcfont.set (key, data);
 	}
 	
@@ -110,7 +110,7 @@ class FontManager {
 	 * key = a give name for the format or stylesheet
 	 * exception = object with properties that should override the original
 	 */
-	static public function getRCFont (?key:String="system", ?exceptions:Dynamic) :RCFont {
+	static public function getFormat (?key:String="system", ?exceptions:Dynamic) :RCFont {
 		return instance().hash_rcfont.get( key ).copy( exceptions );
 	}
 	
