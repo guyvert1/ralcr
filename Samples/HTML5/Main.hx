@@ -113,7 +113,7 @@ class Main {
 		RCWindow.addChild ( group );
 		group.add([1,2,3,4,5,5]);
 		
-		var group = new RCGroupButtons<RCButtonRadio> (200,230,10,null,createRadioButton2);
+		var group = new RCSegmentControl (200,230,10,null,createRadioButton2);
 		RCWindow.addChild ( group );
 		group.add(["1","2","3","4","5"]);
 		
