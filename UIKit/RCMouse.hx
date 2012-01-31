@@ -22,24 +22,21 @@ class RCMouse {
 	dynamic public function onDoubleClick () :Void {}
 	dynamic public function onMove () :Void {}
 	
+	var target :DisplayObjectContainer;
 	
 	public function new (target:DisplayObjectContainer) {
 		
-		_w = MIDDLE_W;
-		_parent = parent;
-		_target = target;
-		_over = (target_over == null) ? target : target_over;//use a different area to attach MouseEvents
-		_is_idle = false;
+		this.target = target;
 		
 		//_target.buttonMode = true;
 		//_over.buttonMode = true;
-		//_parent.doubleClickEnabled = true;
+		//_parent
 		
 		#if (flash || nme)
-			if (_parent != RCWindow.target)
-				_parent.mouseEnabled = true;
-			if (_over != RCWindow.target)
-				_over.mouseEnabled = true;
+			target.doubleClickEnabled = true;
+		
+		#elseif js
+			
 		#end
 		
 		resume();
@@ -50,17 +47,20 @@ class RCMouse {
 	 * Start listening for mouse actions
 	 */
 	public function resume () :Void {
-		
-		_interval = new haxe.Timer ( IDLE_TIME );
-		
 		#if (flash || nme)
-			_over.addEventListener (MouseEvent.ROLL_OVER, mouseOverHandler);
-			_over.addEventListener (MouseEvent.ROLL_OUT, mouseOutHandler);
-			_over.addEventListener (MouseEvent.CLICK, clickHandler);
+			target.addEventListener (MouseEvent.ROLL_OVER, mouseOverHandler);
+			target.addEventListener (MouseEvent.ROLL_OUT, mouseOutHandler);
+			target.addEventListener (MouseEvent.CLICK, clickHandler);
+			target.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+			target.addEventListener (MouseEvent.DOUBLE_CLICK, doubleClickHandler);
+			
 		#elseif js
-			_over.onmouseover = mouseOverHandler;
-			_over.onmouseout = mouseOutHandler;
-			_over.onclick = clickHandler;
+			target.onmouseover = mouseOverHandler;
+			target.onmouseout = mouseOutHandler;
+			target.onclick = clickHandler;
+			target.onmousemove = mouseMoveHandler;
+			target.ondblclick = doubleClickHandler;
+			
 		#end
 	}
 	
@@ -69,18 +69,20 @@ class RCMouse {
 	 * Hold all mouse actions
 	 */
 	public function hold () :Void {
-		
-		_interval.stop();
-		_interval = null;
-		
 		#if (flash || nme)
-			_over.removeEventListener (MouseEvent.ROLL_OVER, mouseOverHandler);
-			_over.removeEventListener (MouseEvent.ROLL_OUT, mouseOutHandler);
-			_over.removeEventListener (MouseEvent.CLICK, clickHandler);
+			target.removeEventListener (MouseEvent.ROLL_OVER, mouseOverHandler);
+			target.removeEventListener (MouseEvent.ROLL_OUT, mouseOutHandler);
+			target.removeEventListener (MouseEvent.CLICK, clickHandler);
+			target.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+			target.removeEventListener (MouseEvent.DOUBLE_CLICK, doubleClickHandler);
+			
 		#elseif js
-			_over.onmouseover = null;
-			_over.onmouseout = null;
-			_over.onclick = null;
+			target.onmouseover = null;
+			target.onmouseout = null;
+			target.onclick = null;
+			target.onmousemove = null;
+			target.ondblclick = null;
+			
 		#end
 	}
 	
@@ -89,92 +91,25 @@ class RCMouse {
 	 * Handlers
 	 */
 	function mouseOverHandler (e:MouseEvent) :Void {
-		_last_position = over;
 		onOver();
-		
-		#if (flash || nme)
-			_parent.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
-			_parent.addEventListener (MouseEvent.DOUBLE_CLICK, doubleClickHandler);
-		#elseif js
-			_over.onmousemove = mouseMoveHandler;
-			_over.ondblclick = doubleClickHandler;
-		#end
 	}
 	function mouseOutHandler (e:MouseEvent) :Void {
-		
-		#if (flash || nme)
-			_parent.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
-			_parent.removeEventListener (MouseEvent.DOUBLE_CLICK, doubleClickHandler);
-		#elseif js
-			_over.onmousemove = null;
-			_over.ondblclick = null;
-		#end
-		
 		onOut();
 	}
-	
 	function mouseMoveHandler (e:MouseEvent) :Void {
-		// for each mousemove reset the counter for going idle
-		_interval.stop();
-		_interval = new haxe.Timer ( IDLE_TIME );
-		_interval.run = goIdle;
-		
-		if (_is_idle) resumeIdle();
-		
-		var position = getPosition(e);
-		
-		if (_last_position == middle && position != middle)
-			onMiddleOut();
-		if (_last_position != position) {
-			_last_position = position;
-			dispatchPosition ( position );
-		}
+		onMove();
 	}
-	
 	function clickHandler (e:MouseEvent) :Void {
-		switch ( getPosition(e) ) {
-			case left:		onClickLeft();		onClick();
-			case right:		onClickRight();		onClick();
-			case middle:	onClickMiddle();	onClick();
-			
-			case outside:	return;
-			case over:		return;
-		}
+		onClick();
 	}
-	
 	function doubleClickHandler (e:MouseEvent) :Void {
 		onDoubleClick();
 	}
 	
-	function dispatchPosition (position:Position) {
-		switch ( position ) {
-			case left:		onLeft();
-			case middle:	onMiddle();
-			case right:		onRight();
-			case outside:	mouseOutHandler ( null );
-			case over:		null;
-		}
-	}
-	
-	
-	/**
-	 * Force to dispatch events even if mouse is not moving
-	 * Usefull if your content was moved but not the mouse
-	 */
-	public function refresh () :Void {
-		mouseMoveHandler ( null );
-	}
-	
-	
-	public function setMiddleWidth (w:Int) {
-		_w = w;
-	}
-	
-	
 	/**
 	 * Returns the position of the mouse to the target
 	 */
-	function getPosition (e:MouseEvent) :Position {
+/*	function getPosition (e:MouseEvent) :Position {
 		#if (flash || nme)
 			if (_parent.mouseX > _target.x && _parent.mouseX < _target.x + _target.width &&
 				_parent.mouseY > _target.y && _parent.mouseY < _target.y + _target.height)
@@ -197,20 +132,7 @@ class RCMouse {
 			}
 		#end
 		return outside;
-	}
-	
-	function goIdle () :Void {
-		_interval.stop();
-		_is_idle = true;
-		onIdle();
-	}
-	
-	function resumeIdle () :Void {
-		_is_idle = false;
-		onResume();
-	}
-	
-	
+	}*/
 	
 	public function destroy() :Void {
 		hold();

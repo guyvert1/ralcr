@@ -1,5 +1,6 @@
 //
 //  RCGroup
+//	This component will align a collection of views horizontally or vertically.
 //
 //  Created by Cristi Baluta on 2011-02-08.
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
@@ -26,7 +27,6 @@ class RCGroup<T:RCView> extends RCView {
 		this.gapY = gapY;
 		this.constructor_ = constructor_;
 		this.items = new Array<T>();
-		//click = new RCSignal<RCGroup->RCIndexPath->Void>();
 		itemPush = new RCSignal<RCIndexPath->Void>();
 		itemRemove = new RCSignal<RCIndexPath->Void>();
 	}
@@ -40,6 +40,7 @@ class RCGroup<T:RCView> extends RCView {
 		
 		if (!Reflect.isFunction (constructor_) && !Reflect.isFunction (alternativeConstructor)) return;
 		if (alternativeConstructor != null) this.constructor_ = alternativeConstructor;
+		if (constructor_ == null) throw "RCGroup needs a constructor to create elements";
 		
 		// push the new values into main array
 		var i = 0;

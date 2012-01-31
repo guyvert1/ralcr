@@ -7,22 +7,19 @@
 
 class RCGroupButtons<T:RCControl> extends RCView {
 	
-	public var gapX :Null<Int>;
-	public var gapY :Null<Int>;
 	var constructButton :String->RCControl;
-	var items :HashArray<RCControl>;
+	var items :HashArray<T>;
 	
-	public var click :RCSignal<RCGroupButtons->RCIndexPath->Void>;
+	public var click :RCSignal<RCGroupButtons<Dynamic>->RCIndexPath->Void>;
 	public var label :String;// currently selected item label
 	
 	
-	public function new (x, y, gapX:Null<Int>, gapY:Null<Int>, constructor:String->RCControl) :Void {
+	public function new (x, y, gapX:Null<Int>, gapY:Null<Int>, constructor_:String->RCControl) :Void {
 		super (x, y);
 		
-		this.gapX = gapX;
-		this.gapY = gapY;
-		this.constructButton = constructor;
-		this.items = new HashArray<RCControl>();
+		this.constructButton = constructor_;
+		this.items = new HashArray<T>();
+		click = new RCSignal<RCGroupButtons<Dynamic>->RCIndexPath->Void>();
 	}
 	
 	
@@ -44,7 +41,7 @@ class RCGroupButtons<T:RCControl> extends RCView {
 			if (items.exists( label )) continue;
 			
 			var b = constructorNow ( label );
-				b.onClick = callback (clickHandler, label);
+				b.click.add ( clickHandler );
 				b.toggable = true;// All the buttons are by default toggable
 			
 			// set the button into hash table
@@ -69,7 +66,7 @@ class RCGroupButtons<T:RCControl> extends RCView {
 		keepButtonsArranged();
 		
 		// dispatch an event that the buttons structure has changed
-		this.dispatchEvent ( new GroupEvent (GroupEvent.REMOVE, label, getPositionForLabel( label )) );
+		//this.dispatchEvent ( new GroupEvent (GroupEvent.REMOVE, label, getPositionForLabel( label )) );
 	}
 	
 	public function update (labels:Array<String>, ?constructor:String->RCControl) :Void {
@@ -104,7 +101,7 @@ class RCGroupButtons<T:RCControl> extends RCView {
 			this.addChild ( new_b );
 		}
 		
-		this.dispatchEvent ( new GroupEvent (GroupEvent.UPDATED, null, -1));
+		//this.dispatchEvent ( new GroupEvent (GroupEvent.UPDATED, null, -1));
 	}
 	
 	public function getIndexPathForLabel (label:String) :Int {
@@ -118,7 +115,7 @@ class RCGroupButtons<T:RCControl> extends RCView {
 	/**
 	 * Select the currently pressed button
 	 * unselect = if set to true, keep selected only the pressed button
-	 * otherwise 
+	 * otherwise
 	 */
 	public function select (label:String, ?can_unselect:Bool=true) :Void {
 		
@@ -185,7 +182,7 @@ class RCGroupButtons<T:RCControl> extends RCView {
 	 */
 	function clickHandler (label:String) :Void {
 		this.label = label;
-		this.dispatchEvent ( new GroupEvent (GroupEvent.CLICK, label, getPositionForLabel( label )) );
+		click.dispatch ( new GroupEvent (GroupEvent.CLICK, label, getPositionForLabel( label )) );
 		onClick();
 	}
 	

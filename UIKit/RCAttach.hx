@@ -25,7 +25,7 @@ class RCAttach extends RCView {
 			}
 			catch(e:Dynamic){trace(e);}
 		#elseif js
-			
+		
 		#end
 	}
 	

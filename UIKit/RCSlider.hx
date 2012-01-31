@@ -19,8 +19,8 @@
 #end
 
 private enum Direction {
-	horizontal;
-	vertical;
+	HORIZONTAL;
+	VERTICAL;
 }
 
 class RCSlider extends RCControl {
@@ -60,7 +60,7 @@ class RCSlider extends RCControl {
 		addChild ( scrubber );
 		
 		// Decide the direction of movement
-		direction_ = (size.width > size.height) ? horizontal : vertical;
+		direction_ = (size.width > size.height) ? HORIZONTAL : VERTICAL;
 		
 		// When the symbol is pressed start to move the slider
 		#if flash
@@ -91,9 +91,9 @@ class RCSlider extends RCControl {
 		var bounds_x:Int=0, bounds_y:Int=0, bounds_w:Int=0, bounds_h:Int=0;
 		
 		switch (direction_) {
-			case horizontal:	bounds_w = Math.round (size.width - scrubber.width);
+			case HORIZONTAL:	bounds_w = Math.round (size.width - scrubber.width);
 								bounds_y = Math.round (scrubber.y);
-			case vertical:		bounds_h = Math.round (size.height - scrubber.height);
+			case VERTICAL:		bounds_h = Math.round (size.height - scrubber.height);
 								bounds_x = Math.round (scrubber.x);
 		}
 		
@@ -130,10 +130,10 @@ class RCSlider extends RCControl {
 		var y0=0.0, y1=0.0, y2=0.0;
 		
 		switch (direction_) {
-			case horizontal:
+			case HORIZONTAL:
 				y0 = scrubber.x;
 				y2 = size.width - scrubber.width;
-			case vertical:
+			case VERTICAL:
 				y0 = scrubber.y;
 				y2 = size.height - scrubber.height;
 		}
@@ -160,10 +160,10 @@ class RCSlider extends RCControl {
 		
 		if (!moving_) {
 			switch (direction_) {
-				case horizontal:
+				case HORIZONTAL:
 					x2 = size.width - scrubber.width;
 					scrubber.x = Zeta.lineEquationInt (x1, x2,  v, minValue_, maxValue_);
-				case vertical:
+				case VERTICAL:
 					x2 = size.height - scrubber.height;
 					scrubber.y = Zeta.lineEquationInt (x1, x2,  v, minValue_, maxValue_);
 			}

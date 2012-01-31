@@ -13,6 +13,7 @@ class Main {
 	static var lin :RCLine;
 	static var ph :RCPhoto;
 	static var circ :RCEllipse;
+	static var req :HTTPRequest;
 	static var signal :RCSignal<Int->Void>;
 	
 	// change the HTML content of a DIV based on its ID
@@ -24,7 +25,10 @@ class Main {
 		//RCWindow.setTarget ("js");
 		RCWindow.backgroundColor = 0xDDDDDD;
 		
-		//RCLib.loadFileWithKey("photo", "../CoreAnimation/3134265_large.jpg");
+		FontManager.init();
+		RCLib.loadFileWithKey("photo", "../CoreAnimation/3134265_large.jpg");
+		RCLib.loadFileWithKey("some_text", "data.txt");
+		RCLib.onComplete = function(){trace("RCLib did finish loading assets"); trace(RCLib.getFileWithKey("some_text"));}
 		
 		var rect = new RCRectangle(0,0, 300, 150, RCColor.greenColor());
 	 	RCWindow.addChild ( rect );
@@ -71,8 +75,8 @@ class Main {
 			k.onLeft = moveLeft;
 			k.onRight = moveRight;
 		
-		var m = new RCMouse( RCWindow.target, rect.view );
-			m.onLeft = function(){ trace("onLeft"); }
+		var m = new RCMouse( rect.view );
+			m.onOver = function(){ trace("onOver"); }
 		
 		signal = new RCSignal<Int->Void>();
 		signal.add ( printNr );
@@ -109,6 +113,10 @@ class Main {
 		RCWindow.addChild ( group );
 		group.add([1,2,3,4,5,5]);
 		
+		var group = new RCGroupButtons<RCButtonRadio> (200,230,10,null,createRadioButton2);
+		RCWindow.addChild ( group );
+		group.add(["1","2","3","4","5"]);
+		
 		// Add slider
 		var s = new haxe.SKSlider(160, 8);
 		var sl = new RCSlider(50, 250, s);
@@ -119,11 +127,21 @@ class Main {
 /*		var swf = new RCSwf(200,0,"../HeartEquation/heart.swf");
 		RCWindow.addChild(swf);*/
 		
+		req = new HTTPRequest();
+		req.onComplete = function (){ trace(req.result); }
+		req.onError = function (){ trace(req.result); }
+		req.onStatus = function (){ trace(req.status); }
+		req.readFile("data.txt");
+		
 		}catch(e:Dynamic){trace(e);}
     }
 	static function createRadioButton (indexPath:RCIndexPath) :RCButtonRadio {
-		trace("create button at "+indexPath);
 		var s = new haxe.SKButtonRadio();
+		var b = new RCButtonRadio(0,0,s);
+		return b;
+	}
+	static function createRadioButton2 (indexPath:RCIndexPath) :RCButtonRadio {
+		var s = new haxe.SKButton("lklklk");
 		var b = new RCButtonRadio(0,0,s);
 		return b;
 	}
@@ -143,6 +161,11 @@ class Main {
 		trace(ph.size.width);*/
 		ph.scaleToFill (300-2, 150-2);
 		//ph.scaleToFit (300-2, 150-2);
+		
+		var ph2 = ph.duplicate();
+		ph2.x = 800;
+		RCWindow.addChild(ph2);
+		
 		return;
 		var anim = new CATween (ph, {x:{fromValue:-ph.width, toValue:ph.width}}, 2, 0, caequations.Cubic.IN_OUT);
 			anim.repeatCount = 5;
@@ -162,20 +185,4 @@ class Main {
 	static function moveRight(){
 		circ.x += 10;
 	}
-	
-	
-/*
-    // function called when the user click on the link
-    static function click() {
-        //setContent("main","Congratulations !");
-		setContent ("main", haxe.Http.requestUrl("data.xml"));
-    }
-	static function clickAsync(xml:String) {
-		trace("click async");
-	    var r = new haxe.Http(xml);
-			//r.setParameter("param","value");
-	    	r.onError = js.Lib.alert;
-	    	r.onData = function(r) { setContent("main", r); }
-	    	r.request(false);
-	}*/
 }
