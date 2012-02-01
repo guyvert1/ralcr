@@ -12,8 +12,8 @@ package  {
 	import flash.events.Event;
 	import flash.Boot;
 	import flash.events.ProgressEvent;
-	public class RCPhoto extends RCView {
-		public function RCPhoto(x : Number = NaN,y : Number = NaN,URL : String = null) : void { if( !flash.Boot.skip_constructor ) {
+	public class RCImage extends RCView {
+		public function RCImage(x : Number = NaN,y : Number = NaN,URL : String = null) : void { if( !flash.Boot.skip_constructor ) {
 			super(x,y);
 			this.load(URL);
 			this.addListeners();
@@ -55,13 +55,13 @@ package  {
 		
 		protected function errorHandler(e : flash.events.ErrorEvent) : void {
 			this.errorMessage = e.toString();
-			haxe.Log.trace(this.errorMessage,{ fileName : "RCPhoto.hx", lineNumber : 68, className : "RCPhoto", methodName : "errorHandler"});
+			haxe.Log.trace(this.errorMessage,{ fileName : "RCImage.hx", lineNumber : 68, className : "RCImage", methodName : "errorHandler"});
 			this.onError();
 		}
 		
 		protected function ioErrorHandler(e : flash.events.IOErrorEvent) : void {
 			this.errorMessage = e.toString();
-			haxe.Log.trace(this.errorMessage,{ fileName : "RCPhoto.hx", lineNumber : 73, className : "RCPhoto", methodName : "ioErrorHandler"});
+			haxe.Log.trace(this.errorMessage,{ fileName : "RCImage.hx", lineNumber : 73, className : "RCImage", methodName : "ioErrorHandler"});
 			this.onError();
 		}
 		

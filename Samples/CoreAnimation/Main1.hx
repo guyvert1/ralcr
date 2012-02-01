@@ -26,7 +26,7 @@ class Main1 {
 	static var timeIn = 2.4;
 	inline static var timeOut = 4;
 	static var container :flash.display.Sprite;
-	static var photo :RCPhoto;
+	static var photo :RCImage;
 	static var m :RCRectangle;
 	static var c = 20;
 	static var particlesTxt :RCTextView;
@@ -77,7 +77,7 @@ class Main1 {
 		container.x = 200;
 		container.y = 50;
 		
-		photo = new RCPhoto (200, 0, "3134265_large.jpg");
+		photo = new RCImage (200, 0, "3134265_large.jpg");
 		photo.onComplete = fadePhoto;
 		RCWindow.addChild ( container );
 		

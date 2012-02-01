@@ -16,7 +16,7 @@ package  {
 		static protected var timeIn : Number = 2.4;
 		static protected var timeOut : int = 4;
 		static protected var container : flash.display.Sprite;
-		static protected var photo : RCPhoto;
+		static protected var photo : RCImage;
 		static protected var m : RCRectangle;
 		static protected var c : int = 20;
 		static protected var particlesTxt : RCTextView;
@@ -44,7 +44,7 @@ package  {
 			Main1.container = new flash.display.Sprite();
 			container.x = 200;
 			container.y = 50;
-			Main1.photo = new RCPhoto(200,0,"3134265_large.jpg");
+			Main1.photo = new RCImage(200,0,"3134265_large.jpg");
 			photo.onComplete = Main1.fadePhoto;
 			RCWindow.addChild(container);
 			Main1.m = new RCRectangle(200,50,500,500,0,0.3);

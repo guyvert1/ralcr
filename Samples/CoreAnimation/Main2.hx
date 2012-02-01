@@ -1,7 +1,7 @@
 import flash.filters.ColorMatrixFilter;
 
 class Main2 {
-	static var photo :RCPhoto;
+	static var photo :RCImage;
 	static var bg :RCRectangle;
 	
 	static function main () :Void {
@@ -9,7 +9,7 @@ class Main2 {
 		RCWindow.init();
 		RCWindow.addChild ( new RCStats (5, 5) );
 		
-		photo = new RCPhoto (200, 0, "3134265_large.jpg");
+		photo = new RCImage (200, 0, "3134265_large.jpg");
 		photo.onComplete = fadePhoto;
 		RCWindow.addChild ( photo );
 		
