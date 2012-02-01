@@ -13,7 +13,7 @@ import flash.events.Event;
 import flash.display.MovieClip;
 
 
-class Pano2VR extends RCPhoto {
+class Pano2VR extends RCImage {
 	
 	var vr :Dynamic;// main MovieClip from loaded swf
 	

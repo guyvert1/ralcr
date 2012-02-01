@@ -1,6 +1,6 @@
 //
 //  RCGroup
-//	This component will align a collection of views horizontally or vertically.
+//	This component will align a collection of views horizontally or vertically or in a matrix
 //
 //  Created by Cristi Baluta on 2011-02-08.
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
@@ -10,13 +10,13 @@
 class RCGroup<T:RCView> extends RCView {
 	
 	var items :Array<T>;
-	var constructor_ :RCIndexPath->T;
+	var constructor_ :RCIndexPath->T;// Javascript conflict names
 	var gapX :Null<Int>;
 	var gapY :Null<Int>;
 	
-	//public var click :RCSignal<RCGroup->RCIndexPath->Void>;
 	public var itemPush :RCSignal<RCIndexPath->Void>;
 	public var itemRemove :RCSignal<RCIndexPath->Void>;
+	public var update :RCSignal<RCGroup<T>->Void>;
 	
 	
 	public function new (x, y, gapX:Null<Int>, gapY:Null<Int>, constructor_:RCIndexPath->T) {
@@ -33,16 +33,16 @@ class RCGroup<T:RCView> extends RCView {
 	
 	
 	/**
-	 *	Add and remove buttons
+	 *	Add and remove items
 	 *	params = a list of parameters to pass to the function that returns our sprite
 	 */
 	public function add (params:Array<Dynamic>, ?alternativeConstructor:RCIndexPath->T) :Void {
 		
 		if (!Reflect.isFunction (constructor_) && !Reflect.isFunction (alternativeConstructor)) return;
 		if (alternativeConstructor != null) this.constructor_ = alternativeConstructor;
-		if (constructor_ == null) throw "RCGroup needs a constructor to create elements";
+		if (constructor_ == null) throw "RCGroup needs passed a constructor function.";
 		
-		// push the new values into main array
+		// Push the new values into the array
 		var i = 0;
 		for (param in params) {
 			// Create a new sprite with the passed function
@@ -51,29 +51,29 @@ class RCGroup<T:RCView> extends RCView {
 			items.push ( s );
 			
 			// dispatch an event that the buttons structure has changed
-			//this.dispatchEvent ( new GroupEvent (GroupEvent.PUSH, null, -1) );
+			itemPush.dispatch ( [new RCIndexPath(0,i)] );
 			i++;
 		}
 		
 		// Keep all items arranged
-		keepButtonsArranged();
+		keepItemsArranged();
 	}
 	
 	public function remove (i:Int) :Void {
 		
 		Fugu.safeDestroy ( items[i] );
 		
-		keepButtonsArranged();
+		keepItemsArranged();
 		
 		// dispatch an event that the buttons structure has changed
-		itemRemove.dispatch ( [this, new RCIndexPath(0,i)] );
+		itemRemove.dispatch ( [new RCIndexPath(0,i)] );
 	}
 	
 	
 	/**
-	 *	Keep all the buttons arranged after an update operation
+	 *	Keep all the items arranged after an update operation
 	 */
-	public function keepButtonsArranged () :Void {
+	public function keepItemsArranged () :Void {
 		
 		// iterate over items
 		for (i in 0...items.length) {
@@ -89,13 +89,14 @@ class RCGroup<T:RCView> extends RCView {
 			new_s.x = newX;
 			new_s.y = newY;
 		}
-		
-		//this.dispatchEvent ( new GroupEvent (GroupEvent.UPDATED, null, -1) );
+		update.dispatch();
+	}
+	override public function viewDidAppear () {
+		//keepItemsArranged();
 	}
 	
-	
 	/**
-	 *	Returns a reference to a specified sprite
+	 *	Returns a reference to a specified view by index
 	 *	Usefull if you want to change it's properties
 	 */
 	public function get (i:Int) :T {

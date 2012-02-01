@@ -35,8 +35,8 @@ class RCSlider extends RCControl {
 	public var minValue (default, setMinValue) :Float;
 	public var maxValue (default, setMaxValue) :Float;
 	public var value (getValue, setValue) :Float;// default 0.0. this value will be pinned to min/max
-	public var minimumValueImage (default, setMinimumValueImage) :RCView;// default is nil
-	public var maximumValueImage (default, setMaximumValueImage) :RCView;
+	public var minimumValueImage (default, setMinimumValueImage) :RCImage;// default is nil
+	public var maximumValueImage (default, setMaximumValueImage) :RCImage;
 	public var background :DisplayObjectContainer;
 	public var scrubber :DisplayObjectContainer;
 
@@ -83,12 +83,44 @@ class RCSlider extends RCControl {
 	
 	
 	/**
+	 *	Functions to move the slider
+	 */
+	function mouseDownHandler (e:MouseEvent) :Void {
+		moving_ = true;
+		RCWindow.target.addEventListener (MouseEvent.MOUSE_UP, onSliderRelease);
+		RCWindow.target.addEventListener (MouseEvent.MOUSE_MOVE, onSliderMove);
+		//this.dispatchEvent ( new SliderEvent (SliderEvent.PRESS, value_) );
+		onSliderMove ( e );
+	}
+	function mouseUpHandler (e:MouseEvent) :Void {
+		moving = false;
+		RCWindow.target.removeEventListener (MouseEvent.MOUSE_UP, onSliderRelease);
+		RCWindow.target.removeEventListener (MouseEvent.MOUSE_MOVE, onSliderMove);
+		//this.dispatchEvent ( new SliderEvent (SliderEvent.RELEASE, value_) );
+	}
+	function onSliderMove (e:MouseEvent) :Void {
+		
+		slider.x = Zeta.limitsInt (this.mouseX-W/2, 0, this.w - W);
+		value_ = Zeta.lineEquation (minValue, maxValue, slider.x, 0, this.w - W);
+		setValue ( value_ );
+		
+		//this.dispatchEvent ( new SliderEvent (SliderEvent.ON_MOVE, value_) );
+		
+	}
+	
+	
+	
+	
+	
+	/**
 	 * Step 1
 	 * Drag the scrubber and listen for mousemove events
 	 */
 	override function mouseDownHandler (e:MouseEvent) {
 		trace("mouseDownHandler");
 		var bounds_x:Int=0, bounds_y:Int=0, bounds_w:Int=0, bounds_h:Int=0;
+		moving_ = true;
+		onSliderMove ( e );
 		
 		switch (direction_) {
 			case HORIZONTAL:	bounds_w = Math.round (size.width - scrubber.width);
@@ -169,11 +201,14 @@ class RCSlider extends RCControl {
 			}
 		}
 		
+		// Set the width of the highlighted state
+		
+		
 		return value_ = v;
 	}
 	public function setMinValue (v:Float) :Float {
 		minValue_ = v;
-		setValue ( value_ );
+		setValue ( value_ );// Refresh the slider elements position
 		return v;
 	}
 	public function setMaxValue (v:Float) :Float {
@@ -181,10 +216,10 @@ class RCSlider extends RCControl {
 		setValue ( value_ );
 		return v;
 	}
-	public function setMinimumValueImage (v:RCView) :RCView {
+	public function setMinimumValueImage (v:RCImage) :RCImage {
 		return v;
 	}
-	public function setMaximumValueImage (v:RCView) :RCView {
+	public function setMaximumValueImage (v:RCImage) :RCImage {
 		return v;
 	}
 	
@@ -193,14 +228,14 @@ class RCSlider extends RCControl {
 	 *	Scale the background and the symbol
 	 *	
 	 */
-/*	function setW (w:Int) :Int {
+/*	function setWidth (w:Int) :Int {
 		if (size.width == null) return w;
 		size.width = w;
 		//TO DO
 		
 		return w;
 	}
-	function setH (h:Int) :Int {
+	function setHeight (h:Int) :Int {
 		if (size.height == null) return h;
 		size.height = h;
 		//TO DO
@@ -210,7 +245,7 @@ class RCSlider extends RCControl {
 	
 	
 	
-	// clean mess
+	// Clean mess
 	override public function destroy () :Void {
 		mouseUpHandler ( null );
 		#if flash

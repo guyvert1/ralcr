@@ -1,45 +1,48 @@
 //
 //  RCTabBarController
 //
-//  Created by Baluta Cristian on 2011-08-18.
+//  Created by Baluta Cristian on 2011-06-09.
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
 
-class TabBarController extends RCView {
+class RCTabBarController extends RCView {
 	
-	inline static var LABELS = ["Info", "Bio", "Bauturi", "Rezultate"];
-	inline static var SYMBOLS = ["SymbolInfo", "SymbolBio", "SymbolDrinks", "SymbolAlarm"];
+	var labels :Array<String>;
+	var symbols :Array<String>;
 	
-	var buttons :RCGroupButtons<RCButton>;
-	dynamic public function onClick () :Void;
-	public var selectedIndex (getIndex, setIndex) :Int;
+	public var tabBar :RCTabBar;
 	public var viewControllers :Array<Dynamic>;
-	public var h :Int;
+	public var selectedIndex (getIndex, setIndex) :Int;
 	
+	public var click :RCSignal<RCTabBarController->Void>;
 	
 	public function new(x, y){
 		super(x,y);
-		this.h = 98;
+		//this.size.height = 98;
 		viewControllers = new Array<Dynamic>();
+		click = new RCSignal<RCTabBarController->Void>();
 		
 		this.addChild ( new RCRectangle (0, 0, 640, 49, 0x222222) );
 		this.addChild ( new RCRectangle (0, 49, 640, 49, 0x000000) );
 		
-		buttons = new RCGroupButtons<RCButton> (0, 3, 6, null, constructButton);
-		buttons.add ( ["0", "1", "2", "3"] );
-		buttons.addEventListener (GroupEvent.CLICK, clickHandler);
-		this.addChild ( buttons );
+		
 	}
-	function constructButton (nr:String) :RCButton {
-		var i = Std.parseInt ( nr );
-		var s = new SkinButtonTabBar ( LABELS[i], SYMBOLS[i], null );
-		var b = new RCButton (0, 0, s);
-			b.toggable = true;
+	public function init (labels:Array<String>, symbols:Array<String>) {
+		this.labels = labels;
+		this.symbols = symbols;
+		
+		tabBar = new RCTabBar (0, 3, 6, null, constructButton);
+		tabBar.add ( labels );
+		tabBar.click.add ( clickHandler );
+		this.addChild ( tabBar );
+	}
+	function constructButton (nr:RCIndexPath) :RCTabBarItem {
+		var s = new SkinButtonTabBar ( labels[nr.row], symbols[nr.row], null );
+		var b = new RCTabBarItem (0, 0, s);
 		return b;
 	}
-	function clickHandler (e:GroupEvent) :Void {
-		setIndex ( e.index );
-		onClick();
+	function clickHandler (s:RCTabBar, e:RCIndexPath) :Void {
+		setIndex ( e.row );
 	}
 	
 	
@@ -47,7 +50,7 @@ class TabBarController extends RCView {
 		return selectedIndex;
 	}
 	public function setIndex (i:Int) :Int {
-		buttons.select ( Std.string(i) );
+		tabBar.select ( Std.string(i) );
 		selectedIndex = i;
 		return getIndex();
 	}
@@ -68,5 +71,4 @@ class TabBarController extends RCView {
 		if (viewControllers[i] == null)
 			viewControllers[i] = view;
 	}
-	
 }

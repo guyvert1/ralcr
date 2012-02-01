@@ -1,12 +1,16 @@
 //
-//  RCCell
+//  RCTableViewCell
 //
 //  Created by Baluta Cristian on 2011-06-30.
-//  Copyright (c) 2011 ralcr.com. All rights reserved.
+//  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
-import flash.geom.Point;
-import flash.events.MouseEvent;
 
+#if flash
+	import flash.events.MouseEvent;
+#elseif js
+	import js.Dom;
+	private typedef MouseEvent = Event;
+#end
 
 class RCTableViewCell extends RCControl {
 	

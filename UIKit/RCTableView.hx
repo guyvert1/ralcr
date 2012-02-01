@@ -1,5 +1,6 @@
 //
 //  RCTableView
+//	A table is a list of items arranged verticaly, 
 //
 //  Created by Baluta Cristian on 2011-06-15.
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
@@ -33,6 +34,7 @@ class RCTableView<T:RCTableViewCell> extends RCView {
 	var dragging :Bool;
 	var inertia :Float;
 	var changeOrder :Bool;
+	var timer :haxe.Timer;
 	
 	
 	public function new (x, y, w, h) {
