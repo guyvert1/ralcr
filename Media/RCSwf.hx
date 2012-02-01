@@ -15,7 +15,7 @@
 	import js.Dom;
 #end
 
-class RCSwf extends RCPhoto {
+class RCSwf extends RCImage {
 	
 	public var target :Dynamic;
 	public var event :Event;
@@ -29,7 +29,7 @@ class RCSwf extends RCPhoto {
 		super (x, y, URL);
 	}
 	
-	override public function load (URL:String) {
+	override public function initWithContentsOfFile (URL:String) {
 		isLoaded = false;
 		percentLoaded = 0;
 		

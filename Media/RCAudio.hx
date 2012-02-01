@@ -1,5 +1,5 @@
 //
-//  Mix
+//  RCAudio
 //
 //  Created by Baluta Cristian on 2008-07-09.
 //  Copyright (c) 2008 http://ralcr.com. All rights reserved.
@@ -20,7 +20,7 @@ import flash.media.SoundTransform;
 import flash.net.URLRequest;
 
 
-class RCMp3 implements RCAudioInterface {
+class RCAudio implements RCAudioInterface {
 	
 	public static var DISPLAY_TIMER_UPDATE_DELAY :Int = 1000;
 	

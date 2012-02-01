@@ -26,7 +26,7 @@
 	typedef IOErrorEvent = Event;
 #end
 
-class RCPhoto extends RCView {
+class RCImage extends RCView {
 	
 	var loader :Loader;
 	
@@ -38,15 +38,27 @@ class RCPhoto extends RCView {
 	dynamic public function onProgress () :Void {}
 	dynamic public function onError () :Void {}
 	
+	// Some convenient methods to create an image
+	//
+	public static function imageNamed (name:String) :RCImage {
+		return new RCImage (0,0,name);
+	}
+	public static function imageWithContentsOfFile (path:String) :RCImage {
+		return new RCImage (0,0,path);
+	}
+	#if flash
+	public static function imageWithData (data:BitmapData) :RCImage {
+		return new RCImage (0,0,null);
+	}
+	#end
 	
 	public function new (x, y, URL:String) {
 		super(x, y);
-		load( URL );
+		initWithContentsOfFile( URL );
 		addListeners();
 	}
 
-
-	public function load (URL:String) {
+	public function initWithContentsOfFile (URL:String) {
 		isLoaded = false;
 		percentLoaded = 0;
 		#if (flash || nme)
@@ -125,7 +137,7 @@ class RCPhoto extends RCView {
 	}
 	
 #elseif js
-	public function duplicate () :RCPhoto {
+	public function duplicate () :RCImage {
 /*		var v :Image = untyped js.Lib.document.createElement("img");
 			v.style.width = size.width+"px";
 			v.style.height = size.height+"px";
@@ -134,7 +146,7 @@ class RCPhoto extends RCView {
 			//v.src = loader.src;
 			v.style.backgroundImage = "url('" + loader.src + "')";
 		return v;*/
-		return new RCPhoto(0,0,loader.src);
+		return new RCImage(0,0,loader.src);
 	}
 #end
 	

@@ -15,7 +15,7 @@ import flash.events.IOErrorEvent;
 import flash.utils.ByteArray;
 
 
-class RCProgressivePhoto extends Sprite {
+class RCProgressiveImage extends Sprite {
 	
 	var loader :Loader;
 	var imageStream :URLStream;

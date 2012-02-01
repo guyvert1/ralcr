@@ -1,18 +1,17 @@
 //
-//  Photo
+//  3D Image simulation
 //
 //  Created by Baluta Cristian on 2008-04-01.
 //  Copyright (c) 2008 http://ralcr.com. All rights reserved.
 //
-import flash.display.Sprite;
-import flash.display.Timer;
-import flash.events.TimerEvent;
+
+import haxe.Timer;
 
 
-class RCPhoto3D extends RCView {
+class RCImageAnimated extends RCView {
 	
-	var photoLeft :RCPhoto;
-	var photoRight :RCPhoto;
+	var photoLeft :RCImage;
+	var photoRight :RCImage;
 	var nrOfLoadedPhotos :Int;
 	var photoToDisplay :Int;
 	
@@ -35,12 +34,12 @@ class RCPhoto3D extends RCView {
 		updateTime = 10;
 		photoToDisplay = 0;
 		
-		photoLeft = new RCPhoto (0, 0, URLLeft);
+		photoLeft = new RCImage (0, 0, URLLeft);
 		photoLeft.onProgress = progressHandler;
 		photoLeft.onError = errorHandler;
 		photoLeft.onComplete = completeHandler;
 		
-		photoRight = new RCPhoto (0, 0, URLRight);
+		photoRight = new RCImage (0, 0, URLRight);
 		photoRight.onProgress = progressHandler;
 		photoRight.onError = errorHandler;
 		photoRight.onComplete = completeHandler;
@@ -55,13 +54,13 @@ class RCPhoto3D extends RCView {
 		nrOfLoadedPhotos ++;
 		
 		if (nrOfLoadedPhotos == 2) {
-			w = lastW = photoLeft.width;
-			h = lastH = photoLeft.height;
+			size.width = lastW = photoLeft.width;
+			size.height = lastH = photoLeft.height;
 			isLoaded = true;
 			onComplete();
 			
 			timer = new Timer ( updateTime );
-			timer.addEventListener (TimerEvent.TIMER, loop);
+			timer.run = loop;
 		}
 	}
 	function loop(_) {
