@@ -29,7 +29,7 @@ class RCLib {
 	
 	static var INSTANCE :RCLib;
 	
-	var photoList :Hash<RCPhoto>;
+	var photoList :Hash<RCImage>;
 	var swfList :Hash<RCSwf>;// Keep a reference to the loaded swf Event in order to acces its assets later
 	var dataList :Hash<String>;
 	var nr :Int;
@@ -72,7 +72,7 @@ class RCLib {
 	 *  RCLib can be initialized only once
 	 */
 	function new () {
-		photoList = new Hash<RCPhoto>();
+		photoList = new Hash<RCImage>();
 		swfList = new Hash<RCSwf>();
 		dataList = new Hash<String>();
 		nr = 0;
@@ -101,7 +101,7 @@ class RCLib {
 	}
 	function loadPhoto (key:String, URL:String) :Void {
 		//trace("load photo "+key+", "+URL);
-		var photo = new RCPhoto (0, 0, URL);
+		var photo = new RCImage (0, 0, URL);
 			photo.onProgress = callback (progressHandler, key, photo);
 			photo.onComplete = callback (completeHandler, key, photo);
 			photo.onError = callback (errorHandler, key, photo);
@@ -138,10 +138,11 @@ class RCLib {
 		totalProgress();
 	}
 	function completeHandler (key:String, obj:Dynamic) :Void {
-		switch (Type.getClass(obj)) {
-			case RCSwf : swfList.set ( key, obj );
-			case HTTPRequest : dataList.set ( key, obj.result );
-			case RCPhoto : photoList.set ( key, obj );
+		// RCImage has some static fields and is causing problems checking non-strings
+		switch (Type.getClassName(Type.getClass(obj))) {
+			case "RCSwf" : swfList.set ( key, obj );
+			case "HTTPRequest" : dataList.set ( key, obj.result );
+			case "RCImage" : photoList.set ( key, obj );
 			default : trace("this asset does not belong to any supported category");
 		}
 		onCompleteHandler();
@@ -167,7 +168,7 @@ class RCLib {
 	
 	
 	/**
-	 *	Attach a Movieclip from the external loaded swf, or duplicate the loaded content from RCPhoto
+	 *	Attach a Movieclip from the external loaded swf, or duplicate the loaded content from RCImage
 	 * 	Can return a Sprite or the class instance
 	 */
 	public function get (key:String, returnAsBitmap:Bool=true) :Dynamic {
