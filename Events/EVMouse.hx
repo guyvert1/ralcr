@@ -12,8 +12,8 @@ class EVMouse extends RCSignal<Bool->Void> {
 	
 	static var instance :EVMouse;
 	
-	public function new () {
-		
+	public function new (?pos:haxe.PosInfos) {
+		trace(pos);
 		if (instance != null) throw "You can't instantiate EVMouse because it's used by the framework. ";
 			instance = this;
 		

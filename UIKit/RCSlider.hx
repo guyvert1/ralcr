@@ -64,13 +64,13 @@ class RCSlider extends RCControl {
 		
 		// When the symbol is pressed start to move the slider
 		#if flash
-			scrubber.addEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
-			scrubber.addEventListener (MouseEvent.MOUSE_OVER, rollOverHandler);
-			scrubber.addEventListener (MouseEvent.MOUSE_OUT, rollOutHandler);
+			view.addEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
+			view.addEventListener (MouseEvent.MOUSE_OVER, rollOverHandler);
+			view.addEventListener (MouseEvent.MOUSE_OUT, rollOutHandler);
 		#elseif js
-			cast(scrubber).onmousedown = mouseDownHandler;
-			cast(scrubber).onmouseover = rollOverHandler;
-			cast(scrubber).onmouseout = rollOutHandler;
+			view.onmousedown = mouseDownHandler;
+			view.onmouseover = rollOverHandler;
+			view.onmouseout = rollOutHandler;
 		#end
 	}
 	override function configureDispatchers () {
@@ -85,38 +85,36 @@ class RCSlider extends RCControl {
 	/**
 	 *	Functions to move the slider
 	 */
-	function mouseDownHandler (e:MouseEvent) :Void {
+	override function mouseDownHandler (e:MouseEvent) :Void {
 		moving_ = true;
-		RCWindow.target.addEventListener (MouseEvent.MOUSE_UP, onSliderRelease);
-		RCWindow.target.addEventListener (MouseEvent.MOUSE_MOVE, onSliderMove);
-		//this.dispatchEvent ( new SliderEvent (SliderEvent.PRESS, value_) );
-		onSliderMove ( e );
+		#if flash
+			RCWindow.stage.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
+			RCWindow.stage.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+		#elseif js
+			RCWindow.target.onmouseup = mouseUpHandler;
+			RCWindow.target.onmousemove = mouseMoveHandler;
+		#end
+		press.dispatch ( [this] );
+		mouseMoveHandler ( e );
 	}
-	function mouseUpHandler (e:MouseEvent) :Void {
-		moving = false;
-		RCWindow.target.removeEventListener (MouseEvent.MOUSE_UP, onSliderRelease);
-		RCWindow.target.removeEventListener (MouseEvent.MOUSE_MOVE, onSliderMove);
-		//this.dispatchEvent ( new SliderEvent (SliderEvent.RELEASE, value_) );
+	override function mouseUpHandler (e:MouseEvent) :Void {
+		moving_ = false;
+		#if flash
+			RCWindow.stage.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
+			RCWindow.stage.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+		#elseif js
+			RCWindow.target.onmouseup = null;
+			RCWindow.target.onmousemove = null;
+		#end
+		release.dispatch ( [this] );
 	}
-	function onSliderMove (e:MouseEvent) :Void {
-		
-		slider.x = Zeta.limitsInt (this.mouseX-W/2, 0, this.w - W);
-		value_ = Zeta.lineEquation (minValue, maxValue, slider.x, 0, this.w - W);
-		setValue ( value_ );
-		
-		//this.dispatchEvent ( new SliderEvent (SliderEvent.ON_MOVE, value_) );
-		
-	}
-	
-	
-	
 	
 	
 	/**
 	 * Step 1
 	 * Drag the scrubber and listen for mousemove events
 	 */
-	override function mouseDownHandler (e:MouseEvent) {
+/*	override function mouseDownHandler (e:MouseEvent) {
 		trace("mouseDownHandler");
 		var bounds_x:Int=0, bounds_y:Int=0, bounds_w:Int=0, bounds_h:Int=0;
 		moving_ = true;
@@ -138,42 +136,27 @@ class RCSlider extends RCControl {
 			RCWindow.target.onmouseup = mouseUpHandler;
 			RCWindow.target.onmousemove = mouseMoveHandler;
 		#end
-	}
-	override function mouseUpHandler (e:MouseEvent) {
-		// When the mouse is released stop dragging the symbol
-		trace("mouseUpHandler");
-		
-		cast(scrubber).stopDrag();
-		
-		#if flash
-			RCWindow.stage.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
-			RCWindow.stage.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
-		#elseif js
-			RCWindow.target.onmouseup = null;
-			RCWindow.target.onmousemove = null;
-		#end
-	}
-	
+	}*/
 	
 	/**
 	 * Set new value when the slider is moving, and dispatch an event
 	 */
 	function mouseMoveHandler (e:MouseEvent) {
 		var y0=0.0, y1=0.0, y2=0.0;
-		
+		#if js trace(e.clientX); #end
 		switch (direction_) {
 			case HORIZONTAL:
-				y0 = scrubber.x;
+				//y0 = scrubber.x;
 				y2 = size.width - scrubber.width;
+				y0 = Zeta.limitsInt (#if js e.clientX #else this.mouseX #end -scrubber.width/2, 0, y2);
 			case VERTICAL:
-				y0 = scrubber.y;
+				//y0 = scrubber.y;
 				y2 = size.height - scrubber.height;
+				y0 = Zeta.limitsInt (this.mouseY-scrubber.height/2, 0, y2);
 		}
 		
-		// set the new percent
-		value_ = Zeta.lineEquation (minValue_, maxValue_,  y0, y1, y2);
-		
-		valueChanged.dispatch ( [this] );
+		// set the new value
+		setValue ( Zeta.lineEquation (minValue_, maxValue_,  y0, y1, y2) );
 		
 		#if flash
 			e.updateAfterEvent();
@@ -189,8 +172,8 @@ class RCSlider extends RCControl {
 	}
 	public function setValue (v:Float) :Float {
 		var x1=0.0, x2=0.0;
-		
-		if (!moving_) {
+		value_ = v;
+		//if (!moving_) {
 			switch (direction_) {
 				case HORIZONTAL:
 					x2 = size.width - scrubber.width;
@@ -199,12 +182,12 @@ class RCSlider extends RCControl {
 					x2 = size.height - scrubber.height;
 					scrubber.y = Zeta.lineEquationInt (x1, x2,  v, minValue_, maxValue_);
 			}
-		}
+			//}
 		
 		// Set the width of the highlighted state
 		
-		
-		return value_ = v;
+		valueChanged.dispatch ( [this] );
+		return value_;
 	}
 	public function setMinValue (v:Float) :Float {
 		minValue_ = v;

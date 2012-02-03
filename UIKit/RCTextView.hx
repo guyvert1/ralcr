@@ -60,8 +60,14 @@ class RCTextView extends RCView {
 		// Create a new textfield
 		target = new TextField();
 		target.embedFonts = properties.embedFonts;
-		target.type = properties.type;
-		target.autoSize = properties.autoSize ? flash.text.TextFieldAutoSize.LEFT : null;
+		target.type = properties.type;//trace(properties.align);
+		target.autoSize = switch (properties.align) {
+			case "center": flash.text.TextFieldAutoSize.CENTER;
+			case "right": flash.text.TextFieldAutoSize.RIGHT;
+			default : flash.text.TextFieldAutoSize.LEFT;
+		};
+		//target.autoSize = properties.autoSize ? flash.text.TextFieldAutoSize.LEFT : null;
+		//trace(target.autoSize);
 		target.antiAliasType = properties.antiAliasType;
 		target.wordWrap = (size.width == null) ? false : true;
 		target.multiline = (size.height == 0) ? false : true;
@@ -119,7 +125,7 @@ class RCTextView extends RCView {
     	//view.style.fontVariant = properties.variant;
 
 		if (size.width != null) setWidth ( size.width );
-		view.style.textAlign = properties.align;
+		//view.style.textAlign = properties.align;
 	}
 	
 #end

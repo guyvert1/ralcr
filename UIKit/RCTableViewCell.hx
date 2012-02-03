@@ -36,7 +36,7 @@ class RCTableViewCell extends RCControl {
 		separatorView = new RCRectangle (0, size.height-1, size.width, 1, 0x999999);
 		this.addChild ( separatorView );
 		
-		titleView = new RCTextView (10, 6, null, null, " ", FontManager.getRCFont("system", {color:0x000000, selectable:false}));
+		titleView = new RCTextView (10, 6, null, null, " ", FontManager.getFormat("system", {color:0x000000, selectable:false}));
 		titleView.y = Math.round ((size.height - titleView.height) / 2);
 		titleView.mouseChildren = false;
 		this.addChild ( titleView );

@@ -11,7 +11,7 @@ import RCWindow;
 class Main {
 	
 	static var lin :RCLine;
-	static var ph :RCPhoto;
+	static var ph :RCImage;
 	static var circ :RCEllipse;
 	static var req :HTTPRequest;
 	static var signal :RCSignal<Int->Void>;
@@ -20,7 +20,7 @@ class Main {
 	static function main() {
 		haxe.Firebug.redirectTraces();
 		trace(#if flash "FLASH" #else "JS" #end);
-		try{
+		try{trace("BEGIN");
 		RCWindow.init();
 		//RCWindow.setTarget ("js");
 		RCWindow.backgroundColor = 0xDDDDDD;
@@ -51,7 +51,7 @@ class Main {
 /*		lin = new RCLine(30,300, 400, 600, 0xff3300);
 		RCWindow.addChild ( lin );*/
 		
-		ph = new RCPhoto(1, 1, "../CoreAnimation/3134265_large.jpg");
+		ph = new RCImage(1, 1, "../CoreAnimation/3134265_large.jpg");
 		ph.onComplete = resizePhoto;
 		rect.addChild ( ph );
 		
@@ -65,8 +65,8 @@ class Main {
 		
 		var f2 = f.copy();
 			f2.color = 0x333333;
-		f2.size = 16;
-		var r = new RCTextRoll (50, 60, 200, null, "We are working on the HTML5 version of the gallery...", f2);
+			f2.size = 16;
+		var r = new RCTextRoll (50, 60, 200, null, "We are working on the HTML5 version of the gallery...", f2.copy());
 		RCWindow.addChild ( r );
 		r.start();
 		r.backgroundColor = 0xFFFFFF;
@@ -108,21 +108,22 @@ class Main {
 		var s = new haxe.SKButtonRadio();
 		var b = new RCButtonRadio(200, 200, s);
 		RCWindow.addChild ( b );
-		
+		trace("1");
 		var group = new RCGroup<RCButtonRadio> (200,230,10,null,createRadioButton);
 		RCWindow.addChild ( group );
 		group.add([1,2,3,4,5,5]);
-		
-		var group = new RCSegmentControl (200,230,10,null,createRadioButton2);
+		trace("1");
+		var group = new RCSegmentedControl (200,300,10,null,createRadioButton2);
 		RCWindow.addChild ( group );
 		group.add(["1","2","3","4","5"]);
-		
+		trace("1");
 		// Add slider
-		var s = new haxe.SKSlider(160, 8);
-		var sl = new RCSlider(50, 250, s);
-		sl.valueChanged.add ( function(e:RCSlider){trace(e.value);} );
+		var s = new haxe.SKSlider(160, 8);trace(1);
+		var sl = new RCSlider(50, 250, s);trace(1);
+		//sl.valueChanged.add ( function(e:RCSlider){trace(e.value);} );
 		RCWindow.addChild ( sl );
 		//sl.maxValue = 500;
+		sl.value = 30;
 		
 /*		var swf = new RCSwf(200,0,"../HeartEquation/heart.swf");
 		RCWindow.addChild(swf);*/
@@ -133,15 +134,16 @@ class Main {
 		req.onStatus = function (){ trace(req.status); }
 		req.readFile("data.txt");
 		
-		}catch(e:Dynamic){trace(e);}
+		}catch(e:Dynamic){Fugu.stack();}
     }
 	static function createRadioButton (indexPath:RCIndexPath) :RCButtonRadio {
+		trace(indexPath);
 		var s = new haxe.SKButtonRadio();
 		var b = new RCButtonRadio(0,0,s);
 		return b;
 	}
-	static function createRadioButton2 (indexPath:RCIndexPath) :RCButtonRadio {
-		var s = new haxe.SKButton("lklklk");
+	static function createRadioButton2 (i:Int) :RCButtonRadio {
+		var s = new haxe.SKButton("lklklk"+Std.random(10));
 		var b = new RCButtonRadio(0,0,s);
 		return b;
 	}

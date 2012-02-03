@@ -15,13 +15,13 @@
 	private typedef MouseEvent = Event;
 #end
 
-class RCTableView<T:RCTableViewCell> extends RCView {
+class RCTableView extends RCView {
 	
 	public var backgroundView :RCRectangle;
 	var contentView :RCView;
 	var scrollIndicator :RCRectangle;
 	
-	var cells :Array<T>;
+	var cells :Array<RCTableViewCell>;
 	public var indexes :Array<String>;
 	public var delegate :Dynamic;
 	public var indexPath :RCIndexPath;
@@ -88,7 +88,7 @@ class RCTableView<T:RCTableViewCell> extends RCView {
 	}
 	
 	// Table view delegate
-	function clickHandler (e:GroupEvent) :Void {
+	function clickHandler (e:RCIndexPath) :Void {
 		//this.dispatchEvent ( e.duplicate() );
 	}
 	
@@ -97,10 +97,13 @@ class RCTableView<T:RCTableViewCell> extends RCView {
 		dragging = true;
 		oldY = this.mouseY;
 		vy = 0;
-		
-		this.addEventListener (Event.ENTER_FRAME, loop);
-		this.addEventListener (MouseEvent.MOUSE_MOVE, mouseMove);
-		RCWindow.stage.addEventListener (MouseEvent.MOUSE_UP, stopDragCells);
+		#if flash
+			this.addEventListener (Event.ENTER_FRAME, loop);
+			this.addEventListener (MouseEvent.MOUSE_MOVE, mouseMove);
+			RCWindow.stage.addEventListener (MouseEvent.MOUSE_UP, stopDragCells);
+		#elseif js
+			
+		#end
 	}
 	function stopDragCells(_){
 		dragging = false;

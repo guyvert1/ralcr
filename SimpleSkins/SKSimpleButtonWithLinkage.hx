@@ -11,10 +11,10 @@ class SKSimpleButtonWithLinkage extends RCSkin {
 		super ( colors );
 		
 		// Attach from library the object with linkage "linkage"
-		up = new RCAttach (0, 0, linkage);
+		normal.label = new RCAttach (0, 0, linkage);
 		
 		// Creates a transparent background for mouse hit area
-		background = new RCRectangle (0, 0, up.width, up.height, 0xFFFFFF, 0);
-		hit = new RCRectangle (0, 0, up.width, up.height, 0xFFFFFF, 0);
+		normal.background = new RCRectangle (0, 0, normal.label.width, normal.label.height, 0xFFFFFF, 0);
+		hit = new RCRectangle (0, 0, normal.label.width, normal.label.height, 0xFFFFFF, 0);
 	}
 }

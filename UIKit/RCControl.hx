@@ -27,15 +27,15 @@ class RCControl extends RCView {
 
 #if nme
 	// TODO
-	public var touchDown :RCSignal<CControl->Void>;// on all touch downs
-	public var touchDownRepeat :RCSignal<CControl->Void>;// on multiple touchdowns (tap count > 1)
-	public var touchDragInside :RCSignal<CControl->Void>;
-	public var touchDragOutside :RCSignal<CControl->Void>;
-	public var touchDragEnter :RCSignal<CControl->Void>;
-	public var touchDragExit :RCSignal<CControl->Void>;
-	public var touchUpInside :RCSignal<CControl->Void>;
-	public var touchUpOutside :RCSignal<CControl->Void>;
-	public var touchCancel :RCSignal<CControl->Void>;
+	public var touchDown :RCSignal<RCControl->Void>;// on all touch downs
+	public var touchDownRepeat :RCSignal<RCControl->Void>;// on multiple touchdowns (tap count > 1)
+	public var touchDragInside :RCSignal<RCControl->Void>;
+	public var touchDragOutside :RCSignal<RCControl->Void>;
+	public var touchDragEnter :RCSignal<RCControl->Void>;
+	public var touchDragExit :RCSignal<RCControl->Void>;
+	public var touchUpInside :RCSignal<RCControl->Void>;
+	public var touchUpOutside :RCSignal<RCControl->Void>;
+	public var touchCancel :RCSignal<RCControl->Void>;
 #end
 	public var click :RCSignal<RCControl->Void>;
 	public var press :RCSignal<RCControl->Void>;

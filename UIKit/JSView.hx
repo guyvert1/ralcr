@@ -23,6 +23,8 @@ class JSView {
 	public var height (getHeight, setHeight) :Float;
 	public var alpha (default, setAlpha) :Float;
 	public var visible (default, setVisible) :Bool;
+	public var mouseX (getMouseX, null) :Float;
+	public var mouseY (getMouseY, null) :Float;
 	
 	var viewMask :HtmlDom;
 	var lastW :Float;
@@ -263,17 +265,16 @@ class JSView {
 		
 	}
 	
-/*	function get_mouseX():Float
-	{
+	function getMouseX () :Float {
+		return untyped view.clientX;
 		if (parent == null) return mouseX;
-		return parent.mouseX - x;
+		return untyped parent.mouseX - x;
 	}
 
-	function get_mouseY():Float
-	{
+	function getMouseY () :Float {
 		if (parent == null) return mouseY;
-		return parent.mouseY - y;
-	}*/
+		return untyped parent.mouseY - y;
+	}
 	
 	
 	// Drawing

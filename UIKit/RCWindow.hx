@@ -57,6 +57,10 @@ class RCWindow {
 			backgroundColor = 0x333333;
 		#end
 		
+		if (stageMouse != null) {
+			trace("You're trying to init twice the RCWindow, but don't worry, the second time is not in effect.");
+			return;
+		}
 		stageMouse = new EVMouse();
 		
 		// Create the url without swf name

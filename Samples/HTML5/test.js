@@ -4,172 +4,316 @@ CATransitionInterface.__name__ = ["CATransitionInterface"];
 CATransitionInterface.prototype.init = null;
 CATransitionInterface.prototype.animate = null;
 CATransitionInterface.prototype.__class__ = CATransitionInterface;
-if(typeof _RCMouse=='undefined') _RCMouse = {}
-_RCMouse.Position = { __ename__ : ["_RCMouse","Position"], __constructs__ : ["left","middle","right","outside","over"] }
-_RCMouse.Position.left = ["left",0];
-_RCMouse.Position.left.toString = $estr;
-_RCMouse.Position.left.__enum__ = _RCMouse.Position;
-_RCMouse.Position.middle = ["middle",1];
-_RCMouse.Position.middle.toString = $estr;
-_RCMouse.Position.middle.__enum__ = _RCMouse.Position;
-_RCMouse.Position.right = ["right",2];
-_RCMouse.Position.right.toString = $estr;
-_RCMouse.Position.right.__enum__ = _RCMouse.Position;
-_RCMouse.Position.outside = ["outside",3];
-_RCMouse.Position.outside.toString = $estr;
-_RCMouse.Position.outside.__enum__ = _RCMouse.Position;
-_RCMouse.Position.over = ["over",4];
-_RCMouse.Position.over.toString = $estr;
-_RCMouse.Position.over.__enum__ = _RCMouse.Position;
-RCMouse = function(parent,target,target_over) {
-	if( parent === $_ ) return;
-	this._w = 200;
-	this._parent = parent;
-	this._target = target;
-	this._over = target_over == null?target:target_over;
-	this._is_idle = false;
+RCMouse = function(target) {
+	if( target === $_ ) return;
+	this.target = target;
 	this.resume();
 }
 RCMouse.__name__ = ["RCMouse"];
-RCMouse.prototype._parent = null;
-RCMouse.prototype._target = null;
-RCMouse.prototype._over = null;
-RCMouse.prototype._last_position = null;
-RCMouse.prototype._interval = null;
-RCMouse.prototype._is_idle = null;
-RCMouse.prototype._is_over = null;
-RCMouse.prototype._w = null;
 RCMouse.prototype.onOver = function() {
 }
 RCMouse.prototype.onOut = function() {
-}
-RCMouse.prototype.onLeft = function() {
-}
-RCMouse.prototype.onMiddle = function() {
-}
-RCMouse.prototype.onMiddleOut = function() {
-}
-RCMouse.prototype.onRight = function() {
 }
 RCMouse.prototype.onClick = function() {
 }
 RCMouse.prototype.onDoubleClick = function() {
 }
-RCMouse.prototype.onClickLeft = function() {
+RCMouse.prototype.onMove = function() {
 }
-RCMouse.prototype.onClickMiddle = function() {
-}
-RCMouse.prototype.onClickRight = function() {
-}
-RCMouse.prototype.onIdle = function() {
-}
-RCMouse.prototype.onResume = function() {
-}
+RCMouse.prototype.target = null;
 RCMouse.prototype.resume = function() {
-	this._interval = new haxe.Timer(3000);
-	this._over.onmouseover = $closure(this,"mouseOverHandler");
-	this._over.onmouseout = $closure(this,"mouseOutHandler");
-	this._over.onclick = $closure(this,"clickHandler");
+	this.target.onmouseover = $closure(this,"mouseOverHandler");
+	this.target.onmouseout = $closure(this,"mouseOutHandler");
+	this.target.onclick = $closure(this,"clickHandler");
+	this.target.onmousemove = $closure(this,"mouseMoveHandler");
+	this.target.ondblclick = $closure(this,"doubleClickHandler");
 }
 RCMouse.prototype.hold = function() {
-	this._interval.stop();
-	this._interval = null;
-	this._over.onmouseover = null;
-	this._over.onmouseout = null;
-	this._over.onclick = null;
+	this.target.onmouseover = null;
+	this.target.onmouseout = null;
+	this.target.onclick = null;
+	this.target.onmousemove = null;
+	this.target.ondblclick = null;
 }
 RCMouse.prototype.mouseOverHandler = function(e) {
-	this._last_position = _RCMouse.Position.over;
 	this.onOver();
-	this._over.onmousemove = $closure(this,"mouseMoveHandler");
-	this._over.ondblclick = $closure(this,"doubleClickHandler");
 }
 RCMouse.prototype.mouseOutHandler = function(e) {
-	this._over.onmousemove = null;
-	this._over.ondblclick = null;
 	this.onOut();
 }
 RCMouse.prototype.mouseMoveHandler = function(e) {
-	this._interval.stop();
-	this._interval = new haxe.Timer(3000);
-	this._interval.run = $closure(this,"goIdle");
-	if(this._is_idle) this.resumeIdle();
-	var position = this.getPosition(e);
-	if(this._last_position == _RCMouse.Position.middle && position != _RCMouse.Position.middle) this.onMiddleOut();
-	if(this._last_position != position) {
-		this._last_position = position;
-		this.dispatchPosition(position);
-	}
+	this.onMove();
 }
 RCMouse.prototype.clickHandler = function(e) {
-	switch( (this.getPosition(e))[1] ) {
-	case 0:
-		this.onClickLeft();
-		this.onClick();
-		break;
-	case 2:
-		this.onClickRight();
-		this.onClick();
-		break;
-	case 1:
-		this.onClickMiddle();
-		this.onClick();
-		break;
-	case 3:
-		return;
-	case 4:
-		return;
-	}
+	this.onClick();
 }
 RCMouse.prototype.doubleClickHandler = function(e) {
 	this.onDoubleClick();
-}
-RCMouse.prototype.dispatchPosition = function(position) {
-	switch( (position)[1] ) {
-	case 0:
-		this.onLeft();
-		break;
-	case 1:
-		this.onMiddle();
-		break;
-	case 2:
-		this.onRight();
-		break;
-	case 3:
-		this.mouseOutHandler(null);
-		break;
-	case 4:
-		null;
-		break;
-	}
-}
-RCMouse.prototype.refresh = function() {
-	this.mouseMoveHandler(null);
-}
-RCMouse.prototype.setMiddleWidth = function(w) {
-	this._w = w;
-}
-RCMouse.prototype.getPosition = function(e) {
-	if(e.clientX > this._target.offsetLeft && e.clientX < this._target.offsetLeft + this._target.offsetWidth && e.clientY > this._target.offsetTop && e.clientY < this._target.offsetTop + this._target.offsetHeight) {
-		var realX = e.clientX - this._target.offsetLeft;
-		if(realX < (this._target.offsetWidth - this._w) / 2) return _RCMouse.Position.left; else if(realX > (this._target.offsetWidth - this._w) / 2 + this._w) return _RCMouse.Position.right; else return _RCMouse.Position.middle;
-	}
-	return _RCMouse.Position.outside;
-}
-RCMouse.prototype.goIdle = function() {
-	this._interval.stop();
-	this._is_idle = true;
-	this.onIdle();
-}
-RCMouse.prototype.resumeIdle = function() {
-	this._is_idle = false;
-	this.onResume();
 }
 RCMouse.prototype.destroy = function() {
 	this.hold();
 	this.mouseOutHandler(null);
 }
 RCMouse.prototype.__class__ = RCMouse;
+RCLib = function(p) {
+	if( p === $_ ) return;
+	this.photoList = new Hash();
+	this.swfList = new Hash();
+	this.dataList = new Hash();
+	this.nr = 0;
+	this.max = 0;
+}
+RCLib.__name__ = ["RCLib"];
+RCLib.INSTANCE = null;
+RCLib.errorMessage = null;
+RCLib.currentPercentLoaded = null;
+RCLib.percentLoaded = null;
+RCLib.useCache = null;
+RCLib.onComplete = function() {
+}
+RCLib.onProgress = function() {
+}
+RCLib.onError = function() {
+}
+RCLib.init = function() {
+	if(RCLib.INSTANCE != null) return;
+	RCLib.INSTANCE = new RCLib();
+	RCLib.currentPercentLoaded = new Hash();
+	RCLib.useCache = false;
+}
+RCLib.instance = function() {
+	RCLib.init();
+	return RCLib.INSTANCE;
+}
+RCLib.loadFileWithKey = function(key,URL) {
+	return RCLib.instance().set(key,URL);
+}
+RCLib.loadFontWithKey = function(key,URL) {
+	return RCLib.instance().set(key,URL,false);
+}
+RCLib.getFileWithKey = function(key,returnAsBitmap) {
+	if(returnAsBitmap == null) returnAsBitmap = true;
+	return RCLib.instance().get(key,returnAsBitmap);
+}
+RCLib.prototype.photoList = null;
+RCLib.prototype.swfList = null;
+RCLib.prototype.dataList = null;
+RCLib.prototype.nr = null;
+RCLib.prototype.max = null;
+RCLib.prototype.set = function(key,URL,newDomain) {
+	if(newDomain == null) newDomain = true;
+	haxe.Log.trace("set " + key + ", " + URL,{ fileName : "RCLib.hx", lineNumber : 83, className : "RCLib", methodName : "set"});
+	this.max++;
+	if(key == null) key = Std.string(Math.random());
+	if(URL.toLowerCase().indexOf(".swf") != -1) this.loadSwf(key,URL,newDomain); else if(URL.toLowerCase().indexOf(".xml") != -1 || URL.toLowerCase().indexOf(".txt") != -1 || URL.toLowerCase().indexOf(".css") != -1) this.loadText(key,URL); else this.loadPhoto(key,URL);
+	return true;
+}
+RCLib.prototype.loadPhoto = function(key,URL) {
+	var photo = new RCImage(0,0,URL);
+	photo.onProgress = (function(f,a1,a2) {
+		return function() {
+			return f(a1,a2);
+		};
+	})($closure(this,"progressHandler"),key,photo);
+	photo.onComplete = (function(f,a1,a2) {
+		return function() {
+			return f(a1,a2);
+		};
+	})($closure(this,"completeHandler"),key,photo);
+	photo.onError = (function(f,a1,a2) {
+		return function() {
+			return f(a1,a2);
+		};
+	})($closure(this,"errorHandler"),key,photo);
+}
+RCLib.prototype.loadSwf = function(key,URL,newDomain) {
+	if(newDomain == null) newDomain = true;
+	var swf = new RCSwf(0,0,URL,newDomain);
+	swf.onProgress = (function(f,a1,a2) {
+		return function() {
+			return f(a1,a2);
+		};
+	})($closure(this,"progressHandler"),key,swf);
+	swf.onComplete = (function(f,a1,a2) {
+		return function() {
+			return f(a1,a2);
+		};
+	})($closure(this,"completeHandler"),key,swf);
+	swf.onError = (function(f,a1,a2) {
+		return function() {
+			return f(a1,a2);
+		};
+	})($closure(this,"errorHandler"),key,swf);
+}
+RCLib.prototype.loadText = function(key,URL) {
+	var data = new HTTPRequest();
+	data.onProgress = (function(f,a1,a2) {
+		return function() {
+			return f(a1,a2);
+		};
+	})($closure(this,"progressHandler"),key,data);
+	data.onComplete = (function(f,a1,a2) {
+		return function() {
+			return f(a1,a2);
+		};
+	})($closure(this,"completeHandler"),key,data);
+	data.onError = (function(f,a1,a2) {
+		return function() {
+			return f(a1,a2);
+		};
+	})($closure(this,"errorHandler"),key,data);
+	data.readFile(URL);
+}
+RCLib.prototype.errorHandler = function(key,media) {
+	this.max--;
+	RCLib.onError();
+	if(this.nr >= this.max) RCLib.onComplete();
+}
+RCLib.prototype.progressHandler = function(key,obj) {
+	RCLib.currentPercentLoaded.set(key,obj.percentLoaded);
+	this.totalProgress();
+}
+RCLib.prototype.completeHandler = function(key,obj) {
+	switch(Type.getClassName(Type.getClass(obj))) {
+	case "RCSwf":
+		this.swfList.set(key,obj);
+		break;
+	case "HTTPRequest":
+		this.dataList.set(key,obj.result);
+		break;
+	case "RCImage":
+		this.photoList.set(key,obj);
+		break;
+	default:
+		haxe.Log.trace("this asset does not belong to any supported category",{ fileName : "RCLib.hx", lineNumber : 146, className : "RCLib", methodName : "completeHandler"});
+	}
+	this.onCompleteHandler();
+}
+RCLib.prototype.onCompleteHandler = function() {
+	this.nr++;
+	if(this.nr >= this.max) RCLib.onComplete();
+}
+RCLib.prototype.totalProgress = function() {
+	var totalPercent = 0;
+	var i = 0;
+	var $it0 = RCLib.currentPercentLoaded.keys();
+	while( $it0.hasNext() ) {
+		var key = $it0.next();
+		i++;
+		totalPercent += RCLib.currentPercentLoaded.get(key);
+	}
+	RCLib.percentLoaded = Math.round(totalPercent / i);
+	RCLib.onProgress();
+}
+RCLib.prototype.get = function(key,returnAsBitmap) {
+	if(returnAsBitmap == null) returnAsBitmap = true;
+	RCLib.init();
+	if(this.photoList.exists(key)) return this.photoList.get(key).duplicate(); else if(this.dataList.exists(key)) return this.dataList.get(key); else if(this.swfList.exists(key)) return this.swfList.get(key);
+	return null;
+}
+RCLib.prototype.__class__ = RCLib;
+if(typeof haxe=='undefined') haxe = {}
+haxe.Http = function(url) {
+	if( url === $_ ) return;
+	this.url = url;
+	this.headers = new Hash();
+	this.params = new Hash();
+	this.async = true;
+}
+haxe.Http.__name__ = ["haxe","Http"];
+haxe.Http.requestUrl = function(url) {
+	var h = new haxe.Http(url);
+	h.async = false;
+	var r = null;
+	h.onData = function(d) {
+		r = d;
+	};
+	h.onError = function(e) {
+		throw e;
+	};
+	h.request(false);
+	return r;
+}
+haxe.Http.prototype.url = null;
+haxe.Http.prototype.async = null;
+haxe.Http.prototype.postData = null;
+haxe.Http.prototype.headers = null;
+haxe.Http.prototype.params = null;
+haxe.Http.prototype.setHeader = function(header,value) {
+	this.headers.set(header,value);
+}
+haxe.Http.prototype.setParameter = function(param,value) {
+	this.params.set(param,value);
+}
+haxe.Http.prototype.setPostData = function(data) {
+	this.postData = data;
+}
+haxe.Http.prototype.request = function(post) {
+	var me = this;
+	var r = new js.XMLHttpRequest();
+	var onreadystatechange = function() {
+		if(r.readyState != 4) return;
+		var s = (function($this) {
+			var $r;
+			try {
+				$r = r.status;
+			} catch( e ) {
+				$r = null;
+			}
+			return $r;
+		}(this));
+		if(s == undefined) s = null;
+		if(s != null) me.onStatus(s);
+		if(s != null && s >= 200 && s < 400) me.onData(r.responseText); else switch(s) {
+		case null: case undefined:
+			me.onError("Failed to connect or resolve host");
+			break;
+		case 12029:
+			me.onError("Failed to connect to host");
+			break;
+		case 12007:
+			me.onError("Unknown host");
+			break;
+		default:
+			me.onError("Http Error #" + r.status);
+		}
+	};
+	if(this.async) r.onreadystatechange = onreadystatechange;
+	var uri = this.postData;
+	if(uri != null) post = true; else {
+		var $it0 = this.params.keys();
+		while( $it0.hasNext() ) {
+			var p = $it0.next();
+			if(uri == null) uri = ""; else uri += "&";
+			uri += StringTools.urlDecode(p) + "=" + StringTools.urlEncode(this.params.get(p));
+		}
+	}
+	try {
+		if(post) r.open("POST",this.url,this.async); else if(uri != null) {
+			var question = this.url.split("?").length <= 1;
+			r.open("GET",this.url + (question?"?":"&") + uri,this.async);
+			uri = null;
+		} else r.open("GET",this.url,this.async);
+	} catch( e ) {
+		this.onError(e.toString());
+		return;
+	}
+	if(this.headers.get("Content-Type") == null && post && this.postData == null) r.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+	var $it1 = this.headers.keys();
+	while( $it1.hasNext() ) {
+		var h = $it1.next();
+		r.setRequestHeader(h,this.headers.get(h));
+	}
+	r.send(uri);
+	if(!this.async) onreadystatechange();
+}
+haxe.Http.prototype.onData = function(data) {
+}
+haxe.Http.prototype.onError = function(msg) {
+}
+haxe.Http.prototype.onStatus = function(status) {
+}
+haxe.Http.prototype.__class__ = haxe.Http;
 JSView = function(x,y) {
 	if( x === $_ ) return;
 	this.size = new RCSize(0,0);
@@ -197,6 +341,8 @@ JSView.prototype.width = null;
 JSView.prototype.height = null;
 JSView.prototype.alpha = null;
 JSView.prototype.visible = null;
+JSView.prototype.mouseX = null;
+JSView.prototype.mouseY = null;
 JSView.prototype.viewMask = null;
 JSView.prototype.lastW = null;
 JSView.prototype.lastH = null;
@@ -331,7 +477,7 @@ JSView.prototype.setY = function(y) {
 	return y;
 }
 JSView.prototype.getWidth = function() {
-	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the width would be 0",{ fileName : "JSView.hx", lineNumber : 224, className : "JSView", methodName : "getWidth"});
+	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the width would be 0",{ fileName : "JSView.hx", lineNumber : 226, className : "JSView", methodName : "getWidth"});
 	return this.view.offsetWidth;
 	return this.view.scrollWidth;
 	return this.view.clientWidth;
@@ -342,7 +488,7 @@ JSView.prototype.setWidth = function(w) {
 	return w;
 }
 JSView.prototype.getHeight = function() {
-	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the height would be 0",{ fileName : "JSView.hx", lineNumber : 235, className : "JSView", methodName : "getHeight"});
+	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the height would be 0",{ fileName : "JSView.hx", lineNumber : 237, className : "JSView", methodName : "getHeight"});
 	return this.view.offsetHeight;
 	return this.view.scrollHeight;
 	return this.view.clientHeight;
@@ -369,6 +515,15 @@ JSView.prototype.scale = function(sx,sy) {
 JSView.prototype.startDrag = function(lockCenter,rect) {
 }
 JSView.prototype.stopDrag = function() {
+}
+JSView.prototype.getMouseX = function() {
+	return this.view.clientX;
+	if(this.parent == null) return this.mouseX;
+	return this.parent.mouseX - this.x;
+}
+JSView.prototype.getMouseY = function() {
+	if(this.parent == null) return this.mouseY;
+	return this.parent.mouseY - this.y;
 }
 JSView.prototype.__class__ = JSView;
 RCControl = function(x,y) {
@@ -449,7 +604,6 @@ RCControl.prototype.clickHandler = function(e) {
 }
 RCControl.prototype.setState = function(state) {
 	this.state_ = state;
-	haxe.Log.trace("current state is " + this.state_,{ fileName : "RCControl.hx", lineNumber : 145, className : "RCControl", methodName : "setState"});
 }
 RCControl.prototype.getSelected = function() {
 	return this.state_ == RCControlState.SELECTED;
@@ -695,7 +849,6 @@ List.prototype.map = function(f) {
 	return b;
 }
 List.prototype.__class__ = List;
-if(typeof haxe=='undefined') haxe = {}
 haxe.Serializer = function(p) {
 	if( p === $_ ) return;
 	this.buf = new StringBuf();
@@ -932,6 +1085,94 @@ haxe.Serializer.prototype.serializeException = function(e) {
 	this.serialize(e);
 }
 haxe.Serializer.prototype.__class__ = haxe.Serializer;
+if(typeof _HTTPRequest=='undefined') _HTTPRequest = {}
+_HTTPRequest.URLVariables = function(p) {
+}
+_HTTPRequest.URLVariables.__name__ = ["_HTTPRequest","URLVariables"];
+_HTTPRequest.URLVariables.prototype.__class__ = _HTTPRequest.URLVariables;
+RCRequest = function(p) {
+}
+RCRequest.__name__ = ["RCRequest"];
+RCRequest.prototype.loader = null;
+RCRequest.prototype.result = null;
+RCRequest.prototype.status = null;
+RCRequest.prototype.percentLoaded = null;
+RCRequest.prototype.onOpen = function() {
+}
+RCRequest.prototype.onComplete = function() {
+}
+RCRequest.prototype.onError = function() {
+}
+RCRequest.prototype.onProgress = function() {
+}
+RCRequest.prototype.onStatus = function() {
+}
+RCRequest.prototype.load = function(URL,variables,method) {
+	if(method == null) method = "POST";
+	this.loader = new haxe.Http(URL);
+	this.configureListeners(this.loader);
+	this.loader.request(method == "POST"?true:false);
+}
+RCRequest.prototype.configureListeners = function(dispatcher) {
+	dispatcher.onData = $closure(this,"completeHandler");
+	dispatcher.onError = $closure(this,"securityErrorHandler");
+	dispatcher.onStatus = $closure(this,"httpStatusHandler");
+}
+RCRequest.prototype.removeListeners = function(dispatcher) {
+	dispatcher.onData = null;
+	dispatcher.onError = null;
+	dispatcher.onStatus = null;
+}
+RCRequest.prototype.openHandler = function(e) {
+	this.onOpen();
+}
+RCRequest.prototype.completeHandler = function(e) {
+	this.result = e;
+	if(this.result.indexOf("error::") != -1) {
+		this.result = this.result.split("error::").pop();
+		this.onError();
+	} else this.onComplete();
+}
+RCRequest.prototype.progressHandler = function(e) {
+}
+RCRequest.prototype.securityErrorHandler = function(e) {
+	this.result = e;
+	this.onError();
+}
+RCRequest.prototype.httpStatusHandler = function(e) {
+	this.status = e;
+	this.onStatus();
+}
+RCRequest.prototype.ioErrorHandler = function(e) {
+	this.result = e;
+	this.onError();
+}
+RCRequest.prototype.destroy = function() {
+	this.removeListeners(this.loader);
+	this.loader = null;
+}
+RCRequest.prototype.__class__ = RCRequest;
+HTTPRequest = function(scripts_path) {
+	if( scripts_path === $_ ) return;
+	this.scripts_path = scripts_path;
+	RCRequest.call(this);
+}
+HTTPRequest.__name__ = ["HTTPRequest"];
+HTTPRequest.__super__ = RCRequest;
+for(var k in RCRequest.prototype ) HTTPRequest.prototype[k] = RCRequest.prototype[k];
+HTTPRequest.prototype.scripts_path = null;
+HTTPRequest.prototype.readFile = function(file) {
+	this.load(file);
+}
+HTTPRequest.prototype.readDirectory = function(directory) {
+	var variables = new _HTTPRequest.URLVariables();
+	variables.path = directory;
+	this.load(this.scripts_path + "filesystem/readDirectory.php",variables);
+}
+HTTPRequest.prototype.call = function(script,variables_list,method) {
+	if(method == null) method = "POST";
+}
+HTTPRequest.prototype.__class__ = HTTPRequest;
 RCGradient = function(colors,alphas,linear) {
 	if( colors === $_ ) return;
 	if(linear == null) linear = true;
@@ -1155,7 +1396,6 @@ RCTextView.prototype.redraw = function() {
 	this.view.style.fontSize = this.properties.size;
 	this.view.style.fontStyle = this.properties.style;
 	if(this.size.width != null) this.setWidth(this.size.width);
-	this.view.style.textAlign = this.properties.align;
 }
 RCTextView.prototype.getText = function() {
 	return this.view.innerHTML;
@@ -1180,6 +1420,109 @@ RCSize.__name__ = ["RCSize"];
 RCSize.prototype.width = null;
 RCSize.prototype.height = null;
 RCSize.prototype.__class__ = RCSize;
+FontManager = function(p) {
+}
+FontManager.__name__ = ["FontManager"];
+FontManager.INSTANCE = null;
+FontManager.init = function() {
+	if(FontManager.INSTANCE == null) {
+		FontManager.INSTANCE = new FontManager();
+		FontManager.INSTANCE.initDefaults();
+	}
+}
+FontManager.instance = function() {
+	if(FontManager.INSTANCE == null) FontManager.init();
+	return FontManager.INSTANCE;
+}
+FontManager.registerFormat = function(key,data) {
+	FontManager.instance().hash_rcfont.set(key,data);
+}
+FontManager.registerStyle = function(key,data) {
+	FontManager.instance().hash_style.set(key,data);
+}
+FontManager.remove = function(key) {
+	FontManager.instance().hash_style.remove(key);
+	FontManager.instance().hash_rcfont.remove(key);
+}
+FontManager.getFormat = function(key,exceptions) {
+	if(key == null) key = "system";
+	return FontManager.instance().hash_rcfont.get(key).copy(exceptions);
+}
+FontManager.getStyleSheet = function(key,exception) {
+	if(key == null) key = "default";
+	if(key == "css" && FontManager.instance().hash_style.exists("css")) return FontManager.instance().hash_style.get("css");
+	return FontManager.instance().createStyle(FontManager.INSTANCE.hash_style.get(key),exception);
+}
+FontManager.addSwf = function(swf) {
+	FontManager.instance().push(swf);
+}
+FontManager.setCSS = function(css) {
+	FontManager.instance().setCSSFile(css);
+}
+FontManager.registerFont = function(str) {
+	return false;
+}
+FontManager.prototype.fontsDomain = null;
+FontManager.prototype.fontsSwfList = null;
+FontManager.prototype.event = null;
+FontManager.prototype._defaultStyleSheetData = null;
+FontManager.prototype._defaultRCFont = null;
+FontManager.prototype.hash_style = null;
+FontManager.prototype.hash_rcfont = null;
+FontManager.prototype.initDefaults = function() {
+	this.hash_style = new Hash();
+	this.hash_rcfont = new Hash();
+	this.fontsSwfList = new Array();
+	this._defaultRCFont = new RCFont();
+	this._defaultRCFont.font = "Arial";
+	this._defaultRCFont.size = 12;
+	this._defaultRCFont.color = 14540253;
+	this._defaultRCFont.leading = 4;
+	this._defaultRCFont.letterSpacing = 1;
+	this._defaultRCFont.align = "left";
+	this._defaultRCFont.html = true;
+	this._defaultRCFont.selectable = true;
+	this._defaultRCFont.embedFonts = false;
+	this._defaultStyleSheetData = { a_link : { color : "#999999", textDecoration : "underline"}, a_hover : { color : "#33CCFF"}, h1 : { size : 16}};
+	FontManager.registerFormat("system",this._defaultRCFont);
+	FontManager.registerStyle("default",this._defaultStyleSheetData);
+}
+FontManager.prototype.push = function(e) {
+	this.fontsSwfList.push(e);
+}
+FontManager.prototype.setCSSFile = function(css) {
+}
+FontManager.prototype.createStyle = function(properties,exceptions) {
+	var style = null;
+	return style;
+}
+FontManager.prototype.__class__ = FontManager;
+CASequence = function(objs) {
+	if( objs === $_ ) return;
+	this.objs = objs;
+}
+CASequence.__name__ = ["CASequence"];
+CASequence.prototype.objs = null;
+CASequence.prototype.start = function() {
+	var obj = this.objs.shift();
+	if(this.objs.length > 0) {
+		var arguments = obj.delegate.animationDidStop;
+		obj.delegate.animationDidStop = $closure(this,"animationDidStop");
+		obj.delegate.arguments = [arguments];
+	}
+	CoreAnimation.add(obj);
+}
+CASequence.prototype.animationDidStop = function(func) {
+	if(func != null) {
+		if(Reflect.isFunction(func)) try {
+			func.apply(null,[]);
+		} catch( e ) {
+			haxe.Log.trace(e,{ fileName : "CASequence.hx", lineNumber : 31, className : "CASequence", methodName : "animationDidStop"});
+		}
+	}
+	if(this.objs.length > 0) this.start();
+}
+CASequence.prototype.__class__ = CASequence;
 Reflect = function() { }
 Reflect.__name__ = ["Reflect"];
 Reflect.hasField = function(o,field) {
@@ -1267,32 +1610,6 @@ Reflect.makeVarArgs = function(f) {
 	};
 }
 Reflect.prototype.__class__ = Reflect;
-CASequence = function(objs) {
-	if( objs === $_ ) return;
-	this.objs = objs;
-}
-CASequence.__name__ = ["CASequence"];
-CASequence.prototype.objs = null;
-CASequence.prototype.start = function() {
-	var obj = this.objs.shift();
-	if(this.objs.length > 0) {
-		var arguments = obj.delegate.animationDidStop;
-		obj.delegate.animationDidStop = $closure(this,"animationDidStop");
-		obj.delegate.arguments = [arguments];
-	}
-	CoreAnimation.add(obj);
-}
-CASequence.prototype.animationDidStop = function(func) {
-	if(func != null) {
-		if(Reflect.isFunction(func)) try {
-			func.apply(null,[]);
-		} catch( e ) {
-			haxe.Log.trace(e,{ fileName : "CASequence.hx", lineNumber : 31, className : "CASequence", methodName : "animationDidStop"});
-		}
-	}
-	if(this.objs.length > 0) this.start();
-}
-CASequence.prototype.__class__ = CASequence;
 RCPoint = function(x,y) {
 	if( x === $_ ) return;
 	this.x = x;
@@ -1302,6 +1619,88 @@ RCPoint.__name__ = ["RCPoint"];
 RCPoint.prototype.x = null;
 RCPoint.prototype.y = null;
 RCPoint.prototype.__class__ = RCPoint;
+haxe.StackItem = { __ename__ : ["haxe","StackItem"], __constructs__ : ["CFunction","Module","FilePos","Method","Lambda"] }
+haxe.StackItem.CFunction = ["CFunction",0];
+haxe.StackItem.CFunction.toString = $estr;
+haxe.StackItem.CFunction.__enum__ = haxe.StackItem;
+haxe.StackItem.Module = function(m) { var $x = ["Module",1,m]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
+haxe.StackItem.FilePos = function(s,file,line) { var $x = ["FilePos",2,s,file,line]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
+haxe.StackItem.Method = function(classname,method) { var $x = ["Method",3,classname,method]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
+haxe.StackItem.Lambda = function(v) { var $x = ["Lambda",4,v]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
+haxe.Stack = function() { }
+haxe.Stack.__name__ = ["haxe","Stack"];
+haxe.Stack.callStack = function() {
+	return haxe.Stack.makeStack("$s");
+}
+haxe.Stack.exceptionStack = function() {
+	return haxe.Stack.makeStack("$e");
+}
+haxe.Stack.toString = function(stack) {
+	var b = new StringBuf();
+	var _g = 0;
+	while(_g < stack.length) {
+		var s = stack[_g];
+		++_g;
+		b.b[b.b.length] = "\nCalled from " == null?"null":"\nCalled from ";
+		haxe.Stack.itemToString(b,s);
+	}
+	return b.b.join("");
+}
+haxe.Stack.itemToString = function(b,s) {
+	var $e = (s);
+	switch( $e[1] ) {
+	case 0:
+		b.b[b.b.length] = "a C function" == null?"null":"a C function";
+		break;
+	case 1:
+		var m = $e[2];
+		b.b[b.b.length] = "module " == null?"null":"module ";
+		b.b[b.b.length] = m == null?"null":m;
+		break;
+	case 2:
+		var line = $e[4], file = $e[3], s1 = $e[2];
+		if(s1 != null) {
+			haxe.Stack.itemToString(b,s1);
+			b.b[b.b.length] = " (" == null?"null":" (";
+		}
+		b.b[b.b.length] = file == null?"null":file;
+		b.b[b.b.length] = " line " == null?"null":" line ";
+		b.b[b.b.length] = line == null?"null":line;
+		if(s1 != null) b.b[b.b.length] = ")" == null?"null":")";
+		break;
+	case 3:
+		var meth = $e[3], cname = $e[2];
+		b.b[b.b.length] = cname == null?"null":cname;
+		b.b[b.b.length] = "." == null?"null":".";
+		b.b[b.b.length] = meth == null?"null":meth;
+		break;
+	case 4:
+		var n = $e[2];
+		b.b[b.b.length] = "local function #" == null?"null":"local function #";
+		b.b[b.b.length] = n == null?"null":n;
+		break;
+	}
+}
+haxe.Stack.makeStack = function(s) {
+	var a = (function($this) {
+		var $r;
+		try {
+			$r = eval(s);
+		} catch( e ) {
+			$r = [];
+		}
+		return $r;
+	}(this));
+	var m = new Array();
+	var _g1 = 0, _g = a.length - (s == "$s"?2:0);
+	while(_g1 < _g) {
+		var i = _g1++;
+		var d = a[i].split("::");
+		m.unshift(haxe.StackItem.Method(d[0],d[1]));
+	}
+	return m;
+}
+haxe.Stack.prototype.__class__ = haxe.Stack;
 if(typeof caequations=='undefined') caequations = {}
 caequations.Linear = function() { }
 caequations.Linear.__name__ = ["caequations","Linear"];
@@ -1389,88 +1788,6 @@ CoreAnimation.timestamp = function() {
 	return Date.now().getTime();
 }
 CoreAnimation.prototype.__class__ = CoreAnimation;
-haxe.StackItem = { __ename__ : ["haxe","StackItem"], __constructs__ : ["CFunction","Module","FilePos","Method","Lambda"] }
-haxe.StackItem.CFunction = ["CFunction",0];
-haxe.StackItem.CFunction.toString = $estr;
-haxe.StackItem.CFunction.__enum__ = haxe.StackItem;
-haxe.StackItem.Module = function(m) { var $x = ["Module",1,m]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
-haxe.StackItem.FilePos = function(s,file,line) { var $x = ["FilePos",2,s,file,line]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
-haxe.StackItem.Method = function(classname,method) { var $x = ["Method",3,classname,method]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
-haxe.StackItem.Lambda = function(v) { var $x = ["Lambda",4,v]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
-haxe.Stack = function() { }
-haxe.Stack.__name__ = ["haxe","Stack"];
-haxe.Stack.callStack = function() {
-	return haxe.Stack.makeStack("$s");
-}
-haxe.Stack.exceptionStack = function() {
-	return haxe.Stack.makeStack("$e");
-}
-haxe.Stack.toString = function(stack) {
-	var b = new StringBuf();
-	var _g = 0;
-	while(_g < stack.length) {
-		var s = stack[_g];
-		++_g;
-		b.b[b.b.length] = "\nCalled from " == null?"null":"\nCalled from ";
-		haxe.Stack.itemToString(b,s);
-	}
-	return b.b.join("");
-}
-haxe.Stack.itemToString = function(b,s) {
-	var $e = (s);
-	switch( $e[1] ) {
-	case 0:
-		b.b[b.b.length] = "a C function" == null?"null":"a C function";
-		break;
-	case 1:
-		var m = $e[2];
-		b.b[b.b.length] = "module " == null?"null":"module ";
-		b.b[b.b.length] = m == null?"null":m;
-		break;
-	case 2:
-		var line = $e[4], file = $e[3], s1 = $e[2];
-		if(s1 != null) {
-			haxe.Stack.itemToString(b,s1);
-			b.b[b.b.length] = " (" == null?"null":" (";
-		}
-		b.b[b.b.length] = file == null?"null":file;
-		b.b[b.b.length] = " line " == null?"null":" line ";
-		b.b[b.b.length] = line == null?"null":line;
-		if(s1 != null) b.b[b.b.length] = ")" == null?"null":")";
-		break;
-	case 3:
-		var meth = $e[3], cname = $e[2];
-		b.b[b.b.length] = cname == null?"null":cname;
-		b.b[b.b.length] = "." == null?"null":".";
-		b.b[b.b.length] = meth == null?"null":meth;
-		break;
-	case 4:
-		var n = $e[2];
-		b.b[b.b.length] = "local function #" == null?"null":"local function #";
-		b.b[b.b.length] = n == null?"null":n;
-		break;
-	}
-}
-haxe.Stack.makeStack = function(s) {
-	var a = (function($this) {
-		var $r;
-		try {
-			$r = eval(s);
-		} catch( e ) {
-			$r = [];
-		}
-		return $r;
-	}(this));
-	var m = new Array();
-	var _g1 = 0, _g = a.length - (s == "$s"?2:0);
-	while(_g1 < _g) {
-		var i = _g1++;
-		var d = a[i].split("::");
-		m.unshift(haxe.StackItem.Method(d[0],d[1]));
-	}
-	return m;
-}
-haxe.Stack.prototype.__class__ = haxe.Stack;
 IntIter = function(min,max) {
 	if( min === $_ ) return;
 	this.min = min;
@@ -1486,69 +1803,121 @@ IntIter.prototype.next = function() {
 	return this.min++;
 }
 IntIter.prototype.__class__ = IntIter;
-RCPhoto = function(x,y,URL) {
+RCImage = function(x,y,URL) {
 	if( x === $_ ) return;
 	JSView.call(this,x,y);
-	this.load(URL);
+	this.initWithContentsOfFile(URL);
 	this.addListeners();
 }
-RCPhoto.__name__ = ["RCPhoto"];
-RCPhoto.__super__ = JSView;
-for(var k in JSView.prototype ) RCPhoto.prototype[k] = JSView.prototype[k];
-RCPhoto.prototype.loader = null;
-RCPhoto.prototype.isLoaded = null;
-RCPhoto.prototype.percentLoaded = null;
-RCPhoto.prototype.errorMessage = null;
-RCPhoto.prototype.onComplete = function() {
+RCImage.__name__ = ["RCImage"];
+RCImage.__super__ = JSView;
+for(var k in JSView.prototype ) RCImage.prototype[k] = JSView.prototype[k];
+RCImage.imageNamed = function(name) {
+	return new RCImage(0,0,name);
 }
-RCPhoto.prototype.onProgress = function() {
+RCImage.imageWithContentsOfFile = function(path) {
+	return new RCImage(0,0,path);
 }
-RCPhoto.prototype.onError = function() {
+RCImage.prototype.loader = null;
+RCImage.prototype.isLoaded = null;
+RCImage.prototype.percentLoaded = null;
+RCImage.prototype.errorMessage = null;
+RCImage.prototype.onComplete = function() {
 }
-RCPhoto.prototype.load = function(URL) {
+RCImage.prototype.onProgress = function() {
+}
+RCImage.prototype.onError = function() {
+}
+RCImage.prototype.initWithContentsOfFile = function(URL) {
 	this.isLoaded = false;
 	this.percentLoaded = 0;
 	this.loader = js.Lib.document.createElement("img");
+	this.loader.draggable = false;
 	this.loader.src = URL;
 }
-RCPhoto.prototype.completeHandler = function(e) {
+RCImage.prototype.completeHandler = function(e) {
 	this.size.width = this.lastW = this.setWidth(this.loader.width);
 	this.size.height = this.lastH = this.setHeight(this.loader.height);
-	this.isLoaded = true;
 	this.view.appendChild(this.loader);
+	this.isLoaded = true;
 	this.onComplete();
 }
-RCPhoto.prototype.errorHandler = function(e) {
+RCImage.prototype.errorHandler = function(e) {
 	this.errorMessage = Std.string(e);
 	this.onError();
 }
-RCPhoto.prototype.ioErrorHandler = function(e) {
+RCImage.prototype.ioErrorHandler = function(e) {
 	this.errorMessage = Std.string(e);
 	this.onError();
 }
-RCPhoto.prototype.addListeners = function() {
+RCImage.prototype.duplicate = function() {
+	return new RCImage(0,0,this.loader.src);
+}
+RCImage.prototype.addListeners = function() {
 	this.loader.onload = $closure(this,"completeHandler");
 	this.loader.onerror = $closure(this,"errorHandler");
 }
-RCPhoto.prototype.removeListeners = function() {
+RCImage.prototype.removeListeners = function() {
 	this.loader.onload = null;
 	this.loader.onerror = null;
 }
-RCPhoto.prototype.destroy = function() {
+RCImage.prototype.destroy = function() {
 	this.removeListeners();
 	this.loader = null;
 }
-RCPhoto.prototype.scaleToFit = function(w,h) {
+RCImage.prototype.scaleToFit = function(w,h) {
 	JSView.prototype.scaleToFit.call(this,w,h);
 	this.loader.style.width = this.getWidth() + "px";
 	this.loader.style.height = this.getHeight() + "px";
 }
-RCPhoto.prototype.scaleToFill = function(w,h) {
+RCImage.prototype.scaleToFill = function(w,h) {
 	JSView.prototype.scaleToFill.call(this,w,h);
 	this.loader.style.width = this.getWidth() + "px";
 	this.loader.style.height = this.getHeight() + "px";
 }
-RCPhoto.prototype.__class__ = RCPhoto;
+RCImage.prototype.__class__ = RCImage;
+RCSwf = function(x,y,URL,newDomain) {
+	if( x === $_ ) return;
+	if(newDomain == null) newDomain = true;
+	this.newDomain = newDomain;
+	this.id_ = "swf_";
+	RCImage.call(this,x,y,URL);
+}
+RCSwf.__name__ = ["RCSwf"];
+RCSwf.__super__ = RCImage;
+for(var k in RCImage.prototype ) RCSwf.prototype[k] = RCImage.prototype[k];
+RCSwf.prototype.target = null;
+RCSwf.prototype.event = null;
+RCSwf.prototype.newDomain = null;
+RCSwf.prototype.id_ = null;
+RCSwf.prototype.initWithContentsOfFile = function(URL) {
+	this.isLoaded = false;
+	this.percentLoaded = 0;
+	this.view.id = this.id_;
+	RCWindow.target.appendChild(this.view);
+	this.target = new js.SWFObject(URL,this.id_,500,400,"9","#cecece");
+	this.target.addParam("AllowScriptAccess","always");
+	this.target.addParam("AllowNetworking","all");
+	this.target.addParam("wmode","transparent");
+	this.target.write(this.id_);
+}
+RCSwf.prototype.completeHandler = function(e) {
+	this.onComplete();
+}
+RCSwf.prototype.callMethod = function(method,params) {
+	return Reflect.field(this.target,method).apply(this.target,params);
+}
+RCSwf.prototype.destroy = function() {
+	this.removeListeners();
+	try {
+		this.loader.contentLoaderInfo.content.destroy();
+	} catch( e ) {
+		haxe.Log.trace(e,{ fileName : "RCSwf.hx", lineNumber : 85, className : "RCSwf", methodName : "destroy"});
+		var stack = haxe.Stack.exceptionStack();
+		haxe.Log.trace(haxe.Stack.toString(stack),{ fileName : "RCSwf.hx", lineNumber : 87, className : "RCSwf", methodName : "destroy"});
+	}
+}
+RCSwf.prototype.__class__ = RCSwf;
 RCDrawInterface = function() { }
 RCDrawInterface.__name__ = ["RCDrawInterface"];
 RCDrawInterface.prototype.configure = null;
@@ -2070,8 +2439,9 @@ haxe.Firebug.trace = function(v,inf) {
 	console[type]((inf == null?"":inf.fileName + ":" + inf.lineNumber + " : ") + Std.string(v));
 }
 haxe.Firebug.prototype.__class__ = haxe.Firebug;
-EVMouse = function(p) {
-	if( p === $_ ) return;
+EVMouse = function(pos) {
+	if( pos === $_ ) return;
+	haxe.Log.trace(pos,{ fileName : "EVMouse.hx", lineNumber : 16, className : "EVMouse", methodName : "new"});
 	if(EVMouse.instance != null) throw "You can't instantiate EVMouse because it's used by the framework. ";
 	EVMouse.instance = this;
 	RCSignal.call(this);
@@ -2187,13 +2557,13 @@ IntHash.prototype.toString = function() {
 }
 IntHash.prototype.__class__ = IntHash;
 if(typeof _RCSlider=='undefined') _RCSlider = {}
-_RCSlider.Direction = { __ename__ : ["_RCSlider","Direction"], __constructs__ : ["horizontal","vertical"] }
-_RCSlider.Direction.horizontal = ["horizontal",0];
-_RCSlider.Direction.horizontal.toString = $estr;
-_RCSlider.Direction.horizontal.__enum__ = _RCSlider.Direction;
-_RCSlider.Direction.vertical = ["vertical",1];
-_RCSlider.Direction.vertical.toString = $estr;
-_RCSlider.Direction.vertical.__enum__ = _RCSlider.Direction;
+_RCSlider.Direction = { __ename__ : ["_RCSlider","Direction"], __constructs__ : ["HORIZONTAL","VERTICAL"] }
+_RCSlider.Direction.HORIZONTAL = ["HORIZONTAL",0];
+_RCSlider.Direction.HORIZONTAL.toString = $estr;
+_RCSlider.Direction.HORIZONTAL.__enum__ = _RCSlider.Direction;
+_RCSlider.Direction.VERTICAL = ["VERTICAL",1];
+_RCSlider.Direction.VERTICAL.toString = $estr;
+_RCSlider.Direction.VERTICAL.__enum__ = _RCSlider.Direction;
 RCSlider = function(x,y,skin) {
 	if( x === $_ ) return;
 	RCControl.call(this,x,y);
@@ -2207,10 +2577,10 @@ RCSlider = function(x,y,skin) {
 	this.scrubber = skin.normal.otherView;
 	this.addChild(skin.normal.background);
 	this.addChild(this.scrubber);
-	this.direction_ = this.size.width > this.size.height?_RCSlider.Direction.horizontal:_RCSlider.Direction.vertical;
-	this.scrubber.onmousedown = $closure(this,"mouseDownHandler");
-	this.scrubber.onmouseover = $closure(this,"rollOverHandler");
-	this.scrubber.onmouseout = $closure(this,"rollOutHandler");
+	this.direction_ = this.size.width > this.size.height?_RCSlider.Direction.HORIZONTAL:_RCSlider.Direction.VERTICAL;
+	this.view.onmousedown = $closure(this,"mouseDownHandler");
+	this.view.onmouseover = $closure(this,"rollOverHandler");
+	this.view.onmouseout = $closure(this,"rollOutHandler");
 }
 RCSlider.__name__ = ["RCSlider"];
 RCSlider.__super__ = RCControl;
@@ -2237,70 +2607,58 @@ RCSlider.prototype.setEnabled = function(c) {
 	return this.enabled_ = false;
 }
 RCSlider.prototype.mouseDownHandler = function(e) {
-	haxe.Log.trace("mouseDownHandler",{ fileName : "RCSlider.hx", lineNumber : 90, className : "RCSlider", methodName : "mouseDownHandler"});
-	var bounds_x = 0, bounds_y = 0, bounds_w = 0, bounds_h = 0;
-	switch( (this.direction_)[1] ) {
-	case 0:
-		bounds_w = Math.round(this.size.width - this.scrubber.getWidth());
-		bounds_y = Math.round(this.scrubber.y);
-		break;
-	case 1:
-		bounds_h = Math.round(this.size.height - this.scrubber.getHeight());
-		bounds_x = Math.round(this.scrubber.x);
-		break;
-	}
-	this.scrubber.startDrag(false,new RCRect(bounds_x,bounds_y,bounds_w,bounds_h));
+	this.moving_ = true;
 	RCWindow.target.onmouseup = $closure(this,"mouseUpHandler");
 	RCWindow.target.onmousemove = $closure(this,"mouseMoveHandler");
+	this.press.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 97, className : "RCSlider", methodName : "mouseDownHandler"});
+	this.mouseMoveHandler(e);
 }
 RCSlider.prototype.mouseUpHandler = function(e) {
-	haxe.Log.trace("mouseUpHandler",{ fileName : "RCSlider.hx", lineNumber : 112, className : "RCSlider", methodName : "mouseUpHandler"});
-	this.scrubber.stopDrag();
+	this.moving_ = false;
 	RCWindow.target.onmouseup = null;
 	RCWindow.target.onmousemove = null;
+	this.release.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 109, className : "RCSlider", methodName : "mouseUpHandler"});
 }
 RCSlider.prototype.mouseMoveHandler = function(e) {
 	var y0 = 0.0, y1 = 0.0, y2 = 0.0;
+	haxe.Log.trace(e.clientX,{ fileName : "RCSlider.hx", lineNumber : 146, className : "RCSlider", methodName : "mouseMoveHandler"});
 	switch( (this.direction_)[1] ) {
 	case 0:
-		y0 = this.scrubber.x;
 		y2 = this.size.width - this.scrubber.getWidth();
+		y0 = Zeta.limitsInt(e.clientX - this.scrubber.getWidth() / 2,0,y2);
 		break;
 	case 1:
-		y0 = this.scrubber.y;
 		y2 = this.size.height - this.scrubber.getHeight();
+		y0 = Zeta.limitsInt(this.getMouseY() - this.scrubber.getHeight() / 2,0,y2);
 		break;
 	}
-	this.value_ = Zeta.lineEquation(this.minValue_,this.maxValue_,y0,y1,y2);
-	this.valueChanged.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 144, className : "RCSlider", methodName : "mouseMoveHandler"});
+	this.setValue(Zeta.lineEquation(this.minValue_,this.maxValue_,y0,y1,y2));
 }
 RCSlider.prototype.getValue = function() {
 	return this.value_;
 }
 RCSlider.prototype.setValue = function(v) {
 	var x1 = 0.0, x2 = 0.0;
-	if(!this.moving_) {
-		switch( (this.direction_)[1] ) {
-		case 0:
-			x2 = this.size.width - this.scrubber.getWidth();
-			this.scrubber.setX(Zeta.lineEquationInt(x1,x2,v,this.minValue_,this.maxValue_));
-			break;
-		case 1:
-			x2 = this.size.height - this.scrubber.getHeight();
-			this.scrubber.setY(Zeta.lineEquationInt(x1,x2,v,this.minValue_,this.maxValue_));
-			break;
-		}
+	this.value_ = v;
+	switch( (this.direction_)[1] ) {
+	case 0:
+		x2 = this.size.width - this.scrubber.getWidth();
+		this.scrubber.setX(Zeta.lineEquationInt(x1,x2,v,this.minValue_,this.maxValue_));
+		break;
+	case 1:
+		x2 = this.size.height - this.scrubber.getHeight();
+		this.scrubber.setY(Zeta.lineEquationInt(x1,x2,v,this.minValue_,this.maxValue_));
+		break;
 	}
-	return this.value_ = v;
+	this.valueChanged.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 189, className : "RCSlider", methodName : "setValue"});
+	return this.value_;
 }
 RCSlider.prototype.setMinValue = function(v) {
-	haxe.Log.trace("set min " + v,{ fileName : "RCSlider.hx", lineNumber : 174, className : "RCSlider", methodName : "setMinValue"});
 	this.minValue_ = v;
 	this.setValue(this.value_);
 	return v;
 }
 RCSlider.prototype.setMaxValue = function(v) {
-	haxe.Log.trace("set max " + v,{ fileName : "RCSlider.hx", lineNumber : 179, className : "RCSlider", methodName : "setMaxValue"});
 	this.maxValue_ = v;
 	this.setValue(this.value_);
 	return v;
@@ -2310,10 +2668,6 @@ RCSlider.prototype.setMinimumValueImage = function(v) {
 }
 RCSlider.prototype.setMaximumValueImage = function(v) {
 	return v;
-}
-RCSlider.prototype.overHandler = function(e) {
-}
-RCSlider.prototype.outHandler = function(e) {
 }
 RCSlider.prototype.destroy = function() {
 	this.mouseUpHandler(null);
@@ -2690,6 +3044,21 @@ RCNotificationCenter.list = function() {
 	}
 }
 RCNotificationCenter.prototype.__class__ = RCNotificationCenter;
+RCAttach = function(x,y,id) {
+	if( x === $_ ) return;
+	JSView.call(this,x,y);
+	this.id = id;
+	this.target = RCLib.getFileWithKey(id);
+}
+RCAttach.__name__ = ["RCAttach"];
+RCAttach.__super__ = JSView;
+for(var k in JSView.prototype ) RCAttach.prototype[k] = JSView.prototype[k];
+RCAttach.prototype.target = null;
+RCAttach.prototype.id = null;
+RCAttach.prototype.clone = function() {
+	return new RCAttach(this.x,this.y,this.id);
+}
+RCAttach.prototype.__class__ = RCAttach;
 RCTextRoll = function(x,y,w,h,str,properties) {
 	if( x === $_ ) return;
 	JSView.call(this,x,y);
@@ -2843,7 +3212,11 @@ RCWindow.init = function() {
 	RCWindow.width = RCWindow.target.scrollWidth;
 	RCWindow.height = RCWindow.target.scrollHeight;
 	RCWindow.setBackgroundColor(3355443);
-	RCWindow.stageMouse = new EVMouse();
+	if(RCWindow.stageMouse != null) {
+		haxe.Log.trace("You're trying to init twice the RCWindow, but don't worry, the second time is not in effect.",{ fileName : "RCWindow.hx", lineNumber : 61, className : "RCWindow", methodName : "init"});
+		return;
+	}
+	RCWindow.stageMouse = new EVMouse({ fileName : "RCWindow.hx", lineNumber : 64, className : "RCWindow", methodName : "init"});
 	var url = RCWindow.URL.split("/");
 	url.pop();
 	RCWindow.URL = url.join("/") + "/";
@@ -2872,7 +3245,7 @@ RCWindow.setBackgroundColor = function(color) {
 }
 RCWindow.setTarget = function(id) {
 	RCWindow.target = js.Lib.document.getElementById(id);
-	haxe.Log.trace(RCWindow.target,{ fileName : "RCWindow.hx", lineNumber : 126, className : "RCWindow", methodName : "setTarget"});
+	haxe.Log.trace(RCWindow.target,{ fileName : "RCWindow.hx", lineNumber : 130, className : "RCWindow", methodName : "setTarget"});
 }
 RCWindow.addChild = function(child) {
 	if(child != null) {
@@ -2996,6 +3369,161 @@ RCKeys.prototype.__class__ = RCKeys;
 Keyboard = function() { }
 Keyboard.__name__ = ["Keyboard"];
 Keyboard.prototype.__class__ = Keyboard;
+RCSegmentedControl = function(x,y,w,h,constructor_) {
+	if( x === $_ ) return;
+	JSView.call(this,x,y);
+	this.size.width = w;
+	this.size.height = h;
+	this.constructButton = constructor_;
+	this.items = new HashArray();
+	this.click = new RCSignal();
+}
+RCSegmentedControl.__name__ = ["RCSegmentedControl"];
+RCSegmentedControl.__super__ = JSView;
+for(var k in JSView.prototype ) RCSegmentedControl.prototype[k] = JSView.prototype[k];
+RCSegmentedControl.prototype.constructButton = null;
+RCSegmentedControl.prototype.labels = null;
+RCSegmentedControl.prototype.items = null;
+RCSegmentedControl.prototype.segmentWidth = null;
+RCSegmentedControl.prototype.gapX = null;
+RCSegmentedControl.prototype.gapY = null;
+RCSegmentedControl.prototype.click = null;
+RCSegmentedControl.prototype.selectedIndex = null;
+RCSegmentedControl.prototype.add = function(labels,constructor_) {
+	this.labels = labels;
+	var constructorNow = this.constructButton;
+	if(Reflect.isFunction(constructor_)) constructorNow = constructor_;
+	if(!Reflect.isFunction(constructorNow)) return;
+	var i = 0;
+	var _g = 0;
+	while(_g < labels.length) {
+		var label = labels[_g];
+		++_g;
+		if(this.items.exists(label)) continue;
+		var b = constructorNow(i);
+		b.click.add($closure(this,"clickHandler"));
+		this.items.set(label,b);
+		i++;
+	}
+	this.keepButtonsArranged();
+}
+RCSegmentedControl.prototype.defaultConstructor = function(i) {
+	var segmentLeft;
+	var segmentMiddle;
+	var segmentRight;
+	switch(i) {
+	case 0:
+		segmentLeft = "L";
+		segmentMiddle = "M";
+		segmentRight = "MR";
+		break;
+	case this.items.arr.length - 1:
+		segmentLeft = "ML";
+		segmentMiddle = "M";
+		segmentRight = "R";
+		break;
+	default:
+		segmentLeft = "ML";
+		segmentMiddle = "M";
+		segmentRight = "MR";
+	}
+	var s = new ios.SKSegment(this.labels[i],this.segmentWidth,this.size.height,segmentLeft,segmentMiddle,segmentRight,null);
+	var b = new RCButtonRadio(0,0,s);
+	return b;
+}
+RCSegmentedControl.prototype.getIndex = function() {
+	return this.selectedIndex;
+}
+RCSegmentedControl.prototype.setIndex = function(i) {
+	this.selectedIndex = i;
+	return this.getIndex();
+}
+RCSegmentedControl.prototype.remove = function(label) {
+	if(this.items.exists(label)) {
+		Fugu.safeDestroy(this.items.get(label),null,{ fileName : "RCSegmentedControl.hx", lineNumber : 98, className : "RCSegmentedControl", methodName : "remove"});
+		this.items.remove(label);
+	}
+	this.keepButtonsArranged();
+}
+RCSegmentedControl.prototype.update = function(labels,constructor_) {
+	this.destroy();
+	this.items = new HashArray();
+	this.add(labels,constructor_);
+}
+RCSegmentedControl.prototype.keepButtonsArranged = function() {
+	var _g1 = 0, _g = this.items.array().length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		var newX = 0.0, newY = 0.0;
+		var new_b = this.items.get(this.items.array()[i]);
+		var old_b = this.items.get(this.items.array()[i - 1]);
+		if(i != 0) {
+			if(this.gapX != null) newX = old_b.x + old_b.getWidth() + this.gapX;
+			if(this.gapY != null) newY = old_b.y + old_b.getHeight() + this.gapY;
+		}
+		new_b.setX(newX);
+		new_b.setY(newY);
+		this.addChild(new_b);
+	}
+}
+RCSegmentedControl.prototype.getIndexForLabel = function(label) {
+	var _g1 = 0, _g = this.items.arr.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		if(this.items.arr[i] == label) return i;
+	}
+	return -1;
+}
+RCSegmentedControl.prototype.select = function(label,can_unselect) {
+	if(can_unselect == null) can_unselect = true;
+	if(this.items.exists(label)) {
+		this.items.get(label).toggle();
+		if(can_unselect) this.items.get(label).lock(); else this.items.get(label).unlock();
+	}
+	if(can_unselect) {
+		var $it0 = this.items.keys();
+		while( $it0.hasNext() ) {
+			var key = $it0.next();
+			if(key != label) {
+				if(this.items.get(key).getToggable()) this.unselect(key);
+			}
+		}
+	}
+}
+RCSegmentedControl.prototype.unselect = function(label) {
+	this.items.get(label).unlock();
+	this.items.get(label).untoggle();
+}
+RCSegmentedControl.prototype.toggled = function(label) {
+	return this.items.get(label).getSelected();
+}
+RCSegmentedControl.prototype.get = function(label) {
+	return this.items.get(label);
+}
+RCSegmentedControl.prototype.exists = function(key) {
+	return this.items.exists(key);
+}
+RCSegmentedControl.prototype.enable = function(label) {
+	this.items.get(label).unlock();
+	this.items.get(label).setAlpha(1);
+}
+RCSegmentedControl.prototype.disable = function(label) {
+	this.items.get(label).lock();
+	this.items.get(label).setAlpha(0.4);
+}
+RCSegmentedControl.prototype.clickHandler = function(b) {
+}
+RCSegmentedControl.prototype.destroy = function() {
+	if(this.items != null) {
+		var $it0 = this.items.keys();
+		while( $it0.hasNext() ) {
+			var key = $it0.next();
+			Fugu.safeDestroy(this.items.get(key),null,{ fileName : "RCSegmentedControl.hx", lineNumber : 225, className : "RCSegmentedControl", methodName : "destroy"});
+		}
+	}
+	this.items = null;
+}
+RCSegmentedControl.prototype.__class__ = RCSegmentedControl;
 RCGroup = function(x,y,gapX,gapY,constructor_) {
 	if( x === $_ ) return;
 	JSView.call(this,x,y);
@@ -3005,6 +3533,7 @@ RCGroup = function(x,y,gapX,gapY,constructor_) {
 	this.items = new Array();
 	this.itemPush = new RCSignal();
 	this.itemRemove = new RCSignal();
+	this.update = new RCSignal();
 }
 RCGroup.__name__ = ["RCGroup"];
 RCGroup.__super__ = JSView;
@@ -3015,9 +3544,11 @@ RCGroup.prototype.gapX = null;
 RCGroup.prototype.gapY = null;
 RCGroup.prototype.itemPush = null;
 RCGroup.prototype.itemRemove = null;
+RCGroup.prototype.update = null;
 RCGroup.prototype.add = function(params,alternativeConstructor) {
 	if(!Reflect.isFunction(this.constructor_) && !Reflect.isFunction(alternativeConstructor)) return;
 	if(alternativeConstructor != null) this.constructor_ = alternativeConstructor;
+	if(this.constructor_ == null) throw "RCGroup needs passed a constructor function.";
 	var i = 0;
 	var _g = 0;
 	while(_g < params.length) {
@@ -3026,16 +3557,21 @@ RCGroup.prototype.add = function(params,alternativeConstructor) {
 		var s = this.constructor_(new RCIndexPath(0,i));
 		this.addChild(s);
 		this.items.push(s);
+		this.itemPush.dispatch([new RCIndexPath(0,i)],{ fileName : "RCGroup.hx", lineNumber : 55, className : "RCGroup", methodName : "add"});
 		i++;
 	}
-	this.keepButtonsArranged();
+	try {
+		this.keepItemsArranged();
+	} catch( e ) {
+		haxe.Log.trace(e,{ fileName : "RCGroup.hx", lineNumber : 60, className : "RCGroup", methodName : "add"});
+	}
 }
 RCGroup.prototype.remove = function(i) {
-	Fugu.safeDestroy(this.items[i],null,{ fileName : "RCGroup.hx", lineNumber : 63, className : "RCGroup", methodName : "remove"});
-	this.keepButtonsArranged();
-	this.itemRemove.dispatch([this,new RCIndexPath(0,i)],{ fileName : "RCGroup.hx", lineNumber : 68, className : "RCGroup", methodName : "remove"});
+	Fugu.safeDestroy(this.items[i],null,{ fileName : "RCGroup.hx", lineNumber : 65, className : "RCGroup", methodName : "remove"});
+	this.keepItemsArranged();
+	this.itemRemove.dispatch([new RCIndexPath(0,i)],{ fileName : "RCGroup.hx", lineNumber : 70, className : "RCGroup", methodName : "remove"});
 }
-RCGroup.prototype.keepButtonsArranged = function() {
+RCGroup.prototype.keepItemsArranged = function() {
 	var _g1 = 0, _g = this.items.length;
 	while(_g1 < _g) {
 		var i = _g1++;
@@ -3043,12 +3579,15 @@ RCGroup.prototype.keepButtonsArranged = function() {
 		var new_s = this.items[i];
 		var old_s = this.items[i - 1];
 		if(i != 0) {
-			if(this.gapX != null) newX = old_s.x + old_s.getWidth() + this.gapX;
-			if(this.gapY != null) newY = old_s.y + old_s.getHeight() + this.gapY;
+			if(this.gapX != null) newX = old_s.x + old_s.size.width + this.gapX;
+			if(this.gapY != null) newY = old_s.y + old_s.size.height + this.gapY;
 		}
 		new_s.setX(newX);
 		new_s.setY(newY);
 	}
+	this.update.dispatch(null,{ fileName : "RCGroup.hx", lineNumber : 93, className : "RCGroup", methodName : "keepItemsArranged"});
+}
+RCGroup.prototype.viewDidAppear = function() {
 }
 RCGroup.prototype.get = function(i) {
 	return this.items[i];
@@ -3070,7 +3609,7 @@ RCGroup.prototype.iterator = function() {
 	return typedItems;
 }
 RCGroup.prototype.destroy = function() {
-	Fugu.safeDestroy(this.items,null,{ fileName : "RCGroup.hx", lineNumber : 119, className : "RCGroup", methodName : "destroy"});
+	Fugu.safeDestroy(this.items,null,{ fileName : "RCGroup.hx", lineNumber : 122, className : "RCGroup", methodName : "destroy"});
 	this.items = null;
 }
 RCGroup.prototype.__class__ = RCGroup;
@@ -3270,6 +3809,32 @@ RCNotification.prototype.toString = function() {
 	return "[RCNotification with name: '" + this.name + "', functionToCall: " + this.functionToCall + "]";
 }
 RCNotification.prototype.__class__ = RCNotification;
+HashArray = function(p) {
+	if( p === $_ ) return;
+	Hash.call(this);
+	this.arr = new Array();
+}
+HashArray.__name__ = ["HashArray"];
+HashArray.__super__ = Hash;
+for(var k in Hash.prototype ) HashArray.prototype[k] = Hash.prototype[k];
+HashArray.prototype.arr = null;
+HashArray.prototype.set = function(key,value) {
+	if(!Hash.prototype.exists.call(this,key)) this.arr.push(key);
+	Hash.prototype.set.call(this,key,value);
+}
+HashArray.prototype.remove = function(key) {
+	this.arr.remove(key);
+	return Hash.prototype.remove.call(this,key);
+}
+HashArray.prototype.insert = function(pos,key,value) {
+	if(Hash.prototype.exists.call(this,key)) return;
+	this.arr.insert(pos,key);
+	Hash.prototype.set.call(this,key,value);
+}
+HashArray.prototype.array = function() {
+	return this.arr;
+}
+HashArray.prototype.__class__ = HashArray;
 haxe.Log = function() { }
 haxe.Log.__name__ = ["haxe","Log"];
 haxe.Log.trace = function(v,infos) {
@@ -3297,6 +3862,40 @@ RCIndexPath.prototype.toString = function() {
 	return "[RCIndexPath section : " + this.section + ", row : " + this.row + "]";
 }
 RCIndexPath.prototype.__class__ = RCIndexPath;
+if(typeof ios=='undefined') ios = {}
+ios.SKSegment = function(label,w,h,posLeft,posMiddle,posRight,colors) {
+	if( label === $_ ) return;
+	RCSkin.call(this,colors);
+	var segLeft = new RCAttach(0,0,"Segment" + posLeft);
+	var segMiddle = new RCAttach(0,0,"Segment" + posMiddle);
+	var segRight = new RCAttach(0,0,"Segment" + posRight);
+	var segLeftSelected = new RCAttach(0,0,"Segment" + posLeft + "Selected");
+	var segMiddleSelected = new RCAttach(0,0,"Segment" + posMiddle + "Selected");
+	var segRightSelected = new RCAttach(0,0,"Segment" + posRight + "Selected");
+	segLeft.setX(0);
+	segMiddle.setX(segLeft.getWidth());
+	segMiddle.setWidth(w - segLeft.getWidth() - segRight.getWidth());
+	segRight.setX(w - segRight.getWidth());
+	segLeftSelected.setX(0);
+	segMiddleSelected.setX(segLeftSelected.getWidth());
+	segMiddleSelected.setWidth(w - segLeftSelected.getWidth() - segRightSelected.getWidth());
+	segRightSelected.setX(w - segRightSelected.getWidth());
+	this.normal.background = new JSView(0,0);
+	this.normal.background.addChild(segLeft);
+	this.normal.background.addChild(segMiddle);
+	this.normal.background.addChild(segRight);
+	this.normal.background.addChild(new RCTextView(0,28,w,30,label,FontManager.getFormat("bold",{ size : 25, color : 7829367, align : "center"})));
+	this.highlighted.background = new JSView(0,0);
+	this.highlighted.background.addChild(segLeftSelected);
+	this.highlighted.background.addChild(segMiddleSelected);
+	this.highlighted.background.addChild(segRightSelected);
+	this.highlighted.background.addChild(new RCTextView(0,28,w,30,label,FontManager.getFormat("bold",{ size : 25, color : 16777215, align : "center"})));
+	this.hit = new RCRectangle(0,0,w,h,0,0);
+}
+ios.SKSegment.__name__ = ["ios","SKSegment"];
+ios.SKSegment.__super__ = RCSkin;
+for(var k in RCSkin.prototype ) ios.SKSegment.prototype[k] = RCSkin.prototype[k];
+ios.SKSegment.prototype.__class__ = ios.SKSegment;
 Std = function() { }
 Std.__name__ = ["Std"];
 Std["is"] = function(v,t) {
@@ -3543,26 +4142,35 @@ Main.__name__ = ["Main"];
 Main.lin = null;
 Main.ph = null;
 Main.circ = null;
+Main.req = null;
 Main.signal = null;
 Main.main = function() {
 	haxe.Firebug.redirectTraces();
-	haxe.Log.trace("JS",{ fileName : "Main.hx", lineNumber : 21, className : "Main", methodName : "main"});
+	haxe.Log.trace("JS",{ fileName : "Main.hx", lineNumber : 22, className : "Main", methodName : "main"});
 	try {
+		haxe.Log.trace("BEGIN",{ fileName : "Main.hx", lineNumber : 23, className : "Main", methodName : "main"});
 		RCWindow.init();
 		RCWindow.setBackgroundColor(14540253);
+		FontManager.init();
+		RCLib.loadFileWithKey("photo","../CoreAnimation/3134265_large.jpg");
+		RCLib.loadFileWithKey("some_text","data.txt");
+		RCLib.onComplete = function() {
+			haxe.Log.trace("RCLib did finish loading assets",{ fileName : "Main.hx", lineNumber : 31, className : "Main", methodName : "main"});
+			haxe.Log.trace(RCLib.getFileWithKey("some_text"),{ fileName : "Main.hx", lineNumber : 31, className : "Main", methodName : "main"});
+		};
 		var rect = new RCRectangle(0,0,300,150,RCColor.greenColor());
 		RCWindow.addChild(rect);
 		rect.setClipsToBounds(true);
 		rect.setCenter(new RCPoint(RCWindow.width / 2,RCWindow.height / 2));
 		Main.circ = new RCEllipse(0,0,100,100,RCColor.darkGrayColor());
 		RCWindow.addChild(Main.circ);
-		var a1 = new CATween(Main.circ,{ x : RCWindow.width - 100, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 39, className : "Main", methodName : "main"});
-		var a2 = new CATween(Main.circ,{ x : RCWindow.width - 100, y : RCWindow.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 40, className : "Main", methodName : "main"});
-		var a3 = new CATween(Main.circ,{ x : 0, y : RCWindow.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 41, className : "Main", methodName : "main"});
-		var a4 = new CATween(Main.circ,{ x : 0, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 42, className : "Main", methodName : "main"});
+		var a1 = new CATween(Main.circ,{ x : RCWindow.width - 100, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 43, className : "Main", methodName : "main"});
+		var a2 = new CATween(Main.circ,{ x : RCWindow.width - 100, y : RCWindow.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 44, className : "Main", methodName : "main"});
+		var a3 = new CATween(Main.circ,{ x : 0, y : RCWindow.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 45, className : "Main", methodName : "main"});
+		var a4 = new CATween(Main.circ,{ x : 0, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 46, className : "Main", methodName : "main"});
 		var seq = new CASequence([a1,a2,a3,a4]);
 		seq.start();
-		Main.ph = new RCPhoto(1,1,"../CoreAnimation/3134265_large.jpg");
+		Main.ph = new RCImage(1,1,"../CoreAnimation/3134265_large.jpg");
 		Main.ph.onComplete = Main.resizePhoto;
 		rect.addChild(Main.ph);
 		var f = new RCFont();
@@ -3575,16 +4183,16 @@ Main.main = function() {
 		var f2 = f.copy();
 		f2.color = 3355443;
 		f2.size = 16;
-		var r = new RCTextRoll(50,60,200,null,"We are working on the HTML5 version of the gallery...",f2);
+		var r = new RCTextRoll(50,60,200,null,"We are working on the HTML5 version of the gallery...",f2.copy());
 		RCWindow.addChild(r);
 		r.start();
 		r.setBackgroundColor(16777215);
 		var k = new RCKeys();
 		k.onLeft = Main.moveLeft;
 		k.onRight = Main.moveRight;
-		var m = new RCMouse(RCWindow.target,rect.view);
-		m.onLeft = function() {
-			haxe.Log.trace("onLeft",{ fileName : "Main.hx", lineNumber : 75, className : "Main", methodName : "main"});
+		var m = new RCMouse(rect.view);
+		m.onOver = function() {
+			haxe.Log.trace("onOver",{ fileName : "Main.hx", lineNumber : 79, className : "Main", methodName : "main"});
 		};
 		Main.signal = new RCSignal();
 		Main.signal.add(Main.printNr);
@@ -3594,61 +4202,86 @@ Main.main = function() {
 		var _g = 0;
 		while(_g < 5) {
 			var i = _g++;
-			Main.signal.dispatch([Math.random()],{ fileName : "Main.hx", lineNumber : 84, className : "Main", methodName : "main"});
+			Main.signal.dispatch([Math.random()],{ fileName : "Main.hx", lineNumber : 88, className : "Main", methodName : "main"});
 		}
 		var s = new haxe.SKButton("Play");
 		var b = new RCButton(50,200,s);
 		b.onClick = function() {
-			haxe.Log.trace("click",{ fileName : "Main.hx", lineNumber : 97, className : "Main", methodName : "main"});
+			haxe.Log.trace("click",{ fileName : "Main.hx", lineNumber : 101, className : "Main", methodName : "main"});
 		};
 		b.onOver = function() {
-			haxe.Log.trace("over",{ fileName : "Main.hx", lineNumber : 98, className : "Main", methodName : "main"});
+			haxe.Log.trace("over",{ fileName : "Main.hx", lineNumber : 102, className : "Main", methodName : "main"});
 		};
 		b.onOut = function() {
-			haxe.Log.trace("out",{ fileName : "Main.hx", lineNumber : 99, className : "Main", methodName : "main"});
+			haxe.Log.trace("out",{ fileName : "Main.hx", lineNumber : 103, className : "Main", methodName : "main"});
 		};
 		b.onPress = function() {
-			haxe.Log.trace("press",{ fileName : "Main.hx", lineNumber : 100, className : "Main", methodName : "main"});
+			haxe.Log.trace("press",{ fileName : "Main.hx", lineNumber : 104, className : "Main", methodName : "main"});
 		};
 		b.onRelease = function() {
-			haxe.Log.trace("release",{ fileName : "Main.hx", lineNumber : 101, className : "Main", methodName : "main"});
+			haxe.Log.trace("release",{ fileName : "Main.hx", lineNumber : 105, className : "Main", methodName : "main"});
 		};
 		RCWindow.addChild(b);
 		var s1 = new haxe.SKButtonRadio();
 		var b1 = new RCButtonRadio(200,200,s1);
 		RCWindow.addChild(b1);
+		haxe.Log.trace("1",{ fileName : "Main.hx", lineNumber : 111, className : "Main", methodName : "main"});
 		var group = new RCGroup(200,230,10,null,Main.createRadioButton);
 		RCWindow.addChild(group);
 		group.add([1,2,3,4,5,5]);
+		haxe.Log.trace("1",{ fileName : "Main.hx", lineNumber : 115, className : "Main", methodName : "main"});
+		var group1 = new RCSegmentedControl(200,300,10,null,Main.createRadioButton2);
+		RCWindow.addChild(group1);
+		group1.add(["1","2","3","4","5"]);
+		haxe.Log.trace("1",{ fileName : "Main.hx", lineNumber : 119, className : "Main", methodName : "main"});
 		var s2 = new haxe.SKSlider(160,8);
+		haxe.Log.trace(1,{ fileName : "Main.hx", lineNumber : 121, className : "Main", methodName : "main"});
 		var sl = new RCSlider(50,250,s2);
-		sl.valueChanged.add(function(e) {
-			haxe.Log.trace(e.getValue(),{ fileName : "Main.hx", lineNumber : 115, className : "Main", methodName : "main"});
-		});
+		haxe.Log.trace(1,{ fileName : "Main.hx", lineNumber : 122, className : "Main", methodName : "main"});
 		RCWindow.addChild(sl);
+		sl.setValue(30);
+		Main.req = new HTTPRequest();
+		Main.req.onComplete = function() {
+			haxe.Log.trace(Main.req.result,{ fileName : "Main.hx", lineNumber : 132, className : "Main", methodName : "main"});
+		};
+		Main.req.onError = function() {
+			haxe.Log.trace(Main.req.result,{ fileName : "Main.hx", lineNumber : 133, className : "Main", methodName : "main"});
+		};
+		Main.req.onStatus = function() {
+			haxe.Log.trace(Main.req.status,{ fileName : "Main.hx", lineNumber : 134, className : "Main", methodName : "main"});
+		};
+		Main.req.readFile("data.txt");
 	} catch( e ) {
-		haxe.Log.trace(e,{ fileName : "Main.hx", lineNumber : 122, className : "Main", methodName : "main"});
+		Fugu.stack();
 	}
 }
 Main.createRadioButton = function(indexPath) {
-	haxe.Log.trace("create button at " + indexPath,{ fileName : "Main.hx", lineNumber : 125, className : "Main", methodName : "createRadioButton"});
+	haxe.Log.trace(indexPath,{ fileName : "Main.hx", lineNumber : 140, className : "Main", methodName : "createRadioButton"});
 	var s = new haxe.SKButtonRadio();
+	var b = new RCButtonRadio(0,0,s);
+	return b;
+}
+Main.createRadioButton2 = function(i) {
+	var s = new haxe.SKButton("lklklk" + Std.random(10));
 	var b = new RCButtonRadio(0,0,s);
 	return b;
 }
 Main.resizePhoto = function() {
 	Main.ph.scaleToFill(298,148);
+	var ph2 = Main.ph.duplicate();
+	ph2.setX(800);
+	RCWindow.addChild(ph2);
 	return;
-	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 147, className : "Main", methodName : "resizePhoto"});
+	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 172, className : "Main", methodName : "resizePhoto"});
 	anim.repeatCount = 5;
 	anim.autoreverses = true;
 	CoreAnimation.add(anim);
 }
 Main.printNr = function(nr) {
-	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 154, className : "Main", methodName : "printNr"});
+	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 179, className : "Main", methodName : "printNr"});
 }
 Main.printNr2 = function(nr) {
-	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 157, className : "Main", methodName : "printNr2"});
+	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 182, className : "Main", methodName : "printNr2"});
 }
 Main.moveLeft = function() {
 	var _g = Main.circ;
@@ -4300,6 +4933,21 @@ StringTools.prototype.__class__ = StringTools;
 $_ = {}
 js.Boot.__res = {}
 js.Boot.__init();
+js["XMLHttpRequest"] = window.XMLHttpRequest?XMLHttpRequest:window.ActiveXObject?function() {
+	try {
+		return new ActiveXObject("Msxml2.XMLHTTP");
+	} catch( e ) {
+		try {
+			return new ActiveXObject("Microsoft.XMLHTTP");
+		} catch( e1 ) {
+			throw "Unable to create XMLHttpRequest object.";
+		}
+	}
+}:(function($this) {
+	var $r;
+	throw "Unable to create XMLHttpRequest object.";
+	return $r;
+}(this));
 {
 	Math.__name__ = ["Math"];
 	Math.NaN = Number["NaN"];
@@ -4311,6 +4959,17 @@ js.Boot.__init();
 	Math.isNaN = function(i) {
 		return isNaN(i);
 	};
+}
+{
+	/**
+ * SWFObject v1.5: Flash Player detection and embed - http://blog.deconcept.com/swfobject/
+ *
+ * SWFObject is (c) 2007 Geoff Stearns and is released under the MIT License:
+ * http://www.opensource.org/licenses/mit-license.php
+ *
+ */
+if(typeof deconcept=="undefined"){var deconcept=new Object();}if(typeof deconcept.util=="undefined"){deconcept.util=new Object();}if(typeof deconcept.SWFObjectUtil=="undefined"){deconcept.SWFObjectUtil=new Object();}deconcept.SWFObject=function(_1,id,w,h,_5,c,_7,_8,_9,_a){if(!document.getElementById){return;}this.DETECT_KEY=_a?_a:"detectflash";this.skipDetect=deconcept.util.getRequestParameter(this.DETECT_KEY);this.params=new Object();this.variables=new Object();this.attributes=new Array();if(_1){this.setAttribute("swf",_1);}if(id){this.setAttribute("id",id);}if(w){this.setAttribute("width",w);}if(h){this.setAttribute("height",h);}if(_5){this.setAttribute("version",new deconcept.PlayerVersion(_5.toString().split(".")));}this.installedVer=deconcept.SWFObjectUtil.getPlayerVersion();if(!window.opera&&document.all&&this.installedVer.major>7){deconcept.SWFObject.doPrepUnload=true;}if(c){this.addParam("bgcolor",c);}var q=_7?_7:"high";this.addParam("quality",q);this.setAttribute("useExpressInstall",false);this.setAttribute("doExpressInstall",false);var _c=(_8)?_8:window.location;this.setAttribute("xiRedirectUrl",_c);this.setAttribute("redirectUrl","");if(_9){this.setAttribute("redirectUrl",_9);}};deconcept.SWFObject.prototype={useExpressInstall:function(_d){this.xiSWFPath=!_d?"expressinstall.swf":_d;this.setAttribute("useExpressInstall",true);},setAttribute:function(_e,_f){this.attributes[_e]=_f;},getAttribute:function(_10){return this.attributes[_10];},addParam:function(_11,_12){this.params[_11]=_12;},getParams:function(){return this.params;},addVariable:function(_13,_14){this.variables[_13]=_14;},getVariable:function(_15){return this.variables[_15];},getVariables:function(){return this.variables;},getVariablePairs:function(){var _16=new Array();var key;var _18=this.getVariables();for(key in _18){_16[_16.length]=key+"="+_18[key];}return _16;},getSWFHTML:function(){var _19="";if(navigator.plugins&&navigator.mimeTypes&&navigator.mimeTypes.length){if(this.getAttribute("doExpressInstall")){this.addVariable("MMplayerType","PlugIn");this.setAttribute("swf",this.xiSWFPath);}_19="<embed type=\"application/x-shockwave-flash\" src=\""+this.getAttribute("swf")+"\" width=\""+this.getAttribute("width")+"\" height=\""+this.getAttribute("height")+"\" style=\""+this.getAttribute("style")+"\"";_19+=" id=\""+this.getAttribute("id")+"\" name=\""+this.getAttribute("id")+"\" ";var _1a=this.getParams();for(var key in _1a){_19+=[key]+"=\""+_1a[key]+"\" ";}var _1c=this.getVariablePairs().join("&");if(_1c.length>0){_19+="flashvars=\""+_1c+"\"";}_19+="/>";}else{if(this.getAttribute("doExpressInstall")){this.addVariable("MMplayerType","ActiveX");this.setAttribute("swf",this.xiSWFPath);}_19="<object id=\""+this.getAttribute("id")+"\" classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" width=\""+this.getAttribute("width")+"\" height=\""+this.getAttribute("height")+"\" style=\""+this.getAttribute("style")+"\">";_19+="<param name=\"movie\" value=\""+this.getAttribute("swf")+"\" />";var _1d=this.getParams();for(var key in _1d){_19+="<param name=\""+key+"\" value=\""+_1d[key]+"\" />";}var _1f=this.getVariablePairs().join("&");if(_1f.length>0){_19+="<param name=\"flashvars\" value=\""+_1f+"\" />";}_19+="</object>";}return _19;},write:function(_20){if(this.getAttribute("useExpressInstall")){var _21=new deconcept.PlayerVersion([6,0,65]);if(this.installedVer.versionIsValid(_21)&&!this.installedVer.versionIsValid(this.getAttribute("version"))){this.setAttribute("doExpressInstall",true);this.addVariable("MMredirectURL",escape(this.getAttribute("xiRedirectUrl")));document.title=document.title.slice(0,47)+" - Flash Player Installation";this.addVariable("MMdoctitle",document.title);}}if(this.skipDetect||this.getAttribute("doExpressInstall")||this.installedVer.versionIsValid(this.getAttribute("version"))){var n=(typeof _20=="string")?document.getElementById(_20):_20;n.innerHTML=this.getSWFHTML();return true;}else{if(this.getAttribute("redirectUrl")!=""){document.location.replace(this.getAttribute("redirectUrl"));}}return false;}};deconcept.SWFObjectUtil.getPlayerVersion=function(){var _23=new deconcept.PlayerVersion([0,0,0]);if(navigator.plugins&&navigator.mimeTypes.length){var x=navigator.plugins["Shockwave Flash"];if(x&&x.description){_23=new deconcept.PlayerVersion(x.description.replace(/([a-zA-Z]|\s)+/,"").replace(/(\s+r|\s+b[0-9]+)/,".").split("."));}}else{if(navigator.userAgent&&navigator.userAgent.indexOf("Windows CE")>=0){var axo=1;var _26=3;while(axo){try{_26++;axo=new ActiveXObject("ShockwaveFlash.ShockwaveFlash."+_26);_23=new deconcept.PlayerVersion([_26,0,0]);}catch(e){axo=null;}}}else{try{var axo=new ActiveXObject("ShockwaveFlash.ShockwaveFlash.7");}catch(e){try{var axo=new ActiveXObject("ShockwaveFlash.ShockwaveFlash.6");_23=new deconcept.PlayerVersion([6,0,21]);axo.AllowScriptAccess="always";}catch(e){if(_23.major==6){return _23;}}try{axo=new ActiveXObject("ShockwaveFlash.ShockwaveFlash");}catch(e){}}if(axo!=null){_23=new deconcept.PlayerVersion(axo.GetVariable("$version").split(" ")[1].split(","));}}}return _23;};deconcept.PlayerVersion=function(_29){this.major=_29[0]!=null?parseInt(_29[0]):0;this.minor=_29[1]!=null?parseInt(_29[1]):0;this.rev=_29[2]!=null?parseInt(_29[2]):0;};deconcept.PlayerVersion.prototype.versionIsValid=function(fv){if(this.major<fv.major){return false;}if(this.major>fv.major){return true;}if(this.minor<fv.minor){return false;}if(this.minor>fv.minor){return true;}if(this.rev<fv.rev){return false;}return true;};deconcept.util={getRequestParameter:function(_2b){var q=document.location.search||document.location.hash;if(_2b==null){return q;}if(q){var _2d=q.substring(1).split("&");for(var i=0;i<_2d.length;i++){if(_2d[i].substring(0,_2d[i].indexOf("="))==_2b){return _2d[i].substring((_2d[i].indexOf("=")+1));}}}return "";}};deconcept.SWFObjectUtil.cleanupSWFs=function(){var _2f=document.getElementsByTagName("OBJECT");for(var i=_2f.length-1;i>=0;i--){_2f[i].style.display="none";for(var x in _2f[i]){if(typeof _2f[i][x]=="function"){_2f[i][x]=function(){};}}}};if(deconcept.SWFObject.doPrepUnload){if(!deconcept.unloadSet){deconcept.SWFObjectUtil.prepUnload=function(){__flash_unloadHandler=function(){};__flash_savedUnloadHandler=function(){};window.attachEvent("onunload",deconcept.SWFObjectUtil.cleanupSWFs);};window.attachEvent("onbeforeunload",deconcept.SWFObjectUtil.prepUnload);deconcept.unloadSet=true;}}if(!document.getElementById&&document.all){document.getElementById=function(id){return document.all[id];};}var getQueryParamValue=deconcept.util.getRequestParameter;var FlashObject=deconcept.SWFObject;var SWFObject=deconcept.SWFObject;;
+	js.SWFObject = deconcept.SWFObject;
 }
 if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 {
@@ -4381,8 +5040,6 @@ if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 	d.prototype.__class__ = d;
 	d.__name__ = ["Date"];
 }
-RCMouse.IDLE_TIME = 3000;
-RCMouse.MIDDLE_W = 200;
 haxe.Serializer.USE_CACHE = false;
 haxe.Serializer.USE_ENUM_INDEX = false;
 haxe.Serializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";

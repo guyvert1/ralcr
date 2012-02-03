@@ -30,11 +30,7 @@ class HTTPRequest extends RCRequest {
 	 * Reads a file and returns it's raw data in public "result" variable.
 	 */
 	public function readFile (file:String) :Void {
-		#if flash
-			loader.load ( new URLRequest (file) );
-		#elseif js
-			load (file);
-		#end
+		load ( file );
 	}
 	
 	

@@ -9,40 +9,49 @@ class RCTabBarController extends RCView {
 	
 	var labels :Array<String>;
 	var symbols :Array<String>;
+	var constructor_ :Int->RCTabBarItem;
 	
 	public var tabBar :RCTabBar;
 	public var viewControllers :Array<Dynamic>;
 	public var selectedIndex (getIndex, setIndex) :Int;
 	
-	public var click :RCSignal<RCTabBarController->Void>;
+	public var didSelectViewController :RCSignal<RCTabBarController->Dynamic->Void>;
 	
-	public function new(x, y){
+	
+	public function new (x, y, ?constructor_:Int->RCTabBarItem) {
 		super(x,y);
 		//this.size.height = 98;
+		this.constructor_ = constructor_;
 		viewControllers = new Array<Dynamic>();
-		click = new RCSignal<RCTabBarController->Void>();
+		didSelectViewController = new RCSignal<RCTabBarController->Dynamic->Void>();
 		
+		// Draw background
 		this.addChild ( new RCRectangle (0, 0, 640, 49, 0x222222) );
 		this.addChild ( new RCRectangle (0, 49, 640, 49, 0x000000) );
-		
-		
 	}
 	public function init (labels:Array<String>, symbols:Array<String>) {
 		this.labels = labels;
 		this.symbols = symbols;
 		
-		tabBar = new RCTabBar (0, 3, 6, null, constructButton);
-		tabBar.add ( labels );
-		tabBar.click.add ( clickHandler );
+		tabBar = new RCTabBar (0, 3, /*6, null, */constructor_ == null ? constructButton : constructor_);
 		this.addChild ( tabBar );
+		tabBar.add ( labels );
+		tabBar.didSelectItem.add ( clickHandler );
 	}
-	function constructButton (nr:RCIndexPath) :RCTabBarItem {
-		var s = new SkinButtonTabBar ( labels[nr.row], symbols[nr.row], null );
+	function constructButton (i:Int) :RCTabBarItem {
+		var s = new haxe.SKTabBarItem ( labels[i], symbols[i], null );
 		var b = new RCTabBarItem (0, 0, s);
 		return b;
 	}
-	function clickHandler (s:RCTabBar, e:RCIndexPath) :Void {
-		setIndex ( e.row );
+	function clickHandler (item:RCTabBarItem) :Void {
+		var i = 0;
+		for (it in tabBar.items) {
+			if (it == item) {
+				break;
+			}
+			i++;
+		}
+		setIndex ( i );
 	}
 	
 	
@@ -50,17 +59,19 @@ class RCTabBarController extends RCView {
 		return selectedIndex;
 	}
 	public function setIndex (i:Int) :Int {
-		tabBar.select ( Std.string(i) );
+		trace("setIndex "+i);
 		selectedIndex = i;
-		return getIndex();
+		//tabBar.select ( i );
+		didSelectViewController.dispatch ( [this, viewControllers[selectedIndex]] );
+		return selectedIndex;
 	}
 	
 	
 	public function enable (i:Int) :Void {
-		buttons.enable( Std.string(i) );
+		tabBar.enable( i );
 	}
 	public function disable (i:Int) :Void {
-		buttons.disable( Std.string(i) );
+		tabBar.disable( i );
 	}
 	
 	
