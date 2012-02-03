@@ -9,7 +9,7 @@
 
 class RCGroup<T:RCView> extends RCView {
 	
-	var items :Array<T>;
+	public var items :Array<T>;
 	var constructor_ :RCIndexPath->T;// Javascript conflict names
 	var gapX :Null<Int>;
 	var gapY :Null<Int>;
@@ -29,6 +29,7 @@ class RCGroup<T:RCView> extends RCView {
 		this.items = new Array<T>();
 		itemPush = new RCSignal<RCIndexPath->Void>();
 		itemRemove = new RCSignal<RCIndexPath->Void>();
+		update = new RCSignal<RCGroup<T>->Void>();
 	}
 	
 	
@@ -46,7 +47,7 @@ class RCGroup<T:RCView> extends RCView {
 		var i = 0;
 		for (param in params) {
 			// Create a new sprite with the passed function
-			var s = this.constructor_ ( new RCIndexPath(0,i) );
+			var s :T = this.constructor_ ( new RCIndexPath(0,i) );
 			this.addChild ( s );
 			items.push ( s );
 			
@@ -56,7 +57,7 @@ class RCGroup<T:RCView> extends RCView {
 		}
 		
 		// Keep all items arranged
-		keepItemsArranged();
+		try{keepItemsArranged();}catch(e:Dynamic){trace(e);}
 	}
 	
 	public function remove (i:Int) :Void {
@@ -82,8 +83,8 @@ class RCGroup<T:RCView> extends RCView {
 			var old_s = items[i-1];
 			
 			if (i != 0) {
-				if (gapX != null) newX = old_s.x + old_s.width + gapX;
-				if (gapY != null) newY = old_s.y + old_s.height + gapY;
+				if (gapX != null) newX = old_s.x + old_s.size.width + gapX;
+				if (gapY != null) newY = old_s.y + old_s.size.height + gapY;
 			}
 			
 			new_s.x = newX;
