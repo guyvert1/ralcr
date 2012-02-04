@@ -6,10 +6,12 @@
 //  Copyright (c) 2009-2012 http://ralcr.com. All rights reserved.
 //
 
-#if (flash || nme)
-	import flash.display.Sprite;
+#if (flash && nme)
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
+#end
+#if (flash || nme)
+	import flash.display.Sprite;
 	import flash.events.ProgressEvent;
 	import flash.events.ErrorEvent;
 	import flash.events.IOErrorEvent;
@@ -127,7 +129,7 @@ class RCLib {
 	*  Dispatch onComplete and onError events
 	*/
 	function errorHandler (key:String, media:Dynamic) :Void {
-		//trace("Error loading URL for key: '"+key+"' with object: "+media);
+		trace("Error loading URL for key: '"+key+"' with object: "+media);
 		max --;
 		onError();
 		if (nr >= max)
@@ -138,12 +140,13 @@ class RCLib {
 		totalProgress();
 	}
 	function completeHandler (key:String, obj:Dynamic) :Void {
+		trace("completeHandler for key: '"+key+"' with object: "+obj);
 		// RCImage has some static fields and is causing problems checking non-strings
 		switch (Type.getClassName(Type.getClass(obj))) {
-			case "RCSwf" : swfList.set ( key, obj );
-			case "HTTPRequest" : dataList.set ( key, obj.result );
 			case "RCImage" : photoList.set ( key, obj );
-			default : trace("this asset does not belong to any supported category");
+			case "HTTPRequest" : dataList.set ( key, obj.result );
+			case "RCSwf" : swfList.set ( key, obj );
+			default : trace("this asset does not belong to any supported category. key="+key);
 		}
 		onCompleteHandler();
 	}
@@ -176,7 +179,7 @@ class RCLib {
 		//trace("get key "+key);//trace(swfList.exists ( key ));
 		// Search for assets in the Hash of photoList first
 		if (photoList.exists ( key )) {
-			return photoList.get( key ).duplicate();// Returns Sprite
+			return photoList.get( key ).copy();// Returns RCImage
 		}
 		
 		else if (dataList.exists ( key )) {
@@ -186,8 +189,8 @@ class RCLib {
 		else if (swfList.exists ( key )) {
 			return swfList.get( key );// Returns RCSwf
 		}
-		#if (flash || nme)
-		// Search for assets in each of the loaded swfList, in they loaded order
+#if (flash || nme)
+		// Search for assets in each of the loaded swfList, might be there
 		else {
 			var classInstance :Dynamic = createInstance ( key );
 			if (classInstance == null) return null;
@@ -197,7 +200,7 @@ class RCLib {
 			else
 				return classInstance;
 		}
-		#end
+#end
 		// No class was found with this definition name
 		return null;
 	}

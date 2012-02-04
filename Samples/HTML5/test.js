@@ -102,7 +102,7 @@ RCLib.prototype.nr = null;
 RCLib.prototype.max = null;
 RCLib.prototype.set = function(key,URL,newDomain) {
 	if(newDomain == null) newDomain = true;
-	haxe.Log.trace("set " + key + ", " + URL,{ fileName : "RCLib.hx", lineNumber : 83, className : "RCLib", methodName : "set"});
+	haxe.Log.trace("set " + key + ", " + URL,{ fileName : "RCLib.hx", lineNumber : 85, className : "RCLib", methodName : "set"});
 	this.max++;
 	if(key == null) key = Std.string(Math.random());
 	if(URL.toLowerCase().indexOf(".swf") != -1) this.loadSwf(key,URL,newDomain); else if(URL.toLowerCase().indexOf(".xml") != -1 || URL.toLowerCase().indexOf(".txt") != -1 || URL.toLowerCase().indexOf(".css") != -1) this.loadText(key,URL); else this.loadPhoto(key,URL);
@@ -165,6 +165,7 @@ RCLib.prototype.loadText = function(key,URL) {
 	data.readFile(URL);
 }
 RCLib.prototype.errorHandler = function(key,media) {
+	haxe.Log.trace("Error loading URL for key: '" + key + "' with object: " + media,{ fileName : "RCLib.hx", lineNumber : 132, className : "RCLib", methodName : "errorHandler"});
 	this.max--;
 	RCLib.onError();
 	if(this.nr >= this.max) RCLib.onComplete();
@@ -174,18 +175,19 @@ RCLib.prototype.progressHandler = function(key,obj) {
 	this.totalProgress();
 }
 RCLib.prototype.completeHandler = function(key,obj) {
+	haxe.Log.trace("completeHandler for key: '" + key + "' with object: " + obj,{ fileName : "RCLib.hx", lineNumber : 143, className : "RCLib", methodName : "completeHandler"});
 	switch(Type.getClassName(Type.getClass(obj))) {
-	case "RCSwf":
-		this.swfList.set(key,obj);
+	case "RCImage":
+		this.photoList.set(key,obj);
 		break;
 	case "HTTPRequest":
 		this.dataList.set(key,obj.result);
 		break;
-	case "RCImage":
-		this.photoList.set(key,obj);
+	case "RCSwf":
+		this.swfList.set(key,obj);
 		break;
 	default:
-		haxe.Log.trace("this asset does not belong to any supported category",{ fileName : "RCLib.hx", lineNumber : 146, className : "RCLib", methodName : "completeHandler"});
+		haxe.Log.trace("this asset does not belong to any supported category. key=" + key,{ fileName : "RCLib.hx", lineNumber : 149, className : "RCLib", methodName : "completeHandler"});
 	}
 	this.onCompleteHandler();
 }
@@ -208,7 +210,7 @@ RCLib.prototype.totalProgress = function() {
 RCLib.prototype.get = function(key,returnAsBitmap) {
 	if(returnAsBitmap == null) returnAsBitmap = true;
 	RCLib.init();
-	if(this.photoList.exists(key)) return this.photoList.get(key).duplicate(); else if(this.dataList.exists(key)) return this.dataList.get(key); else if(this.swfList.exists(key)) return this.swfList.get(key);
+	if(this.photoList.exists(key)) return this.photoList.get(key).copy(); else if(this.dataList.exists(key)) return this.dataList.get(key); else if(this.swfList.exists(key)) return this.swfList.get(key);
 	return null;
 }
 RCLib.prototype.__class__ = RCLib;
@@ -598,7 +600,7 @@ RCControl.prototype.rollOutHandler = function(e) {
 	this.onOut();
 }
 RCControl.prototype.clickHandler = function(e) {
-	haxe.Log.trace("click",{ fileName : "RCControl.hx", lineNumber : 140, className : "RCControl", methodName : "clickHandler"});
+	haxe.Log.trace("click",{ fileName : "RCControl.hx", lineNumber : 144, className : "RCControl", methodName : "clickHandler"});
 	this.setState(RCControlState.SELECTED);
 	this.onClick();
 }
@@ -1806,8 +1808,9 @@ IntIter.prototype.__class__ = IntIter;
 RCImage = function(x,y,URL) {
 	if( x === $_ ) return;
 	JSView.call(this,x,y);
-	this.initWithContentsOfFile(URL);
+	this.loader = js.Lib.document.createElement("img");
 	this.addListeners();
+	this.initWithContentsOfFile(URL);
 }
 RCImage.__name__ = ["RCImage"];
 RCImage.__super__ = JSView;
@@ -1819,6 +1822,7 @@ RCImage.imageWithContentsOfFile = function(path) {
 	return new RCImage(0,0,path);
 }
 RCImage.prototype.loader = null;
+RCImage.prototype.bitmapData = null;
 RCImage.prototype.isLoaded = null;
 RCImage.prototype.percentLoaded = null;
 RCImage.prototype.errorMessage = null;
@@ -1831,7 +1835,7 @@ RCImage.prototype.onError = function() {
 RCImage.prototype.initWithContentsOfFile = function(URL) {
 	this.isLoaded = false;
 	this.percentLoaded = 0;
-	this.loader = js.Lib.document.createElement("img");
+	if(URL == null) return;
 	this.loader.draggable = false;
 	this.loader.src = URL;
 }
@@ -1850,7 +1854,7 @@ RCImage.prototype.ioErrorHandler = function(e) {
 	this.errorMessage = Std.string(e);
 	this.onError();
 }
-RCImage.prototype.duplicate = function() {
+RCImage.prototype.copy = function() {
 	return new RCImage(0,0,this.loader.src);
 }
 RCImage.prototype.addListeners = function() {
@@ -1912,9 +1916,9 @@ RCSwf.prototype.destroy = function() {
 	try {
 		this.loader.contentLoaderInfo.content.destroy();
 	} catch( e ) {
-		haxe.Log.trace(e,{ fileName : "RCSwf.hx", lineNumber : 85, className : "RCSwf", methodName : "destroy"});
+		haxe.Log.trace(e,{ fileName : "RCSwf.hx", lineNumber : 87, className : "RCSwf", methodName : "destroy"});
 		var stack = haxe.Stack.exceptionStack();
-		haxe.Log.trace(haxe.Stack.toString(stack),{ fileName : "RCSwf.hx", lineNumber : 87, className : "RCSwf", methodName : "destroy"});
+		haxe.Log.trace(haxe.Stack.toString(stack),{ fileName : "RCSwf.hx", lineNumber : 89, className : "RCSwf", methodName : "destroy"});
 	}
 }
 RCSwf.prototype.__class__ = RCSwf;
@@ -2162,7 +2166,7 @@ RCDraw = function(x,y,w,h,color,alpha) {
 	try {
 		this.graphics = this.view;
 	} catch( e ) {
-		haxe.Log.trace(e,{ fileName : "RCDraw.hx", lineNumber : 32, className : "RCDraw", methodName : "new"});
+		haxe.Log.trace(e,{ fileName : "RCDraw.hx", lineNumber : 36, className : "RCDraw", methodName : "new"});
 	}
 	if(Std["is"](color,RCColor) || Std["is"](color,RCGradient)) this.color = color; else if(Std["is"](color,Int) || Std["is"](color,Int)) this.color = new RCColor(color); else if(Std["is"](color,Array)) this.color = new RCColor(color[0],color[1]); else this.color = new RCColor(0);
 }
@@ -2737,7 +2741,7 @@ CAObject = function(obj,properties,duration,delay,Eq,pos) {
 	this.fromTime = Date.now().getTime();
 	this.duration = duration == null?CoreAnimation.defaultDuration:duration <= 0?0.001:duration;
 	this.delay = delay == null || delay < 0?0:delay;
-	this.timingFunction = Eq == null?CoreAnimation.defaultTimingFunction:Eq;
+	if(Eq == null) this.timingFunction = CoreAnimation.defaultTimingFunction; else this.timingFunction = Eq;
 	this.delegate = new CADelegate();
 	this.delegate.pos = pos;
 	this.fromValues = { };
@@ -3213,13 +3217,10 @@ RCWindow.init = function() {
 	RCWindow.height = RCWindow.target.scrollHeight;
 	RCWindow.setBackgroundColor(3355443);
 	if(RCWindow.stageMouse != null) {
-		haxe.Log.trace("You're trying to init twice the RCWindow, but don't worry, the second time is not in effect.",{ fileName : "RCWindow.hx", lineNumber : 61, className : "RCWindow", methodName : "init"});
+		haxe.Log.trace("You're trying to init twice the RCWindow, but don't worry, the second time is not in effect.",{ fileName : "RCWindow.hx", lineNumber : 63, className : "RCWindow", methodName : "init"});
 		return;
 	}
-	RCWindow.stageMouse = new EVMouse({ fileName : "RCWindow.hx", lineNumber : 64, className : "RCWindow", methodName : "init"});
-	var url = RCWindow.URL.split("/");
-	url.pop();
-	RCWindow.URL = url.join("/") + "/";
+	RCWindow.stageMouse = new EVMouse({ fileName : "RCWindow.hx", lineNumber : 66, className : "RCWindow", methodName : "init"});
 	RCNotificationCenter.addObserver("resize",RCWindow.resizeHandler);
 }
 RCWindow.resizeHandler = function(w,h) {
@@ -3245,7 +3246,7 @@ RCWindow.setBackgroundColor = function(color) {
 }
 RCWindow.setTarget = function(id) {
 	RCWindow.target = js.Lib.document.getElementById(id);
-	haxe.Log.trace(RCWindow.target,{ fileName : "RCWindow.hx", lineNumber : 130, className : "RCWindow", methodName : "setTarget"});
+	haxe.Log.trace(RCWindow.target,{ fileName : "RCWindow.hx", lineNumber : 133, className : "RCWindow", methodName : "setTarget"});
 }
 RCWindow.addChild = function(child) {
 	if(child != null) {
@@ -3592,24 +3593,8 @@ RCGroup.prototype.viewDidAppear = function() {
 RCGroup.prototype.get = function(i) {
 	return this.items[i];
 }
-RCGroup.prototype.iterator = function() {
-	var typedItems = new Array();
-	var _g = 0, _g1 = this.items;
-	while(_g < _g1.length) {
-		var s = _g1[_g];
-		++_g;
-		typedItems.push((function($this) {
-			var $r;
-			var $t = s;
-			if(Std["is"]($t,iterator.T)) $t; else throw "Class cast error";
-			$r = $t;
-			return $r;
-		}(this)));
-	}
-	return typedItems;
-}
 RCGroup.prototype.destroy = function() {
-	Fugu.safeDestroy(this.items,null,{ fileName : "RCGroup.hx", lineNumber : 122, className : "RCGroup", methodName : "destroy"});
+	Fugu.safeDestroy(this.items,null,{ fileName : "RCGroup.hx", lineNumber : 123, className : "RCGroup", methodName : "destroy"});
 	this.items = null;
 }
 RCGroup.prototype.__class__ = RCGroup;
@@ -3979,7 +3964,7 @@ RCFont.prototype.copy = function(exceptions) {
 	}
 	rcfont.format = { };
 	rcfont.format.align = rcfont.align;
-	haxe.Log.trace(rcfont.align + ", " + rcfont.format.align,{ fileName : "RCFont.hx", lineNumber : 126, className : "RCFont", methodName : "copy"});
+	haxe.Log.trace(rcfont.align + ", " + rcfont.format.align,{ fileName : "RCFont.hx", lineNumber : 132, className : "RCFont", methodName : "copy"});
 	rcfont.format.blockIndent = rcfont.blockIndent;
 	rcfont.format.bold = rcfont.bold;
 	rcfont.format.bullet = rcfont.bullet;
@@ -4050,50 +4035,6 @@ Zeta.concatObjects = function(objs) {
 		}
 	}
 	return finalObject;
-}
-Zeta.sort = function(array,sort_type,sort_array) {
-	if(sort_type.toLowerCase() == "lastmodifieddescending") return array;
-	if(sort_type.toLowerCase() == "lastmodifiedascending") sort_type = "reverse";
-	if(sort_type.toLowerCase() == "customascending" && sort_array != null) sort_type = "custom";
-	if(sort_type.toLowerCase() == "customdescending" && sort_array != null) {
-		sort_array.reverse();
-		sort_type = "custom";
-	}
-	switch(sort_type.toLowerCase()) {
-	case "reverse":
-		array.reverse();
-		break;
-	case "ascending":
-		array.sort(Zeta.ascendingSort);
-		break;
-	case "descending":
-		array.sort(Zeta.descendingSort);
-		break;
-	case "random":
-		array.sort(Zeta.randomSort);
-		break;
-	case "custom":
-		var arr = new Array();
-		var _g = 0;
-		while(_g < sort_array.length) {
-			var a = sort_array[_g];
-			++_g;
-			var _g1 = 0;
-			while(_g1 < array.length) {
-				var b = array[_g1];
-				++_g1;
-				if(a == b) {
-					arr.push(a);
-					array.remove(a);
-					break;
-				}
-			}
-		}
-		return arr.concat(array);
-	default:
-		array.sortOn(sort_type,Array.NUMERIC);
-	}
-	return array;
 }
 Zeta.randomSort = function(a,b) {
 	return -1 + Std.random(3);
@@ -4267,8 +4208,12 @@ Main.createRadioButton2 = function(i) {
 	return b;
 }
 Main.resizePhoto = function() {
+	haxe.Log.trace("onComplete",{ fileName : "Main.hx", lineNumber : 161, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace(Main.ph.getWidth(),{ fileName : "Main.hx", lineNumber : 162, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace(Main.ph.size.width,{ fileName : "Main.hx", lineNumber : 163, className : "Main", methodName : "resizePhoto"});
 	Main.ph.scaleToFill(298,148);
-	var ph2 = Main.ph.duplicate();
+	var ph2 = Main.ph.copy();
+	haxe.Log.trace(ph2,{ fileName : "Main.hx", lineNumber : 167, className : "Main", methodName : "resizePhoto"});
 	ph2.setX(800);
 	RCWindow.addChild(ph2);
 	return;

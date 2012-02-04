@@ -26,8 +26,10 @@ class RCWindow {
 	inline public static var stage :Stage = flash.Lib.current.stage;
 	public static var SCREEN_W :Float = flash.system.Capabilities.screenResolutionX;
 	public static var SCREEN_H :Float = flash.system.Capabilities.screenResolutionY;
-	public static var URL :String = flash.Lib.current.loaderInfo.url;
-	public static var ID :String = flash.Lib.current.loaderInfo.parameters.id;
+/*	public static var URL :String = flash.Lib.current.loaderInfo.url;
+	public static var ID :String = flash.Lib.current.loaderInfo.parameters.id;*/
+	public static var URL :String = "";
+	public static var ID :String = "";
 #elseif js
 	public static var target :HtmlDom = js.Lib.document.body;
 	public static var stage :HtmlDom = target;
@@ -64,10 +66,11 @@ class RCWindow {
 		stageMouse = new EVMouse();
 		
 		// Create the url without swf name
+		#if flash
 		var url = URL.split("/");
 			url.pop();
 		URL = url.join("/") + "/";
-		
+		#end
 		//RCNotificationCenter.addObserver ("fullscreen", fullScreenHandler);
 		RCNotificationCenter.addObserver ("resize", resizeHandler);
 	}

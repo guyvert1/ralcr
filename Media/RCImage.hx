@@ -1,14 +1,16 @@
 //
-//  Photo
+//  RCImage
 //
 //  Created by Baluta Cristian on 2008-04-01.
 //  Copyright (c) 2008-2012 http://ralcr.com. All rights reserved.
 //
 
-#if (flash || nme)
-	import flash.display.Sprite;
-	import flash.display.Loader;
+#if (flash && !nme)
 	import flash.system.LoaderContext;
+#end
+
+#if (flash || nme)
+	import flash.display.Loader;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.PixelSnapping;
@@ -21,14 +23,15 @@
 	import js.Dom;
 	import RCView;
 	typedef Loader = js.Dom.Image;
-	typedef ProgressEvent = Event;
+	typedef BitmapData = Dynamic;
 	typedef ErrorEvent = Event;
 	typedef IOErrorEvent = Event;
 #end
 
 class RCImage extends RCView {
 	
-	var loader :Loader;
+	public var loader :Loader;
+	public var bitmapData :BitmapData;
 	
 	public var isLoaded :Bool;
 	public var percentLoaded :Int;
@@ -40,32 +43,67 @@ class RCImage extends RCView {
 	
 	// Some convenient methods to create an image
 	//
+	/**
+	 *  Create an instance of the rcimage with the path to the photo
+	 *  Or id of the photo for NME
+	 *  Asyncronous operation
+	 **/
 	public static function imageNamed (name:String) :RCImage {
 		return new RCImage (0,0,name);
 	}
+	/**
+	 *  NME method to load an image. Syncronous operation.
+	 **/
 	public static function imageWithContentsOfFile (path:String) :RCImage {
 		return new RCImage (0,0,path);
 	}
-	#if flash
-	public static function imageWithData (data:BitmapData) :RCImage {
-		return new RCImage (0,0,null);
+#if (flash || nme)
+	/**
+	 *  Create an image from the ByteArray. Async
+	 **/
+	public static function imageWithBytes (data:flash.utils.ByteArray) :RCImage {
+		var im = new RCImage (0,0,null);
+			im.loader.loadBytes ( data );
+		return im;
 	}
-	#end
+	/**
+	 *  This will create a RCImage based on a BitmapData. onComplete event is dispatched after
+	 *  10ms to keep the asyncronous operations compatible.
+	 **/
+	public static function imageWithBitmapData (bitmapBata:BitmapData) :RCImage {
+		var im = new RCImage (0,0,null);// Create a blank image
+			im.bitmapData = bitmapBata;// Set the BitmapData
+			im.completeHandler(null);// Display the image in it's container
+		return im;// Returns it
+	}
+#end
 	
 	public function new (x, y, URL:String) {
 		super(x, y);
-		initWithContentsOfFile( URL );
+		
+		#if (nme || flash)
+			loader = new Loader();
+		#elseif js
+			loader = cast js.Lib.document.createElement("img");
+		#end
+		
 		addListeners();
+		initWithContentsOfFile ( URL );
 	}
-
+	
+	/**
+	 *  The image created through the constructor and this method is asyncronous for all platforms
+	 **/
 	public function initWithContentsOfFile (URL:String) {
 		isLoaded = false;
 		percentLoaded = 0;
-		#if (flash || nme)
-			loader = new Loader();
-			loader.load ( new URLRequest ( URL ), new LoaderContext (true) );
+		if (URL == null) return;
+		#if nme
+			bitmapData = nme.Assets.getBitmapData ( URL );
+			haxe.Timer.delay (function() { (bitmapData != null) ? completeHandler(null) : errorHandler(null); }, 10);
+		#elseif flash
+			loader.load ( new URLRequest ( URL ), new LoaderContext ( true ) );
 		#elseif js
-			loader = cast js.Lib.document.createElement("img");
 			untyped loader.draggable = false;
 			loader.src = URL;
 		#end
@@ -73,14 +111,37 @@ class RCImage extends RCView {
 	
 	
 	/**
-	 *	Handlers.
+	 *	Bitmapize and add the image to the displaylist.
 	 */
-	function completeHandler (e:Event) :Void {
+	public function completeHandler (e:Event) :Void {
 		#if (flash || nme)
-			this.size.width = this.lastW = loader.content.width;
-			this.size.height = this.lastH = loader.content.height;
-			this.view.addChild ( loader );
-			bitmapize();
+			if (bitmapData != null) {
+				// We already have the bitmapData at this point
+				var bitmap = new Bitmap (bitmapData, PixelSnapping.AUTO, true);
+				this.size.width = this.lastW = bitmapData.width;
+				this.size.height = this.lastH = bitmapData.height;
+				this.view.addChild ( bitmap );
+			}
+			else {
+				var w = Math.round (loader.content.width);
+				var h = Math.round (loader.content.height);
+				// Add the image to the view
+				this.size.width = this.lastW = w;
+				this.size.height = this.lastH = h;
+				this.view.addChild ( loader );
+				// Get the BitmapData of the image
+				
+				if (w <= 2880 && h <= 2880) {
+				
+				}
+				
+				bitmapData = new BitmapData (w, h, true, 0x000000ff);
+				bitmapData.draw ( loader.content );
+				
+				var bitmap = new Bitmap (bitmapData, PixelSnapping.AUTO, true);
+				this.view.removeChild ( loader );
+				this.view.addChild ( bitmap );
+			}
 		#elseif js
 			this.size.width = this.lastW = this.width = loader.width;
 			this.size.height = this.lastH = this.height = loader.height;
@@ -104,49 +165,19 @@ class RCImage extends RCView {
 		errorMessage = Std.string(e);
 		onError();
 	}
-	
+
+	/**
+	 *	Get a copy of the rcphoto.
+	 *  In flash and NME it creates in image based on the BitmapData
+	 *  In JS it loads again the image from cache
+	 */
 #if (flash || nme)
-	/**
-	 * Bitmapize the loaded photo. This will prevent pixelizing when photo is scaled
-	 */
-	function bitmapize () :Void {
-		var d = duplicate();
-		if (d != null) {
-			this.view.removeChild ( loader );
-			this.view.addChild ( d );
-		}
+		 public function copy () :RCImage {trace("copy "+bitmapData);
+		return imageWithBitmapData ( bitmapData );
 	}
-	
-	
-	/**
-	 *	Get a duplicate of the photo.
-	 */
-	public function duplicate () :Sprite {
-		
-		if (loader.content.width > 2880 || loader.content.height > 2880) return null;
-		
-		var bitmap = new BitmapData (	Math.round (loader.content.width),
-										Math.round (loader.content.height), true, 0x000000ff );
-		
-		bitmap.draw ( loader.content );
-		
-		var d = new Sprite();
-			d.addChild ( new Bitmap (bitmap, PixelSnapping.AUTO, true) );
-		
-		return d;
-	}
-	
 #elseif js
-	public function duplicate () :RCImage {
-/*		var v :Image = untyped js.Lib.document.createElement("img");
-			v.style.width = size.width+"px";
-			v.style.height = size.height+"px";
-			v.style.display = "inline";
-			//v.style.position = "absolute";
-			//v.src = loader.src;
-			v.style.backgroundImage = "url('" + loader.src + "')";
-		return v;*/
-		return new RCImage(0,0,loader.src);
+	public function copy () :RCImage {
+		return new RCImage (0, 0, loader.src);
 	}
 #end
 	
@@ -180,10 +211,12 @@ class RCImage extends RCView {
 		#if (flash || nme)
 			//loader.close();
 			loader.unload();
+			if (bitmapData != null)
+				bitmapData.dispose();
 		#end
 		loader = null;
 	}
-	
+
 #if js
 	override public function scaleToFit (w:Int, h:Int) :Void {
 		super.scaleToFit (w, h);

@@ -5,7 +5,7 @@
 //  Created by Cristi Baluta on 2011-02-09.
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
-#if flash
+#if (flash || nme)
 	import flash.events.MouseEvent;
 	import flash.events.Event;
 	import flash.display.DisplayObjectContainer;

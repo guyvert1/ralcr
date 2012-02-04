@@ -1,6 +1,6 @@
 // Attach something from the assets library
 
-#if flash
+#if (flash || nme)
 	import flash.display.MovieClip;
 #elseif js
 	import js.Dom;

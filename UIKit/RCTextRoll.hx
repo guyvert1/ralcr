@@ -6,7 +6,7 @@
 //
 
 import RCView;
-#if flash
+#if (flash || nme)
 	import flash.events.Event;
 #elseif js
 	import js.Dom;

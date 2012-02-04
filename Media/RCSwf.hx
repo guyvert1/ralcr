@@ -5,14 +5,16 @@
 //  Copyright (c) 2007-2012 http://ralcr.com. All rights reserved.
 //
 
-#if flash
-	import flash.events.Event;
+#if (flash || (nme && flash))
 	import flash.system.LoaderContext;
 	import flash.system.ApplicationDomain;
+#end
+#if (flash || nme)
+	import flash.events.Event;
 	import flash.display.Loader;
 	import flash.net.URLRequest;
 #elseif js
-	import js.Dom;
+	import js.Dom;// Includes the js.Event
 #end
 
 class RCSwf extends RCImage {
@@ -33,7 +35,7 @@ class RCSwf extends RCImage {
 		isLoaded = false;
 		percentLoaded = 0;
 		
-		#if flash
+		#if (flash || (nme && flash))
 			loader = new Loader();
 		
 			if (newDomain)
@@ -87,7 +89,7 @@ class RCSwf extends RCImage {
 			trace ( haxe.Stack.toString ( stack ) );
 		}
 		//loader.close();
-		#if swf
+		#if flash
 			loader.unload();
 			loader = null;
 		#end

@@ -5,7 +5,7 @@
 //  Copyright (c) 2008 http://imagin.ro. All rights reserved.
 //
 
-#if flash
+#if (flash || nme)
 	import flash.display.DisplayObjectContainer;
 	import flash.events.MouseEvent;
 #elseif js

@@ -5,7 +5,7 @@
 //  Copyright (c) 2008 http://ralcr.com. All rights reserved.
 //
 
-#if flash
+#if (flash || nme)
 
 import flash.events.Event;
 import flash.events.ProgressEvent;

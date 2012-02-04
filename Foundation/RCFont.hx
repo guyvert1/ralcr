@@ -9,10 +9,15 @@
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
-	//import flash.text.TextFieldAutoSize;
-	import flash.text.TextFormatDisplay;
-	import flash.text.StyleSheet;
-	import flash.text.AntiAliasType;
+	#if (cpp || neko)
+		private typedef TextFormatDisplay = Dynamic;
+		private typedef StyleSheet = Dynamic;
+		private typedef AntiAliasType = Dynamic;
+	#else
+		import flash.text.TextFormatDisplay;
+		import flash.text.StyleSheet;
+		import flash.text.AntiAliasType;
+	#end
 #elseif js
 	typedef TextFieldType = Dynamic;
 	typedef TextFormat = Dynamic;
@@ -86,10 +91,11 @@ class RCFont {
 		selectable = false;
 #if (flash || nme)
 		type = TextFieldType.DYNAMIC;
+#if flash
 		antiAliasType = AntiAliasType.ADVANCED;// ADVANCED-normal fonts(<40px), NORMAL-pixel fonts
-		
-		format = new TextFormat();
 		style = new StyleSheet();
+#end
+		format = new TextFormat();
 #end
 	}
 		
@@ -114,7 +120,7 @@ class RCFont {
 		}
 		
 		rcfont.format = #if (flash || nme) new TextFormat() #elseif js {} #end;
-		rcfont.format.align = #if flash switch(rcfont.align)
+		rcfont.format.align = #if (flash || nme) switch(rcfont.align)
 		{
 			case "center": TextFormatAlign.CENTER;
 			case "left": TextFormatAlign.LEFT;

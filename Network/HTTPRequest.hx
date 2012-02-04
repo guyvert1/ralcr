@@ -5,14 +5,19 @@
 //  Copyright (c) 2008-2012 ralcr.com. All rights reserved.
 //
 
-#if flash
+#if (flash || (flash && nme))
 	import flash.net.URLVariables;
 	import flash.net.URLRequest;
 	import flash.net.URLRequestMethod;
-#elseif js
+#else
 	private class URLVariables implements Dynamic { public function new(){} }
-	private typedef URLRequest = Dynamic;
 	private typedef URLRequestMethod = Dynamic;
+	#if nme
+		import flash.net.URLRequest;
+	#end
+#end
+#if js
+	private typedef URLRequest = Dynamic;
 #end
 
 class HTTPRequest extends RCRequest {
@@ -49,7 +54,7 @@ class HTTPRequest extends RCRequest {
 	 * Call a custom script and pass some variables
 	 */
 	public function call (script:String, variables_list:Dynamic, ?method:String="POST") :Void {
-		#if flash
+		#if (flash || nme)
 		var variables = new URLVariables();
 		if (variables_list != null)
 			for (f in Reflect.fields (variables_list)) {
@@ -57,9 +62,10 @@ class HTTPRequest extends RCRequest {
 			}
 		
 		var request = new URLRequest ( scripts_path + script );
+		#if flash
 			request.data = variables;
 			request.method = method=="POST" ? URLRequestMethod.POST : URLRequestMethod.GET;
-		
+		#end
 		loader.load ( request );
 		#elseif js
 			

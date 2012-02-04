@@ -6,7 +6,7 @@
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
 
-#if flash
+#if (flash || nme)
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 #elseif js
@@ -60,7 +60,7 @@ class RCTableView extends RCView {
 		
 		cells = [];
 		
-		#if flash
+		#if (flash || nme)
 			contentView.addEventListener (MouseEvent.MOUSE_DOWN, startDragCells);
 		#elseif js
 			contentView.onmousedown = startDragCells;
@@ -97,7 +97,7 @@ class RCTableView extends RCView {
 		dragging = true;
 		oldY = this.mouseY;
 		vy = 0;
-		#if flash
+		#if (flash || nme)
 			this.addEventListener (Event.ENTER_FRAME, loop);
 			this.addEventListener (MouseEvent.MOUSE_MOVE, mouseMove);
 			RCWindow.stage.addEventListener (MouseEvent.MOUSE_UP, stopDragCells);

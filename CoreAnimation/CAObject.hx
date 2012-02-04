@@ -22,7 +22,7 @@ class CAObject {
 	public var duration :Float;// s
 	public var repeatCount :Int;
 	public var autoreverses :Bool;
-	public var timingFunction :Float -> Float -> Float -> Float -> Dynamic -> Float;
+	public var timingFunction :Dynamic;//Float -> Float -> Float -> Float -> Dynamic -> Float;
 	public var modifierFunction :Float -> Void;//function used to modify values in HaxeGetSet transition
 	public var constraintBounds :RCRect;// used by kenburns and slide
 	public var delegate :CADelegate;
@@ -37,7 +37,7 @@ class CAObject {
 							properties :Dynamic,
 							?duration :Null<Float>,
 							?delay :Null<Float>,
-							?Eq :Float -> Float -> Float -> Float -> Dynamic -> Float,
+							?Eq :Dynamic,/*Float -> Float -> Float -> Float -> Dynamic -> Float,*/
 							?pos :haxe.PosInfos)
 	{
 		
@@ -48,7 +48,11 @@ class CAObject {
 		this.fromTime = CoreAnimation.timestamp();
 		this.duration = (duration == null) ? CoreAnimation.defaultDuration : ((duration <= 0) ? 0.001 : duration);
 		this.delay = (delay == null || delay < 0) ? 0 : delay;
-		this.timingFunction = (Eq == null) ? CoreAnimation.defaultTimingFunction : Eq;
+		// cpp does not work if you don't use "if else"
+		if (Eq == null)
+			this.timingFunction = CoreAnimation.defaultTimingFunction;
+		else
+			this.timingFunction = Eq;
 		this.delegate = new CADelegate();
 		this.delegate.pos = pos;
 		

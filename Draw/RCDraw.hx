@@ -2,8 +2,12 @@
 //  RCDraw
 //
 //  Created by Cristi Baluta on 2010-02-19.
-//  Copyright (c) 2010 ralcr.com. All rights reserved.
+//  Copyright (c) 2010-2012 ralcr.com. All rights reserved.
 //
+
+#if nme
+	private typedef UInt = Int;
+#end
 #if (flash || nme)
 	import flash.geom.Matrix;
 	import flash.display.LineScaleMode;

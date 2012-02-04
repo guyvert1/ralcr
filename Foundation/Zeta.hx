@@ -74,7 +74,7 @@ class Zeta {
 	 *	Usualy received as descending by modified date
 	 *	array2 is used to sort the array with priority on elements from array2
 	 */
-	public static function sort<T> (array:Array<T>, sort_type:String, ?sort_array:Array<T>) :Array<T> {
+/*	public static function sort<T> (array:Array<T>, sort_type:String, ?sort_array:Array<T>) :Array<T> {
 		
 		if (sort_type.toLowerCase() == "lastmodifieddescending") return array;
 		if (sort_type.toLowerCase() == "lastmodifiedascending") sort_type = "reverse";
@@ -98,10 +98,10 @@ class Zeta {
 										break;
 									}
 								return arr.concat ( array );
-			default:			untyped array.sortOn ( sort_type, /*Array.ASCENDING | */Array.NUMERIC );
+			default:			untyped array.sortOn ( sort_type, Array.NUMERIC );// Array.ASCENDING |
 		}
 		return array;
-	}
+	}*/
 	inline static function randomSort<T> (a:T, b:T) :Int { 
 		return -1 + Std.random (3);
 	}

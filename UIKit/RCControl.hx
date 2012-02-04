@@ -77,9 +77,11 @@ class RCControl extends RCView {
 		setState ( NORMAL );
 	}
 	function configureListeners (dispatcher:IEventDispatcher) :Void {
-		#if (flash || nme)
+		#if (!cpp && !nme && flash)
 			this.useHandCursor = true;
 			this.buttonMode = true;
+		#end
+		#if (flash || nme)
 			dispatcher.addEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
 			dispatcher.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
 			dispatcher.addEventListener (MouseEvent.ROLL_OVER, rollOverHandler);
@@ -94,9 +96,11 @@ class RCControl extends RCView {
 		#end
 	}
 	function removeListeners (dispatcher:IEventDispatcher) :Void {
-		#if (flash || nme)
+		#if (!cpp && !nme && flash)
 			this.useHandCursor = false;
 			this.buttonMode = false;
+		#end
+		#if (flash || nme)
 			dispatcher.removeEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
 			dispatcher.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
 			dispatcher.removeEventListener (MouseEvent.ROLL_OVER, rollOverHandler);

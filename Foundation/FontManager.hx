@@ -16,13 +16,19 @@
 
 */
 
-#if flash
+#if (flash || (flash && nme))
 	import flash.system.ApplicationDomain;
+	import flash.text.StyleSheet;
+#elseif nme
+	private typedef ApplicationDomain = Dynamic;
+	private typedef StyleSheet = Dynamic;
+#end
+
+#if (flash || nme)
 	import flash.events.Event;
 	import flash.text.Font;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
-	import flash.text.StyleSheet;
 #elseif js
 	import js.Dom;
 	private typedef ApplicationDomain = Dynamic;
@@ -174,7 +180,7 @@ class FontManager {
 		fontsSwfList.push ( e );
 	}
 	function setCSSFile (css:String) {
-		#if flash
+		#if (flash || (flash && nme))
 			var cssStyleSheet = new StyleSheet();
 				cssStyleSheet.parseCSS ( css );
 			hash_style.set ("css", cssStyleSheet);
@@ -186,16 +192,16 @@ class FontManager {
 	// 1. a:link should be a_link
 	// 2. .heading should be .... (not implemented yet)
 	function createStyle (properties:Dynamic, ?exceptions:Dynamic) :StyleSheet {
-		#if flash
-		// Create new styleSheet 
-		var style = new StyleSheet();
+		#if (flash || (flash && nme))
+			// Create new styleSheet 
+			var style = new StyleSheet();
 		
-		for (field in Reflect.fields(properties)) {
-			style.setStyle (StringTools.replace (field, "_", ":"), Reflect.field (properties, field));
-			if (exceptions != null)
-			style.setStyle (StringTools.replace (field, "_", ":"), Reflect.field (exceptions, field));
-		}
-		#elseif js
+			for (field in Reflect.fields(properties)) {
+				style.setStyle (StringTools.replace (field, "_", ":"), Reflect.field (properties, field));
+				if (exceptions != null)
+					style.setStyle (StringTools.replace (field, "_", ":"), Reflect.field (exceptions, field));
+			}
+		#else
 			var style = null;
 		#end
 		

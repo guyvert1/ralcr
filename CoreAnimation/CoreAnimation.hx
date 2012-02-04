@@ -4,10 +4,11 @@
 //  Created by Baluta Cristian on 2008-09-28.
 //  Copyright (c) 2008 ralcr.com. All rights reserved.
 //
-#if (flash || nme)
-typedef Ticker = flash.display.Sprite;
+
+#if (flash || (nme && flash))
+	typedef Ticker = flash.display.Sprite;
 #elseif (js || cpp || neko)
-typedef Ticker = haxe.Timer;
+	typedef Ticker = haxe.Timer;
 #end
 
 class CoreAnimation {
@@ -15,7 +16,7 @@ class CoreAnimation {
 	static var latest :CAObject;
 	static var ticker :Ticker;
 	
-	public static var defaultTimingFunction = caequations.Linear.NONE;
+	public static var defaultTimingFunction :Dynamic = caequations.Linear.NONE;
 	public static var defaultDuration = 0.8;
 	
 	/**
@@ -47,10 +48,10 @@ class CoreAnimation {
 		obj.initTime();
 		
 		if (ticker == null) {
-#if (flash || nme)
+#if (flash || (nme && flash))
 			ticker = new Ticker();
 			ticker.addEventListener (flash.events.Event.ENTER_FRAME, updateAnimations);
-#elseif js
+#else
 			ticker = new Ticker( 10 );
 			ticker.run = updateAnimations;
 #end
@@ -87,7 +88,7 @@ class CoreAnimation {
 	
 	static function removeTimer () :Void {
 		if (latest == null && ticker != null) {
-#if (flash || nme)
+#if (flash || (nme && flash))
 			ticker.removeEventListener (flash.events.Event.ENTER_FRAME, updateAnimations);
 #elseif (js || neko || cpp)
 			ticker.stop();
@@ -109,7 +110,7 @@ class CoreAnimation {
 	/**
 	 *	Update the animations
 	 */
-	static function updateAnimations (#if (flash || nme) _ #end) :Void {
+	static function updateAnimations (#if (flash || (nme && flash)) _ #end) :Void {
 		
 		var current_time = timestamp();
 		var time_diff = 0.0;
@@ -164,7 +165,9 @@ class CoreAnimation {
 	}
 	
 	inline public static function timestamp () :Float {
-		#if (neko || cpp)
+		#if cpp
+			return cpp.Sys.time() * 1000;
+		#elseif neko
 			return neko.Sys.time() * 1000;
 		#elseif js
 			return Date.now().getTime();

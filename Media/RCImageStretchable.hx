@@ -1,12 +1,13 @@
 
-#if flash
+#if (flash || nme)
 	import flash.display.DisplayObjectContainer;
 #elseif js
 	import js.Dom;
 	private typedef DisplayObjectContainer = JSView;
 #end
 
-class RCImageStretchable {
+class RCImageStretchable extends RCView {
+	
 	var l :DisplayObjectContainer;
 	var m :DisplayObjectContainer;
 	var r :DisplayObjectContainer;

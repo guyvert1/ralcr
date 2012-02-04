@@ -5,13 +5,15 @@
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
 
+#if (flash || (flash && nme))
+	import flash.text.AntiAliasType;
+#end
 #if (flash || nme)
 	import flash.display.Sprite;
 	import flash.text.TextField;
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	import flash.text.TextFieldAutoSize;
-	import flash.text.AntiAliasType;
 	import flash.events.MouseEvent;
 #elseif js
 	import js.Dom;
@@ -68,10 +70,14 @@ class RCTextView extends RCView {
 		};
 		//target.autoSize = properties.autoSize ? flash.text.TextFieldAutoSize.LEFT : null;
 		//trace(target.autoSize);
+		#if (flash || (flash && nme))
 		target.antiAliasType = properties.antiAliasType;
+		#end
 		target.wordWrap = (size.width == null) ? false : true;
 		target.multiline = (size.height == 0) ? false : true;
+		#if (flash || (flash && nme))
 		target.sharpness = properties.sharpness;
+		#end
 		target.selectable = properties.selectable;
 		target.border = false;
 		
@@ -80,8 +86,9 @@ class RCTextView extends RCView {
 		
 		if (properties.format != null) target.defaultTextFormat = properties.format;
 		//if (properties.format != null) target.setTextFormat ( properties.format );
+		#if (flash || (flash && nme))
 		if (properties.style  != null) target.styleSheet = properties.style;
-		
+		#end
 		view.addChild ( target );
 	}
 	

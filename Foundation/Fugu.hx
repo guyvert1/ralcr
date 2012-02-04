@@ -5,7 +5,7 @@
 //  Copyright (c) 2008 http://ralcr.com. All rights reserved.
 //
 
-#if flash
+#if (flash || nme)
 	import flash.display.DisplayObjectContainer;
 #elseif js
 	import js.Dom;
@@ -67,7 +67,7 @@ class Fugu {
 									blur:Null<Float>,
 									strength:Float=0.6)
 	{
-		#if flash
+		#if (flash || nme)
 		var filter = new flash.filters.GlowFilter (color, alpha, blur, blur, strength, 3, false, false);
 		target.filters = blur==null ? null : [filter];
 		#end
@@ -78,7 +78,7 @@ class Fugu {
 	 * Changes the color of the targeted object
 	 */
 	public static function color (target:DisplayObjectContainer, color:Int) :Void {
-		#if flash
+		#if (flash || nme)
 		var red   = color >> 16 & 0xFF; 
 		var green = color >> 8 & 0xFF; 
 		var blue  = color & 0xFF;
@@ -87,7 +87,7 @@ class Fugu {
 	}
 	
 	public static function resetColor (target:DisplayObjectContainer) :Void {
-		#if flash
+		#if (flash || nme)
 		target.transform.colorTransform = new flash.geom.ColorTransform (1,	1,	1,	1, 0,	0,	0,	0);
 		#end
 	}

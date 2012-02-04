@@ -5,7 +5,7 @@
 //  Copyright (c) 2010-2012 ralcr.com. All rights reserved.
 //
 
-#if js
+#if (js || cpp || neko)
 	private typedef UInt = Int;
 #end
 

@@ -69,7 +69,7 @@ class RCProgressiveImage extends Sprite {
 	function processImageData () {
 		if ( imageStream.connected ) imageStream.readBytes( imageData , imageData.length );
 		loader.unload();
-		loader.loadBytes( imageData );            
+		loader.loadBytes( imageData );
 	}
 	
 	

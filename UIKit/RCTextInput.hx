@@ -4,15 +4,25 @@
 //  Created by Baluta Cristian on 2008-03-22.
 //  Copyright (c) 2008 www.ralcr.com. All rights reserved.
 //
-import flash.text.TextField;
-import flash.text.TextFieldType;
-import flash.text.TextFormat;
-import flash.text.StyleSheet;
-import flash.text.TextFieldAutoSize;
-import flash.events.TextEvent;
-import flash.events.MouseEvent;
-import flash.events.KeyboardEvent;
-import flash.events.FocusEvent;
+
+#if (flash || (flash && nme))
+	import flash.text.AntiAliasType;
+#end
+#if (flash || nme)
+	import flash.text.TextField;
+	import flash.text.TextFieldType;
+	import flash.text.TextFormat;
+	import flash.text.TextFieldAutoSize;
+	import flash.events.TextEvent;
+	import flash.events.MouseEvent;
+	import flash.events.KeyboardEvent;
+	import flash.events.FocusEvent;
+#elseif js
+	import js.Dom;
+	import RCView;
+	private typedef MouseEvent = Event;
+	private typedef TextField = RCView;
+#end
 
 
 class RCTextInput extends RCTextView {
@@ -34,10 +44,12 @@ class RCTextInput extends RCTextView {
 		target.type = TextFieldType.INPUT;
 		target.autoSize = TextFieldAutoSize.NONE;
 		target.embedFonts = properties.embedFonts;
-		target.antiAliasType = properties.antiAliasType;
+		#if flash
+			target.antiAliasType = properties.antiAliasType;
+			target.sharpness = properties.sharpness;
+		#end
 		target.wordWrap = (size.width == null) ? false : true;
 		target.multiline = (size.height == 0) ? false : true;
-		target.sharpness = properties.sharpness;
 		target.selectable = true;
 		
 		target.addEventListener (KeyboardEvent.KEY_UP, keyUpHandler);

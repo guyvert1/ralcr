@@ -109,13 +109,14 @@ class RCGroup<T:RCView> extends RCView {
 	 *	Returns an array with items but marked as Dynamic
 	 *	because RCView will not contain the neccesary methods needed by the code
 	 */
-	public function iterator<T>() :Array<T> {
+		 // problems with cpp
+/*	public function getIterator<T>() :Array<T> {
 		var typedItems = new Array<T>();
 		for (s in items)
 			typedItems.push ( cast(s, T) );
 			
 		return typedItems;
-	}
+	}*/
 	
 	
 	override public function destroy() :Void {

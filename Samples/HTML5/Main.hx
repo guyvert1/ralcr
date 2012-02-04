@@ -158,13 +158,13 @@ class Main {
 		lin.redraw();
 	}*/
 	static function resizePhoto(){
-/*		trace("onComplete");
+		trace("onComplete");
 		trace(ph.width);
-		trace(ph.size.width);*/
+		trace(ph.size.width);
 		ph.scaleToFill (300-2, 150-2);
 		//ph.scaleToFit (300-2, 150-2);
 		
-		var ph2 = ph.duplicate();
+		var ph2 = ph.copy();trace(ph2);
 		ph2.x = 800;
 		RCWindow.addChild(ph2);
 		

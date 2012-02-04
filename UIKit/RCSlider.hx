@@ -5,7 +5,7 @@
 //  Copyright (c) 2008-2012 milc.ro. All rights reserved.
 //
 
-#if flash
+#if (flash || nme)
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -63,7 +63,7 @@ class RCSlider extends RCControl {
 		direction_ = (size.width > size.height) ? HORIZONTAL : VERTICAL;
 		
 		// When the symbol is pressed start to move the slider
-		#if flash
+		#if (flash || nme)
 			view.addEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
 			view.addEventListener (MouseEvent.MOUSE_OVER, rollOverHandler);
 			view.addEventListener (MouseEvent.MOUSE_OUT, rollOutHandler);
@@ -87,7 +87,7 @@ class RCSlider extends RCControl {
 	 */
 	override function mouseDownHandler (e:MouseEvent) :Void {
 		moving_ = true;
-		#if flash
+		#if (flash || nme)
 			RCWindow.stage.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
 			RCWindow.stage.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 		#elseif js
@@ -99,7 +99,7 @@ class RCSlider extends RCControl {
 	}
 	override function mouseUpHandler (e:MouseEvent) :Void {
 		moving_ = false;
-		#if flash
+		#if (flash || nme)
 			RCWindow.stage.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
 			RCWindow.stage.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 		#elseif js
@@ -129,7 +129,7 @@ class RCSlider extends RCControl {
 		
 		cast(scrubber).startDrag (false, new Rectangle (bounds_x, bounds_y, bounds_w, bounds_h));
 		
-		#if flash
+		#if (flash || nme)
 			RCWindow.stage.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
 			RCWindow.stage.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 		#elseif js
@@ -158,7 +158,7 @@ class RCSlider extends RCControl {
 		// set the new value
 		setValue ( Zeta.lineEquation (minValue_, maxValue_,  y0, y1, y2) );
 		
-		#if flash
+		#if (flash || nme)
 			e.updateAfterEvent();
 		#end
 	}
@@ -231,7 +231,7 @@ class RCSlider extends RCControl {
 	// Clean mess
 	override public function destroy () :Void {
 		mouseUpHandler ( null );
-		#if flash
+		#if (flash || nme)
 			scrubber.removeEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
 		#elseif js
 			cast(scrubber).onmousedown = null;

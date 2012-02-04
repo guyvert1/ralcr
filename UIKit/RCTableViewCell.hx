@@ -5,7 +5,7 @@
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
 
-#if flash
+#if (flash || nme)
 	import flash.events.MouseEvent;
 #elseif js
 	import js.Dom;
