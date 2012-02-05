@@ -5,10 +5,6 @@
 //  Copyright (c) 2008-2012 http://ralcr.com. All rights reserved.
 //
 
-#if (flash && !nme)
-	import flash.system.LoaderContext;
-#end
-
 #if (flash || nme)
 	import flash.display.Loader;
 	import flash.display.Bitmap;
@@ -19,6 +15,9 @@
 	import flash.events.ProgressEvent;
 	import flash.events.ErrorEvent;
 	import flash.events.IOErrorEvent;
+	#if flash
+		import flash.system.LoaderContext;
+	#end
 #elseif js
 	import js.Dom;
 	import RCView;
@@ -172,7 +171,7 @@ class RCImage extends RCView {
 	 *  In JS it loads again the image from cache
 	 */
 #if (flash || nme)
-		 public function copy () :RCImage {trace("copy "+bitmapData);
+	public function copy () :RCImage {
 		return imageWithBitmapData ( bitmapData );
 	}
 #elseif js

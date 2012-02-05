@@ -41,7 +41,7 @@ class RCTextRoll extends RCView {
 		trace("viewdidappear");
 		this.size.height = txt1.height;trace(size);
 		if (txt1.width > size.width) {
-			txt2 = new RCTextView (Math.round (txt1.width + GAP), 0, null, size.height, text, txt1.properties);
+			txt2 = new RCTextView (Math.round (txt1.width + GAP), 0, null, size.height, text, txt1.rcfont);
 			this.addChild ( txt2 );
 			this.clipsToBounds = true;
 		}

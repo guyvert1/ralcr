@@ -68,7 +68,7 @@ FontManager.init();</code>
 2. Register loaded fonts(to register a font that you loaded from the swf you need a Class that extends Font Class in the same package with the one from the swf), textformats and stylesheets:
 <code>FontManager.registerFont ('resources.fonts.CustomFontR');
 
-FontManager.registerFormat ('normal',
+FontManager.registerFont ('normal',
 	{font: new resources.fonts.CustomFontR().fontName,
 	size: 12, color: 0xFFFFFF, letterSpacing: 0, leading: 4});
 

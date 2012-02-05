@@ -1,6 +1,7 @@
 //
 //  RCGroup
 //	This component will align a collection of views horizontally or vertically or in a matrix
+//	Matrix is not suported yet
 //
 //  Created by Cristi Baluta on 2011-02-08.
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
@@ -34,8 +35,8 @@ class RCGroup<T:RCView> extends RCView {
 	
 	
 	/**
-	 *	Add and remove items
-	 *	params = a list of parameters to pass to the function that returns our sprite
+	 *	Add items
+	 *	params = a list of parameters to pass to the function that returns the element
 	 */
 	public function add (params:Array<Dynamic>, ?alternativeConstructor:RCIndexPath->T) :Void {
 		
@@ -57,7 +58,7 @@ class RCGroup<T:RCView> extends RCView {
 		}
 		
 		// Keep all items arranged
-		try{keepItemsArranged();}catch(e:Dynamic){trace(e);}
+		keepItemsArranged();
 	}
 	
 	public function remove (i:Int) :Void {

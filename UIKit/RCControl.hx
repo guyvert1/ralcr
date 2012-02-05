@@ -77,16 +77,16 @@ class RCControl extends RCView {
 		setState ( NORMAL );
 	}
 	function configureListeners (dispatcher:IEventDispatcher) :Void {
-		#if (!cpp && !nme && flash)
-			this.useHandCursor = true;
-			this.buttonMode = true;
-		#end
 		#if (flash || nme)
 			dispatcher.addEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
 			dispatcher.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
 			dispatcher.addEventListener (MouseEvent.ROLL_OVER, rollOverHandler);
 			dispatcher.addEventListener (MouseEvent.ROLL_OUT, rollOutHandler);
 			dispatcher.addEventListener (MouseEvent.CLICK, clickHandler);
+			#if (flash)
+				this.useHandCursor = true;
+				this.buttonMode = true;
+			#end
 		#elseif js
 			view.onmousedown = mouseDownHandler;
 			view.onmouseup = mouseUpHandler;
@@ -96,16 +96,16 @@ class RCControl extends RCView {
 		#end
 	}
 	function removeListeners (dispatcher:IEventDispatcher) :Void {
-		#if (!cpp && !nme && flash)
-			this.useHandCursor = false;
-			this.buttonMode = false;
-		#end
 		#if (flash || nme)
 			dispatcher.removeEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
 			dispatcher.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
 			dispatcher.removeEventListener (MouseEvent.ROLL_OVER, rollOverHandler);
 			dispatcher.removeEventListener (MouseEvent.ROLL_OUT, rollOutHandler);
 			dispatcher.removeEventListener (MouseEvent.CLICK, clickHandler);
+			#if (flash)
+				this.useHandCursor = false;
+				this.buttonMode = false;
+			#end
 		#elseif js
 			view.onmousedown = null;
 			view.onmouseup = null;
@@ -128,22 +128,27 @@ class RCControl extends RCView {
 	function mouseDownHandler (e:MouseEvent) :Void {
 		setState ( SELECTED );
 		onPress();
+		press.dispatch([this]);
 	}
 	function mouseUpHandler (e:MouseEvent) :Void {
 		setState ( HIGHLIGHTED );
 		onRelease();
+		release.dispatch([this]);
 	}
 	function rollOverHandler (e:MouseEvent) :Void {
 		setState ( HIGHLIGHTED );
 		onOver();
+		over.dispatch([this]);
 	}
 	function rollOutHandler (e:MouseEvent) :Void {
 		setState ( NORMAL );
 		onOut();
+		out.dispatch([this]);
 	}
-	function clickHandler (e:MouseEvent) :Void {trace("click");
+	function clickHandler (e:MouseEvent) :Void {
 		setState ( SELECTED );
 		onClick();
+		click.dispatch([this]);
 	}
 	public function setState (state:RCControlState) {
 		state_ = state;//trace("current state is "+state_);

@@ -32,8 +32,8 @@
 class RCFont {
 	
 	public var html :Bool;
-	public var format :TextFormat;
-	public var style :StyleSheet;
+	public var format (getFormat, null) :TextFormat;
+	public var style (getStyleSheet, null) :StyleSheet;
 	
 	// TextField properties (only some of them that are more important)
 	public var embedFonts :Bool;
@@ -83,22 +83,62 @@ class RCFont {
 	public var textIndent :String;*/
 	
 	
-	public function new () {
+	// Some convenience methods to create fast a rcfont
+	public static function fontWithName (fontName:String, size:Int) :RCFont {
+		var fnt = new RCFont();
 		
+		return fnt;
+	}
+
+	// Returns an array of font family names for all installed fonts
+	public static function familyNames () :Array<Dynamic> {
+		#if flash
+			return flash.text.Font.enumerateFonts();
+		#else
+			return [];
+		#end
+	}
+	
+	// Some convenience methods to create system fonts
+	public static function systemFontOfSize (size:Int) :RCFont {
+		var fnt = new RCFont();
+			fnt.size = size;
+			fnt.embedFonts = false;
+		return fnt;
+	}
+	public static function boldSystemFontOfSize (size:Int) :RCFont {
+		var fnt = systemFontOfSize(size);
+			fnt.bold = true;
+		return fnt;
+	}
+	public static function italicSystemFontOfSize (size:Int) :RCFont {
+		var fnt = systemFontOfSize(size);
+			fnt.italic = true;
+		return fnt;
+	}
+	
+	
+	public function new () {
+		font = "Arial";
 		html = true;
 		embedFonts = true;
-		autoSize = true;//TextFieldAutoSize.LEFT;
+		autoSize = true;
 		selectable = false;
+		color = 0xDDDDDD;
+		size = 12;
 #if (flash || nme)
-		type = TextFieldType.DYNAMIC;
-#if flash
+	#if flash
 		antiAliasType = AntiAliasType.ADVANCED;// ADVANCED-normal fonts(<40px), NORMAL-pixel fonts
 		style = new StyleSheet();
-#end
+	#end
 		format = new TextFormat();
+		type = TextFieldType.DYNAMIC;
+#elseif js
+		format = {};
+		style = {};
 #end
 	}
-		
+	
 	public function copy (?exceptions:Dynamic) :RCFont {
 		
 		var rcfont = new RCFont();
@@ -106,11 +146,12 @@ class RCFont {
 		
 		// Copy all RCFont properties to the new object
 		for (field in fields) {
-			if (field == "copy") continue;
+			// Restricted fields
+			if (field == "copy" || field == "getFormat" || field == "getStyleSheet") continue;
 			//trace(field+", "+Reflect.field (this, field));
 			Reflect.setField (rcfont, field, Reflect.field (this, field));
 		}
-		
+		// Apply some exceptions
 		if (exceptions != null) {
 			for (excp in Reflect.fields ( exceptions )) {
 				if (Reflect.hasField (rcfont, excp)) {
@@ -118,37 +159,32 @@ class RCFont {
 				}
 			}
 		}
-		
-		rcfont.format = #if (flash || nme) new TextFormat() #elseif js {} #end;
-		rcfont.format.align = #if (flash || nme) switch(rcfont.align)
-		{
-			case "center": TextFormatAlign.CENTER;
-			case "left": TextFormatAlign.LEFT;
-			case "right": TextFormatAlign.RIGHT;
-		};
-		#elseif js
-			rcfont.align;
-		#end
-			trace(rcfont.align+", "+rcfont.format.align);
-		rcfont.format.blockIndent = rcfont.blockIndent;
-		rcfont.format.bold = rcfont.bold;
-		rcfont.format.bullet = rcfont.bullet;
-		rcfont.format.color = rcfont.color;
-		//rcfont.format.display = rcfont.display;
-		rcfont.format.font = rcfont.font;
-		rcfont.format.italic = rcfont.italic;
-		rcfont.format.indent = rcfont.indent;
-		rcfont.format.kerning = rcfont.kerning;
-		rcfont.format.leading = rcfont.leading;
-		rcfont.format.leftMargin = rcfont.leftMargin;
-		rcfont.format.letterSpacing = rcfont.letterSpacing;
-		rcfont.format.rightMargin = rcfont.rightMargin;
-		rcfont.format.size = rcfont.size;
-		rcfont.format.tabStops = rcfont.tabStops;
-		rcfont.format.target = rcfont.target;
-		rcfont.format.underline = rcfont.underline;
-		rcfont.format.url = rcfont.url;
-		
 		return rcfont;
+	}
+	public function getFormat () :TextFormat {
+		// Copy the right properties from rcfont to the format
+		format.align = null;// This property is replaced in the textfield
+		format.blockIndent = blockIndent;
+		format.bold = bold;
+		format.bullet = bullet;
+		format.color = color;
+		//format.display = display;
+		format.font = font;
+		format.italic = italic;
+		format.indent = indent;
+		format.kerning = kerning;
+		format.leading = leading;
+		format.leftMargin = leftMargin;
+		format.letterSpacing = letterSpacing;
+		format.rightMargin = rightMargin;
+		format.size = size;
+		format.tabStops = tabStops;
+		format.target = target;
+		format.underline = underline;
+		format.url = url;
+		return format;
+	}
+	public function getStyleSheet () :StyleSheet {
+		return style;
 	}
 }

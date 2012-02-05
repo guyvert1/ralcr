@@ -33,13 +33,13 @@ class SKSegment extends RCSkin {
 		normal.background.addChild ( segLeft );
 		normal.background.addChild ( segMiddle );
 		normal.background.addChild ( segRight );
-		normal.background.addChild ( new RCTextView (0, 28, w, 30, label, FontManager.getFormat ("bold", {size:25, color:0x777777, align:"center"})) );
+		normal.background.addChild ( new RCTextView (0, 28, w, 30, label, FontManager.getFont ("bold", {size:25, color:0x777777, align:"center"})) );
 		
 		highlighted.background = new RCView(0,0);
 		highlighted.background.addChild ( segLeftSelected );
 		highlighted.background.addChild ( segMiddleSelected );
 		highlighted.background.addChild ( segRightSelected );
-		highlighted.background.addChild ( new RCTextView (0, 28, w, 30, label, FontManager.getFormat ("bold", {size:25, color:0xFFFFFF, align:"center"})) );
+		highlighted.background.addChild ( new RCTextView (0, 28, w, 30, label, FontManager.getFont ("bold", {size:25, color:0xFFFFFF, align:"center"})) );
 		
 		//background = new RCRectangle (0, 0, w, h, 0x000000, 0);
 		hit = new RCRectangle (0, 0, w, h, 0x000000, 0);

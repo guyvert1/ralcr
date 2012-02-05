@@ -37,16 +37,14 @@ class RCTextInput extends RCTextView {
 	dynamic public function onFocusOut () :Void {}
 	
 	
-	override public function init (properties:RCFont) :Void {
-		this.properties = properties;
-		
+	override function init () :Void {
 		target = new TextField();
 		target.type = TextFieldType.INPUT;
 		target.autoSize = TextFieldAutoSize.NONE;
-		target.embedFonts = properties.embedFonts;
+		target.embedFonts = rcfont.embedFonts;
 		#if flash
-			target.antiAliasType = properties.antiAliasType;
-			target.sharpness = properties.sharpness;
+			target.antiAliasType = rcfont.antiAliasType;
+			target.sharpness = rcfont.sharpness;
 		#end
 		target.wordWrap = (size.width == null) ? false : true;
 		target.multiline = (size.height == 0) ? false : true;
@@ -60,7 +58,7 @@ class RCTextInput extends RCTextView {
 		if (size.width != null)							target.width = size.width;
 		if (size.height != null && size.height != 0)	target.height = size.height;
 		
-		target.defaultTextFormat = properties.format;
+		target.defaultTextFormat = rcfont.format;
 		
 		view.addChild ( target );
 	}

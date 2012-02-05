@@ -11,6 +11,7 @@ class RCTabBarController extends RCView {
 	var symbols :Array<String>;
 	var constructor_ :Int->RCTabBarItem;
 	
+	public var background :RCRectangle;
 	public var tabBar :RCTabBar;
 	public var viewControllers :Array<Dynamic>;
 	public var selectedIndex (getIndex, setIndex) :Int;
@@ -19,31 +20,36 @@ class RCTabBarController extends RCView {
 	
 	
 	public function new (x, y, ?constructor_:Int->RCTabBarItem) {
-		super(x,y);
-		//this.size.height = 98;
+		super (x, y);
+		this.size.width = 640;
+		this.size.height = 98;
 		this.constructor_ = constructor_;
 		viewControllers = new Array<Dynamic>();
 		didSelectViewController = new RCSignal<RCTabBarController->Dynamic->Void>();
 		
 		// Draw background
-		this.addChild ( new RCRectangle (0, 0, 640, 49, 0x222222) );
-		this.addChild ( new RCRectangle (0, 49, 640, 49, 0x000000) );
+		this.addChild ( background = new RCRectangle (0, 0, this.size.width, this.size.height, 0x222222) );
+		background.addChild ( new RCRectangle (0, this.size.height/2, this.size.width, this.size.height/2, 0x000000) );
 	}
-	public function init (labels:Array<String>, symbols:Array<String>) {
+	public function initWithLabels (labels:Array<String>, symbols:Array<String>) {
 		this.labels = labels;
 		this.symbols = symbols;
 		
 		tabBar = new RCTabBar (0, 3, /*6, null, */constructor_ == null ? constructButton : constructor_);
 		this.addChild ( tabBar );
 		tabBar.add ( labels );
-		tabBar.didSelectItem.add ( clickHandler );
+		tabBar.didSelectItem.add ( didSelectItemHandler );
 	}
+	/**
+	 *  Default constructor for the RCTabBarItem
+	 *  Pass a different constructor if you want to use a custom RCTabBarItem
+	 **/
 	function constructButton (i:Int) :RCTabBarItem {
 		var s = new haxe.SKTabBarItem ( labels[i], symbols[i], null );
 		var b = new RCTabBarItem (0, 0, s);
 		return b;
 	}
-	function clickHandler (item:RCTabBarItem) :Void {
+	function didSelectItemHandler (item:RCTabBarItem) :Void {
 		var i = 0;
 		for (it in tabBar.items) {
 			if (it == item) {
@@ -56,14 +62,12 @@ class RCTabBarController extends RCView {
 	
 	
 	public function getIndex () :Int {
-		return selectedIndex;
+		return tabBar.selectedIndex;
 	}
 	public function setIndex (i:Int) :Int {
-		trace("setIndex "+i);
-		selectedIndex = i;
-		//tabBar.select ( i );
-		didSelectViewController.dispatch ( [this, viewControllers[selectedIndex]] );
-		return selectedIndex;
+		tabBar.setIndex ( i );
+		didSelectViewController.dispatch ( [this, getViewController(i)] );
+		return i;
 	}
 	
 	

@@ -8,14 +8,11 @@ class SKButton extends RCSkin {
 		super ( colors );
 		
 		// Creates a TextField
-		var f = new RCFont();
+		var f = RCFont.boldSystemFontOfSize(11);
 			f.color = 0x000000;
-			f.font = "Arial";
-			f.bold = true;
-			f.size = 11;
 			f.align = "center";
-			f.embedFonts = false;
 		normal.label = new RCTextView (0, 4, 70, 20, label_str, f);
+		normal.label.y = Math.round ((20-normal.label.height)/2);
 		
 		//var fm = FontManager.getRCFont("system",{embedFonts:false});
 		//normal.label = new RCTextView (0, 0, null, null, label_str, fm);

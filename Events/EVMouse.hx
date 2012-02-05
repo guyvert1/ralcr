@@ -28,7 +28,7 @@ class EVMouse extends RCSignal<Bool->Void> {
 		#end
 	}
 	function mouseUpHandler (e:MouseEvent) {
-		trace("mouseUp");
+		//trace("mouseUp");
 	}
 	function mouseMoveHandler (e:MouseEvent) {return;
 		#if (flash || nme)

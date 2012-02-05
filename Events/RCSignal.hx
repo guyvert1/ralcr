@@ -16,14 +16,15 @@ class RCSignal<T> {
 	public function add (listener:T) {
 		listeners.add ( listener );
 	}
-	public function addOnce (listener:T) {
+	public function addOnce (listener:T, ?pos:haxe.PosInfos) {
+		if (exists(listener)) trace("This listener is already added, it will not be called only once. "+pos);
 		exposableListener = listener;
 	}
 	public function remove (listener:T) :Void {
 		for (l in listeners) {
 			if (Reflect.compareMethods(l, listener)) {
 				listeners.remove ( listener );
-				return;
+				//break;
 			}
 		}
 		if (Reflect.compareMethods (exposableListener, listener)) {
@@ -54,19 +55,11 @@ class RCSignal<T> {
 	}
 	
 	public function exists (listener:T) :Bool {
-		
-		//if (existing == null || !existing.has(listener)) return true;
-		
-		//if (Reflect.compareMethods(listener, T))
-				// If the listener was previously added, definitely don't add it again.
-				// But throw an exception if their once value differs.
-				//throw new IllegalOperationException('You cannot addOnce() then add() the same listener without removing the relationship first.');
-			
-			// Listener was already added.
-			return false;
-		
-		// This listener has not been added before.
-		//return true;
+		for (l in listeners) {
+			if (l == listener)
+				return true;
+		}
+		return false;
 	}
 	
 	public function destroy () :Void {

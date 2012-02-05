@@ -2,9 +2,9 @@
 //  Zeta
 //
 //  Created by Baluta Cristian on 2007-12-27.
-//  Copyright (c) 2007 ralcr.com. All rights reserved.
+//  Copyright (c) 2007-2012 ralcr.com. All rights reserved.
 //
-// a colection of useful functions
+//	A colection of useful functions
 
 class Zeta {
 	
@@ -74,7 +74,8 @@ class Zeta {
 	 *	Usualy received as descending by modified date
 	 *	array2 is used to sort the array with priority on elements from array2
 	 */
-/*	public static function sort<T> (array:Array<T>, sort_type:String, ?sort_array:Array<T>) :Array<T> {
+#if !nme
+	public static function sort<T> (array:Array<T>, sort_type:String, ?sort_array:Array<T>) :Array<T> {
 		
 		if (sort_type.toLowerCase() == "lastmodifieddescending") return array;
 		if (sort_type.toLowerCase() == "lastmodifiedascending") sort_type = "reverse";
@@ -85,9 +86,9 @@ class Zeta {
 		}
 		
 		switch ( sort_type.toLowerCase() ) {
-			case "reverse": 	array.reverse();
-			case "ascending": 	array.sort ( ascendingSort );
-			case "descending": 	array.sort ( descendingSort );
+			case "reverse":		array.reverse();
+			case "ascending":	array.sort ( ascendingSort );
+			case "descending":	array.sort ( descendingSort );
 			case "random":		array.sort ( randomSort );
 			case "custom":		var arr = new Array<T>();
 								for (a in sort_array)
@@ -101,7 +102,7 @@ class Zeta {
 			default:			untyped array.sortOn ( sort_type, Array.NUMERIC );// Array.ASCENDING |
 		}
 		return array;
-	}*/
+	}
 	inline static function randomSort<T> (a:T, b:T) :Int { 
 		return -1 + Std.random (3);
 	}
@@ -111,7 +112,7 @@ class Zeta {
 	inline static function descendingSort<T> (a:T, b:T) :Int { 
 		return (Std.string(a) > Std.string(b)) ? -1:1;
 	}
-	
+#end
 	
 	
 	/**
@@ -167,6 +168,4 @@ class Zeta {
 	inline public static function limitsInt (val:Float, min:Float, max:Float) :Int {
 		return Math.round ( if (val < min) min; else if (val > max) max; else val );
 	}
-	
-	
 }

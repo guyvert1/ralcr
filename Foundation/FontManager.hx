@@ -41,10 +41,9 @@ class FontManager {
 	var fontsSwfList :Array<Event>;// Keep a reference to the loaded font event (Flash only)
 	var event :Event;
 	var _defaultStyleSheetData :Dynamic;// StyleSheet
-	var _defaultRCFont :RCFont;// TextFormat;
 	
 	// Store the name of the format and the object with properties
-	// that should later be converted to TextFormat or StyleSheet
+	// that should later be converted to TextFormat and StyleSheet
 	var hash_style :Hash<Dynamic>;
 	var hash_rcfont :Hash<RCFont>;
 	
@@ -57,24 +56,10 @@ class FontManager {
 		hash_rcfont = new Hash<RCFont>();
 		fontsSwfList = new Array<Event>();
 		
-		// Init the default values
-		_defaultRCFont = new RCFont();
-		_defaultRCFont.font = "Arial";
-		_defaultRCFont.size = 12;
-		_defaultRCFont.color = 0xDDDDDD;
-		_defaultRCFont.leading = 4;
-		_defaultRCFont.letterSpacing = 1;
-		_defaultRCFont.align = "left";
-		_defaultRCFont.html = true;
-		_defaultRCFont.selectable = true;
-		_defaultRCFont.embedFonts = false;
-		
 		_defaultStyleSheetData = {	a_link	:{color:"#999999", textDecoration:"underline"},
 									a_hover :{color:"#33CCFF"},
 									h1		:{size:16}
 		};
-		
-		registerFormat ("system", _defaultRCFont); // use with embedFonts = false
 		registerStyle ("default", _defaultStyleSheetData);
 	}
 	
@@ -97,7 +82,7 @@ class FontManager {
 	 * Register formats and stylesheets
 	 * Data is stored as Objects
 	 */
-	public static function registerFormat (key:String, data:RCFont) :Void {
+	public static function registerFont (key:String, data:RCFont) :Void {
 		instance().hash_rcfont.set (key, data);
 	}
 	
@@ -116,7 +101,7 @@ class FontManager {
 	 * key = a give name for the format or stylesheet
 	 * exception = object with properties that should override the original
 	 */
-	static public function getFormat (?key:String="system", ?exceptions:Dynamic) :RCFont {
+	static public function getFont (?key:String="system", ?exceptions:Dynamic) :RCFont {
 		return instance().hash_rcfont.get( key ).copy( exceptions );
 	}
 	
@@ -131,7 +116,7 @@ class FontManager {
 	
 	
 	/**
-	 * Load a font embeded in swf, or a css file
+	 * Load a font embeded in swf
 	 */
 	public static function addSwf (swf:Event) :Void {
 		instance().push ( swf );
@@ -140,18 +125,12 @@ class FontManager {
 	public static function setCSS (css:String) :Void {
 		instance().setCSSFile ( css );
 	}
-#if flash
-	public static function enumerateFonts () :Array<Dynamic> {
-		init();
-		return Font.enumerateFonts();
-	}
-#end
 	
 	/**
 	 * Register a font that you know for shure exits in the loaded swf
 	 */
-	public static function registerFont (str:String) :Bool {
-		#if flash
+	public static function registerSwfFont (str:String) :Bool {
+	#if flash
 		if (instance().fontsSwfList.length == 0) return false;
 		
 		// Iterate over each swf registered that has fonts inside
@@ -168,7 +147,7 @@ class FontManager {
 				return true;
 			}
 		}
-		#end
+	#end
 		return false;
 	}
 	

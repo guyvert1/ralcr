@@ -586,23 +586,27 @@ RCControl.prototype.configureDispatchers = function() {
 RCControl.prototype.mouseDownHandler = function(e) {
 	this.setState(RCControlState.SELECTED);
 	this.onPress();
+	this.press.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 131, className : "RCControl", methodName : "mouseDownHandler"});
 }
 RCControl.prototype.mouseUpHandler = function(e) {
 	this.setState(RCControlState.HIGHLIGHTED);
 	this.onRelease();
+	this.release.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 136, className : "RCControl", methodName : "mouseUpHandler"});
 }
 RCControl.prototype.rollOverHandler = function(e) {
 	this.setState(RCControlState.HIGHLIGHTED);
 	this.onOver();
+	this.over.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 141, className : "RCControl", methodName : "rollOverHandler"});
 }
 RCControl.prototype.rollOutHandler = function(e) {
 	this.setState(RCControlState.NORMAL);
 	this.onOut();
+	this.out.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 146, className : "RCControl", methodName : "rollOutHandler"});
 }
 RCControl.prototype.clickHandler = function(e) {
-	haxe.Log.trace("click",{ fileName : "RCControl.hx", lineNumber : 144, className : "RCControl", methodName : "clickHandler"});
 	this.setState(RCControlState.SELECTED);
 	this.onClick();
+	this.click.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 151, className : "RCControl", methodName : "clickHandler"});
 }
 RCControl.prototype.setState = function(state) {
 	this.state_ = state;
@@ -708,22 +712,27 @@ RCButtonRadio.prototype.toggable_ = null;
 RCButtonRadio.prototype.toggable = null;
 RCButtonRadio.prototype.mouseDownHandler = function(e) {
 	this.onPress();
+	this.press.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 29, className : "RCButtonRadio", methodName : "mouseDownHandler"});
 }
 RCButtonRadio.prototype.mouseUpHandler = function(e) {
 	this.onRelease();
+	this.release.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 34, className : "RCButtonRadio", methodName : "mouseUpHandler"});
 }
 RCButtonRadio.prototype.clickHandler = function(e) {
-	haxe.Log.trace("click",{ fileName : "RCButtonRadio.hx", lineNumber : 34, className : "RCButtonRadio", methodName : "clickHandler"});
+	haxe.Log.trace("click",{ fileName : "RCButtonRadio.hx", lineNumber : 36, className : "RCButtonRadio", methodName : "clickHandler"});
 	this.setState(this.getSelected()?RCControlState.NORMAL:RCControlState.SELECTED);
 	this.onClick();
+	this.click.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 39, className : "RCButtonRadio", methodName : "clickHandler"});
 }
 RCButtonRadio.prototype.rollOverHandler = function(e) {
 	if(!this.getSelected()) this.setState(RCControlState.HIGHLIGHTED);
-	this.onOut();
+	this.onOver();
+	this.over.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 45, className : "RCButtonRadio", methodName : "rollOverHandler"});
 }
 RCButtonRadio.prototype.rollOutHandler = function(e) {
 	if(!this.getSelected()) this.setState(RCControlState.NORMAL);
 	this.onOut();
+	this.out.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 51, className : "RCButtonRadio", methodName : "rollOutHandler"});
 }
 RCButtonRadio.prototype.getToggable = function() {
 	return this.toggable_;
@@ -1297,17 +1306,15 @@ RCSignal.prototype.exposableListener = null;
 RCSignal.prototype.add = function(listener) {
 	this.listeners.add(listener);
 }
-RCSignal.prototype.addOnce = function(listener) {
+RCSignal.prototype.addOnce = function(listener,pos) {
+	if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once. " + pos,{ fileName : "RCSignal.hx", lineNumber : 20, className : "RCSignal", methodName : "addOnce"});
 	this.exposableListener = listener;
 }
 RCSignal.prototype.remove = function(listener) {
 	var $it0 = this.listeners.iterator();
 	while( $it0.hasNext() ) {
 		var l = $it0.next();
-		if(Reflect.compareMethods(l,listener)) {
-			this.listeners.remove(listener);
-			return;
-		}
+		if(Reflect.compareMethods(l,listener)) this.listeners.remove(listener);
 	}
 	if(Reflect.compareMethods(this.exposableListener,listener)) this.exposableListener = null;
 }
@@ -1330,10 +1337,15 @@ RCSignal.prototype.callMethod = function(listener,args,pos) {
 	try {
 		listener.apply(null,args);
 	} catch( e ) {
-		haxe.Log.trace("[RCSignal error: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 52, className : "RCSignal", methodName : "callMethod"});
+		haxe.Log.trace("[RCSignal error: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 53, className : "RCSignal", methodName : "callMethod"});
 	}
 }
 RCSignal.prototype.exists = function(listener) {
+	var $it0 = this.listeners.iterator();
+	while( $it0.hasNext() ) {
+		var l = $it0.next();
+		if(l == listener) return true;
+	}
 	return false;
 }
 RCSignal.prototype.destroy = function() {
@@ -1349,24 +1361,24 @@ EVFullScreen.__name__ = ["EVFullScreen"];
 EVFullScreen.__super__ = RCSignal;
 for(var k in RCSignal.prototype ) EVFullScreen.prototype[k] = RCSignal.prototype[k];
 EVFullScreen.prototype.__class__ = EVFullScreen;
-RCTextView = function(x,y,w,h,str,properties) {
+RCTextView = function(x,y,w,h,str,rcfont) {
 	if( x === $_ ) return;
 	JSView.call(this,Math.round(x),Math.round(y));
 	this.size.width = w;
 	this.size.height = h;
+	this.rcfont = rcfont.copy();
 	this.setWidth(w);
 	this.setHeight(h);
-	this.init(properties);
+	this.init();
 	this.setText(str);
 }
 RCTextView.__name__ = ["RCTextView"];
 RCTextView.__super__ = JSView;
 for(var k in JSView.prototype ) RCTextView.prototype[k] = JSView.prototype[k];
 RCTextView.prototype.target = null;
-RCTextView.prototype.properties = null;
+RCTextView.prototype.rcfont = null;
 RCTextView.prototype.text = null;
-RCTextView.prototype.init = function(properties) {
-	this.properties = properties;
+RCTextView.prototype.init = function() {
 	this.redraw();
 }
 RCTextView.prototype.redraw = function() {
@@ -1374,17 +1386,17 @@ RCTextView.prototype.redraw = function() {
 	var multiline = this.size.height != 0;
 	this.view.style.whiteSpace = wrap?"normal":"nowrap";
 	this.view.style.wordWrap = wrap?"break-word":"normal";
-	var style = this.properties.selectable?"text":"none";
+	var style = this.rcfont.selectable?"text":"none";
 	this.view.style.WebkitUserSelect = style;
 	this.view.style.MozUserSelect = style;
-	this.view.style.lineHeight = this.properties.leading + this.properties.size + "px";
-	this.view.style.fontFamily = this.properties.font;
-	this.view.style.fontSize = this.properties.size + "px";
-	this.view.style.fontWeight = this.properties.bold?"bold":"normal";
-	this.view.style.fontStyle = this.properties.italic?"italic":"normal";
-	this.view.style.letterSpacing = this.properties.letterSpacing + "px";
-	this.view.style.textAlign = this.properties.align;
-	if(this.properties.autoSize) {
+	this.view.style.lineHeight = this.rcfont.leading + this.rcfont.size + "px";
+	this.view.style.fontFamily = this.rcfont.font;
+	this.view.style.fontSize = this.rcfont.size + "px";
+	this.view.style.fontWeight = this.rcfont.bold?"bold":"normal";
+	this.view.style.fontStyle = this.rcfont.italic?"italic":"normal";
+	this.view.style.letterSpacing = this.rcfont.letterSpacing + "px";
+	this.view.style.textAlign = this.rcfont.align;
+	if(this.rcfont.autoSize) {
 		this.view.style.width = multiline?this.size.width + "px":"auto";
 		this.view.style.height = "auto";
 	} else {
@@ -1392,18 +1404,18 @@ RCTextView.prototype.redraw = function() {
 		this.view.style.height = this.size.height + "px";
 	}
 	this.view.innerHTML = "";
-	this.view.style.color = RCColor.HEXtoString(this.properties.color);
-	this.view.style.fontFamily = this.properties.font;
-	this.view.style.fontWeight = this.properties.bold;
-	this.view.style.fontSize = this.properties.size;
-	this.view.style.fontStyle = this.properties.style;
+	this.view.style.color = RCColor.HEXtoString(this.rcfont.color);
+	this.view.style.fontFamily = this.rcfont.font;
+	this.view.style.fontWeight = this.rcfont.bold;
+	this.view.style.fontSize = this.rcfont.size;
+	this.view.style.fontStyle = this.rcfont.getStyleSheet();
 	if(this.size.width != null) this.setWidth(this.size.width);
 }
 RCTextView.prototype.getText = function() {
 	return this.view.innerHTML;
 }
 RCTextView.prototype.setText = function(str) {
-	if(this.properties.html) this.view.innerHTML = str; else this.view.innerHTML = str;
+	if(this.rcfont.html) this.view.innerHTML = str; else this.view.innerHTML = str;
 	return str;
 }
 RCTextView.prototype.wheelHandler = function(e) {
@@ -1436,7 +1448,7 @@ FontManager.instance = function() {
 	if(FontManager.INSTANCE == null) FontManager.init();
 	return FontManager.INSTANCE;
 }
-FontManager.registerFormat = function(key,data) {
+FontManager.registerFont = function(key,data) {
 	FontManager.instance().hash_rcfont.set(key,data);
 }
 FontManager.registerStyle = function(key,data) {
@@ -1446,7 +1458,7 @@ FontManager.remove = function(key) {
 	FontManager.instance().hash_style.remove(key);
 	FontManager.instance().hash_rcfont.remove(key);
 }
-FontManager.getFormat = function(key,exceptions) {
+FontManager.getFont = function(key,exceptions) {
 	if(key == null) key = "system";
 	return FontManager.instance().hash_rcfont.get(key).copy(exceptions);
 }
@@ -1461,32 +1473,20 @@ FontManager.addSwf = function(swf) {
 FontManager.setCSS = function(css) {
 	FontManager.instance().setCSSFile(css);
 }
-FontManager.registerFont = function(str) {
+FontManager.registerSwfFont = function(str) {
 	return false;
 }
 FontManager.prototype.fontsDomain = null;
 FontManager.prototype.fontsSwfList = null;
 FontManager.prototype.event = null;
 FontManager.prototype._defaultStyleSheetData = null;
-FontManager.prototype._defaultRCFont = null;
 FontManager.prototype.hash_style = null;
 FontManager.prototype.hash_rcfont = null;
 FontManager.prototype.initDefaults = function() {
 	this.hash_style = new Hash();
 	this.hash_rcfont = new Hash();
 	this.fontsSwfList = new Array();
-	this._defaultRCFont = new RCFont();
-	this._defaultRCFont.font = "Arial";
-	this._defaultRCFont.size = 12;
-	this._defaultRCFont.color = 14540253;
-	this._defaultRCFont.leading = 4;
-	this._defaultRCFont.letterSpacing = 1;
-	this._defaultRCFont.align = "left";
-	this._defaultRCFont.html = true;
-	this._defaultRCFont.selectable = true;
-	this._defaultRCFont.embedFonts = false;
 	this._defaultStyleSheetData = { a_link : { color : "#999999", textDecoration : "underline"}, a_hover : { color : "#33CCFF"}, h1 : { size : 16}};
-	FontManager.registerFormat("system",this._defaultRCFont);
 	FontManager.registerStyle("default",this._defaultStyleSheetData);
 }
 FontManager.prototype.push = function(e) {
@@ -2457,7 +2457,6 @@ EVMouse.__super__ = RCSignal;
 for(var k in RCSignal.prototype ) EVMouse.prototype[k] = RCSignal.prototype[k];
 EVMouse.instance = null;
 EVMouse.prototype.mouseUpHandler = function(e) {
-	haxe.Log.trace("mouseUp",{ fileName : "EVMouse.hx", lineNumber : 31, className : "EVMouse", methodName : "mouseUpHandler"});
 }
 EVMouse.prototype.mouseMoveHandler = function(e) {
 	return;
@@ -3085,7 +3084,7 @@ RCTextRoll.prototype.viewDidAppear = function() {
 	this.size.height = this.txt1.getHeight();
 	haxe.Log.trace(this.size,{ fileName : "RCTextRoll.hx", lineNumber : 42, className : "RCTextRoll", methodName : "viewDidAppear"});
 	if(this.txt1.getWidth() > this.size.width) {
-		this.txt2 = new RCTextView(Math.round(this.txt1.getWidth() + 20),0,null,this.size.height,this.getText(),this.txt1.properties);
+		this.txt2 = new RCTextView(Math.round(this.txt1.getWidth() + 20),0,null,this.size.height,this.getText(),this.txt1.rcfont);
 		this.addChild(this.txt2);
 		this.setClipsToBounds(true);
 	}
@@ -3558,19 +3557,15 @@ RCGroup.prototype.add = function(params,alternativeConstructor) {
 		var s = this.constructor_(new RCIndexPath(0,i));
 		this.addChild(s);
 		this.items.push(s);
-		this.itemPush.dispatch([new RCIndexPath(0,i)],{ fileName : "RCGroup.hx", lineNumber : 55, className : "RCGroup", methodName : "add"});
+		this.itemPush.dispatch([new RCIndexPath(0,i)],{ fileName : "RCGroup.hx", lineNumber : 56, className : "RCGroup", methodName : "add"});
 		i++;
 	}
-	try {
-		this.keepItemsArranged();
-	} catch( e ) {
-		haxe.Log.trace(e,{ fileName : "RCGroup.hx", lineNumber : 60, className : "RCGroup", methodName : "add"});
-	}
+	this.keepItemsArranged();
 }
 RCGroup.prototype.remove = function(i) {
-	Fugu.safeDestroy(this.items[i],null,{ fileName : "RCGroup.hx", lineNumber : 65, className : "RCGroup", methodName : "remove"});
+	Fugu.safeDestroy(this.items[i],null,{ fileName : "RCGroup.hx", lineNumber : 66, className : "RCGroup", methodName : "remove"});
 	this.keepItemsArranged();
-	this.itemRemove.dispatch([new RCIndexPath(0,i)],{ fileName : "RCGroup.hx", lineNumber : 70, className : "RCGroup", methodName : "remove"});
+	this.itemRemove.dispatch([new RCIndexPath(0,i)],{ fileName : "RCGroup.hx", lineNumber : 71, className : "RCGroup", methodName : "remove"});
 }
 RCGroup.prototype.keepItemsArranged = function() {
 	var _g1 = 0, _g = this.items.length;
@@ -3586,7 +3581,7 @@ RCGroup.prototype.keepItemsArranged = function() {
 		new_s.setX(newX);
 		new_s.setY(newY);
 	}
-	this.update.dispatch(null,{ fileName : "RCGroup.hx", lineNumber : 93, className : "RCGroup", methodName : "keepItemsArranged"});
+	this.update.dispatch(null,{ fileName : "RCGroup.hx", lineNumber : 94, className : "RCGroup", methodName : "keepItemsArranged"});
 }
 RCGroup.prototype.viewDidAppear = function() {
 }
@@ -3594,7 +3589,7 @@ RCGroup.prototype.get = function(i) {
 	return this.items[i];
 }
 RCGroup.prototype.destroy = function() {
-	Fugu.safeDestroy(this.items,null,{ fileName : "RCGroup.hx", lineNumber : 123, className : "RCGroup", methodName : "destroy"});
+	Fugu.safeDestroy(this.items,null,{ fileName : "RCGroup.hx", lineNumber : 124, className : "RCGroup", methodName : "destroy"});
 	this.items = null;
 }
 RCGroup.prototype.__class__ = RCGroup;
@@ -3869,12 +3864,12 @@ ios.SKSegment = function(label,w,h,posLeft,posMiddle,posRight,colors) {
 	this.normal.background.addChild(segLeft);
 	this.normal.background.addChild(segMiddle);
 	this.normal.background.addChild(segRight);
-	this.normal.background.addChild(new RCTextView(0,28,w,30,label,FontManager.getFormat("bold",{ size : 25, color : 7829367, align : "center"})));
+	this.normal.background.addChild(new RCTextView(0,28,w,30,label,FontManager.getFont("bold",{ size : 25, color : 7829367, align : "center"})));
 	this.highlighted.background = new JSView(0,0);
 	this.highlighted.background.addChild(segLeftSelected);
 	this.highlighted.background.addChild(segMiddleSelected);
 	this.highlighted.background.addChild(segRightSelected);
-	this.highlighted.background.addChild(new RCTextView(0,28,w,30,label,FontManager.getFormat("bold",{ size : 25, color : 16777215, align : "center"})));
+	this.highlighted.background.addChild(new RCTextView(0,28,w,30,label,FontManager.getFont("bold",{ size : 25, color : 16777215, align : "center"})));
 	this.hit = new RCRectangle(0,0,w,h,0,0);
 }
 ios.SKSegment.__name__ = ["ios","SKSegment"];
@@ -3908,12 +3903,40 @@ Std.random = function(x) {
 Std.prototype.__class__ = Std;
 RCFont = function(p) {
 	if( p === $_ ) return;
+	this.font = "Arial";
 	this.html = true;
 	this.embedFonts = true;
 	this.autoSize = true;
 	this.selectable = false;
+	this.color = 14540253;
+	this.size = 12;
+	this.format = { };
+	this.style = { };
 }
 RCFont.__name__ = ["RCFont"];
+RCFont.fontWithName = function(fontName,size) {
+	var fnt = new RCFont();
+	return fnt;
+}
+RCFont.familyNames = function() {
+	return [];
+}
+RCFont.systemFontOfSize = function(size) {
+	var fnt = new RCFont();
+	fnt.size = size;
+	fnt.embedFonts = false;
+	return fnt;
+}
+RCFont.boldSystemFontOfSize = function(size) {
+	var fnt = RCFont.systemFontOfSize(size);
+	fnt.bold = true;
+	return fnt;
+}
+RCFont.italicSystemFontOfSize = function(size) {
+	var fnt = RCFont.systemFontOfSize(size);
+	fnt.italic = true;
+	return fnt;
+}
 RCFont.prototype.html = null;
 RCFont.prototype.format = null;
 RCFont.prototype.style = null;
@@ -3951,7 +3974,7 @@ RCFont.prototype.copy = function(exceptions) {
 	while(_g < fields.length) {
 		var field = fields[_g];
 		++_g;
-		if(field == "copy") continue;
+		if(field == "copy" || field == "getFormat" || field == "getStyleSheet") continue;
 		rcfont[field] = Reflect.field(this,field);
 	}
 	if(exceptions != null) {
@@ -3962,27 +3985,31 @@ RCFont.prototype.copy = function(exceptions) {
 			if(Reflect.hasField(rcfont,excp)) rcfont[excp] = Reflect.field(exceptions,excp);
 		}
 	}
-	rcfont.format = { };
-	rcfont.format.align = rcfont.align;
-	haxe.Log.trace(rcfont.align + ", " + rcfont.format.align,{ fileName : "RCFont.hx", lineNumber : 132, className : "RCFont", methodName : "copy"});
-	rcfont.format.blockIndent = rcfont.blockIndent;
-	rcfont.format.bold = rcfont.bold;
-	rcfont.format.bullet = rcfont.bullet;
-	rcfont.format.color = rcfont.color;
-	rcfont.format.font = rcfont.font;
-	rcfont.format.italic = rcfont.italic;
-	rcfont.format.indent = rcfont.indent;
-	rcfont.format.kerning = rcfont.kerning;
-	rcfont.format.leading = rcfont.leading;
-	rcfont.format.leftMargin = rcfont.leftMargin;
-	rcfont.format.letterSpacing = rcfont.letterSpacing;
-	rcfont.format.rightMargin = rcfont.rightMargin;
-	rcfont.format.size = rcfont.size;
-	rcfont.format.tabStops = rcfont.tabStops;
-	rcfont.format.target = rcfont.target;
-	rcfont.format.underline = rcfont.underline;
-	rcfont.format.url = rcfont.url;
 	return rcfont;
+}
+RCFont.prototype.getFormat = function() {
+	this.format.align = null;
+	this.format.blockIndent = this.blockIndent;
+	this.format.bold = this.bold;
+	this.format.bullet = this.bullet;
+	this.format.color = this.color;
+	this.format.font = this.font;
+	this.format.italic = this.italic;
+	this.format.indent = this.indent;
+	this.format.kerning = this.kerning;
+	this.format.leading = this.leading;
+	this.format.leftMargin = this.leftMargin;
+	this.format.letterSpacing = this.letterSpacing;
+	this.format.rightMargin = this.rightMargin;
+	this.format.size = this.size;
+	this.format.tabStops = this.tabStops;
+	this.format.target = this.target;
+	this.format.underline = this.underline;
+	this.format.url = this.url;
+	return this.format;
+}
+RCFont.prototype.getStyleSheet = function() {
+	return this.style;
 }
 RCFont.prototype.__class__ = RCFont;
 Zeta = function() { }
@@ -4035,6 +4062,50 @@ Zeta.concatObjects = function(objs) {
 		}
 	}
 	return finalObject;
+}
+Zeta.sort = function(array,sort_type,sort_array) {
+	if(sort_type.toLowerCase() == "lastmodifieddescending") return array;
+	if(sort_type.toLowerCase() == "lastmodifiedascending") sort_type = "reverse";
+	if(sort_type.toLowerCase() == "customascending" && sort_array != null) sort_type = "custom";
+	if(sort_type.toLowerCase() == "customdescending" && sort_array != null) {
+		sort_array.reverse();
+		sort_type = "custom";
+	}
+	switch(sort_type.toLowerCase()) {
+	case "reverse":
+		array.reverse();
+		break;
+	case "ascending":
+		array.sort(Zeta.ascendingSort);
+		break;
+	case "descending":
+		array.sort(Zeta.descendingSort);
+		break;
+	case "random":
+		array.sort(Zeta.randomSort);
+		break;
+	case "custom":
+		var arr = new Array();
+		var _g = 0;
+		while(_g < sort_array.length) {
+			var a = sort_array[_g];
+			++_g;
+			var _g1 = 0;
+			while(_g1 < array.length) {
+				var b = array[_g1];
+				++_g1;
+				if(a == b) {
+					arr.push(a);
+					array.remove(a);
+					break;
+				}
+			}
+		}
+		return arr.concat(array);
+	default:
+		array.sortOn(sort_type,Array.NUMERIC);
+	}
+	return array;
 }
 Zeta.randomSort = function(a,b) {
 	return -1 + Std.random(3);
@@ -4137,7 +4208,7 @@ Main.main = function() {
 		};
 		Main.signal = new RCSignal();
 		Main.signal.add(Main.printNr);
-		Main.signal.addOnce(Main.printNr2);
+		Main.signal.addOnce(Main.printNr2,{ fileName : "Main.hx", lineNumber : 83, className : "Main", methodName : "main"});
 		Main.signal.remove(Main.printNr);
 		Main.signal.removeAll();
 		var _g = 0;
@@ -4606,14 +4677,11 @@ Fugu.prototype.__class__ = Fugu;
 haxe.SKButton = function(label_str,colors) {
 	if( label_str === $_ ) return;
 	RCSkin.call(this,colors);
-	var f = new RCFont();
+	var f = RCFont.boldSystemFontOfSize(11);
 	f.color = 0;
-	f.font = "Arial";
-	f.bold = true;
-	f.size = 11;
 	f.align = "center";
-	f.embedFonts = false;
 	this.normal.label = new RCTextView(0,4,70,20,label_str,f);
+	this.normal.label.setY(Math.round((20 - this.normal.label.getHeight()) / 2));
 	this.normal.background = new RCRectangle(0,0,70,20,10066329,1,8);
 	this.normal.background.addChild(new RCRectangle(1,1,68,18,16711422,1,6));
 	this.highlighted.background = new RCRectangle(0,0,70,20,3355443,1,8);

@@ -5,16 +5,17 @@
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
 
-#if (flash || (flash && nme))
-	import flash.text.AntiAliasType;
-#end
 #if (flash || nme)
 	import flash.display.Sprite;
 	import flash.text.TextField;
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
+	import flash.text.TextFormatAlign;
 	import flash.text.TextFieldAutoSize;
 	import flash.events.MouseEvent;
+	#if flash
+		import flash.text.AntiAliasType;
+	#end
 #elseif js
 	import js.Dom;
 	import RCView;
@@ -26,27 +27,26 @@
 class RCTextView extends RCView {
 	
 	public var target :TextField;
-	public var properties :RCFont;
+	public var rcfont :RCFont;
 	public var text (getText, setText) :String;
 	
 	
-	public function new (x:Float, y:Float, w:Null<Float>, h:Null<Float>, str:String, properties:RCFont) {
+	public function new (x:Float, y:Float, w:Null<Float>, h:Null<Float>, str:String, rcfont:RCFont) {
 		
 		super (Math.round(x), Math.round(y));
 		size.width = w;
 		size.height = h;
+		this.rcfont = rcfont.copy();// This step is very important, otherwise the format does not exist correctly
 #if js
 		setWidth ( w );
 		setHeight ( h );
 #end
-		init ( properties );
+		init();
 		setText ( str );
 	}
-	
-	public function init (properties:RCFont) :Void {
-		// Duplicate the properties RCFont and apply exceptions
-		this.properties = properties;
+	function init () :Void {
 		redraw();
+		// trick for flash bug when a textfield is scrolling with the wheel one row
 		//target.addEventListener (MouseEvent.MOUSE_WHEEL, wheelHandler);
 	}
 	
@@ -61,33 +61,35 @@ class RCTextView extends RCView {
 		
 		// Create a new textfield
 		target = new TextField();
-		target.embedFonts = properties.embedFonts;
-		target.type = properties.type;//trace(properties.align);
-		target.autoSize = switch (properties.align) {
+		target.embedFonts = rcfont.embedFonts;
+		target.type = rcfont.type;
+		target.autoSize = switch (rcfont.align) {
 			case "center": flash.text.TextFieldAutoSize.CENTER;
 			case "right": flash.text.TextFieldAutoSize.RIGHT;
 			default : flash.text.TextFieldAutoSize.LEFT;
 		};
-		//target.autoSize = properties.autoSize ? flash.text.TextFieldAutoSize.LEFT : null;
-		//trace(target.autoSize);
-		#if (flash || (flash && nme))
-		target.antiAliasType = properties.antiAliasType;
+		#if flash
+			target.antiAliasType = rcfont.antiAliasType;
+			target.sharpness = rcfont.sharpness;
 		#end
 		target.wordWrap = (size.width == null) ? false : true;
 		target.multiline = (size.height == 0) ? false : true;
-		#if (flash || (flash && nme))
-		target.sharpness = properties.sharpness;
-		#end
-		target.selectable = properties.selectable;
+		target.selectable = rcfont.selectable;
 		target.border = false;
 		
 		if (size.width != null)							target.width = size.width;
 		if (size.height != null && size.height != 0)	target.height = size.height;
 		
-		if (properties.format != null) target.defaultTextFormat = properties.format;
-		//if (properties.format != null) target.setTextFormat ( properties.format );
-		#if (flash || (flash && nme))
-		if (properties.style  != null) target.styleSheet = properties.style;
+		var format = rcfont.getFormat();
+		format.align = switch (rcfont.align) {
+						case "center": TextFormatAlign.CENTER;
+						case "right": TextFormatAlign.RIGHT;
+						default: TextFormatAlign.LEFT;
+					};
+		target.defaultTextFormat = format;
+		//if (rcfont.format != null) target.setTextFormat ( rcfont.format );
+		#if flash
+			if (rcfont.style  != null) target.styleSheet = rcfont.style;
 		#end
 		view.addChild ( target );
 	}
@@ -102,19 +104,19 @@ class RCTextView extends RCView {
 		view.style.whiteSpace = (wrap ? "normal" : "nowrap");
 		view.style.wordWrap = (wrap ? "break-word" : "normal");
 		
-		var style = (properties.selectable ? "text" : "none");
+		var style = (rcfont.selectable ? "text" : "none");
 		untyped view.style.WebkitUserSelect = style;
 		untyped view.style.MozUserSelect = style;
 		
-		view.style.lineHeight = (properties.leading + properties.size) + "px";
-		view.style.fontFamily = properties.font;
-		view.style.fontSize = properties.size + "px";
-		view.style.fontWeight = (properties.bold ? "bold" : "normal");
-		view.style.fontStyle = (properties.italic ? "italic" : "normal");
-		view.style.letterSpacing = properties.letterSpacing + "px";
-		view.style.textAlign = properties.align;
+		view.style.lineHeight = (rcfont.leading + rcfont.size) + "px";
+		view.style.fontFamily = rcfont.font;
+		view.style.fontSize = rcfont.size + "px";
+		view.style.fontWeight = (rcfont.bold ? "bold" : "normal");
+		view.style.fontStyle = (rcfont.italic ? "italic" : "normal");
+		view.style.letterSpacing = rcfont.letterSpacing + "px";
+		view.style.textAlign = rcfont.align;// "center", "left", "right"
 		
-		if (properties.autoSize) {
+		if (rcfont.autoSize) {
 			view.style.width = multiline ? size.width + "px" : "auto";
 			view.style.height = "auto";
 		}
@@ -124,15 +126,15 @@ class RCTextView extends RCView {
 		}
 		
 		view.innerHTML = "";
-		view.style.color = RCColor.HEXtoString ( properties.color );
-		view.style.fontFamily = properties.font;
-		view.style.fontWeight = properties.bold;
-    	view.style.fontSize = properties.size;
-    	view.style.fontStyle = properties.style;
-    	//view.style.fontVariant = properties.variant;
+		view.style.color = RCColor.HEXtoString ( rcfont.color );
+		view.style.fontFamily = rcfont.font;
+		view.style.fontWeight = rcfont.bold;
+    	view.style.fontSize = rcfont.size;
+    	view.style.fontStyle = rcfont.style;
+    	//view.style.fontVariant = rcfont.variant;
 
 		if (size.width != null) setWidth ( size.width );
-		//view.style.textAlign = properties.align;
+		//view.style.textAlign = rcfont.align;
 	}
 	
 #end
@@ -143,12 +145,12 @@ class RCTextView extends RCView {
 	
 	public function setText (str:String) :String {
 		#if (flash || nme)
-			if (properties.html)
+			if (rcfont.html)
 				target.htmlText = str;
 			else
 				target.text = str;
 		#elseif js
-			if (properties.html) {
+			if (rcfont.html) {
 				view.innerHTML = str;
 			}
 			else {
