@@ -43,14 +43,20 @@ class RCSlider extends RCControl {
 	public var valueChanged :RCSignal<RCSlider->Void>;// sliders, etc.
 	
 	
-	public function new (x, y, skin:RCSkin) {
+	public function new (x, y, w, h, skin:RCSkin) {
 		super(x,y);
-		
+		this.size.width = w;
+		this.size.height = h;
 		this.moving_ = false;
 		this.minValue_ = 0.0;
 		this.maxValue_ = 100.0;
 		this.value_ = 0.0;
 		this.skin = skin;
+		
+		// Resize skin elements based on the width and height
+		untyped skin.normal.background.setWidth(w);
+		skin.normal.otherView.y = Math.round ((h - skin.normal.otherView.height)/2);
+		
 		
 		this.size.width = skin.normal.background.width;
 		this.size.height = skin.normal.background.height;

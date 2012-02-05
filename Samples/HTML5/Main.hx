@@ -115,11 +115,11 @@ class Main {
 		trace("1");
 		var group = new RCSegmentedControl (200,300,10,null,createRadioButton2);
 		RCWindow.addChild ( group );
-		group.add(["1","2","3","4","5"]);
+		group.initWithLabels(["1","2","3","4","5"]);
 		trace("1");
 		// Add slider
-		var s = new haxe.SKSlider(160, 8);trace(1);
-		var sl = new RCSlider(50, 250, s);trace(1);
+		var s = new haxe.SKSlider();
+		var sl = new RCSlider(50, 250, 160, 10, s);
 		//sl.valueChanged.add ( function(e:RCSlider){trace(e.value);} );
 		RCWindow.addChild ( sl );
 		//sl.maxValue = 500;

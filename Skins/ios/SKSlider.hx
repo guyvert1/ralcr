@@ -5,16 +5,15 @@
 //  Copyright (c) 2012 ralcr.com. All rights reserved.
 //
 package ios;
+
 import RCView;
 
 class SKSlider extends RCSkin {
 	
-	public function new (w, h, ?colors:Array<Null<Int>>) {
-		super ( colors );
+	public function new () {
+		super ( null );
 		
-		normal.background = new RCRectangle (0, 0, w, h, 0x666666, 1, 8);
-		normal.background.addChild ( new RCRectangle (4, 2, w-8, 2, 0xffffff, 0.2) );
-		
+		normal.background = new RCImageStretchable (0, 0, "Resources/ios.skin/slider_l.png", "Resources/ios.skin/slider_m.png", "Resources/ios.skin/slider_r.png");
 		normal.otherView = RCLib.getFileWithKey("slider_dot");
 		
 		// Creates a transparent background for mouse hit area

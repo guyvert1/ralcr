@@ -9,8 +9,11 @@ import RCView;
 
 class SKSlider extends RCSkin {
 	
-	public function new (w, h, ?colors:Array<Null<Int>>) {
+	public function new (?colors:Array<Null<Int>>) {
 		super ( colors );
+		
+		var w = 160;
+		var h = 8;
 		
 		normal.background = new RCRectangle (0, 0, w, h, 0x666666, 1, 8);
 		normal.background.addChild ( new RCRectangle (4, 2, w-8, 2, 0xffffff, 0.2) );

@@ -175,7 +175,6 @@ RCLib.prototype.progressHandler = function(key,obj) {
 	this.totalProgress();
 }
 RCLib.prototype.completeHandler = function(key,obj) {
-	haxe.Log.trace("completeHandler for key: '" + key + "' with object: " + obj,{ fileName : "RCLib.hx", lineNumber : 143, className : "RCLib", methodName : "completeHandler"});
 	switch(Type.getClassName(Type.getClass(obj))) {
 	case "RCImage":
 		this.photoList.set(key,obj);
@@ -2567,14 +2566,18 @@ _RCSlider.Direction.HORIZONTAL.__enum__ = _RCSlider.Direction;
 _RCSlider.Direction.VERTICAL = ["VERTICAL",1];
 _RCSlider.Direction.VERTICAL.toString = $estr;
 _RCSlider.Direction.VERTICAL.__enum__ = _RCSlider.Direction;
-RCSlider = function(x,y,skin) {
+RCSlider = function(x,y,w,h,skin) {
 	if( x === $_ ) return;
 	RCControl.call(this,x,y);
+	this.size.width = w;
+	this.size.height = h;
 	this.moving_ = false;
 	this.minValue_ = 0.0;
 	this.maxValue_ = 100.0;
 	this.value_ = 0.0;
 	this.skin = skin;
+	skin.normal.background.setWidth(w);
+	skin.normal.otherView.setY(Math.round((h - skin.normal.otherView.getHeight()) / 2));
 	this.size.width = skin.normal.background.getWidth();
 	this.size.height = skin.normal.background.getHeight();
 	this.scrubber = skin.normal.otherView;
@@ -2613,18 +2616,18 @@ RCSlider.prototype.mouseDownHandler = function(e) {
 	this.moving_ = true;
 	RCWindow.target.onmouseup = $closure(this,"mouseUpHandler");
 	RCWindow.target.onmousemove = $closure(this,"mouseMoveHandler");
-	this.press.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 97, className : "RCSlider", methodName : "mouseDownHandler"});
+	this.press.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 103, className : "RCSlider", methodName : "mouseDownHandler"});
 	this.mouseMoveHandler(e);
 }
 RCSlider.prototype.mouseUpHandler = function(e) {
 	this.moving_ = false;
 	RCWindow.target.onmouseup = null;
 	RCWindow.target.onmousemove = null;
-	this.release.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 109, className : "RCSlider", methodName : "mouseUpHandler"});
+	this.release.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 115, className : "RCSlider", methodName : "mouseUpHandler"});
 }
 RCSlider.prototype.mouseMoveHandler = function(e) {
 	var y0 = 0.0, y1 = 0.0, y2 = 0.0;
-	haxe.Log.trace(e.clientX,{ fileName : "RCSlider.hx", lineNumber : 146, className : "RCSlider", methodName : "mouseMoveHandler"});
+	haxe.Log.trace(e.clientX,{ fileName : "RCSlider.hx", lineNumber : 152, className : "RCSlider", methodName : "mouseMoveHandler"});
 	switch( (this.direction_)[1] ) {
 	case 0:
 		y2 = this.size.width - this.scrubber.getWidth();
@@ -2653,7 +2656,7 @@ RCSlider.prototype.setValue = function(v) {
 		this.scrubber.setY(Zeta.lineEquationInt(x1,x2,v,this.minValue_,this.maxValue_));
 		break;
 	}
-	this.valueChanged.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 189, className : "RCSlider", methodName : "setValue"});
+	this.valueChanged.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 195, className : "RCSlider", methodName : "setValue"});
 	return this.value_;
 }
 RCSlider.prototype.setMinValue = function(v) {
@@ -2700,9 +2703,11 @@ RCSkin.prototype.disabled = null;
 RCSkin.prototype.selected = null;
 RCSkin.prototype.hit = null;
 RCSkin.prototype.__class__ = RCSkin;
-haxe.SKSlider = function(w,h,colors) {
-	if( w === $_ ) return;
+haxe.SKSlider = function(colors) {
+	if( colors === $_ ) return;
 	RCSkin.call(this,colors);
+	var w = 160;
+	var h = 8;
 	this.normal.background = new RCRectangle(0,0,w,h,6710886,1,8);
 	this.normal.background.addChild(new RCRectangle(4,2,w - 8,2,16777215,0.2));
 	this.normal.otherView = new RCEllipse(0,-h / 2,h * 2,h * 2,3355443);
@@ -3389,7 +3394,7 @@ RCSegmentedControl.prototype.gapX = null;
 RCSegmentedControl.prototype.gapY = null;
 RCSegmentedControl.prototype.click = null;
 RCSegmentedControl.prototype.selectedIndex = null;
-RCSegmentedControl.prototype.add = function(labels,constructor_) {
+RCSegmentedControl.prototype.initWithLabels = function(labels,constructor_) {
 	this.labels = labels;
 	var constructorNow = this.constructButton;
 	if(Reflect.isFunction(constructor_)) constructorNow = constructor_;
@@ -3448,7 +3453,7 @@ RCSegmentedControl.prototype.remove = function(label) {
 RCSegmentedControl.prototype.update = function(labels,constructor_) {
 	this.destroy();
 	this.items = new HashArray();
-	this.add(labels,constructor_);
+	this.initWithLabels(labels,constructor_);
 }
 RCSegmentedControl.prototype.keepButtonsArranged = function() {
 	var _g1 = 0, _g = this.items.array().length;
@@ -4244,12 +4249,10 @@ Main.main = function() {
 		haxe.Log.trace("1",{ fileName : "Main.hx", lineNumber : 115, className : "Main", methodName : "main"});
 		var group1 = new RCSegmentedControl(200,300,10,null,Main.createRadioButton2);
 		RCWindow.addChild(group1);
-		group1.add(["1","2","3","4","5"]);
+		group1.initWithLabels(["1","2","3","4","5"]);
 		haxe.Log.trace("1",{ fileName : "Main.hx", lineNumber : 119, className : "Main", methodName : "main"});
-		var s2 = new haxe.SKSlider(160,8);
-		haxe.Log.trace(1,{ fileName : "Main.hx", lineNumber : 121, className : "Main", methodName : "main"});
-		var sl = new RCSlider(50,250,s2);
-		haxe.Log.trace(1,{ fileName : "Main.hx", lineNumber : 122, className : "Main", methodName : "main"});
+		var s2 = new haxe.SKSlider();
+		var sl = new RCSlider(50,250,160,10,s2);
 		RCWindow.addChild(sl);
 		sl.setValue(30);
 		Main.req = new HTTPRequest();
