@@ -140,7 +140,7 @@ class RCLib {
 		totalProgress();
 	}
 	function completeHandler (key:String, obj:Dynamic) :Void {
-		trace("completeHandler for key: '"+key+"' with object: "+obj);
+		//trace("completeHandler for key: '"+key+"' with object: "+obj);
 		// RCImage has some static fields and is causing problems checking non-strings
 		switch (Type.getClassName(Type.getClass(obj))) {
 			case "RCImage" : photoList.set ( key, obj );

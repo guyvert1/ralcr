@@ -9,7 +9,7 @@
 -cp Network
 -cp Physics
 -cp Services
--cp SimpleSkins
+-cp Skins
 -cp SWFTools
 -cp UIKit
 -cp UnitTestings

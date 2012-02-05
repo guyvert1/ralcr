@@ -29,7 +29,7 @@ class RCSegmentedControl extends RCView {
 		this.items = new HashArray<RCButtonRadio>();
 		click = new RCSignal<RCSegmentedControl->Void>();
 	}
-	public function add (labels:Array<String>, ?constructor_:Int->RCButtonRadio) :Void {
+	public function initWithLabels (labels:Array<String>, ?constructor_:Int->RCButtonRadio) :Void {
 		this.labels = labels;
 		var constructorNow :Int->RCButtonRadio = this.constructButton;
 		
@@ -112,7 +112,7 @@ class RCSegmentedControl extends RCView {
 		// Recreate the array
 		items = new HashArray<RCButtonRadio>();
 		// Add the new buttons
-		add (labels, constructor_);
+		initWithLabels (labels, constructor_);
 	}
 	
 	
