@@ -34,8 +34,8 @@ class RCImageStretchable extends RCView {
 		l.x = 0;
 		r.x = w - r.width;
 		m.x = l.width;trace(m.x);trace(l.width);trace(r.width);
-		//m.width = w - l.width - r.width;trace(m.width);
-		m.setWidth (Math.round(w-l.width-r.width));trace(m.width);
+		m.width = w - l.width - r.width;trace(m.width);
+		//m.setWidth (Math.round(w-l.width-r.width));trace(m.width);
 		return w;
 	}
 	override public function destroy () :Void {

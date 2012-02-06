@@ -6,6 +6,7 @@
 //
 
 #if (flash || nme)
+	import flash.display.MovieClip;
 	import flash.display.Stage;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
@@ -22,23 +23,20 @@
 class RCWindow {
 
 #if (flash || nme)
-	inline public static var target = flash.Lib.current;
-	inline public static var stage :Stage = flash.Lib.current.stage;
+	// NME goes blank if you're trying to init this 2 static variables right now
+	public static var target :MovieClip;
+	public static var stage :Stage;
 	public static var SCREEN_W :Float = flash.system.Capabilities.screenResolutionX;
 	public static var SCREEN_H :Float = flash.system.Capabilities.screenResolutionY;
-/*	public static var URL :String = flash.Lib.current.loaderInfo.url;
-	public static var ID :String = flash.Lib.current.loaderInfo.parameters.id;*/
-	public static var URL :String = "";
-	public static var ID :String = "";
 #elseif js
 	public static var target :HtmlDom = js.Lib.document.body;
-	public static var stage :HtmlDom = target;
+	public static var stage :HtmlDom = js.Lib.document;
 	public static var SCREEN_W :Float = js.Lib.window.screen.width;
 	public static var SCREEN_H :Float = js.Lib.window.screen.height;
-	public static var URL :String = "";
-	public static var ID :String = "";
 #end
 
+	public static var URL :String = "";
+	public static var ID :String = "";
 	public static var width :Int;
 	public static var height :Int;
 	public static var backgroundColor (null, setBackgroundColor) :Int;
@@ -46,7 +44,10 @@ class RCWindow {
 	
 	
 	public static function init () {
+		trace("init");
 		#if (flash || nme)
+			target = flash.Lib.current;
+			stage = flash.Lib.current.stage;
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
 			width = stage.stageWidth;
@@ -58,18 +59,21 @@ class RCWindow {
 			height = target.scrollHeight;
 			backgroundColor = 0x333333;
 		#end
-		
+		#if flash
+			URL = flash.Lib.current.loaderInfo.url;
+			ID = flash.Lib.current.loaderInfo.parameters.id;
+		#end
 		if (stageMouse != null) {
-			trace("You're trying to init twice the RCWindow, but don't worry, the second time is not in effect.");
+			trace("You're trying to init twice the RCWindow, ignoring it...");
 			return;
 		}
-		stageMouse = new EVMouse();
+		stageMouse = new EVMouse (EVMouse.UP, RCWindow.stage);
 		
 		// Create the url without swf name
 		#if flash
-		var url = URL.split("/");
+/*		var url = URL.split("/");
 			url.pop();
-		URL = url.join("/") + "/";
+		URL = url.join("/") + "/";*/
 		#end
 		//RCNotificationCenter.addObserver ("fullscreen", fullScreenHandler);
 		RCNotificationCenter.addObserver ("resize", resizeHandler);
@@ -130,7 +134,7 @@ class RCWindow {
 	// JS can permit to change the container of the RCWindow
 	public static function setTarget (id:String) :Void {
 		#if js
-			target = js.Lib.document.getElementById( id );trace(target);
+			target = js.Lib.document.getElementById( id );
 		#end
 	}
 	

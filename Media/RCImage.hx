@@ -56,6 +56,12 @@ class RCImage extends RCView {
 	public static function imageWithContentsOfFile (path:String) :RCImage {
 		return new RCImage (0,0,path);
 	}
+	/**
+	 *  
+	 **/
+	public static function resizableImageWithCapInsets (path:String, capWidth:Int) :RCImage {
+		return new RCImage (0,0,path);
+	}
 #if (flash || nme)
 	/**
 	 *  Create an image from the ByteArray. Async

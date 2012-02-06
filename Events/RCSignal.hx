@@ -17,14 +17,14 @@ class RCSignal<T> {
 		listeners.add ( listener );
 	}
 	public function addOnce (listener:T, ?pos:haxe.PosInfos) {
-		if (exists(listener)) trace("This listener is already added, it will not be called only once. "+pos);
+		if (exists(listener)) trace("This listener is already added, it will not be called only once as you expect. "+pos);
 		exposableListener = listener;
 	}
 	public function remove (listener:T) :Void {
 		for (l in listeners) {
 			if (Reflect.compareMethods(l, listener)) {
 				listeners.remove ( listener );
-				//break;
+				break;
 			}
 		}
 		if (Reflect.compareMethods (exposableListener, listener)) {
@@ -50,7 +50,7 @@ class RCSignal<T> {
 			Reflect.callMethod (null, listener, args);
 		}
 		catch (e:Dynamic) {
-			trace ("[RCSignal error: " + Std.string ( pos ) + "]");
+			trace ("[RCSignal error when calling: " + listener + " from: " + Std.string ( pos ) + "]");
 		}
 	}
 	

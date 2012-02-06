@@ -478,7 +478,7 @@ JSView.prototype.setY = function(y) {
 	return y;
 }
 JSView.prototype.getWidth = function() {
-	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the width would be 0",{ fileName : "JSView.hx", lineNumber : 226, className : "JSView", methodName : "getWidth"});
+	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the width will be 0",{ fileName : "JSView.hx", lineNumber : 226, className : "JSView", methodName : "getWidth"});
 	return this.view.offsetWidth;
 	return this.view.scrollWidth;
 	return this.view.clientWidth;
@@ -1306,14 +1306,17 @@ RCSignal.prototype.add = function(listener) {
 	this.listeners.add(listener);
 }
 RCSignal.prototype.addOnce = function(listener,pos) {
-	if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once. " + pos,{ fileName : "RCSignal.hx", lineNumber : 20, className : "RCSignal", methodName : "addOnce"});
+	if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once as you expect. " + pos,{ fileName : "RCSignal.hx", lineNumber : 20, className : "RCSignal", methodName : "addOnce"});
 	this.exposableListener = listener;
 }
 RCSignal.prototype.remove = function(listener) {
 	var $it0 = this.listeners.iterator();
 	while( $it0.hasNext() ) {
 		var l = $it0.next();
-		if(Reflect.compareMethods(l,listener)) this.listeners.remove(listener);
+		if(Reflect.compareMethods(l,listener)) {
+			this.listeners.remove(listener);
+			break;
+		}
 	}
 	if(Reflect.compareMethods(this.exposableListener,listener)) this.exposableListener = null;
 }
@@ -1336,7 +1339,7 @@ RCSignal.prototype.callMethod = function(listener,args,pos) {
 	try {
 		listener.apply(null,args);
 	} catch( e ) {
-		haxe.Log.trace("[RCSignal error: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 53, className : "RCSignal", methodName : "callMethod"});
+		haxe.Log.trace("[RCSignal error when calling: " + listener + " from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 53, className : "RCSignal", methodName : "callMethod"});
 	}
 }
 RCSignal.prototype.exists = function(listener) {
@@ -1818,6 +1821,9 @@ RCImage.imageNamed = function(name) {
 	return new RCImage(0,0,name);
 }
 RCImage.imageWithContentsOfFile = function(path) {
+	return new RCImage(0,0,path);
+}
+RCImage.resizableImageWithCapInsets = function(path,capWidth) {
 	return new RCImage(0,0,path);
 }
 RCImage.prototype.loader = null;
@@ -2442,26 +2448,82 @@ haxe.Firebug.trace = function(v,inf) {
 	console[type]((inf == null?"":inf.fileName + ":" + inf.lineNumber + " : ") + Std.string(v));
 }
 haxe.Firebug.prototype.__class__ = haxe.Firebug;
-EVMouse = function(pos) {
-	if( pos === $_ ) return;
-	haxe.Log.trace(pos,{ fileName : "EVMouse.hx", lineNumber : 16, className : "EVMouse", methodName : "new"});
-	if(EVMouse.instance != null) throw "You can't instantiate EVMouse because it's used by the framework. ";
-	EVMouse.instance = this;
+EVMouse = function(type,target,pos) {
+	if( type === $_ ) return;
+	if(target == null) throw "Can't use a null target. " + pos;
 	RCSignal.call(this);
-	js.Lib.document.onmouseup = $closure(this,"mouseUpHandler");
-	js.Lib.document.onmousemove = $closure(this,"mouseMoveHandler");
+	this.type = type;
+	this.target = target;
+	this.targets = new List();
+	this.addEventListener(pos);
 }
 EVMouse.__name__ = ["EVMouse"];
 EVMouse.__super__ = RCSignal;
 for(var k in RCSignal.prototype ) EVMouse.prototype[k] = RCSignal.prototype[k];
-EVMouse.instance = null;
-EVMouse.prototype.mouseUpHandler = function(e) {
+EVMouse.prototype.target = null;
+EVMouse.prototype.type = null;
+EVMouse.prototype.targets = null;
+EVMouse.prototype.addEventListener = function(pos) {
+	var $it0 = this.targets.iterator();
+	while( $it0.hasNext() ) {
+		var t = $it0.next();
+		if(t.target == this.target && t.type == this.type) {
+			haxe.Log.trace("Target already in use by this event type. Called from " + pos,{ fileName : "EVMouse.hx", lineNumber : 61, className : "EVMouse", methodName : "addEventListener"});
+			return;
+		}
+	}
+	this.targets.add({ target : this.target, type : this.type, instance : this});
+	switch(this.type) {
+	case EVMouse.UP:
+		this.target.onmouseup = $closure(this,"mouseHandler");
+		break;
+	case EVMouse.DOWN:
+		this.target.onmousedown = $closure(this,"mouseHandler");
+		break;
+	case EVMouse.OVER:
+		this.target.onmouseover = $closure(this,"mouseHandler");
+		break;
+	case EVMouse.OUT:
+		this.target.onmouseout = $closure(this,"mouseHandler");
+		break;
+	case EVMouse.MOVE:
+		this.target.onmousemove = $closure(this,"mouseHandler");
+		break;
+	case EVMouse.CLICK:
+		this.target.onclick = $closure(this,"mouseHandler");
+		break;
+	default:
+		haxe.Log.trace("The mouse event you're trying to add does not exist. " + pos,{ fileName : "EVMouse.hx", lineNumber : 74, className : "EVMouse", methodName : "addEventListener"});
+	}
 }
-EVMouse.prototype.mouseMoveHandler = function(e) {
-	return;
-	var w = js.Lib.document.body.scrollWidth;
-	var h = js.Lib.document.body.scrollHeight;
-	this.dispatch([w,h],{ fileName : "EVMouse.hx", lineNumber : 41, className : "EVMouse", methodName : "mouseMoveHandler"});
+EVMouse.prototype.removeEventListener = function() {
+	switch(this.type) {
+	case EVMouse.UP:
+		this.target.onmouseup = null;
+		break;
+	case EVMouse.DOWN:
+		this.target.onmousedown = null;
+		break;
+	case EVMouse.OVER:
+		this.target.onmouseover = null;
+		break;
+	case EVMouse.OUT:
+		this.target.onmouseout = null;
+		break;
+	case EVMouse.MOVE:
+		this.target.onmousemove = null;
+		break;
+	case EVMouse.CLICK:
+		this.target.onclick = null;
+		break;
+	}
+}
+EVMouse.prototype.mouseHandler = function(e) {
+	this.dispatch([this],{ fileName : "EVMouse.hx", lineNumber : 100, className : "EVMouse", methodName : "mouseHandler"});
+}
+EVMouse.prototype.destroy = function() {
+	this.removeEventListener();
+	RCSignal.prototype.destroy.call(this);
 }
 EVMouse.prototype.__class__ = EVMouse;
 haxe.Timer = function(time_ms) {
@@ -3221,10 +3283,10 @@ RCWindow.init = function() {
 	RCWindow.height = RCWindow.target.scrollHeight;
 	RCWindow.setBackgroundColor(3355443);
 	if(RCWindow.stageMouse != null) {
-		haxe.Log.trace("You're trying to init twice the RCWindow, but don't worry, the second time is not in effect.",{ fileName : "RCWindow.hx", lineNumber : 63, className : "RCWindow", methodName : "init"});
+		haxe.Log.trace("You're trying to init twice the RCWindow, ignoring it...",{ fileName : "RCWindow.hx", lineNumber : 66, className : "RCWindow", methodName : "init"});
 		return;
 	}
-	RCWindow.stageMouse = new EVMouse({ fileName : "RCWindow.hx", lineNumber : 66, className : "RCWindow", methodName : "init"});
+	RCWindow.stageMouse = new EVMouse(EVMouse.UP,RCWindow.stage,{ fileName : "RCWindow.hx", lineNumber : 69, className : "RCWindow", methodName : "init"});
 	RCNotificationCenter.addObserver("resize",RCWindow.resizeHandler);
 }
 RCWindow.resizeHandler = function(w,h) {
@@ -3250,7 +3312,6 @@ RCWindow.setBackgroundColor = function(color) {
 }
 RCWindow.setTarget = function(id) {
 	RCWindow.target = js.Lib.document.getElementById(id);
-	haxe.Log.trace(RCWindow.target,{ fileName : "RCWindow.hx", lineNumber : 133, className : "RCWindow", methodName : "setTarget"});
 }
 RCWindow.addChild = function(child) {
 	if(child != null) {
@@ -5068,11 +5129,17 @@ RCColor.CYAN = 65535;
 RCColor.YELLOW = 16776960;
 CoreAnimation.defaultTimingFunction = caequations.Linear.NONE;
 CoreAnimation.defaultDuration = 0.8;
+EVMouse.UP = "mouseup";
+EVMouse.DOWN = "mousedown";
+EVMouse.OVER = "mouseover";
+EVMouse.OUT = "mouseout";
+EVMouse.MOVE = "mousemove";
+EVMouse.CLICK = "mouseclick";
 haxe.remoting.ExternalConnection.connections = new Hash();
 RCTextRoll.GAP = 20;
 js.Lib.onerror = null;
 RCWindow.target = js.Lib.document.body;
-RCWindow.stage = RCWindow.target;
+RCWindow.stage = js.Lib.document;
 RCWindow.SCREEN_W = js.Lib.window.screen.width;
 RCWindow.SCREEN_H = js.Lib.window.screen.height;
 RCWindow.URL = "";

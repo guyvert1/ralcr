@@ -37,10 +37,9 @@ class RCView extends Sprite {
 		super();
 		size = new RCSize (0, 0);
 		
-		view = new flash.display.Sprite();
+		view = this;
 		view.addEventListener (Event.ADDED_TO_STAGE, viewDidAppearHandler);
 		view.addEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappearHandler);
-		view = this;
 		view.x = x;
 		view.y = y;
 	}

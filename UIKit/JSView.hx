@@ -223,7 +223,7 @@ class JSView {
 		return y;
 	}
 	public function getWidth () :Float {
-		if (parent == null) trace("This view doesn't have a parent, the width would be 0");
+		if (parent == null) trace("This view doesn't have a parent, the width will be 0");
 		return view.offsetWidth;
 		return view.scrollWidth;
 		return view.clientWidth;

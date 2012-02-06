@@ -58,8 +58,8 @@ class RCSlider extends RCControl {
 		skin.normal.otherView.y = Math.round ((h - skin.normal.otherView.height)/2);
 		
 		
-		this.size.width = skin.normal.background.width;
-		this.size.height = skin.normal.background.height;
+		//this.size.width = skin.normal.background.width;
+		//this.size.height = skin.normal.background.height;
 		this.scrubber = skin.normal.otherView;
 		
 		addChild ( skin.normal.background );
