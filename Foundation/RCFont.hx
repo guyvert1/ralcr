@@ -143,20 +143,24 @@ class RCFont {
 		
 		var rcfont = new RCFont();
 		var fields = Type.getInstanceFields ( RCFont );
-		
+		trace(fields);
 		// Copy all RCFont properties to the new object
 		for (field in fields) {
 			// Restricted fields
 			if (field == "copy" || field == "getFormat" || field == "getStyleSheet") continue;
-			//trace(field+", "+Reflect.field (this, field));
 			Reflect.setField (rcfont, field, Reflect.field (this, field));
 		}
 		// Apply some exceptions
 		if (exceptions != null) {
 			for (excp in Reflect.fields ( exceptions )) {
+				#if cpp
+					// Temporary, i hope, cpp fix where hasField is not working on class members. Issue 148 on hxcpp
+					Reflect.setField (rcfont, excp, Reflect.field (exceptions, excp));
+				#else
 				if (Reflect.hasField (rcfont, excp)) {
 					Reflect.setField (rcfont, excp, Reflect.field (exceptions, excp));
 				}
+				#end
 			}
 		}
 		return rcfont;
