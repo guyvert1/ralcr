@@ -112,7 +112,7 @@ class RCSlider extends RCControl {
 	 * Set new value when the slider is moving, and dispatch an event
 	 */
 	function mouseMoveHandler (e:EVMouse) {
-		trace("mouseMoveHandler");
+		//trace("mouseMoveHandler");
 		var y0=0.0, y1=0.0, y2=0.0;
 		//#if js trace(e.clientX); #end
 		switch (direction_) {

@@ -14,7 +14,7 @@ class SKButton extends RCSkin {
 		normal.label = new RCTextView (0, 4, 70, 20, label_str, f);
 		normal.label.y = Math.round ((20-normal.label.height)/2);
 		
-		//var fm = FontManager.getRCFont("system",{embedFonts:false});
+		//var fm = RCFontManager.getRCFont("system",{embedFonts:false});
 		//normal.label = new RCTextView (0, 0, null, null, label_str, fm);
 		
 		normal.background = new RCRectangle (0, 0, 70, 20, 0x999999, 1, 8);

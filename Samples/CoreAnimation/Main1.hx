@@ -51,7 +51,7 @@ class Main1 {
 		RCWindow.addChild ( menu );
 		RCWindow.addChild ( new RCStats (5, 5) );
 		
-		particlesTxt = new RCTextView (5, 50+menu.height, null, null, "Particles: "+c+"->50ms", FontManager.getRCFont("system",{embedFonts:false}));
+		particlesTxt = new RCTextView (5, 50+menu.height, null, null, "Particles: "+c+"->50ms", RCFontManager.getRCFont("system",{embedFonts:false}));
 		RCWindow.addChild ( particlesTxt );
 		
 		timer = new haxe.Timer(50);

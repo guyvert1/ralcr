@@ -14,7 +14,7 @@ class SKSlider extends RCSkin {
 		super ( null );
 		
 		normal.background = new RCImageStretchable (0, 0, "Resources/ios.skin/slider_l.png", "Resources/ios.skin/slider_m.png", "Resources/ios.skin/slider_r.png");
-		normal.otherView = RCLib.getFileWithKey("slider_dot");
+		normal.otherView = RCAssets.getFileWithKey("slider_dot");
 		
 		// Creates a transparent background for mouse hit area
 		hit = new RCView(0,0);

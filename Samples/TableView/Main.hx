@@ -34,7 +34,7 @@ class Main {
 		FontManager.init();
 		//RegisterFonts.init();
 		
-		//MC.addChild ( new RCTextView (300, 50, 400, null, usage, FontManager.getRCFont("pixel")) );
+		//MC.addChild ( new RCTextView (300, 50, 400, null, usage, RCFontManager.getRCFont("pixel")) );
 		
 		
 		
@@ -71,7 +71,7 @@ class Main {
 		}
 		
 		trace(indexes);
-		MC.addChild ( new RCTextView (30, 6, null, null, "Hello in any language", FontManager.getRCFont("system", {color:0x000000})) );
+		MC.addChild ( new RCTextView (30, 6, null, null, "Hello in any language", RCFontManager.getRCFont("system", {color:0x000000})) );
 		
 		tableView = new RCTableView<RCTableViewCell> (20, 30, 300, 500);
 		tableView.delegate = Main;

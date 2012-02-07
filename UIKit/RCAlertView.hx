@@ -13,24 +13,24 @@ class RCAlertView extends RCView {
 	var COLORS :Array<Null<Int>>;
 	var background :DisplayObjectContainer;
 	var text :DisplayObjectContainer;
-	var buttons :RCGroupButtons<RCButton>;
+	var buttons :RCGroup<RCButton>;
 	
 	public var label :String;
 	dynamic public function onClick () :Void {}
 	
 	
 	public function new (skin:RCSkin) {
-		super();
+		super(0,0);
 		
-		this.background = skin.background;
-		this.text = skin.up; // all graphical elements are here
+		this.background = skin.normal.background;
+		this.text = skin.normal.label; // all graphical elements are here
 		this.addChild ( this.background );
 		this.addChild ( this.text );
 	}
 	
-	public function init (arr:Array<String>, constructButton:String->RCButton) :Void {
+	public function init (arr:Array<String>, constructButton:RCIndexPath->RCButton) :Void {
 		
-		buttons = new RCGroupButtons<RCButton>(0, 0, 10, null, constructButton);
+		buttons = new RCGroup<RCButton>(0, 0, 10, null, constructButton);
 		buttons.add ( arr );
 		buttons.x = Math.round ( (background.width - buttons.width) / 2 );
 		buttons.y = Math.round ( background.height - buttons.height - 10 );
@@ -39,16 +39,17 @@ class RCAlertView extends RCView {
 		this.addChild ( buttons );
 	}
 	
-	function onClickHandler (e:EVGroup) :Void {
-		label = e.label;
-		onClick();
-		this.dispatchEvent ( e );
+	function onClickHandler (e:EVMouse) :Void {
+		//label = e.label;
+		//onClick();
+		//this.dispatchEvent ( e );
 	}
 	
 	
-	public function destroy () :Void {
+	override public function destroy () :Void {
 		if (buttons != null)
 			buttons.destroy();
 			buttons = null;
+		super.destroy();
 	}
 }

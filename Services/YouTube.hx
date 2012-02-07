@@ -111,7 +111,7 @@ class YouTube extends RCVideo, implements RCVideoInterface, implements RCAudioIn
 			time = player.getCurrentTime();
 			duration = player.getDuration();
 			onPlayingProgress();
-			this.dispatchEvent ( new VideoEvent (VideoEvent.PLAYING_PROGRESS, time, duration));
+			//this.dispatchEvent ( new VideoEvent (VideoEvent.PLAYING_PROGRESS, time, duration));
 		}
 		
 		if (time >= duration && duration > 0)

@@ -10,7 +10,7 @@ class RegisterFonts {
 	public static function init () :Void {
 		
 		// register external loaded font
-		trace( FontManager.registerFont ("resources.fonts.CustomFontR") );
+		trace( RCFontManager.registerFont ("resources.fonts.CustomFontR") );
 		
 		
 		// create styles
@@ -32,7 +32,7 @@ class RegisterFonts {
 			fontNormal.antiAliasType = flash.text.AntiAliasType.ADVANCED;
 			fontNormal.html = true;
 			fontNormal.selectable = true;
-			fontNormal.style = FontManager.getStyleSheet("css");
+			fontNormal.style = RCFontManager.getStyleSheet("css");
 			//trace(new CustomFontR());
 			trace(fontNormal.font);
 		FontManager.registerRCFont ("normal", fontNormal);
@@ -62,7 +62,7 @@ class RegisterFonts {
 			fontNormal.antiAliasType = flash.text.AntiAliasType.NORMAL;
 			fontNormal.html = true;
 			fontNormal.selectable = true;
-			fontNormal.style = FontManager.getStyleSheet("normal");
+			fontNormal.style = RCFontManager.getStyleSheet("normal");
 			
 		FontManager.registerRCFont ("pixel", fontNormal);
 	}

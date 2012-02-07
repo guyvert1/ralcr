@@ -4,13 +4,12 @@
 //  Created by Cristi Baluta on 2010-10-26.
 //  Copyright (c) 2010 ralcr.com. All rights reserved.
 //
-import Shortcuts;
 import haxe.Timer;
 
 
 class GKScore {
 	
-	var timer :Timer;
+	var timer :haxe.Timer;
 	var obj :CAObject;
 	public var score :Int;
 	public var totalScore :Int;

@@ -18,8 +18,8 @@ class RCCustomCursor extends RCView {
 	var cursor :Dynamic;
 	
 	
-	public function new (target:Dynamic){
-		super();
+	public function new (target:Dynamic) {
+		super(0,0);
 		this.target = target;
 		
 		//Stage.MC.addEventListener (Event.MOUSE_LEAVE, hideCustomCursor);
@@ -49,7 +49,7 @@ class RCCustomCursor extends RCView {
 		cursor.visible = false;
 	}
 	
-	public function destroy () :Void {
+	override public function destroy () :Void {
 		Mouse.show();
 		//Stage.MC.removeEventListener (Event.MOUSE_LEAVE, hideCustomCursor);
 		target.removeEventListener (MouseEvent.MOUSE_MOVE, moveHandler);

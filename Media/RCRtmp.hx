@@ -65,7 +65,7 @@ class RCRtmp extends RCVideo, implements RCVideoInterface {
 		setVolume ( RCVideo.DEFAULT_VOLUME );
 		startVideo ( file );
 		onInit();
-		this.dispatchEvent ( new VideoEvent (VideoEvent.INIT, 0.0, 0) );
+		//this.dispatchEvent ( new VideoEvent (VideoEvent.INIT, 0.0, 0) );
 	}
 	
 	

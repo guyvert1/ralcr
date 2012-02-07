@@ -16,14 +16,14 @@ class SKTabBarItem extends RCSkin {
 		// Attach an object from library
 		normal.background = new Sprite();
 		//normal.background.addChild ( new RCAttach (50, 4, linkage) );
-		normal.background.addChild ( new RCTextView (0, 72, 155, null, label, FontManager.getFont("regular", {color:0xCCCCCC, align:"center"})) );
+		normal.background.addChild ( new RCTextView (0, 72, 155, null, label, RCFontManager.getFont("regular", {color:0xCCCCCC, align:"center"})) );
 
 		normal.label = new Sprite();
 		
 		highlighted.background = new Sprite();
 		highlighted.background.addChild ( new RCRectangle (0, 0, 155, 90, 0xFFFFFF, 0.2, 6) );
 		//highlighted.background.addChild ( new RCAttach (50, 4, linkage+"Selected") );
-		highlighted.background.addChild ( new RCTextView (0, 72, 155, null, label, FontManager.getFont("regular", {color:0xFFFFFF, align:"center"})) );
+		highlighted.background.addChild ( new RCTextView (0, 72, 155, null, label, RCFontManager.getFont("regular", {color:0xFFFFFF, align:"center"})) );
 		
 		
 		// Draws a background as a hit area

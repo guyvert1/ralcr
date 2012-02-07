@@ -4,6 +4,9 @@
 //  Created by Baluta Cristian on 2007-10-18.
 //  Copyright (c) 2007 http://ralcr.com. All rights reserved.
 //
+
+#if flash
+
 import flash.display.Sprite;
 import flash.events.Event;
 import flash.events.NetStatusEvent;
@@ -64,12 +67,10 @@ class RCVideo extends RCView, implements RCVideoInterface {
 	
 	
 	public function new (x, y, URL:String, ?w:Null<Int>, ?h:Null<Int>) {
-		super();
+		super (x, y);
 		
-		this.x = x;
-		this.y = y;
-		this.w = w;
-		this.h = h;
+		this.size.width = w;
+		this.size.height = h;
 		
 		this.videoURL = URL;
 		this.inited = false;
@@ -154,15 +155,15 @@ class RCVideo extends RCView, implements RCVideoInterface {
 		setVolume ( _volume );
 		
 		onInit();
-		this.dispatchEvent ( new VideoEvent (VideoEvent.INIT, 0.0, 0));
+		//this.dispatchEvent ( new VideoEvent (VideoEvent.INIT, 0.0, 0));
 	}
 	
 	function securityErrorHandler (e:SecurityErrorEvent) :Void {
 		statusMessage = e.text;
 		onError();
-		var ev = new VideoEvent ( VideoEvent.ERROR, 0.0, 0);
-			ev.errorMessage = statusMessage;
-		this.dispatchEvent ( ev );
+		//var ev = new VideoEvent ( VideoEvent.ERROR, 0.0, 0);
+		//	ev.errorMessage = statusMessage;
+		//this.dispatchEvent ( ev );
     }
 	
 	function asyncErrorHandler (e:AsyncErrorEvent) :Void {
@@ -181,7 +182,7 @@ class RCVideo extends RCView, implements RCVideoInterface {
 			time = ns.time;
 			percentPlayed = Math.round (time / duration * 100);
 			onPlayingProgress();
-			this.dispatchEvent ( new VideoEvent (VideoEvent.PLAYING_PROGRESS, time, duration));
+			//this.dispatchEvent ( new VideoEvent (VideoEvent.PLAYING_PROGRESS, time, duration));
 			//trace(time+", "+duration);
 			// Fire from here the event that the video did finish playing.
 			// The NetStream.Play.Stop is fired too often
@@ -196,7 +197,7 @@ class RCVideo extends RCView, implements RCVideoInterface {
 			percentLoaded = Math.round (ns.bytesLoaded / ns.bytesTotal * 100);
 			if (percentLoaded >= 100) loaded = true;
 			onLoadingProgress();
-			this.dispatchEvent ( new VideoEvent (VideoEvent.LOADING_PROGRESS, time, duration));
+			//this.dispatchEvent ( new VideoEvent (VideoEvent.LOADING_PROGRESS, time, duration));
 		}
 		
 		} catch (e:Dynamic) {
@@ -231,12 +232,12 @@ class RCVideo extends RCView, implements RCVideoInterface {
 		// Now that we have the metadata, we can start the timer
 		timer.start();
 		
-		this.dispatchEvent ( new MetaEvent (MetaEvent.META, meta) );
+		//this.dispatchEvent ( new MetaEvent (MetaEvent.META, meta) );
 	}
 	
 	function onCuePoint (cue:Dynamic) :Void {
 		//trace(Std.string(cue));
-		this.dispatchEvent ( new CuePoint (CuePoint.CUE_POINT, cue) );
+		//this.dispatchEvent ( new CuePoint (CuePoint.CUE_POINT, cue) );
 	}
 	
 	
@@ -384,7 +385,7 @@ class RCVideo extends RCView, implements RCVideoInterface {
 	/**
 	 * Cleanup the mess, stop the player
 	 */
-	public function destroy () :Void {
+	override public function destroy () :Void {
 		
 		if (timer != null) {
 			timer.stop();
@@ -405,5 +406,12 @@ class RCVideo extends RCView, implements RCVideoInterface {
 		}
 		
 		video = null;
+		super.destroy();
 	}
 }
+
+#elseif js
+
+typedef RCVideo = JSVideo;
+
+#end

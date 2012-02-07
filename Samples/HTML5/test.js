@@ -427,27 +427,22 @@ RCControl.prototype.removeListeners = function() {
 RCControl.prototype.mouseDownHandler = function(e) {
 	this.setState(RCControlState.SELECTED);
 	this.onPress();
-	this.press.dispatch([this.press],{ fileName : "RCControl.hx", lineNumber : 109, className : "RCControl", methodName : "mouseDownHandler"});
 }
 RCControl.prototype.mouseUpHandler = function(e) {
 	this.setState(RCControlState.HIGHLIGHTED);
 	this.onRelease();
-	this.release.dispatch([this.release],{ fileName : "RCControl.hx", lineNumber : 114, className : "RCControl", methodName : "mouseUpHandler"});
 }
 RCControl.prototype.rollOverHandler = function(e) {
 	this.setState(RCControlState.HIGHLIGHTED);
 	this.onOver();
-	this.over.dispatch([this.over],{ fileName : "RCControl.hx", lineNumber : 119, className : "RCControl", methodName : "rollOverHandler"});
 }
 RCControl.prototype.rollOutHandler = function(e) {
 	this.setState(RCControlState.NORMAL);
 	this.onOut();
-	this.out.dispatch([this.out],{ fileName : "RCControl.hx", lineNumber : 124, className : "RCControl", methodName : "rollOutHandler"});
 }
 RCControl.prototype.clickHandler = function(e) {
 	this.setState(RCControlState.SELECTED);
 	this.onClick();
-	this.click.dispatch([this.click],{ fileName : "RCControl.hx", lineNumber : 129, className : "RCControl", methodName : "clickHandler"});
 }
 RCControl.prototype.setState = function(state) {
 	this.state_ = state;
@@ -557,26 +552,21 @@ RCButtonRadio.prototype.toggable_ = null;
 RCButtonRadio.prototype.toggable = null;
 RCButtonRadio.prototype.mouseDownHandler = function(e) {
 	this.onPress();
-	this.press.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 23, className : "RCButtonRadio", methodName : "mouseDownHandler"});
 }
 RCButtonRadio.prototype.mouseUpHandler = function(e) {
 	this.onRelease();
-	this.release.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 28, className : "RCButtonRadio", methodName : "mouseUpHandler"});
 }
 RCButtonRadio.prototype.clickHandler = function(e) {
 	this.setState(this.getSelected()?RCControlState.NORMAL:RCControlState.SELECTED);
 	this.onClick();
-	this.click.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 33, className : "RCButtonRadio", methodName : "clickHandler"});
 }
 RCButtonRadio.prototype.rollOverHandler = function(e) {
 	if(!this.getSelected()) this.setState(RCControlState.HIGHLIGHTED);
 	this.onOver();
-	this.over.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 39, className : "RCButtonRadio", methodName : "rollOverHandler"});
 }
 RCButtonRadio.prototype.rollOutHandler = function(e) {
 	if(!this.getSelected()) this.setState(RCControlState.NORMAL);
 	this.onOut();
-	this.out.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 45, className : "RCButtonRadio", methodName : "rollOutHandler"});
 }
 RCButtonRadio.prototype.getToggable = function() {
 	return this.toggable_;
@@ -2428,7 +2418,10 @@ RCSlider = function(x,y,w,h,skin) {
 	this.maxValue_ = 100.0;
 	this.value_ = 0.0;
 	this.skin = skin;
-	skin.normal.background.setWidth(w);
+	try {
+		skin.normal.background.setWidth(w);
+	} catch( e ) {
+	}
 	skin.normal.otherView.setY(Math.round((h - skin.normal.otherView.getHeight()) / 2));
 	this.scrubber = skin.normal.otherView;
 	this.addChild(skin.normal.background);
@@ -2467,17 +2460,16 @@ RCSlider.prototype.setEnabled = function(c) {
 	return this.enabled_ = false;
 }
 RCSlider.prototype.mouseDownHandler = function(e) {
+	haxe.Log.trace("mouseDownHandler",{ fileName : "RCSlider.hx", lineNumber : 98, className : "RCSlider", methodName : "mouseDownHandler"});
 	this.moving_ = true;
 	this.mouseUpOverStage_.add($closure(this,"mouseUpHandler"));
 	this.mouseMoveOverStage_.add($closure(this,"mouseMoveHandler"));
-	this.press.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 98, className : "RCSlider", methodName : "mouseDownHandler"});
 	this.mouseMoveHandler(e);
 }
 RCSlider.prototype.mouseUpHandler = function(e) {
 	this.moving_ = false;
 	this.mouseUpOverStage_.remove($closure(this,"mouseUpHandler"));
 	this.mouseMoveOverStage_.remove($closure(this,"mouseMoveHandler"));
-	this.release.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 105, className : "RCSlider", methodName : "mouseUpHandler"});
 }
 RCSlider.prototype.mouseMoveHandler = function(e) {
 	var y0 = 0.0, y1 = 0.0, y2 = 0.0;
@@ -2503,13 +2495,14 @@ RCSlider.prototype.setValue = function(v) {
 	case 0:
 		x2 = this.size.width - this.scrubber.getWidth();
 		this.scrubber.setX(Zeta.lineEquationInt(x1,x2,v,this.minValue_,this.maxValue_));
+		if(this.skin.highlighted.background != null) this.skin.highlighted.background.setWidth(this.scrubber.x);
 		break;
 	case 1:
 		x2 = this.size.height - this.scrubber.getHeight();
 		this.scrubber.setY(Zeta.lineEquationInt(x1,x2,v,this.minValue_,this.maxValue_));
 		break;
 	}
-	this.valueChanged.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 185, className : "RCSlider", methodName : "setValue"});
+	this.valueChanged.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 159, className : "RCSlider", methodName : "setValue"});
 	return this.value_;
 }
 RCSlider.prototype.setMinValue = function(v) {
@@ -2529,9 +2522,10 @@ RCSlider.prototype.setMaximumValueImage = function(v) {
 	return v;
 }
 RCSlider.prototype.destroy = function() {
-	this.mouseUpHandler(null);
 	this.mouseUpOverStage_.destroy();
 	this.mouseMoveOverStage_.destroy();
+	this.valueChanged.destroy();
+	this.skin.destroy();
 	RCControl.prototype.destroy.call(this);
 }
 RCSlider.prototype.__class__ = RCSlider;
@@ -2556,6 +2550,8 @@ RCSkin.prototype.highlighted = null;
 RCSkin.prototype.disabled = null;
 RCSkin.prototype.selected = null;
 RCSkin.prototype.hit = null;
+RCSkin.prototype.destroy = function() {
+}
 RCSkin.prototype.__class__ = RCSkin;
 haxe.SKSlider = function(colors) {
 	if( colors === $_ ) return;
@@ -3604,7 +3600,7 @@ CATween.prototype.animate = function(time_diff) {
 		try {
 			var val = this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null);
 			var setter = "set" + prop.substr(0,1).toUpperCase() + prop.substr(1);
-			if(setter != null) setter.apply(this.target,[val]);
+			if(setter != null) Reflect.field(this.target,setter).apply(this.target,[val]);
 		} catch( e ) {
 			haxe.Log.trace(e,{ fileName : "CATween.hx", lineNumber : 52, className : "CATween", methodName : "animate"});
 		}

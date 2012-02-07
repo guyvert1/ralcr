@@ -36,18 +36,18 @@ class RCTableViewCell extends RCControl {
 		separatorView = new RCRectangle (0, size.height-1, size.width, 1, 0x999999);
 		this.addChild ( separatorView );
 		
-		titleView = new RCTextView (10, 6, null, null, " ", FontManager.getFont("system", {color:0x000000, selectable:false}));
+		titleView = new RCTextView (10, 6, null, null, " ", RCFont.systemFontOfSize(12));
 		titleView.y = Math.round ((size.height - titleView.height) / 2);
 		titleView.mouseChildren = false;
 		this.addChild ( titleView );
 	}
 	
-	override function rollOverHandler (e:MouseEvent) :Void {
+	override function rollOverHandler (e:EVMouse) :Void {
 		backgroundView.color.fillColor = 0x578ccb;
 		backgroundView.redraw();
 		super.rollOverHandler( e );
 	}
-	override function rollOutHandler (e:MouseEvent) :Void {
+	override function rollOutHandler (e:EVMouse) :Void {
 		backgroundView.color.fillColor = 0xffffff;
 		backgroundView.redraw();
 		super.rollOutHandler( e );

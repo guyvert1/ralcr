@@ -92,7 +92,7 @@ class RCSliderSync {
 		(e.delta < 0) ? onScrollRight() : onScrollLeft();
 	}
 	
-	function sliderChangedHandler (e:SliderEvent) :Void {
+	function sliderChangedHandler (e:RCSlider) :Void {
 		valueFinal = Zeta.lineEquationInt (valueStart, valueStart + valueMax - getContentSize(), e.value, 0, 100);
 		startLoop();
 	}

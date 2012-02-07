@@ -2,8 +2,8 @@
 //  Copyright (c) 2011 ralcr.com. All rights reserved.
 
 // Foundation
-import Files;
-import FontManager;
+import RCFiles;
+import RCFontManager;
 import Fugu;
 import HashArray;
 import HXAddress;
@@ -44,9 +44,9 @@ import RCStar;
 import RCWedge;
 
 // Media
-import RCMp3;
+import RCAudio;
 import RCImage;
-import RCProgressivePhoto;
+import RCProgressiveImage;
 import RCRadioStream;
 import RCRtmp;
 import RCSwf;
@@ -104,7 +104,7 @@ import YouTube;
 
 // UIKit
 import RCActivityIndicator;
-import RCAlertView;
+//import RCAlertView;
 import RCAttach;
 import RCButton;
 import RCButtonRadio;
@@ -112,7 +112,7 @@ import RCCircularProgressIndicator;
 import RCColor;
 import RCControl;
 import RCCustomCursor;
-import RCDropDown;
+//import RCDropDown;
 import RCGestureRecognizer;
 import RCGroup;
 import RCIndexPath;
@@ -121,12 +121,12 @@ import RCMouse;
 import RCPageControl;
 import RCProgressIndicator;
 import RCRightClick;
-import RCScrollBar;
-import RCScrollView;
+//import RCScrollBar;
+//import RCScrollView;
 import RCSegmentedControl;
 import RCSkin;
 import RCSlider;
-import RCSliderSync;
+//import RCSliderSync;
 import RCSwitch;
 import RCTabBar;
 import RCTabBarController;
@@ -147,7 +147,7 @@ import ColorMatrix;
 import Csv;
 import DistortImage;
 import Evaluate;
-import MotionDetector;
+//import MotionDetector;
 import MotionTracker;
 import RCStats;
 import FloatIter;

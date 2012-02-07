@@ -16,17 +16,18 @@ class RCActivityIndicator extends RCProgressIndicator {
 		
 		this.stepX = stepX;
 		this.speedX = 1;
-		this.addEventListener (Event.ENTER_FRAME, loop);
+		this.addEventListener (flash.events.Event.ENTER_FRAME, loop);
 	}
 	
 	function loop (_) :Void {
-		symbol.x -= speedX;
-		if (Math.abs(symbol.x) >= Math.abs(stepX))
-			symbol.x = 0;
+		skin.normal.otherView.x -= speedX;
+		if (Math.abs(skin.normal.otherView.x) >= Math.abs(stepX))
+			skin.normal.otherView.x = 0;
 	}
 	
 	// CLEAN MESS
 	override public function destroy() :Void {
-		this.removeEventListener (Event.ENTER_FRAME, loop);
+		this.removeEventListener (flash.events.Event.ENTER_FRAME, loop);
+		super.destroy();
 	}
 }

@@ -5,37 +5,33 @@
 //  Copyright (c) 2009-2012 http://ralcr.com. All rights reserved.
 //
 
-#if flash
-	import flash.display.DisplayObjectContainer;
-#elseif js
-	typedef DisplayObjectContainer = JSView;
-#end
-
 class RCProgressIndicator extends RCView {
 	
 	public var skin :RCSkin;
 /*	var background :DisplayObjectContainer;
-	var symbol :DisplayObjectContainer;
-	var symbolMask :DisplayObjectContainer;*/
+	var symbol :DisplayObjectContainer;*/
 	
 	public function new (x, y, skin:RCSkin) {
 		super (x, y);
+		this.skin = skin;
 		
 		// display skin (background, symbol, hit)
-		background = skin.background;
-		this.addChild ( background );
-		symbol = skin.up;
-		this.addChild ( symbol );
-		symbolMask = skin.hit;
+		this.addChild ( skin.normal.background );
+		this.addChild ( skin.normal.otherView );
+/*		symbolMask = skin.hit;
 		this.addChild ( symbolMask );
-		symbol.mask = symbolMask;
+		symbol.mask = symbolMask;*/
+		this.clipsToBounds = true;
 		// end skin
 	}
 	
 	public function updateProgressBarWithPercent (percent:Int) {
-		symbol.width = Zeta.lineEquationInt (0, symbolMask.width, percent, 0, 100);
+		skin.normal.otherView.width = Zeta.lineEquationInt (0, size.width, percent, 0, 100);
 	}
 	
 	// CLEAN MESS
-	public function destroy() :Void {}
+	override public function destroy() :Void {
+		skin.destroy();
+		super.destroy();
+	}
 }

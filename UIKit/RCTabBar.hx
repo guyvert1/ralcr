@@ -24,8 +24,8 @@ class RCTabBar extends RCGroup<RCTabBarItem> {
 			but.click.add ( clickHandler );
 		return but;
 	}
-	function clickHandler (s:RCControl) :Void {
-		selectedItem = cast s;
+	function clickHandler (s:EVMouse) :Void {
+		selectedItem = cast s.target;
 		didSelectItem.dispatch ( [selectedItem] );
 	}
 	

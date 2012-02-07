@@ -14,8 +14,8 @@ package  {
 	import flash.events.Event;
 	import flash.events.SecurityErrorEvent;
 	import flash.text.StyleSheet;
-	public class FontManager {
-		public function FontManager() : void {
+	public class RCFontManager {
+		public function RCFontManager() : void {
 			null;
 		}
 		
@@ -100,7 +100,7 @@ package  {
 			return style;
 		}
 		
-		static protected var INSTANCE : FontManager;
+		static protected var INSTANCE : RCFontManager;
 		static public var errorMessage : String;
 		static public var percentLoaded : int;
 		static public var onInit : Function = function() : void {
@@ -120,12 +120,12 @@ package  {
 		}
 		static public function init() : void {
 			if(FontManager.INSTANCE == null) {
-				FontManager.INSTANCE = new FontManager();
+				FontManager.INSTANCE = new RCFontManager();
 				INSTANCE.initDefaults();
 			}
 		}
 		
-		static public function instance() : FontManager {
+		static public function instance() : RCFontManager {
 			if(FontManager.INSTANCE == null) init();
 			return INSTANCE;
 		}
