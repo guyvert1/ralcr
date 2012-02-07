@@ -55,164 +55,6 @@ RCMouse.prototype.destroy = function() {
 	this.mouseOutHandler(null);
 }
 RCMouse.prototype.__class__ = RCMouse;
-RCLib = function(p) {
-	if( p === $_ ) return;
-	this.photoList = new Hash();
-	this.swfList = new Hash();
-	this.dataList = new Hash();
-	this.nr = 0;
-	this.max = 0;
-}
-RCLib.__name__ = ["RCLib"];
-RCLib.INSTANCE = null;
-RCLib.errorMessage = null;
-RCLib.currentPercentLoaded = null;
-RCLib.percentLoaded = null;
-RCLib.useCache = null;
-RCLib.onComplete = function() {
-}
-RCLib.onProgress = function() {
-}
-RCLib.onError = function() {
-}
-RCLib.init = function() {
-	if(RCLib.INSTANCE != null) return;
-	RCLib.INSTANCE = new RCLib();
-	RCLib.currentPercentLoaded = new Hash();
-	RCLib.useCache = false;
-}
-RCLib.instance = function() {
-	RCLib.init();
-	return RCLib.INSTANCE;
-}
-RCLib.loadFileWithKey = function(key,URL) {
-	return RCLib.instance().set(key,URL);
-}
-RCLib.loadFontWithKey = function(key,URL) {
-	return RCLib.instance().set(key,URL,false);
-}
-RCLib.getFileWithKey = function(key,returnAsBitmap) {
-	if(returnAsBitmap == null) returnAsBitmap = true;
-	return RCLib.instance().get(key,returnAsBitmap);
-}
-RCLib.prototype.photoList = null;
-RCLib.prototype.swfList = null;
-RCLib.prototype.dataList = null;
-RCLib.prototype.nr = null;
-RCLib.prototype.max = null;
-RCLib.prototype.set = function(key,URL,newDomain) {
-	if(newDomain == null) newDomain = true;
-	haxe.Log.trace("set " + key + ", " + URL,{ fileName : "RCLib.hx", lineNumber : 85, className : "RCLib", methodName : "set"});
-	this.max++;
-	if(key == null) key = Std.string(Math.random());
-	if(URL.toLowerCase().indexOf(".swf") != -1) this.loadSwf(key,URL,newDomain); else if(URL.toLowerCase().indexOf(".xml") != -1 || URL.toLowerCase().indexOf(".txt") != -1 || URL.toLowerCase().indexOf(".css") != -1) this.loadText(key,URL); else this.loadPhoto(key,URL);
-	return true;
-}
-RCLib.prototype.loadPhoto = function(key,URL) {
-	var photo = new RCImage(0,0,URL);
-	photo.onProgress = (function(f,a1,a2) {
-		return function() {
-			return f(a1,a2);
-		};
-	})($closure(this,"progressHandler"),key,photo);
-	photo.onComplete = (function(f,a1,a2) {
-		return function() {
-			return f(a1,a2);
-		};
-	})($closure(this,"completeHandler"),key,photo);
-	photo.onError = (function(f,a1,a2) {
-		return function() {
-			return f(a1,a2);
-		};
-	})($closure(this,"errorHandler"),key,photo);
-}
-RCLib.prototype.loadSwf = function(key,URL,newDomain) {
-	if(newDomain == null) newDomain = true;
-	var swf = new RCSwf(0,0,URL,newDomain);
-	swf.onProgress = (function(f,a1,a2) {
-		return function() {
-			return f(a1,a2);
-		};
-	})($closure(this,"progressHandler"),key,swf);
-	swf.onComplete = (function(f,a1,a2) {
-		return function() {
-			return f(a1,a2);
-		};
-	})($closure(this,"completeHandler"),key,swf);
-	swf.onError = (function(f,a1,a2) {
-		return function() {
-			return f(a1,a2);
-		};
-	})($closure(this,"errorHandler"),key,swf);
-}
-RCLib.prototype.loadText = function(key,URL) {
-	var data = new HTTPRequest();
-	data.onProgress = (function(f,a1,a2) {
-		return function() {
-			return f(a1,a2);
-		};
-	})($closure(this,"progressHandler"),key,data);
-	data.onComplete = (function(f,a1,a2) {
-		return function() {
-			return f(a1,a2);
-		};
-	})($closure(this,"completeHandler"),key,data);
-	data.onError = (function(f,a1,a2) {
-		return function() {
-			return f(a1,a2);
-		};
-	})($closure(this,"errorHandler"),key,data);
-	data.readFile(URL);
-}
-RCLib.prototype.errorHandler = function(key,media) {
-	haxe.Log.trace("Error loading URL for key: '" + key + "' with object: " + media,{ fileName : "RCLib.hx", lineNumber : 132, className : "RCLib", methodName : "errorHandler"});
-	this.max--;
-	RCLib.onError();
-	if(this.nr >= this.max) RCLib.onComplete();
-}
-RCLib.prototype.progressHandler = function(key,obj) {
-	RCLib.currentPercentLoaded.set(key,obj.percentLoaded);
-	this.totalProgress();
-}
-RCLib.prototype.completeHandler = function(key,obj) {
-	switch(Type.getClassName(Type.getClass(obj))) {
-	case "RCImage":
-		this.photoList.set(key,obj);
-		break;
-	case "HTTPRequest":
-		this.dataList.set(key,obj.result);
-		break;
-	case "RCSwf":
-		this.swfList.set(key,obj);
-		break;
-	default:
-		haxe.Log.trace("this asset does not belong to any supported category. key=" + key,{ fileName : "RCLib.hx", lineNumber : 149, className : "RCLib", methodName : "completeHandler"});
-	}
-	this.onCompleteHandler();
-}
-RCLib.prototype.onCompleteHandler = function() {
-	this.nr++;
-	if(this.nr >= this.max) RCLib.onComplete();
-}
-RCLib.prototype.totalProgress = function() {
-	var totalPercent = 0;
-	var i = 0;
-	var $it0 = RCLib.currentPercentLoaded.keys();
-	while( $it0.hasNext() ) {
-		var key = $it0.next();
-		i++;
-		totalPercent += RCLib.currentPercentLoaded.get(key);
-	}
-	RCLib.percentLoaded = Math.round(totalPercent / i);
-	RCLib.onProgress();
-}
-RCLib.prototype.get = function(key,returnAsBitmap) {
-	if(returnAsBitmap == null) returnAsBitmap = true;
-	RCLib.init();
-	if(this.photoList.exists(key)) return this.photoList.get(key).copy(); else if(this.dataList.exists(key)) return this.dataList.get(key); else if(this.swfList.exists(key)) return this.swfList.get(key);
-	return null;
-}
-RCLib.prototype.__class__ = RCLib;
 if(typeof haxe=='undefined') haxe = {}
 haxe.Http = function(url) {
 	if( url === $_ ) return;
@@ -585,27 +427,27 @@ RCControl.prototype.removeListeners = function() {
 RCControl.prototype.mouseDownHandler = function(e) {
 	this.setState(RCControlState.SELECTED);
 	this.onPress();
-	this.press.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 109, className : "RCControl", methodName : "mouseDownHandler"});
+	this.press.dispatch([this.press],{ fileName : "RCControl.hx", lineNumber : 109, className : "RCControl", methodName : "mouseDownHandler"});
 }
 RCControl.prototype.mouseUpHandler = function(e) {
 	this.setState(RCControlState.HIGHLIGHTED);
 	this.onRelease();
-	this.release.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 114, className : "RCControl", methodName : "mouseUpHandler"});
+	this.release.dispatch([this.release],{ fileName : "RCControl.hx", lineNumber : 114, className : "RCControl", methodName : "mouseUpHandler"});
 }
 RCControl.prototype.rollOverHandler = function(e) {
 	this.setState(RCControlState.HIGHLIGHTED);
 	this.onOver();
-	this.over.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 119, className : "RCControl", methodName : "rollOverHandler"});
+	this.over.dispatch([this.over],{ fileName : "RCControl.hx", lineNumber : 119, className : "RCControl", methodName : "rollOverHandler"});
 }
 RCControl.prototype.rollOutHandler = function(e) {
 	this.setState(RCControlState.NORMAL);
 	this.onOut();
-	this.out.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 124, className : "RCControl", methodName : "rollOutHandler"});
+	this.out.dispatch([this.out],{ fileName : "RCControl.hx", lineNumber : 124, className : "RCControl", methodName : "rollOutHandler"});
 }
 RCControl.prototype.clickHandler = function(e) {
 	this.setState(RCControlState.SELECTED);
 	this.onClick();
-	this.click.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 129, className : "RCControl", methodName : "clickHandler"});
+	this.click.dispatch([this.click],{ fileName : "RCControl.hx", lineNumber : 129, className : "RCControl", methodName : "clickHandler"});
 }
 RCControl.prototype.setState = function(state) {
 	this.state_ = state;
@@ -1442,71 +1284,6 @@ RCSize.__name__ = ["RCSize"];
 RCSize.prototype.width = null;
 RCSize.prototype.height = null;
 RCSize.prototype.__class__ = RCSize;
-FontManager = function(p) {
-}
-FontManager.__name__ = ["FontManager"];
-FontManager.INSTANCE = null;
-FontManager.init = function() {
-	if(FontManager.INSTANCE == null) {
-		FontManager.INSTANCE = new FontManager();
-		FontManager.INSTANCE.initDefaults();
-	}
-}
-FontManager.instance = function() {
-	if(FontManager.INSTANCE == null) FontManager.init();
-	return FontManager.INSTANCE;
-}
-FontManager.registerFont = function(key,data) {
-	FontManager.instance().hash_rcfont.set(key,data);
-}
-FontManager.registerStyle = function(key,data) {
-	FontManager.instance().hash_style.set(key,data);
-}
-FontManager.remove = function(key) {
-	FontManager.instance().hash_style.remove(key);
-	FontManager.instance().hash_rcfont.remove(key);
-}
-FontManager.getFont = function(key,exceptions) {
-	if(key == null) key = "system";
-	return FontManager.instance().hash_rcfont.get(key).copy(exceptions);
-}
-FontManager.getStyleSheet = function(key,exception) {
-	if(key == null) key = "default";
-	if(key == "css" && FontManager.instance().hash_style.exists("css")) return FontManager.instance().hash_style.get("css");
-	return FontManager.instance().createStyle(FontManager.INSTANCE.hash_style.get(key),exception);
-}
-FontManager.addSwf = function(swf) {
-	FontManager.instance().push(swf);
-}
-FontManager.setCSS = function(css) {
-	FontManager.instance().setCSSFile(css);
-}
-FontManager.registerSwfFont = function(str) {
-	return false;
-}
-FontManager.prototype.fontsDomain = null;
-FontManager.prototype.fontsSwfList = null;
-FontManager.prototype.event = null;
-FontManager.prototype._defaultStyleSheetData = null;
-FontManager.prototype.hash_style = null;
-FontManager.prototype.hash_rcfont = null;
-FontManager.prototype.initDefaults = function() {
-	this.hash_style = new Hash();
-	this.hash_rcfont = new Hash();
-	this.fontsSwfList = new Array();
-	this._defaultStyleSheetData = { a_link : { color : "#999999", textDecoration : "underline"}, a_hover : { color : "#33CCFF"}, h1 : { size : 16}};
-	FontManager.registerStyle("default",this._defaultStyleSheetData);
-}
-FontManager.prototype.push = function(e) {
-	this.fontsSwfList.push(e);
-}
-FontManager.prototype.setCSSFile = function(css) {
-}
-FontManager.prototype.createStyle = function(properties,exceptions) {
-	var style = null;
-	return style;
-}
-FontManager.prototype.__class__ = FontManager;
 CASequence = function(objs) {
 	if( objs === $_ ) return;
 	this.objs = objs;
@@ -3133,7 +2910,7 @@ RCAttach = function(x,y,id) {
 	if( x === $_ ) return;
 	JSView.call(this,x,y);
 	this.id = id;
-	this.target = RCLib.getFileWithKey(id);
+	this.target = RCAssets.getFileWithKey(id);
 }
 RCAttach.__name__ = ["RCAttach"];
 RCAttach.__super__ = JSView;
@@ -3922,12 +3699,12 @@ ios.SKSegment = function(label,w,h,posLeft,posMiddle,posRight,colors) {
 	this.normal.background.addChild(segLeft);
 	this.normal.background.addChild(segMiddle);
 	this.normal.background.addChild(segRight);
-	this.normal.background.addChild(new RCTextView(0,28,w,30,label,FontManager.getFont("bold",{ size : 25, color : 7829367, align : "center"})));
+	this.normal.background.addChild(new RCTextView(0,28,w,30,label,RCFontManager.getFont("bold",{ size : 25, color : 7829367, align : "center"})));
 	this.highlighted.background = new JSView(0,0);
 	this.highlighted.background.addChild(segLeftSelected);
 	this.highlighted.background.addChild(segMiddleSelected);
 	this.highlighted.background.addChild(segRightSelected);
-	this.highlighted.background.addChild(new RCTextView(0,28,w,30,label,FontManager.getFont("bold",{ size : 25, color : 16777215, align : "center"})));
+	this.highlighted.background.addChild(new RCTextView(0,28,w,30,label,RCFontManager.getFont("bold",{ size : 25, color : 16777215, align : "center"})));
 	this.hit = new RCRectangle(0,0,w,h,0,0);
 }
 ios.SKSegment.__name__ = ["ios","SKSegment"];
@@ -4072,6 +3849,164 @@ RCFont.prototype.getStyleSheet = function() {
 	return this.style;
 }
 RCFont.prototype.__class__ = RCFont;
+RCAssets = function(p) {
+	if( p === $_ ) return;
+	this.photoList = new Hash();
+	this.swfList = new Hash();
+	this.dataList = new Hash();
+	this.nr = 0;
+	this.max = 0;
+}
+RCAssets.__name__ = ["RCAssets"];
+RCAssets.INSTANCE = null;
+RCAssets.errorMessage = null;
+RCAssets.currentPercentLoaded = null;
+RCAssets.percentLoaded = null;
+RCAssets.useCache = null;
+RCAssets.onComplete = function() {
+}
+RCAssets.onProgress = function() {
+}
+RCAssets.onError = function() {
+}
+RCAssets.init = function() {
+	if(RCAssets.INSTANCE != null) return;
+	RCAssets.INSTANCE = new RCAssets();
+	RCAssets.currentPercentLoaded = new Hash();
+	RCAssets.useCache = false;
+}
+RCAssets.instance = function() {
+	RCAssets.init();
+	return RCAssets.INSTANCE;
+}
+RCAssets.loadFileWithKey = function(key,URL) {
+	return RCAssets.instance().set(key,URL);
+}
+RCAssets.loadFontWithKey = function(key,URL) {
+	return RCAssets.instance().set(key,URL,false);
+}
+RCAssets.getFileWithKey = function(key,returnAsBitmap) {
+	if(returnAsBitmap == null) returnAsBitmap = true;
+	return RCAssets.instance().get(key,returnAsBitmap);
+}
+RCAssets.prototype.photoList = null;
+RCAssets.prototype.swfList = null;
+RCAssets.prototype.dataList = null;
+RCAssets.prototype.nr = null;
+RCAssets.prototype.max = null;
+RCAssets.prototype.set = function(key,URL,newDomain) {
+	if(newDomain == null) newDomain = true;
+	haxe.Log.trace("set " + key + ", " + URL,{ fileName : "RCAssets.hx", lineNumber : 85, className : "RCAssets", methodName : "set"});
+	this.max++;
+	if(key == null) key = Std.string(Math.random());
+	if(URL.toLowerCase().indexOf(".swf") != -1) this.loadSwf(key,URL,newDomain); else if(URL.toLowerCase().indexOf(".xml") != -1 || URL.toLowerCase().indexOf(".txt") != -1 || URL.toLowerCase().indexOf(".css") != -1) this.loadText(key,URL); else this.loadPhoto(key,URL);
+	return true;
+}
+RCAssets.prototype.loadPhoto = function(key,URL) {
+	var photo = new RCImage(0,0,URL);
+	photo.onProgress = (function(f,a1,a2) {
+		return function() {
+			return f(a1,a2);
+		};
+	})($closure(this,"progressHandler"),key,photo);
+	photo.onComplete = (function(f,a1,a2) {
+		return function() {
+			return f(a1,a2);
+		};
+	})($closure(this,"completeHandler"),key,photo);
+	photo.onError = (function(f,a1,a2) {
+		return function() {
+			return f(a1,a2);
+		};
+	})($closure(this,"errorHandler"),key,photo);
+}
+RCAssets.prototype.loadSwf = function(key,URL,newDomain) {
+	if(newDomain == null) newDomain = true;
+	var swf = new RCSwf(0,0,URL,newDomain);
+	swf.onProgress = (function(f,a1,a2) {
+		return function() {
+			return f(a1,a2);
+		};
+	})($closure(this,"progressHandler"),key,swf);
+	swf.onComplete = (function(f,a1,a2) {
+		return function() {
+			return f(a1,a2);
+		};
+	})($closure(this,"completeHandler"),key,swf);
+	swf.onError = (function(f,a1,a2) {
+		return function() {
+			return f(a1,a2);
+		};
+	})($closure(this,"errorHandler"),key,swf);
+}
+RCAssets.prototype.loadText = function(key,URL) {
+	var data = new HTTPRequest();
+	data.onProgress = (function(f,a1,a2) {
+		return function() {
+			return f(a1,a2);
+		};
+	})($closure(this,"progressHandler"),key,data);
+	data.onComplete = (function(f,a1,a2) {
+		return function() {
+			return f(a1,a2);
+		};
+	})($closure(this,"completeHandler"),key,data);
+	data.onError = (function(f,a1,a2) {
+		return function() {
+			return f(a1,a2);
+		};
+	})($closure(this,"errorHandler"),key,data);
+	data.readFile(URL);
+}
+RCAssets.prototype.errorHandler = function(key,media) {
+	haxe.Log.trace("Error loading URL for key: '" + key + "' with object: " + media,{ fileName : "RCAssets.hx", lineNumber : 132, className : "RCAssets", methodName : "errorHandler"});
+	this.max--;
+	RCAssets.onError();
+	if(this.nr >= this.max) RCAssets.onComplete();
+}
+RCAssets.prototype.progressHandler = function(key,obj) {
+	RCAssets.currentPercentLoaded.set(key,obj.percentLoaded);
+	this.totalProgress();
+}
+RCAssets.prototype.completeHandler = function(key,obj) {
+	switch(Type.getClassName(Type.getClass(obj))) {
+	case "RCImage":
+		this.photoList.set(key,obj);
+		break;
+	case "HTTPRequest":
+		this.dataList.set(key,obj.result);
+		break;
+	case "RCSwf":
+		this.swfList.set(key,obj);
+		break;
+	default:
+		haxe.Log.trace("this asset does not belong to any supported category. key=" + key,{ fileName : "RCAssets.hx", lineNumber : 149, className : "RCAssets", methodName : "completeHandler"});
+	}
+	this.onCompleteHandler();
+}
+RCAssets.prototype.onCompleteHandler = function() {
+	this.nr++;
+	if(this.nr >= this.max) RCAssets.onComplete();
+}
+RCAssets.prototype.totalProgress = function() {
+	var totalPercent = 0;
+	var i = 0;
+	var $it0 = RCAssets.currentPercentLoaded.keys();
+	while( $it0.hasNext() ) {
+		var key = $it0.next();
+		i++;
+		totalPercent += RCAssets.currentPercentLoaded.get(key);
+	}
+	RCAssets.percentLoaded = Math.round(totalPercent / i);
+	RCAssets.onProgress();
+}
+RCAssets.prototype.get = function(key,returnAsBitmap) {
+	if(returnAsBitmap == null) returnAsBitmap = true;
+	RCAssets.init();
+	if(this.photoList.exists(key)) return this.photoList.get(key).copy(); else if(this.dataList.exists(key)) return this.dataList.get(key); else if(this.swfList.exists(key)) return this.swfList.get(key);
+	return null;
+}
+RCAssets.prototype.__class__ = RCAssets;
 Zeta = function() { }
 Zeta.__name__ = ["Zeta"];
 Zeta.isIn = function(search_this,in_this,pos) {
@@ -4223,12 +4158,12 @@ Main.main = function() {
 		haxe.Log.trace("BEGIN",{ fileName : "Main.hx", lineNumber : 23, className : "Main", methodName : "main"});
 		RCWindow.init();
 		RCWindow.setBackgroundColor(14540253);
-		FontManager.init();
-		RCLib.loadFileWithKey("photo","../CoreAnimation/3134265_large.jpg");
-		RCLib.loadFileWithKey("some_text","data.txt");
-		RCLib.onComplete = function() {
-			haxe.Log.trace("RCLib did finish loading assets",{ fileName : "Main.hx", lineNumber : 31, className : "Main", methodName : "main"});
-			haxe.Log.trace(RCLib.getFileWithKey("some_text"),{ fileName : "Main.hx", lineNumber : 31, className : "Main", methodName : "main"});
+		RCFontManager.init();
+		RCAssets.loadFileWithKey("photo","../CoreAnimation/3134265_large.jpg");
+		RCAssets.loadFileWithKey("some_text","data.txt");
+		RCAssets.onComplete = function() {
+			haxe.Log.trace("RCAssets did finish loading assets",{ fileName : "Main.hx", lineNumber : 31, className : "Main", methodName : "main"});
+			haxe.Log.trace(RCAssets.getFileWithKey("some_text"),{ fileName : "Main.hx", lineNumber : 31, className : "Main", methodName : "main"});
 		};
 		var rect = new RCRectangle(0,0,300,150,RCColor.greenColor());
 		RCWindow.addChild(rect);
@@ -4750,6 +4685,71 @@ haxe.SKButton.__name__ = ["haxe","SKButton"];
 haxe.SKButton.__super__ = RCSkin;
 for(var k in RCSkin.prototype ) haxe.SKButton.prototype[k] = RCSkin.prototype[k];
 haxe.SKButton.prototype.__class__ = haxe.SKButton;
+RCFontManager = function(p) {
+}
+RCFontManager.__name__ = ["RCFontManager"];
+RCFontManager.INSTANCE = null;
+RCFontManager.init = function() {
+	if(RCFontManager.INSTANCE == null) {
+		RCFontManager.INSTANCE = new RCFontManager();
+		RCFontManager.INSTANCE.initDefaults();
+	}
+}
+RCFontManager.instance = function() {
+	if(RCFontManager.INSTANCE == null) RCFontManager.init();
+	return RCFontManager.INSTANCE;
+}
+RCFontManager.registerFont = function(key,data) {
+	RCFontManager.instance().hash_rcfont.set(key,data);
+}
+RCFontManager.registerStyle = function(key,data) {
+	RCFontManager.instance().hash_style.set(key,data);
+}
+RCFontManager.remove = function(key) {
+	RCFontManager.instance().hash_style.remove(key);
+	RCFontManager.instance().hash_rcfont.remove(key);
+}
+RCFontManager.getFont = function(key,exceptions) {
+	if(key == null) key = "system";
+	return RCFontManager.instance().hash_rcfont.get(key).copy(exceptions);
+}
+RCFontManager.getStyleSheet = function(key,exception) {
+	if(key == null) key = "default";
+	if(key == "css" && RCFontManager.instance().hash_style.exists("css")) return RCFontManager.instance().hash_style.get("css");
+	return RCFontManager.instance().createStyle(RCFontManager.INSTANCE.hash_style.get(key),exception);
+}
+RCFontManager.addSwf = function(swf) {
+	RCFontManager.instance().push(swf);
+}
+RCFontManager.setCSS = function(css) {
+	RCFontManager.instance().setCSSFile(css);
+}
+RCFontManager.registerSwfFont = function(str) {
+	return false;
+}
+RCFontManager.prototype.fontsDomain = null;
+RCFontManager.prototype.fontsSwfList = null;
+RCFontManager.prototype.event = null;
+RCFontManager.prototype._defaultStyleSheetData = null;
+RCFontManager.prototype.hash_style = null;
+RCFontManager.prototype.hash_rcfont = null;
+RCFontManager.prototype.initDefaults = function() {
+	this.hash_style = new Hash();
+	this.hash_rcfont = new Hash();
+	this.fontsSwfList = new Array();
+	this._defaultStyleSheetData = { a_link : { color : "#999999", textDecoration : "underline"}, a_hover : { color : "#33CCFF"}, h1 : { size : 16}};
+	RCFontManager.registerStyle("default",this._defaultStyleSheetData);
+}
+RCFontManager.prototype.push = function(e) {
+	this.fontsSwfList.push(e);
+}
+RCFontManager.prototype.setCSSFile = function(css) {
+}
+RCFontManager.prototype.createStyle = function(properties,exceptions) {
+	var style = null;
+	return style;
+}
+RCFontManager.prototype.__class__ = RCFontManager;
 if(!haxe.io) haxe.io = {}
 haxe.io.Error = { __ename__ : ["haxe","io","Error"], __constructs__ : ["Blocked","Overflow","OutsideBounds","Custom"] }
 haxe.io.Error.Blocked = ["Blocked",0];

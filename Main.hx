@@ -12,7 +12,7 @@ import RCAppDelegate;
 import RCDateTools;
 import RCFont;
 import RCIterator;
-import RCLib;
+import RCAssets;
 //import RCLocalization; // Do not compile it because it requires the xml to be present
 import RCMath;
 import RCSize;

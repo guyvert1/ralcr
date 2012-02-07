@@ -27,9 +27,9 @@
 #end
 
 
-class RCLib {
+class RCAssets {
 	
-	static var INSTANCE :RCLib;
+	static var INSTANCE :RCAssets;
 	
 	var photoList :Hash<RCImage>;
 	var swfList :Hash<RCSwf>;// Keep a reference to the loaded swf Event in order to acces its assets later
@@ -50,11 +50,11 @@ class RCLib {
 	
 	static function init () :Void {
 		if (INSTANCE != null) return;
-			INSTANCE = new RCLib();
+			INSTANCE = new RCAssets();
 		currentPercentLoaded = new Hash<Int>();
 		useCache = false;
 	}
-	public static function instance () : RCLib {
+	public static function instance () : RCAssets {
 		init();
 		return INSTANCE;
 	}
@@ -71,7 +71,7 @@ class RCLib {
 	
 	
 	/**
-	 *  RCLib can be initialized only once
+	 *  RCAssets can be initialized only once
 	 */
 	function new () {
 		photoList = new Hash<RCImage>();

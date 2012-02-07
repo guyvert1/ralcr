@@ -106,27 +106,27 @@ class RCControl extends RCView {
 	function mouseDownHandler (e:EVMouse) :Void {
 		setState ( SELECTED );
 		onPress();
-		press.dispatch([this]);
+		press.dispatch([press]);
 	}
 	function mouseUpHandler (e:EVMouse) :Void {
 		setState ( HIGHLIGHTED );
 		onRelease();
-		release.dispatch([this]);
+		release.dispatch([release]);
 	}
 	function rollOverHandler (e:EVMouse) :Void {
 		setState ( HIGHLIGHTED );
 		onOver();
-		over.dispatch([this]);
+		over.dispatch([over]);
 	}
 	function rollOutHandler (e:EVMouse) :Void {
 		setState ( NORMAL );
 		onOut();
-		out.dispatch([this]);
+		out.dispatch([out]);
 	}
 	function clickHandler (e:EVMouse) :Void {
 		setState ( SELECTED );
 		onClick();
-		click.dispatch([this]);
+		click.dispatch([click]);
 	}
 	public function setState (state:RCControlState) {
 		state_ = state;//trace("current state is "+state_);

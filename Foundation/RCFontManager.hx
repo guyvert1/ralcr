@@ -34,9 +34,9 @@
 	private typedef ApplicationDomain = Dynamic;
 #end
 
-class FontManager {
+class RCFontManager {
 	
-	static var INSTANCE :FontManager;
+	static var INSTANCE :RCFontManager;
 	var fontsDomain :ApplicationDomain;
 	var fontsSwfList :Array<Event>;// Keep a reference to the loaded font event (Flash only)
 	var event :Event;
@@ -66,12 +66,12 @@ class FontManager {
 	
 	public static function init () {
 		if (INSTANCE == null) {
-			INSTANCE = new FontManager();
+			INSTANCE = new RCFontManager();
 			INSTANCE.initDefaults();
 		}
 	}
 	
-	public static function instance () :FontManager {
+	public static function instance () :RCFontManager {
 		if (INSTANCE == null) init();
 		return INSTANCE;
 	}

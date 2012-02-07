@@ -25,10 +25,10 @@ class Main {
 		//RCWindow.setTarget ("js");
 		RCWindow.backgroundColor = 0xDDDDDD;
 		
-		FontManager.init();
-		RCLib.loadFileWithKey("photo", "../CoreAnimation/3134265_large.jpg");
-		RCLib.loadFileWithKey("some_text", "data.txt");
-		RCLib.onComplete = function(){trace("RCLib did finish loading assets"); trace(RCLib.getFileWithKey("some_text"));}
+		RCFontManager.init();
+		RCAssets.loadFileWithKey("photo", "../CoreAnimation/3134265_large.jpg");
+		RCAssets.loadFileWithKey("some_text", "data.txt");
+		RCAssets.onComplete = function(){trace("RCAssets did finish loading assets"); trace(RCAssets.getFileWithKey("some_text"));}
 		
 		var rect = new RCRectangle(0,0, 300, 150, RCColor.greenColor());
 	 	RCWindow.addChild ( rect );

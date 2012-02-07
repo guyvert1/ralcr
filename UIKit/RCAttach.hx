@@ -24,8 +24,8 @@ class RCAttach extends RCView {
 				this.addChild ( target );
 			}
 			catch(e:Dynamic){trace(e);}
-		#elseif js
-			target = RCLib.getFileWithKey( id );
+		#elseif (nme || js)
+			target = RCAssets.getFileWithKey( id );
 		#end
 	}
 	
