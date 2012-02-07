@@ -56,7 +56,7 @@ class RCSlider extends RCControl {
 		this.skin = skin;
 		
 		// Resize skin elements based on the width and height
-		untyped skin.normal.background.setWidth(w);
+		try { untyped skin.normal.background.setWidth(w); }catch(e:Dynamic){}
 		skin.normal.otherView.y = Math.round ((h - skin.normal.otherView.height)/2);
 		
 		
@@ -81,6 +81,10 @@ class RCSlider extends RCControl {
 		valueChanged = new RCSignal<RCSlider->Void>();
 		mouseUpOverStage_ = new EVMouse (EVMouse.UP, RCWindow.stage);
 		mouseMoveOverStage_ = new EVMouse (EVMouse.MOVE, RCWindow.stage);
+		//RCWindow.target/js
+/*		var m2 = new EVMouse (EVMouse.MOVE, RCWindow.stage);
+		trace(mouseMoveOverStage_ == m2);
+		trace(Reflect.compareMethods(m2, mouseMoveOverStage_));*/
 	}
 	override function setEnabled (c:Bool) :Bool {
 		return enabled_ = false;// The slider does not listen for the events on the entire object, but for the scrubber
@@ -91,53 +95,24 @@ class RCSlider extends RCControl {
 	 *	Functions to move the slider
 	 */
 	override function mouseDownHandler (e:EVMouse) :Void {
+		trace("mouseDownHandler");
 		moving_ = true;
 		mouseUpOverStage_.add ( mouseUpHandler );
 		mouseMoveOverStage_.add ( mouseMoveHandler );
-		//RCWindow.target
-		press.dispatch ( [this] );
 		mouseMoveHandler ( e );
 	}
 	override function mouseUpHandler (e:EVMouse) :Void {
 		moving_ = false;
 		mouseUpOverStage_.remove ( mouseUpHandler );
 		mouseMoveOverStage_.remove ( mouseMoveHandler );
-		release.dispatch ( [this] );
 	}
 	
-	
-	/**
-	 * Step 1
-	 * Drag the scrubber and listen for mousemove events
-	 */
-/*	override function mouseDownHandler (e:MouseEvent) {
-		trace("mouseDownHandler");
-		var bounds_x:Int=0, bounds_y:Int=0, bounds_w:Int=0, bounds_h:Int=0;
-		moving_ = true;
-		onSliderMove ( e );
-		
-		switch (direction_) {
-			case HORIZONTAL:	bounds_w = Math.round (size.width - scrubber.width);
-								bounds_y = Math.round (scrubber.y);
-			case VERTICAL:		bounds_h = Math.round (size.height - scrubber.height);
-								bounds_x = Math.round (scrubber.x);
-		}
-		
-		cast(scrubber).startDrag (false, new Rectangle (bounds_x, bounds_y, bounds_w, bounds_h));
-		
-		#if (flash || nme)
-			RCWindow.stage.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
-			RCWindow.stage.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
-		#elseif js
-			RCWindow.target.onmouseup = mouseUpHandler;
-			RCWindow.target.onmousemove = mouseMoveHandler;
-		#end
-	}*/
 	
 	/**
 	 * Set new value when the slider is moving, and dispatch an event
 	 */
 	function mouseMoveHandler (e:EVMouse) {
+		trace("mouseMoveHandler");
 		var y0=0.0, y1=0.0, y2=0.0;
 		//#if js trace(e.clientX); #end
 		switch (direction_) {
@@ -160,27 +135,26 @@ class RCSlider extends RCControl {
 	}
 	
 	
-	/**
-	 * Set the symbol correct position when the content changed his position
-	 */
+	
 	function getValue () :Float {
 		return value_;
 	}
+	/**
+	 * Set the scrubber position based on the new value
+	 */
 	public function setValue (v:Float) :Float {
 		var x1=0.0, x2=0.0;
 		value_ = v;
-		//if (!moving_) {
-			switch (direction_) {
-				case HORIZONTAL:
-					x2 = size.width - scrubber.width;
-					scrubber.x = Zeta.lineEquationInt (x1, x2,  v, minValue_, maxValue_);
-				case VERTICAL:
-					x2 = size.height - scrubber.height;
-					scrubber.y = Zeta.lineEquationInt (x1, x2,  v, minValue_, maxValue_);
-			}
-			//}
-		
-		// Set the width of the highlighted state
+		switch (direction_) {
+			case HORIZONTAL:
+				x2 = size.width - scrubber.width;
+				scrubber.x = Zeta.lineEquationInt (x1, x2,  v, minValue_, maxValue_);
+				if (skin.highlighted.background != null)
+					skin.highlighted.background.width = scrubber.x;
+			case VERTICAL:
+				x2 = size.height - scrubber.height;
+				scrubber.y = Zeta.lineEquationInt (x1, x2,  v, minValue_, maxValue_);
+		}
 		
 		valueChanged.dispatch ( [this] );
 		return value_;
@@ -226,9 +200,10 @@ class RCSlider extends RCControl {
 	
 	// Clean mess
 	override public function destroy () :Void {
-		mouseUpHandler ( null );
 		mouseUpOverStage_.destroy();
 		mouseMoveOverStage_.destroy();
+		valueChanged.destroy();
+		skin.destroy();
 		super.destroy();
 	}
 }

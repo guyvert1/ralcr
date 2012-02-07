@@ -18,7 +18,7 @@ class RCAttach extends RCView {
 		super(x,y);
 		this.id = id;
 		
-		#if flash
+		#if (flash && !nme)
 			try {
 				target = flash.Lib.attach ( id );
 				this.addChild ( target );

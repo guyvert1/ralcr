@@ -20,29 +20,24 @@ class RCButtonRadio extends RCButton {
 	override function mouseDownHandler (e:EVMouse) :Void {
 		//setState ( selected ? NORMAL : HIGHLIGHTED );
 		onPress();
-		press.dispatch([this]);
 	}
 	override function mouseUpHandler (e:EVMouse) :Void {
 		//setState ( selected ? NORMAL : HIGHLIGHTED );
 		onRelease();
-		release.dispatch([this]);
 	}
 	override function clickHandler (e:EVMouse) :Void {
 		setState ( selected ? NORMAL : SELECTED );
 		onClick();
-		click.dispatch([this]);
 	}
 	override function rollOverHandler (e:EVMouse) :Void {
 		if (!selected)
 			setState ( HIGHLIGHTED );
 		onOver();
-		over.dispatch([this]);
 	}
 	override function rollOutHandler (e:EVMouse) :Void {
 		if (!selected)
 			setState ( NORMAL );
 		onOut();
-		out.dispatch([this]);
 	}
 	
 	

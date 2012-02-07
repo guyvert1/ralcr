@@ -37,7 +37,7 @@ class CATween extends CAObject, implements CATransitionInterface {
 				var val = calculate (time_diff, prop);
 				var setter = "set"+prop.substr(0,1).toUpperCase()+prop.substr(1);
 				if (setter != null)
-				Reflect.callMethod (target, setter, [val]);
+				Reflect.callMethod (target, Reflect.field(target,setter), [val]);
 /*				switch ( prop ) {
 					case "x": target.setX ( val );
 					case "y": target.setY ( val );

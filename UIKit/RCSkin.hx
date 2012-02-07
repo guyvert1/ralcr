@@ -53,4 +53,7 @@ class RCSkin {
 			disabled.colors.label = colors[3];
 		}
 	}
+	public function destroy(){
+		// Override this method
+	}
 }

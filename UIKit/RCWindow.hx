@@ -64,13 +64,9 @@ class RCWindow {
 		#if flash
 			URL = flash.Lib.current.loaderInfo.url;
 			ID = flash.Lib.current.loaderInfo.parameters.id;
-		#end
-		
-		// Create the url without swf name
-		#if flash
-/*		var url = URL.split("/");
-			url.pop();
-		URL = url.join("/") + "/";*/
+			var url = URL.split("/");
+				url.pop();
+			URL = url.join("/") + "/";// URL without swf name
 		#end
 		//RCNotificationCenter.addObserver ("fullscreen", fullScreenHandler);
 		RCNotificationCenter.addObserver ("resize", resizeHandler);
