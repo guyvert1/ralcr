@@ -172,9 +172,9 @@ class RCImage extends RCView {
 	}
 
 	/**
-	 *	Get a copy of the rcphoto.
-	 *  In flash and NME it creates in image based on the BitmapData
-	 *  In JS it loads again the image from cache
+	 *	Get a copy of the RCImage.
+	 *  In flash and NME it creates in image based on the BitmapData.
+	 *  In JS it loads again the image from cache.
 	 */
 #if (flash || nme)
 	public function copy () :RCImage {

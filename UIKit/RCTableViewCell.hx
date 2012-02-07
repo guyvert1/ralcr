@@ -5,13 +5,6 @@
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
 
-#if (flash || nme)
-	import flash.events.MouseEvent;
-#elseif js
-	import js.Dom;
-	private typedef MouseEvent = Event;
-#end
-
 class RCTableViewCell extends RCControl {
 	
 	public var identifier :String;
@@ -23,7 +16,7 @@ class RCTableViewCell extends RCControl {
 	
 	
 	public function new (w, h) {
-		super (x, y);
+		super (0, 0);
 		this.size = new RCSize (w, h);
 		init();
 	}

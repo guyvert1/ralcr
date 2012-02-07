@@ -6,15 +6,6 @@
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
 
-#if (flash || nme)
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-#elseif js
-	import js.Dom;
-	import RCView;
-	private typedef MouseEvent = Event;
-#end
-
 class RCTableView extends RCView {
 	
 	public var backgroundView :RCRectangle;
@@ -28,17 +19,20 @@ class RCTableView extends RCView {
 	var anim :CATween;
 	var maxCells :Int;
 	
-	// Dragging and Throwing variables
+	// Dragging and Throwing
 	var vy :Float;
 	var oldY :Float;
 	var dragging :Bool;
 	var inertia :Float;
 	var changeOrder :Bool;
 	var timer :haxe.Timer;
+	var mousePress_ :EVMouse;
+	var mouseMove_ :EVMouse;
+	var mouseUp_ :EVMouse;
 	
 	
 	public function new (x, y, w, h) {
-		super(x, y);
+		super (x, y);
 		size.width = w;
 		size.height = h;
 		this.indexPath = new RCIndexPath (0, 0);
@@ -60,11 +54,9 @@ class RCTableView extends RCView {
 		
 		cells = [];
 		
-		#if (flash || nme)
-			contentView.addEventListener (MouseEvent.MOUSE_DOWN, startDragCells);
-		#elseif js
-			contentView.onmousedown = startDragCells;
-		#end
+		mousePress_ = new EVMouse (EVMouse.DOWN, contentView);
+		mouseMove_ = new EVMouse (EVMouse.MOVE, this);
+		mouseUp_ = new EVMouse (EVMouse.UP, RCWindow.stage);
 	}
 	
 	public function init () :Void {
@@ -78,39 +70,36 @@ class RCTableView extends RCView {
 		}
 		
 		reloadData();
+		mousePress_.add ( startDragCells );
 	}
 	
 	public function reloadData () {
 		for (i in indexPath.row...(indexPath.row + maxCells)) {
 			cells[i].indexPath.row = i;
-			Reflect.callMethod (delegate, Reflect.field (delegate, "claimDataForCell"), [cells[i]] );
+			dataForCell ( i );
 		}
 	}
-	
-	// Table view delegate
-	function clickHandler (e:RCIndexPath) :Void {
-		//this.dispatchEvent ( e.duplicate() );
+	function dataForCell (i:Int) :Void {
+		try {
+			delegate.dataForCell ( cells[i] );
+		}
+		catch(e:Dynamic){ trace("There's no method called 'dataForCell(cell:RCTableViewCell)' in the delegate class"); }
 	}
 	
-	
-	function startDragCells(_){
+	function startDragCells (e:EVMouse) {
 		dragging = true;
 		oldY = this.mouseY;
 		vy = 0;
-		#if (flash || nme)
-			this.addEventListener (Event.ENTER_FRAME, loop);
-			this.addEventListener (MouseEvent.MOUSE_MOVE, mouseMove);
-			RCWindow.stage.addEventListener (MouseEvent.MOUSE_UP, stopDragCells);
-		#elseif js
-			
-		#end
+		mouseMove_.add ( mouseMoveHandler );
+		mouseUp_.add ( stopDragCells );
+		startLoop();
 	}
-	function stopDragCells(_){
+	function stopDragCells (e:EVMouse) {
 		dragging = false;
 		//CoreAnimation.remove ( anim );
 		
-		RCWindow.stage.removeEventListener (MouseEvent.MOUSE_UP, stopDragCells);
-		this.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMove);
+		mouseMove_.remove ( mouseMoveHandler );
+		mouseUp_.remove ( stopDragCells );
 		
 /*		if (contentView.y > 0) {
 			anim = new CATween (contentView, {y:0}, 0.5, 0, caequations.Cubic.OUT);
@@ -122,7 +111,7 @@ class RCTableView extends RCView {
 		}*/
 	}
 	
-	function mouseMove (e:MouseEvent) {
+	function mouseMoveHandler (e:EVMouse) {
 		if (dragging) {
 			vy = this.mouseY - oldY;
 			oldY = this.mouseY;
@@ -131,7 +120,7 @@ class RCTableView extends RCView {
 			if (vy < -44)
 				vy = -44;
 		}
-		e.updateAfterEvent();
+		//e.updateAfterEvent();
 	}
 	public function mouseWheel (delta:Int) {
 		vy = delta;
@@ -139,13 +128,24 @@ class RCTableView extends RCView {
 			vy = 44;
 		if (vy < -44)
 			vy = -44;
-		this.addEventListener (Event.ENTER_FRAME, loop);
+		startLoop();
 	}
-	function loop (e:Event) {
+	function startLoop () {
+		stopLoop();
+		timer = new haxe.Timer(10);
+		timer.run = loop;
+	}
+	function stopLoop () {
+		if (timer != null) {
+			timer.stop();
+			timer = null;
+		}
+	}
+	function loop () {
 		scrollIndicator.alpha = 1;
 		
 		for (i in 0...cells.length) {
-			cells[i].y = i==0 ? Math.round (cells[i].y + vy) : Math.round (cells[i-1].y + cells[i-1].height);
+			cells[i].y = (i==0) ? Math.round (cells[i].y + vy) : Math.round (cells[i-1].y + cells[i-1].height);
 			
 			// Decide direction
 			// From up to down
@@ -161,7 +161,7 @@ class RCTableView extends RCView {
 					//cells[maxCells - 1].indexPath.row = cells[maxCells - 1].indexPath.row - maxCells + 1;
 					cells.unshift ( cell );
 					cells[0].y = Math.round (cells[1].y - cells[0].height);
-					Reflect.callMethod (delegate, Reflect.field (delegate, "claimDataForCell"), [cells[0]] );
+					dataForCell ( 0 );
 				}
 			}
 			
@@ -178,8 +178,8 @@ class RCTableView extends RCView {
 					cells.push ( cell );
 					indexPath = cell.indexPath;
 					//cells[maxCells - 1].y = Math.round (cells[maxCells - 2].y + cells[maxCells - 2].height);
-					Reflect.callMethod (delegate, Reflect.field (delegate, "claimDataForCell"), [cells[maxCells - 1]] );
-					loop(null);
+					dataForCell ( maxCells - 1 );
+					loop();
 					break;
 				}
 			}
@@ -187,7 +187,7 @@ class RCTableView extends RCView {
 		if (!dragging) {
 			vy *= inertia;
 			if (Math.abs (vy) < 1) {
-				this.removeEventListener (Event.ENTER_FRAME, loop);
+				stopLoop();
 				scrollIndicator.alpha = 0;
 			}
 		}
@@ -200,8 +200,12 @@ class RCTableView extends RCView {
 	
 	
 	
-	public function resize (w, h) :Void {
+/*	public function resize (w, h) :Void {
 		size.width = w;
 		size.height = h;
+	}*/
+	override public function destroy () {
+		stopLoop();
+		super.destroy();
 	}
 }
