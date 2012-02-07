@@ -1,12 +1,12 @@
 //
-//  FontManager
+//  RCFontManager
 //
 //  Created by Baluta Cristian on 2008-10-11.
 //  Copyright (c) 2008 http://ralcr.com. All rights reserved.
 //
 /*
 
-- init the FontManager
+- init the RCFontManager
 - load external fonts from swf
 - load CSS file
 - set TextFormat properties (all fonts except external ones)
