@@ -30,6 +30,8 @@ class RCSlider extends RCControl {
 	var maxValue_ :Float;
 	var moving_ :Bool;
 	var direction_ :Direction;
+	var mouseUpOverStage_ :EVMouse;
+	var mouseMoveOverStage_ :EVMouse;
 	
 	public var skin :RCSkin;
 	public var minValue (default, setMinValue) :Float;
@@ -63,25 +65,22 @@ class RCSlider extends RCControl {
 		this.scrubber = skin.normal.otherView;
 		
 		addChild ( skin.normal.background );
+		//addChild ( skin.highlighted.background );
 		addChild ( scrubber );
 		
 		// Decide the direction of movement
 		direction_ = (size.width > size.height) ? HORIZONTAL : VERTICAL;
 		
 		// When the symbol is pressed start to move the slider
-		#if (flash || nme)
-			view.addEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
-			view.addEventListener (MouseEvent.MOUSE_OVER, rollOverHandler);
-			view.addEventListener (MouseEvent.MOUSE_OUT, rollOutHandler);
-		#elseif js
-			view.onmousedown = mouseDownHandler;
-			view.onmouseover = rollOverHandler;
-			view.onmouseout = rollOutHandler;
-		#end
+		press.add ( mouseDownHandler );
+		over.add ( rollOverHandler );
+		out.add ( rollOutHandler );
 	}
 	override function configureDispatchers () {
 		super.configureDispatchers();
 		valueChanged = new RCSignal<RCSlider->Void>();
+		mouseUpOverStage_ = new EVMouse (EVMouse.UP, RCWindow.stage);
+		mouseMoveOverStage_ = new EVMouse (EVMouse.MOVE, RCWindow.stage);
 	}
 	override function setEnabled (c:Bool) :Bool {
 		return enabled_ = false;// The slider does not listen for the events on the entire object, but for the scrubber
@@ -91,27 +90,18 @@ class RCSlider extends RCControl {
 	/**
 	 *	Functions to move the slider
 	 */
-	override function mouseDownHandler (e:MouseEvent) :Void {
+	override function mouseDownHandler (e:EVMouse) :Void {
 		moving_ = true;
-		#if (flash || nme)
-			RCWindow.stage.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
-			RCWindow.stage.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
-		#elseif js
-			RCWindow.target.onmouseup = mouseUpHandler;
-			RCWindow.target.onmousemove = mouseMoveHandler;
-		#end
+		mouseUpOverStage_.add ( mouseUpHandler );
+		mouseMoveOverStage_.add ( mouseMoveHandler );
+		//RCWindow.target
 		press.dispatch ( [this] );
 		mouseMoveHandler ( e );
 	}
-	override function mouseUpHandler (e:MouseEvent) :Void {
+	override function mouseUpHandler (e:EVMouse) :Void {
 		moving_ = false;
-		#if (flash || nme)
-			RCWindow.stage.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
-			RCWindow.stage.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
-		#elseif js
-			RCWindow.target.onmouseup = null;
-			RCWindow.target.onmousemove = null;
-		#end
+		mouseUpOverStage_.remove ( mouseUpHandler );
+		mouseMoveOverStage_.remove ( mouseMoveHandler );
 		release.dispatch ( [this] );
 	}
 	
@@ -147,14 +137,14 @@ class RCSlider extends RCControl {
 	/**
 	 * Set new value when the slider is moving, and dispatch an event
 	 */
-	function mouseMoveHandler (e:MouseEvent) {
+	function mouseMoveHandler (e:EVMouse) {
 		var y0=0.0, y1=0.0, y2=0.0;
-		#if js trace(e.clientX); #end
+		//#if js trace(e.clientX); #end
 		switch (direction_) {
 			case HORIZONTAL:
 				//y0 = scrubber.x;
 				y2 = size.width - scrubber.width;
-				y0 = Zeta.limitsInt (#if js e.clientX #else this.mouseX #end -scrubber.width/2, 0, y2);
+				y0 = Zeta.limitsInt (this.mouseX -scrubber.width/2, 0, y2);
 			case VERTICAL:
 				//y0 = scrubber.y;
 				y2 = size.height - scrubber.height;
@@ -165,7 +155,7 @@ class RCSlider extends RCControl {
 		setValue ( Zeta.lineEquation (minValue_, maxValue_,  y0, y1, y2) );
 		
 		#if (flash || nme)
-			e.updateAfterEvent();
+			//e.updateAfterEvent();
 		#end
 	}
 	
@@ -237,11 +227,8 @@ class RCSlider extends RCControl {
 	// Clean mess
 	override public function destroy () :Void {
 		mouseUpHandler ( null );
-		#if (flash || nme)
-			scrubber.removeEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
-		#elseif js
-			cast(scrubber).onmousedown = null;
-		#end
+		mouseUpOverStage_.destroy();
+		mouseMoveOverStage_.destroy();
 		super.destroy();
 	}
 }

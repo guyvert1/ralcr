@@ -215,7 +215,7 @@ class RCSegmentedControl extends RCView {
 	/**
 	 * Dispatch events
 	 */
-	function clickHandler (b:RCControl) :Void {
+	function clickHandler (b:EVMouse) :Void {
 		//click.dispatch ( [this, getIndexForLabel( label )] );
 	}
 	

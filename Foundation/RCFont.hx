@@ -19,13 +19,13 @@
 		import flash.text.AntiAliasType;
 	#end
 #elseif js
-	typedef TextFieldType = Dynamic;
-	typedef TextFormat = Dynamic;
-	typedef TextFormatAlign = Dynamic;
+	private typedef TextFieldType = Dynamic;
+	private typedef TextFormat = Dynamic;
+	private typedef TextFormatAlign = Dynamic;
 	//typedef TextFieldAutoSize = Dynamic;
-	typedef TextFormatDisplay = Dynamic;
-	typedef StyleSheet = Dynamic;
-	typedef AntiAliasType = Dynamic;
+	private typedef TextFormatDisplay = Dynamic;
+	private typedef StyleSheet = Dynamic;
+	private typedef AntiAliasType = Dynamic;
 #end
 
 
@@ -86,11 +86,14 @@ class RCFont {
 	// Some convenience methods to create fast a rcfont
 	public static function fontWithName (fontName:String, size:Int) :RCFont {
 		var fnt = new RCFont();
-		
+			fnt.font = fontName;
+			fnt.size = size;
 		return fnt;
 	}
 
-	// Returns an array of font family names for all installed fonts
+	/**
+	* Returns an array of font family names for all installed fonts
+	*/
 	public static function familyNames () :Array<Dynamic> {
 		#if flash
 			return flash.text.Font.enumerateFonts();
@@ -143,7 +146,7 @@ class RCFont {
 		
 		var rcfont = new RCFont();
 		var fields = Type.getInstanceFields ( RCFont );
-		trace(fields);
+		
 		// Copy all RCFont properties to the new object
 		for (field in fields) {
 			// Restricted fields

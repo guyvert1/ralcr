@@ -7,7 +7,7 @@
 
 #if (flash || (nme && flash))
 	typedef Ticker = flash.display.Sprite;
-#elseif (js || cpp || neko)
+#else
 	typedef Ticker = haxe.Timer;
 #end
 
@@ -90,10 +90,9 @@ class CoreAnimation {
 		if (latest == null && ticker != null) {
 #if (flash || (nme && flash))
 			ticker.removeEventListener (flash.events.Event.ENTER_FRAME, updateAnimations);
-#elseif (js || neko || cpp)
+#else
 			ticker.stop();
 #end
-			
 			ticker = null;
 		}
 	}

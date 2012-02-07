@@ -1,10 +1,12 @@
 
 #if (flash || nme)
 	import flash.events.MouseEvent;
+	import flash.display.DisplayObjectContainer;
 #elseif js
 	import js.Dom;
-	typedef MouseEvent = Event;
-	typedef EVMouseRelationship = {target:Dynamic, type:String, instance:EVMouse};
+	private typedef MouseEvent = Event;
+	private typedef DisplayObjectContainer = HtmlDom;
+	typedef EVMouseRelationship = {target:DisplayObjectContainer, type:String, instance:EVMouse};
 #end
 
 
@@ -16,8 +18,9 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 	public static var OUT = "mouseout";
 	public static var MOVE = "mousemove";
 	public static var CLICK = "mouseclick";
+	public static var DOUBLE_CLICK = "mousedoubleclick";
 	
-	public var target :Dynamic;
+	public var target :DisplayObjectContainer;
 	public var type :String;
 	
 	#if js
@@ -28,7 +31,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 	#end
 	
 	/**
-	 *  type: the tipe of mouse event you want to listen to.
+	 *  type: the type of MouseEvent you want to listen to.
 	 *  target: displayobject you want to listen for events
 	 **/
 	public function new (type:String, target:Dynamic, ?pos:haxe.PosInfos) {
@@ -37,13 +40,18 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 		super();
 		
 		this.type = type;
-		this.target = target;
 		#if js
 			targets = new List<EVMouseRelationship>();
+			if (Std.is(target, JSView))
+			this.target = target.view;
+			else
+			this.target = target;
+		#else
+			this.target = target;
 		#end
-		addEventListener(pos);
+		return addEventListener(pos);
 	}
-	function addEventListener (?pos:haxe.PosInfos) {
+	function addEventListener (?pos:haxe.PosInfos) :EVMouse {
 		#if (flash || nme)
 			switch (type) {
 				case UP: target.addEventListener (MouseEvent.MOUSE_UP, mouseHandler);
@@ -52,6 +60,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 				case OUT: target.addEventListener (MouseEvent.MOUSE_OUT, mouseHandler);
 				case MOVE: target.addEventListener (MouseEvent.MOUSE_MOVE, mouseHandler);
 				case CLICK: target.addEventListener (MouseEvent.CLICK, mouseHandler);
+				case DOUBLE_CLICK: target.addEventListener (MouseEvent.DOUBLE_CLICK, mouseHandler);
 				default: trace("The mouse event you're trying to add does not exist. "+pos);
 			}
 		#elseif js
@@ -59,8 +68,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 				if (t.target == target && t.type == type) {
 					// Target is already used for this mouse event
 					trace("Target already in use by this event type. Called from "+pos);
-					//this = t.instance;
-					return;
+					return t.instance;
 				}
 			}
 			targets.add ({target:target, type:type, instance:this});
@@ -71,9 +79,11 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 				case OUT: target.onmouseout = mouseHandler;
 				case MOVE: target.onmousemove = mouseHandler;
 				case CLICK: target.onclick = mouseHandler;
+				case DOUBLE_CLICK: target.ondblclick = mouseHandler;
 				default: trace("The mouse event you're trying to add does not exist. "+pos);
 			}
 		#end
+		return this;
 	}
 	function removeEventListener () {
 		#if (flash || nme)
@@ -84,6 +94,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 				case OUT: target.removeEventListener (MouseEvent.MOUSE_OUT, mouseHandler);
 				case MOVE: target.removeEventListener (MouseEvent.MOUSE_MOVE, mouseHandler);
 				case CLICK: target.removeEventListener (MouseEvent.CLICK, mouseHandler);
+				case DOUBLE_CLICK: target.removeEventListener (MouseEvent.DOUBLE_CLICK, mouseHandler);
 			}
 		#elseif js
 			switch (type) {
@@ -93,6 +104,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 				case OUT: target.onmouseout = null;
 				case MOVE: target.onmousemove = null;
 				case CLICK: target.onclick = null;
+				case DOUBLE_CLICK: target.ondblclick = null;
 			}
 		#end
 	}

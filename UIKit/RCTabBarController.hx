@@ -45,7 +45,7 @@ class RCTabBarController extends RCView {
 	 *  Pass a different constructor if you want to use a custom RCTabBarItem
 	 **/
 	function constructButton (i:Int) :RCTabBarItem {
-		var s = new haxe.SKTabBarItem ( labels[i], symbols[i], null );
+		var s = new ios.SKTabBarItem ( labels[i], symbols[i] );
 		var b = new RCTabBarItem (0, 0, s);
 		return b;
 	}

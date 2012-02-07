@@ -5,13 +5,7 @@
 //  Copyright (c) 2008-2012 www.ralcr.com. All rights reserved.
 //
 
-#if (flash || nme)
-	import flash.events.MouseEvent;
-#elseif js
-	import js.Dom;
-	private typedef MouseEvent = Event;
-#end
-import RCControl;
+import RCControl;// Imports states
 
 
 class RCButtonRadio extends RCButton {
@@ -23,28 +17,28 @@ class RCButtonRadio extends RCButton {
 		super (x, y, skin);
 		toggable_ = true;
 	}
-	override function mouseDownHandler (e:MouseEvent) :Void {
+	override function mouseDownHandler (e:EVMouse) :Void {
 		//setState ( selected ? NORMAL : HIGHLIGHTED );
 		onPress();
 		press.dispatch([this]);
 	}
-	override function mouseUpHandler (e:MouseEvent) :Void {
+	override function mouseUpHandler (e:EVMouse) :Void {
 		//setState ( selected ? NORMAL : HIGHLIGHTED );
 		onRelease();
 		release.dispatch([this]);
 	}
-	override function clickHandler (e:MouseEvent) :Void {trace("click");
+	override function clickHandler (e:EVMouse) :Void {
 		setState ( selected ? NORMAL : SELECTED );
 		onClick();
 		click.dispatch([this]);
 	}
-	override function rollOverHandler (e:MouseEvent) :Void {
+	override function rollOverHandler (e:EVMouse) :Void {
 		if (!selected)
 			setState ( HIGHLIGHTED );
 		onOver();
 		over.dispatch([this]);
 	}
-	override function rollOutHandler (e:MouseEvent) :Void {
+	override function rollOutHandler (e:EVMouse) :Void {
 		if (!selected)
 			setState ( NORMAL );
 		onOut();

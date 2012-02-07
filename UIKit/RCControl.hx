@@ -5,16 +5,6 @@
 //  Copyright (c) 2008-2012 www.ralcr.com. All rights reserved.
 //
 
-#if (flash || nme)
-	import flash.events.MouseEvent;
-	import flash.events.IEventDispatcher;
-#elseif js
-	import js.Dom;
-	private typedef MouseEvent = Event;
-	private typedef IEventDispatcher = Dynamic;
-#end
-
-
 enum RCControlState {
 	NORMAL;
 	HIGHLIGHTED;// used when UIControl isHighlighted is set
@@ -37,11 +27,11 @@ class RCControl extends RCView {
 	public var touchUpOutside :RCSignal<RCControl->Void>;
 	public var touchCancel :RCSignal<RCControl->Void>;
 #end
-	public var click :RCSignal<RCControl->Void>;
-	public var press :RCSignal<RCControl->Void>;
-	public var release :RCSignal<RCControl->Void>;
-	public var over :RCSignal<RCControl->Void>;
-	public var out :RCSignal<RCControl->Void>;
+	public var click :EVMouse;// RCSignal that dispatches EVMouse
+	public var press :EVMouse;
+	public var release :EVMouse;
+	public var over :EVMouse;
+	public var out :EVMouse;
 
 	public var editingDidBegin :RCSignal<RCControl->Void>;// RCTextInput
 	public var editingChanged :RCSignal<RCControl->Void>;
@@ -55,6 +45,7 @@ class RCControl extends RCView {
 	
 	var enabled_ :Bool;
 	var state_ :RCControlState;
+	
 	
 	/**
 	 * The classical way of listening to events, override this methods from outside of the object
@@ -76,76 +67,63 @@ class RCControl extends RCView {
 		setEnabled ( true );// This will configure the right mouse listeners
 		setState ( NORMAL );
 	}
-	function configureListeners (dispatcher:IEventDispatcher) :Void {
-		#if (flash || nme)
-			dispatcher.addEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
-			dispatcher.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
-			dispatcher.addEventListener (MouseEvent.ROLL_OVER, rollOverHandler);
-			dispatcher.addEventListener (MouseEvent.ROLL_OUT, rollOutHandler);
-			dispatcher.addEventListener (MouseEvent.CLICK, clickHandler);
-			#if (flash)
-				this.useHandCursor = true;
-				this.buttonMode = true;
-			#end
-		#elseif js
-			view.onmousedown = mouseDownHandler;
-			view.onmouseup = mouseUpHandler;
-			view.onmouseover = rollOverHandler;
-			view.onmouseout = rollOutHandler;
-			view.onclick = clickHandler;
-		#end
-	}
-	function removeListeners (dispatcher:IEventDispatcher) :Void {
-		#if (flash || nme)
-			dispatcher.removeEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
-			dispatcher.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
-			dispatcher.removeEventListener (MouseEvent.ROLL_OVER, rollOverHandler);
-			dispatcher.removeEventListener (MouseEvent.ROLL_OUT, rollOutHandler);
-			dispatcher.removeEventListener (MouseEvent.CLICK, clickHandler);
-			#if (flash)
-				this.useHandCursor = false;
-				this.buttonMode = false;
-			#end
-		#elseif js
-			view.onmousedown = null;
-			view.onmouseup = null;
-			view.onmouseover = null;
-			view.onmouseout = null;
-			view.onclick = null;
-		#end
-	}
 	function configureDispatchers () {
-		click = new RCSignal<RCControl->Void>();
-		press = new RCSignal<RCControl->Void>();
-		release = new RCSignal<RCControl->Void>();
-		over = new RCSignal<RCControl->Void>();
-		out = new RCSignal<RCControl->Void>();
+		click = new EVMouse (EVMouse.CLICK, this);
+		press = new EVMouse (EVMouse.DOWN, this);
+		release = new EVMouse (EVMouse.UP, this);
+		over = new EVMouse (EVMouse.OVER, this);
+		out = new EVMouse (EVMouse.OUT, this);
 	}
+	function configureListeners () :Void {
+		//
+		click.addFirst ( clickHandler );
+		press.addFirst ( mouseDownHandler );
+		release.addFirst ( mouseUpHandler );
+		over.addFirst ( rollOverHandler );
+		out.addFirst ( rollOutHandler );
+		#if flash
+			this.useHandCursor = true;
+			this.buttonMode = true;
+		#end
+	}
+	function removeListeners () :Void {
+		//
+		click.remove ( clickHandler );
+		press.remove ( mouseDownHandler );
+		release.remove ( mouseUpHandler );
+		over.remove ( rollOverHandler );
+		out.remove ( rollOutHandler );
+		#if flash
+			this.useHandCursor = false;
+			this.buttonMode = false;
+		#end
+	}
+	
 	
 	/**
 	* Mouse Handlers
 	*/
-	function mouseDownHandler (e:MouseEvent) :Void {
+	function mouseDownHandler (e:EVMouse) :Void {
 		setState ( SELECTED );
 		onPress();
 		press.dispatch([this]);
 	}
-	function mouseUpHandler (e:MouseEvent) :Void {
+	function mouseUpHandler (e:EVMouse) :Void {
 		setState ( HIGHLIGHTED );
 		onRelease();
 		release.dispatch([this]);
 	}
-	function rollOverHandler (e:MouseEvent) :Void {
+	function rollOverHandler (e:EVMouse) :Void {
 		setState ( HIGHLIGHTED );
 		onOver();
 		over.dispatch([this]);
 	}
-	function rollOutHandler (e:MouseEvent) :Void {
+	function rollOutHandler (e:EVMouse) :Void {
 		setState ( NORMAL );
 		onOut();
 		out.dispatch([this]);
 	}
-	function clickHandler (e:MouseEvent) :Void {
+	function clickHandler (e:EVMouse) :Void {
 		setState ( SELECTED );
 		onClick();
 		click.dispatch([this]);
@@ -167,7 +145,7 @@ class RCControl extends RCView {
 	}
 	function setEnabled (c:Bool) :Bool {
 		enabled_ = c;
-		enabled_ ? configureListeners ( this ) : removeListeners ( this );
+		enabled_ ? configureListeners() : removeListeners();
 		return enabled_;
 	}
 	//
@@ -193,7 +171,13 @@ class RCControl extends RCView {
 	
 	// Clean mess
 	override public function destroy () :Void {
-		removeListeners ( this );
+		//
+		click.destroy();
+		press.destroy();
+		release.destroy();
+		over.destroy();
+		out.destroy();
+		//
 		super.destroy();
 	}
 }

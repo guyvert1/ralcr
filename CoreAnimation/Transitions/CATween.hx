@@ -35,7 +35,10 @@ class CATween extends CAObject, implements CATransitionInterface {
 				Reflect.setField (target, prop, calculate (time_diff, prop));
 #elseif js
 				var val = calculate (time_diff, prop);
-				switch ( prop ) {
+				var setter = "set"+prop.substr(0,1).toUpperCase()+prop.substr(1);
+				if (setter != null)
+				Reflect.callMethod (target, setter, [val]);
+/*				switch ( prop ) {
 					case "x": target.setX ( val );
 					case "y": target.setY ( val );
 					case "width": target.setWidth ( val );
@@ -43,7 +46,7 @@ class CATween extends CAObject, implements CATransitionInterface {
 					case "scaleX": target.setScaleX ( val );
 					case "scaleY": target.setScaleY ( val );
 					case "alpha": target.setAlpha ( val );
-				}
+				}*/
 #end
 			}
 			catch (e:Dynamic) { trace(e); }

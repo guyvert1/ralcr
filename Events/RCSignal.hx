@@ -20,6 +20,10 @@ class RCSignal<T> {
 		if (exists(listener)) trace("This listener is already added, it will not be called only once as you expect. "+pos);
 		exposableListener = listener;
 	}
+	// Useful for native components, this listener will be called first
+	public function addFirst (listener:T, ?pos:haxe.PosInfos) {
+		listeners.push ( listener );
+	}
 	public function remove (listener:T) :Void {
 		for (l in listeners) {
 			if (Reflect.compareMethods(l, listener)) {

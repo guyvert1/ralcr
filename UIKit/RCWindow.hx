@@ -40,11 +40,13 @@ class RCWindow {
 	public static var width :Int;
 	public static var height :Int;
 	public static var backgroundColor (null, setBackgroundColor) :Int;
-	public static var stageMouse :EVMouse;
+	static var init_ :Bool = false;
 	
 	
 	public static function init () {
 		trace("init");
+		if (init_) return;
+			init_ = true;
 		#if (flash || nme)
 			target = flash.Lib.current;
 			stage = flash.Lib.current.stage;
@@ -63,11 +65,6 @@ class RCWindow {
 			URL = flash.Lib.current.loaderInfo.url;
 			ID = flash.Lib.current.loaderInfo.parameters.id;
 		#end
-		if (stageMouse != null) {
-			trace("You're trying to init twice the RCWindow, ignoring it...");
-			return;
-		}
-		stageMouse = new EVMouse (EVMouse.UP, RCWindow.stage);
 		
 		// Create the url without swf name
 		#if flash
@@ -143,6 +140,7 @@ class RCWindow {
 	 *	Add and remove views
 	 */
 	public static function addChild (child:DisplayObjectContainer) :Void {
+		init();
 		if (child != null) {
 			#if (flash || nme)
 				target.addChild ( child );
