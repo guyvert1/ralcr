@@ -561,51 +561,51 @@ RCControl.prototype.onOver = function() {
 }
 RCControl.prototype.onOut = function() {
 }
-RCControl.prototype.configureListeners = function(dispatcher) {
-	this.view.onmousedown = $closure(this,"mouseDownHandler");
-	this.view.onmouseup = $closure(this,"mouseUpHandler");
-	this.view.onmouseover = $closure(this,"rollOverHandler");
-	this.view.onmouseout = $closure(this,"rollOutHandler");
-	this.view.onclick = $closure(this,"clickHandler");
-}
-RCControl.prototype.removeListeners = function(dispatcher) {
-	this.view.onmousedown = null;
-	this.view.onmouseup = null;
-	this.view.onmouseover = null;
-	this.view.onmouseout = null;
-	this.view.onclick = null;
-}
 RCControl.prototype.configureDispatchers = function() {
-	this.click = new RCSignal();
-	this.press = new RCSignal();
-	this.release = new RCSignal();
-	this.over = new RCSignal();
-	this.out = new RCSignal();
+	this.click = new EVMouse(EVMouse.CLICK,this,{ fileName : "RCControl.hx", lineNumber : 71, className : "RCControl", methodName : "configureDispatchers"});
+	this.press = new EVMouse(EVMouse.DOWN,this,{ fileName : "RCControl.hx", lineNumber : 72, className : "RCControl", methodName : "configureDispatchers"});
+	this.release = new EVMouse(EVMouse.UP,this,{ fileName : "RCControl.hx", lineNumber : 73, className : "RCControl", methodName : "configureDispatchers"});
+	this.over = new EVMouse(EVMouse.OVER,this,{ fileName : "RCControl.hx", lineNumber : 74, className : "RCControl", methodName : "configureDispatchers"});
+	this.out = new EVMouse(EVMouse.OUT,this,{ fileName : "RCControl.hx", lineNumber : 75, className : "RCControl", methodName : "configureDispatchers"});
+}
+RCControl.prototype.configureListeners = function() {
+	this.click.addFirst($closure(this,"clickHandler"),{ fileName : "RCControl.hx", lineNumber : 79, className : "RCControl", methodName : "configureListeners"});
+	this.press.addFirst($closure(this,"mouseDownHandler"),{ fileName : "RCControl.hx", lineNumber : 80, className : "RCControl", methodName : "configureListeners"});
+	this.release.addFirst($closure(this,"mouseUpHandler"),{ fileName : "RCControl.hx", lineNumber : 81, className : "RCControl", methodName : "configureListeners"});
+	this.over.addFirst($closure(this,"rollOverHandler"),{ fileName : "RCControl.hx", lineNumber : 82, className : "RCControl", methodName : "configureListeners"});
+	this.out.addFirst($closure(this,"rollOutHandler"),{ fileName : "RCControl.hx", lineNumber : 83, className : "RCControl", methodName : "configureListeners"});
+}
+RCControl.prototype.removeListeners = function() {
+	this.click.remove($closure(this,"clickHandler"));
+	this.press.remove($closure(this,"mouseDownHandler"));
+	this.release.remove($closure(this,"mouseUpHandler"));
+	this.over.remove($closure(this,"rollOverHandler"));
+	this.out.remove($closure(this,"rollOutHandler"));
 }
 RCControl.prototype.mouseDownHandler = function(e) {
 	this.setState(RCControlState.SELECTED);
 	this.onPress();
-	this.press.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 131, className : "RCControl", methodName : "mouseDownHandler"});
+	this.press.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 109, className : "RCControl", methodName : "mouseDownHandler"});
 }
 RCControl.prototype.mouseUpHandler = function(e) {
 	this.setState(RCControlState.HIGHLIGHTED);
 	this.onRelease();
-	this.release.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 136, className : "RCControl", methodName : "mouseUpHandler"});
+	this.release.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 114, className : "RCControl", methodName : "mouseUpHandler"});
 }
 RCControl.prototype.rollOverHandler = function(e) {
 	this.setState(RCControlState.HIGHLIGHTED);
 	this.onOver();
-	this.over.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 141, className : "RCControl", methodName : "rollOverHandler"});
+	this.over.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 119, className : "RCControl", methodName : "rollOverHandler"});
 }
 RCControl.prototype.rollOutHandler = function(e) {
 	this.setState(RCControlState.NORMAL);
 	this.onOut();
-	this.out.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 146, className : "RCControl", methodName : "rollOutHandler"});
+	this.out.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 124, className : "RCControl", methodName : "rollOutHandler"});
 }
 RCControl.prototype.clickHandler = function(e) {
 	this.setState(RCControlState.SELECTED);
 	this.onClick();
-	this.click.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 151, className : "RCControl", methodName : "clickHandler"});
+	this.click.dispatch([this],{ fileName : "RCControl.hx", lineNumber : 129, className : "RCControl", methodName : "clickHandler"});
 }
 RCControl.prototype.setState = function(state) {
 	this.state_ = state;
@@ -618,7 +618,7 @@ RCControl.prototype.getEnabled = function() {
 }
 RCControl.prototype.setEnabled = function(c) {
 	this.enabled_ = c;
-	if(this.enabled_) this.configureListeners(this); else this.removeListeners(this);
+	if(this.enabled_) this.configureListeners(); else this.removeListeners();
 	return this.enabled_;
 }
 RCControl.prototype.getHighlighted = function() {
@@ -631,7 +631,11 @@ RCControl.prototype.unlock = function() {
 	this.setEnabled(true);
 }
 RCControl.prototype.destroy = function() {
-	this.removeListeners(this);
+	this.click.destroy();
+	this.press.destroy();
+	this.release.destroy();
+	this.over.destroy();
+	this.out.destroy();
 	JSView.prototype.destroy.call(this);
 }
 RCControl.prototype.__class__ = RCControl;
@@ -711,27 +715,26 @@ RCButtonRadio.prototype.toggable_ = null;
 RCButtonRadio.prototype.toggable = null;
 RCButtonRadio.prototype.mouseDownHandler = function(e) {
 	this.onPress();
-	this.press.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 29, className : "RCButtonRadio", methodName : "mouseDownHandler"});
+	this.press.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 23, className : "RCButtonRadio", methodName : "mouseDownHandler"});
 }
 RCButtonRadio.prototype.mouseUpHandler = function(e) {
 	this.onRelease();
-	this.release.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 34, className : "RCButtonRadio", methodName : "mouseUpHandler"});
+	this.release.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 28, className : "RCButtonRadio", methodName : "mouseUpHandler"});
 }
 RCButtonRadio.prototype.clickHandler = function(e) {
-	haxe.Log.trace("click",{ fileName : "RCButtonRadio.hx", lineNumber : 36, className : "RCButtonRadio", methodName : "clickHandler"});
 	this.setState(this.getSelected()?RCControlState.NORMAL:RCControlState.SELECTED);
 	this.onClick();
-	this.click.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 39, className : "RCButtonRadio", methodName : "clickHandler"});
+	this.click.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 33, className : "RCButtonRadio", methodName : "clickHandler"});
 }
 RCButtonRadio.prototype.rollOverHandler = function(e) {
 	if(!this.getSelected()) this.setState(RCControlState.HIGHLIGHTED);
 	this.onOver();
-	this.over.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 45, className : "RCButtonRadio", methodName : "rollOverHandler"});
+	this.over.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 39, className : "RCButtonRadio", methodName : "rollOverHandler"});
 }
 RCButtonRadio.prototype.rollOutHandler = function(e) {
 	if(!this.getSelected()) this.setState(RCControlState.NORMAL);
 	this.onOut();
-	this.out.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 51, className : "RCButtonRadio", methodName : "rollOutHandler"});
+	this.out.dispatch([this],{ fileName : "RCButtonRadio.hx", lineNumber : 45, className : "RCButtonRadio", methodName : "rollOutHandler"});
 }
 RCButtonRadio.prototype.getToggable = function() {
 	return this.toggable_;
@@ -1309,6 +1312,9 @@ RCSignal.prototype.addOnce = function(listener,pos) {
 	if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once as you expect. " + pos,{ fileName : "RCSignal.hx", lineNumber : 20, className : "RCSignal", methodName : "addOnce"});
 	this.exposableListener = listener;
 }
+RCSignal.prototype.addFirst = function(listener,pos) {
+	this.listeners.push(listener);
+}
 RCSignal.prototype.remove = function(listener) {
 	var $it0 = this.listeners.iterator();
 	while( $it0.hasNext() ) {
@@ -1339,7 +1345,7 @@ RCSignal.prototype.callMethod = function(listener,args,pos) {
 	try {
 		listener.apply(null,args);
 	} catch( e ) {
-		haxe.Log.trace("[RCSignal error when calling: " + listener + " from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 53, className : "RCSignal", methodName : "callMethod"});
+		haxe.Log.trace("[RCSignal error when calling: " + listener + " from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 57, className : "RCSignal", methodName : "callMethod"});
 	}
 }
 RCSignal.prototype.exists = function(listener) {
@@ -2453,9 +2459,9 @@ EVMouse = function(type,target,pos) {
 	if(target == null) throw "Can't use a null target. " + pos;
 	RCSignal.call(this);
 	this.type = type;
-	this.target = target;
 	this.targets = new List();
-	this.addEventListener(pos);
+	if(Std["is"](target,JSView)) this.target = target.view; else this.target = target;
+	return this.addEventListener(pos);
 }
 EVMouse.__name__ = ["EVMouse"];
 EVMouse.__super__ = RCSignal;
@@ -2468,8 +2474,8 @@ EVMouse.prototype.addEventListener = function(pos) {
 	while( $it0.hasNext() ) {
 		var t = $it0.next();
 		if(t.target == this.target && t.type == this.type) {
-			haxe.Log.trace("Target already in use by this event type. Called from " + pos,{ fileName : "EVMouse.hx", lineNumber : 61, className : "EVMouse", methodName : "addEventListener"});
-			return;
+			haxe.Log.trace("Target already in use by this event type. Called from " + pos,{ fileName : "EVMouse.hx", lineNumber : 70, className : "EVMouse", methodName : "addEventListener"});
+			return t.instance;
 		}
 	}
 	this.targets.add({ target : this.target, type : this.type, instance : this});
@@ -2492,9 +2498,13 @@ EVMouse.prototype.addEventListener = function(pos) {
 	case EVMouse.CLICK:
 		this.target.onclick = $closure(this,"mouseHandler");
 		break;
+	case EVMouse.DOUBLE_CLICK:
+		this.target.ondblclick = $closure(this,"mouseHandler");
+		break;
 	default:
-		haxe.Log.trace("The mouse event you're trying to add does not exist. " + pos,{ fileName : "EVMouse.hx", lineNumber : 74, className : "EVMouse", methodName : "addEventListener"});
+		haxe.Log.trace("The mouse event you're trying to add does not exist. " + pos,{ fileName : "EVMouse.hx", lineNumber : 83, className : "EVMouse", methodName : "addEventListener"});
 	}
+	return this;
 }
 EVMouse.prototype.removeEventListener = function() {
 	switch(this.type) {
@@ -2516,10 +2526,13 @@ EVMouse.prototype.removeEventListener = function() {
 	case EVMouse.CLICK:
 		this.target.onclick = null;
 		break;
+	case EVMouse.DOUBLE_CLICK:
+		this.target.ondblclick = null;
+		break;
 	}
 }
 EVMouse.prototype.mouseHandler = function(e) {
-	this.dispatch([this],{ fileName : "EVMouse.hx", lineNumber : 100, className : "EVMouse", methodName : "mouseHandler"});
+	this.dispatch([this],{ fileName : "EVMouse.hx", lineNumber : 112, className : "EVMouse", methodName : "mouseHandler"});
 }
 EVMouse.prototype.destroy = function() {
 	this.removeEventListener();
@@ -2640,15 +2653,13 @@ RCSlider = function(x,y,w,h,skin) {
 	this.skin = skin;
 	skin.normal.background.setWidth(w);
 	skin.normal.otherView.setY(Math.round((h - skin.normal.otherView.getHeight()) / 2));
-	this.size.width = skin.normal.background.getWidth();
-	this.size.height = skin.normal.background.getHeight();
 	this.scrubber = skin.normal.otherView;
 	this.addChild(skin.normal.background);
 	this.addChild(this.scrubber);
 	this.direction_ = this.size.width > this.size.height?_RCSlider.Direction.HORIZONTAL:_RCSlider.Direction.VERTICAL;
-	this.view.onmousedown = $closure(this,"mouseDownHandler");
-	this.view.onmouseover = $closure(this,"rollOverHandler");
-	this.view.onmouseout = $closure(this,"rollOutHandler");
+	this.press.add($closure(this,"mouseDownHandler"));
+	this.over.add($closure(this,"rollOverHandler"));
+	this.out.add($closure(this,"rollOutHandler"));
 }
 RCSlider.__name__ = ["RCSlider"];
 RCSlider.__super__ = RCControl;
@@ -2658,6 +2669,8 @@ RCSlider.prototype.minValue_ = null;
 RCSlider.prototype.maxValue_ = null;
 RCSlider.prototype.moving_ = null;
 RCSlider.prototype.direction_ = null;
+RCSlider.prototype.mouseUpOverStage_ = null;
+RCSlider.prototype.mouseMoveOverStage_ = null;
 RCSlider.prototype.skin = null;
 RCSlider.prototype.minValue = null;
 RCSlider.prototype.maxValue = null;
@@ -2670,30 +2683,31 @@ RCSlider.prototype.valueChanged = null;
 RCSlider.prototype.configureDispatchers = function() {
 	RCControl.prototype.configureDispatchers.call(this);
 	this.valueChanged = new RCSignal();
+	this.mouseUpOverStage_ = new EVMouse(EVMouse.UP,RCWindow.stage,{ fileName : "RCSlider.hx", lineNumber : 82, className : "RCSlider", methodName : "configureDispatchers"});
+	this.mouseMoveOverStage_ = new EVMouse(EVMouse.MOVE,RCWindow.stage,{ fileName : "RCSlider.hx", lineNumber : 83, className : "RCSlider", methodName : "configureDispatchers"});
 }
 RCSlider.prototype.setEnabled = function(c) {
 	return this.enabled_ = false;
 }
 RCSlider.prototype.mouseDownHandler = function(e) {
 	this.moving_ = true;
-	RCWindow.target.onmouseup = $closure(this,"mouseUpHandler");
-	RCWindow.target.onmousemove = $closure(this,"mouseMoveHandler");
-	this.press.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 103, className : "RCSlider", methodName : "mouseDownHandler"});
+	this.mouseUpOverStage_.add($closure(this,"mouseUpHandler"));
+	this.mouseMoveOverStage_.add($closure(this,"mouseMoveHandler"));
+	this.press.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 98, className : "RCSlider", methodName : "mouseDownHandler"});
 	this.mouseMoveHandler(e);
 }
 RCSlider.prototype.mouseUpHandler = function(e) {
 	this.moving_ = false;
-	RCWindow.target.onmouseup = null;
-	RCWindow.target.onmousemove = null;
-	this.release.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 115, className : "RCSlider", methodName : "mouseUpHandler"});
+	this.mouseUpOverStage_.remove($closure(this,"mouseUpHandler"));
+	this.mouseMoveOverStage_.remove($closure(this,"mouseMoveHandler"));
+	this.release.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 105, className : "RCSlider", methodName : "mouseUpHandler"});
 }
 RCSlider.prototype.mouseMoveHandler = function(e) {
 	var y0 = 0.0, y1 = 0.0, y2 = 0.0;
-	haxe.Log.trace(e.clientX,{ fileName : "RCSlider.hx", lineNumber : 152, className : "RCSlider", methodName : "mouseMoveHandler"});
 	switch( (this.direction_)[1] ) {
 	case 0:
 		y2 = this.size.width - this.scrubber.getWidth();
-		y0 = Zeta.limitsInt(e.clientX - this.scrubber.getWidth() / 2,0,y2);
+		y0 = Zeta.limitsInt(this.getMouseX() - this.scrubber.getWidth() / 2,0,y2);
 		break;
 	case 1:
 		y2 = this.size.height - this.scrubber.getHeight();
@@ -2718,7 +2732,7 @@ RCSlider.prototype.setValue = function(v) {
 		this.scrubber.setY(Zeta.lineEquationInt(x1,x2,v,this.minValue_,this.maxValue_));
 		break;
 	}
-	this.valueChanged.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 195, className : "RCSlider", methodName : "setValue"});
+	this.valueChanged.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 185, className : "RCSlider", methodName : "setValue"});
 	return this.value_;
 }
 RCSlider.prototype.setMinValue = function(v) {
@@ -2739,7 +2753,8 @@ RCSlider.prototype.setMaximumValueImage = function(v) {
 }
 RCSlider.prototype.destroy = function() {
 	this.mouseUpHandler(null);
-	this.scrubber.onmousedown = null;
+	this.mouseUpOverStage_.destroy();
+	this.mouseMoveOverStage_.destroy();
 	RCControl.prototype.destroy.call(this);
 }
 RCSlider.prototype.__class__ = RCSlider;
@@ -3275,18 +3290,15 @@ RCWindow.__name__ = ["RCWindow"];
 RCWindow.width = null;
 RCWindow.height = null;
 RCWindow.backgroundColor = null;
-RCWindow.stageMouse = null;
 RCWindow.init = function() {
+	haxe.Log.trace("init",{ fileName : "RCWindow.hx", lineNumber : 47, className : "RCWindow", methodName : "init"});
+	if(RCWindow.init_) return;
+	RCWindow.init_ = true;
 	RCWindow.target.style.position = "absolute";
 	RCWindow.target.style.margin = "0px 0px 0px 0px";
 	RCWindow.width = RCWindow.target.scrollWidth;
 	RCWindow.height = RCWindow.target.scrollHeight;
 	RCWindow.setBackgroundColor(3355443);
-	if(RCWindow.stageMouse != null) {
-		haxe.Log.trace("You're trying to init twice the RCWindow, ignoring it...",{ fileName : "RCWindow.hx", lineNumber : 66, className : "RCWindow", methodName : "init"});
-		return;
-	}
-	RCWindow.stageMouse = new EVMouse(EVMouse.UP,RCWindow.stage,{ fileName : "RCWindow.hx", lineNumber : 69, className : "RCWindow", methodName : "init"});
 	RCNotificationCenter.addObserver("resize",RCWindow.resizeHandler);
 }
 RCWindow.resizeHandler = function(w,h) {
@@ -3314,6 +3326,7 @@ RCWindow.setTarget = function(id) {
 	RCWindow.target = js.Lib.document.getElementById(id);
 }
 RCWindow.addChild = function(child) {
+	RCWindow.init();
 	if(child != null) {
 		child.viewWillAppear();
 		child.parent = RCWindow.target;
@@ -3813,31 +3826,10 @@ CATween.prototype.animate = function(time_diff) {
 		++_g;
 		try {
 			var val = this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null);
-			switch(prop) {
-			case "x":
-				this.target.setX(val);
-				break;
-			case "y":
-				this.target.setY(val);
-				break;
-			case "width":
-				this.target.setWidth(val);
-				break;
-			case "height":
-				this.target.setHeight(val);
-				break;
-			case "scaleX":
-				this.target.setScaleX(val);
-				break;
-			case "scaleY":
-				this.target.setScaleY(val);
-				break;
-			case "alpha":
-				this.target.setAlpha(val);
-				break;
-			}
+			var setter = "set" + prop.substr(0,1).toUpperCase() + prop.substr(1);
+			if(setter != null) setter.apply(this.target,[val]);
 		} catch( e ) {
-			haxe.Log.trace(e,{ fileName : "CATween.hx", lineNumber : 49, className : "CATween", methodName : "animate"});
+			haxe.Log.trace(e,{ fileName : "CATween.hx", lineNumber : 52, className : "CATween", methodName : "animate"});
 		}
 	}
 }
@@ -3982,6 +3974,8 @@ RCFont = function(p) {
 RCFont.__name__ = ["RCFont"];
 RCFont.fontWithName = function(fontName,size) {
 	var fnt = new RCFont();
+	fnt.font = fontName;
+	fnt.size = size;
 	return fnt;
 }
 RCFont.familyNames = function() {
@@ -5135,6 +5129,7 @@ EVMouse.OVER = "mouseover";
 EVMouse.OUT = "mouseout";
 EVMouse.MOVE = "mousemove";
 EVMouse.CLICK = "mouseclick";
+EVMouse.DOUBLE_CLICK = "mousedoubleclick";
 haxe.remoting.ExternalConnection.connections = new Hash();
 RCTextRoll.GAP = 20;
 js.Lib.onerror = null;
@@ -5144,6 +5139,7 @@ RCWindow.SCREEN_W = js.Lib.window.screen.width;
 RCWindow.SCREEN_H = js.Lib.window.screen.height;
 RCWindow.URL = "";
 RCWindow.ID = "";
+RCWindow.init_ = false;
 Keyboard.LEFT = 37;
 Keyboard.RIGHT = 39;
 Keyboard.UP = 38;
