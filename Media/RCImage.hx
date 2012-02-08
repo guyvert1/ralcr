@@ -125,7 +125,7 @@ class RCImage extends RCView {
 				var bitmap = new Bitmap (bitmapData, PixelSnapping.AUTO, true);
 				this.size.width = this.lastW = bitmapData.width;
 				this.size.height = this.lastH = bitmapData.height;
-				this.view.addChild ( bitmap );
+				this.layer.addChild ( bitmap );
 			}
 			else {
 				var w = Math.round (loader.content.width);
@@ -133,7 +133,7 @@ class RCImage extends RCView {
 				// Add the image to the view
 				this.size.width = this.lastW = w;
 				this.size.height = this.lastH = h;
-				this.view.addChild ( loader );
+				this.layer.addChild ( loader );
 				// Get the BitmapData of the image
 				
 				if (w <= 2880 && h <= 2880) {
@@ -144,13 +144,13 @@ class RCImage extends RCView {
 				bitmapData.draw ( loader.content );
 				
 				var bitmap = new Bitmap (bitmapData, PixelSnapping.AUTO, true);
-				this.view.removeChild ( loader );
-				this.view.addChild ( bitmap );
+				this.layer.removeChild ( loader );
+				this.layer.addChild ( bitmap );
 			}
 		#elseif js
 			this.size.width = this.lastW = this.width = loader.width;
 			this.size.height = this.lastH = this.height = loader.height;
-			this.view.appendChild ( loader );
+			this.layer.appendChild ( loader );
 		#end
 		this.isLoaded = true;
 		onComplete();

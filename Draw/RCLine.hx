@@ -25,7 +25,7 @@ class RCLine extends RCDraw, implements RCDrawInterface {
 		this.graphics.moveTo (0, 0);
 		this.graphics.lineTo (size.width, size.height);
 #elseif js
-		view.innerHTML = "";
+		layer.innerHTML = "";
 		drawLine (0, 0, Math.round(size.width), Math.round(size.height));
 #end
 	}
@@ -37,20 +37,20 @@ class RCLine extends RCDraw, implements RCDrawInterface {
    	 	//For Horizontal line
 	 	if(y0==y1) {
 	 		if(x0<=x1)
-				view.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:" + x0 + "px;top:" + y0 + "px;width:" + (x1-x0+1) + "px;height:" + lineWeight + ";background-color:" + hexColor + "\"></DIV>";
+				layer.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:" + x0 + "px;top:" + y0 + "px;width:" + (x1-x0+1) + "px;height:" + lineWeight + ";background-color:" + hexColor + "\"></DIV>";
 	 		else if(x0>x1)
-				view.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:" + x1 + "px;top:" + y0 + "px;width:" + (x0-x1+1) + "px;height:" + lineWeight + ";background-color:" + hexColor + "\"></DIV>";
-	 		return view;
+				layer.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:" + x1 + "px;top:" + y0 + "px;width:" + (x0-x1+1) + "px;height:" + lineWeight + ";background-color:" + hexColor + "\"></DIV>";
+	 		return layer;
 	 	}
 	 	
 	 	//For Vertical line
 	 	if(x0==x1) {
 	 		if(y0<=y1)
-		 		view.innerHTML="<DIV style=\"position:absolute;overflow:hidden;left:" + x0 + "px;top:" + y0 + "px;width:" + lineWeight + ";height:" + (y1-y0+1) + "px;background-color:" + hexColor + "\"></DIV>";
+		 		layer.innerHTML="<DIV style=\"position:absolute;overflow:hidden;left:" + x0 + "px;top:" + y0 + "px;width:" + lineWeight + ";height:" + (y1-y0+1) + "px;background-color:" + hexColor + "\"></DIV>";
 	 		else if(y0>y1)
-		 		view.innerHTML="<DIV style=\"position:absolute;overflow:hidden;left:" + x0 + "px;top:" + y1 + "px;width:" + lineWeight + ";height:" + (y0-y1+1) + "px;background-color:" + hexColor + "\"></DIV>";
+		 		layer.innerHTML="<DIV style=\"position:absolute;overflow:hidden;left:" + x0 + "px;top:" + y1 + "px;width:" + lineWeight + ";height:" + (y0-y1+1) + "px;background-color:" + hexColor + "\"></DIV>";
 		 		
-	 		return view;
+	 		return layer;
 	 	}
 		
 	    var iHtml=new Array<String>();
@@ -70,8 +70,8 @@ class RCLine extends RCDraw, implements RCDrawInterface {
 	 	}
 	 	///Pixel Height Width End
 
-	 	var steep = Math.abs(y1 - y0) > Math.abs(x1 - x0); 
-		if (steep) {   
+		var steep = Math.abs(y1 - y0) > Math.abs(x1 - x0); 
+		if (steep) {
 			// swap   
 			var tmp=x0;
 			x0=y0;
@@ -81,7 +81,7 @@ class RCLine extends RCDraw, implements RCDrawInterface {
 			y1=tmp;
 		}
 
-		if (x0 > x1) {   
+		if (x0 > x1) {
 			// swap   
 			var tmp=x0;
 			x0=x1;
@@ -102,23 +102,23 @@ class RCLine extends RCDraw, implements RCDrawInterface {
 		var xp = 0;
 		var yp = 0;
 		var divWidth=0;
- 		var divHeight=0;
- 		if(steep) {
- 			divWidth=pixWidth;
- 		}
- 		else {
- 			divHeight=pixHeight;
- 		}
+		var divHeight=0;
+		if(steep) {
+			divWidth=pixWidth;
+		}
+		else {
+			divHeight=pixHeight;
+		}
 		for (x in x0...(x1+1)){
-   			if (steep) { 
-   				if(x==x0) {
-   					xp=y;
-   					yp=x;
-   				}
-   				else {
-   					if(y==xp) {
-   						divHeight=divHeight+ 1;
-   					}
+			if (steep) {
+				if(x==x0) {
+					xp=y;
+					yp=x;
+				}
+				else {
+					if(y==xp) {
+						divHeight=divHeight+ 1;
+					}
    					else {
    						divHeight=divHeight+pixHeight;
 						iHtml[iHtml.length]="<DIV style=\"position:absolute;overflow:hidden;left:" + xp + "px;top:" + yp + "px;width:" + divWidth+ "px;height:" + divHeight + "px;background-color:" + hexColor + "\"></DIV>";
@@ -171,16 +171,15 @@ class RCLine extends RCDraw, implements RCDrawInterface {
  				}
  			}
 
-   			error = error - deltay;
-   			if (error < 0)
-			{     
+			error = error - deltay;
+			if (error < 0) {
 				y = y + ystep;
-     			error = error + deltax;
-   			}
- 		}
+				error = error + deltax;
+			}
+		}
  		
- 		view.innerHTML=iHtml.join("");
- 		return view;
+		layer.innerHTML=iHtml.join("");
+		return layer;
 	}
 #end
 }

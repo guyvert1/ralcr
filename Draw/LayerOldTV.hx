@@ -55,9 +55,9 @@ class LayerOldTV extends Sprite {
 		var scope = this;
 		for (i in 0...Std.random(3)) {
 			var curve = randomCurves[Std.random(randomCurves.length)];
-				curve.view.x = Math.random()*(w-100);
-				curve.view.y = Math.random()*(h-100);
-			this.addChild ( curve.view );
+				curve.layer.x = Math.random()*(w-100);
+				curve.layer.y = Math.random()*(h-100);
+			this.addChild ( curve.layer );
 			haxe.Timer.delay (function(){scope.removeElement(curve);}, Math.round(5+Math.random()*20));
 		}
 	}
@@ -65,9 +65,9 @@ class LayerOldTV extends Sprite {
 		var scope = this;
 		for (i in 0...Std.random(2)) {
 			var shape = blackShapes[Std.random(blackShapes.length)];
-				shape.view.x = Math.random()*(w-100);
-				shape.view.y = Math.random()*(h-100);
-			this.addChild ( shape.view );
+				shape.layer.x = Math.random()*(w-100);
+				shape.layer.y = Math.random()*(h-100);
+			this.addChild ( shape.layer );
 			haxe.Timer.delay (function(){scope.removeElement(shape);}, Math.round(5+Math.random()*20));
 		}
 	}
@@ -75,10 +75,10 @@ class LayerOldTV extends Sprite {
 		var scope = this;
 		for (i in 0...Std.random(5)) {
 			var line = noisyLines[Std.random(noisyLines.length)];
-				line.view.x = Math.random()*w;
-			this.addChild ( line.view );
+				line.layer.x = Math.random()*w;
+			this.addChild ( line.layer );
 			
-			var obj = new CATween (line.view, {x:line.view.x+50-Math.random()*100, alpha:0}, Math.random(), 0);
+			var obj = new CATween (line.layer, {x:line.layer.x+50-Math.random()*100, alpha:0}, Math.random(), 0);
 				obj.delegate.animationDidStop = removeElement;
 				obj.delegate.arguments = [line];
 			CoreAnimation.add ( obj );

@@ -1,5 +1,6 @@
 //
-//  RCApplication
+//  RCAppDelegate
+//	Your application should extend this class
 //
 //  Created by Cristi Baluta on 2010-05-14.
 //  Copyright (c) 2010 ralcr.com. All rights reserved.
@@ -12,11 +13,6 @@
 #end
 
 class RCAppDelegate extends MovieClip {
-	
-	dynamic public function applicationDidLaunch () :Void {}
-	dynamic public function onDataLoaded () :Void {}
-	dynamic public function onInit () :Void {}
-	
 	
 	public function new () {
 		super();
@@ -31,6 +27,9 @@ class RCAppDelegate extends MovieClip {
 	
 	// Override this methods
 	public function applicationDidFinishLaunching () :Void {}
+	public function applicationDidBecomeActive () :Void {}
+	public function applicationWillEnterForeground () :Void {}
+	public function applicationWillTerminate () :Void {}
 	public function resize (w:Int, h:Int) :Void {}
 	public function fullscreen (b:Bool) :Void {}
 }

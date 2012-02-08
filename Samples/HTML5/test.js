@@ -4,57 +4,6 @@ CATransitionInterface.__name__ = ["CATransitionInterface"];
 CATransitionInterface.prototype.init = null;
 CATransitionInterface.prototype.animate = null;
 CATransitionInterface.prototype.__class__ = CATransitionInterface;
-RCMouse = function(target) {
-	if( target === $_ ) return;
-	this.target = target;
-	this.resume();
-}
-RCMouse.__name__ = ["RCMouse"];
-RCMouse.prototype.onOver = function() {
-}
-RCMouse.prototype.onOut = function() {
-}
-RCMouse.prototype.onClick = function() {
-}
-RCMouse.prototype.onDoubleClick = function() {
-}
-RCMouse.prototype.onMove = function() {
-}
-RCMouse.prototype.target = null;
-RCMouse.prototype.resume = function() {
-	this.target.onmouseover = $closure(this,"mouseOverHandler");
-	this.target.onmouseout = $closure(this,"mouseOutHandler");
-	this.target.onclick = $closure(this,"clickHandler");
-	this.target.onmousemove = $closure(this,"mouseMoveHandler");
-	this.target.ondblclick = $closure(this,"doubleClickHandler");
-}
-RCMouse.prototype.hold = function() {
-	this.target.onmouseover = null;
-	this.target.onmouseout = null;
-	this.target.onclick = null;
-	this.target.onmousemove = null;
-	this.target.ondblclick = null;
-}
-RCMouse.prototype.mouseOverHandler = function(e) {
-	this.onOver();
-}
-RCMouse.prototype.mouseOutHandler = function(e) {
-	this.onOut();
-}
-RCMouse.prototype.mouseMoveHandler = function(e) {
-	this.onMove();
-}
-RCMouse.prototype.clickHandler = function(e) {
-	this.onClick();
-}
-RCMouse.prototype.doubleClickHandler = function(e) {
-	this.onDoubleClick();
-}
-RCMouse.prototype.destroy = function() {
-	this.hold();
-	this.mouseOutHandler(null);
-}
-RCMouse.prototype.__class__ = RCMouse;
 if(typeof haxe=='undefined') haxe = {}
 haxe.Http = function(url) {
 	if( url === $_ ) return;
@@ -157,21 +106,21 @@ haxe.Http.prototype.onError = function(msg) {
 haxe.Http.prototype.onStatus = function(status) {
 }
 haxe.Http.prototype.__class__ = haxe.Http;
-JSView = function(x,y) {
+JSView = function(x,y,w,h) {
 	if( x === $_ ) return;
-	this.size = new RCSize(0,0);
+	this.size = new RCSize(w,h);
 	this.scaleX_ = 1;
 	this.scaleY_ = 1;
 	this.alpha_ = 1;
-	this.view = js.Lib.document.createElement("div");
-	this.view.style.position = "absolute";
-	this.view.style.margin = "0px 0px 0px 0px";
+	this.layer = js.Lib.document.createElement("div");
+	this.layer.style.position = "absolute";
+	this.layer.style.margin = "0px 0px 0px 0px";
 	this.setX(x);
 	this.setY(y);
 }
 JSView.__name__ = ["JSView"];
 JSView.prototype.parent = null;
-JSView.prototype.view = null;
+JSView.prototype.layer = null;
 JSView.prototype.size = null;
 JSView.prototype.center = null;
 JSView.prototype.clipsToBounds = null;
@@ -217,20 +166,20 @@ JSView.prototype.viewDidDisappearHandler = function() {
 JSView.prototype.addChild = function(child) {
 	if(child == null) return;
 	child.viewWillAppearHandler();
-	child.parent = this.view;
-	this.view.appendChild(child.view);
+	child.parent = this.layer;
+	this.layer.appendChild(child.layer);
 	child.viewDidAppearHandler();
 }
 JSView.prototype.removeChild = function(child) {
 	if(child == null) return;
 	child.viewWillDisappearHandler();
 	child.parent = null;
-	this.view.removeChild(child.view);
+	this.layer.removeChild(child.layer);
 	child.viewDidDisappearHandler();
 }
 JSView.prototype.setBackgroundColor = function(color) {
 	if(color == null) {
-		this.view.style.background = null;
+		this.layer.style.background = null;
 		return color;
 	}
 	var red = (color & 16711680) >> 16;
@@ -238,7 +187,7 @@ JSView.prototype.setBackgroundColor = function(color) {
 	var blue = color & 255;
 	var alpha = 1;
 	var color_ = "rgba(" + red + "," + green + "," + blue + "," + alpha + ")";
-	this.view.style.background = color_;
+	this.layer.style.background = color_;
 	return color;
 }
 JSView.prototype.setCenter = function(pos) {
@@ -249,17 +198,17 @@ JSView.prototype.setCenter = function(pos) {
 }
 JSView.prototype.setClipsToBounds = function(clip) {
 	if(clip) {
-		this.view.style.overflow = "hidden";
+		this.layer.style.overflow = "hidden";
 		this.viewMask = js.Lib.document.createElement("div");
 		this.viewMask.style.width = this.size.width + "px";
 		this.viewMask.style.height = this.size.height + "px";
-		while(this.view.hasChildNodes()) this.viewMask.appendChild(this.view.removeChild(this.view.firstChild));
-		this.view.appendChild(this.viewMask);
+		while(this.layer.hasChildNodes()) this.viewMask.appendChild(this.layer.removeChild(this.layer.firstChild));
+		this.layer.appendChild(this.viewMask);
 	} else {
-		this.view.style.overflow = null;
-		this.view.removeChild(this.viewMask);
-		while(this.viewMask.hasChildNodes()) this.view.appendChild(this.viewMask.removeChild(this.viewMask.firstChild));
-		this.viewMask = this.view;
+		this.layer.style.overflow = null;
+		this.layer.removeChild(this.viewMask);
+		while(this.viewMask.hasChildNodes()) this.layer.appendChild(this.viewMask.removeChild(this.viewMask.firstChild));
+		this.viewMask = this.layer;
 	}
 	return clip;
 }
@@ -297,48 +246,48 @@ JSView.prototype.destroy = function() {
 	CoreAnimation.remove(this.caobj);
 }
 JSView.prototype.removeFromSuperView = function() {
-	if(this.parent != null) this.parent.removeChild(this.view);
+	if(this.parent != null) this.parent.removeChild(this.layer);
 }
 JSView.prototype.setVisible = function(v) {
 	this.visible = v;
-	this.view.style.visibility = v?"visible":"hidden";
+	this.layer.style.visibility = v?"visible":"hidden";
 	return v;
 }
 JSView.prototype.setAlpha = function(a) {
 	this.alpha_ = a;
-	this.view.style.opacity = Std.string(a);
+	this.layer.style.opacity = Std.string(a);
 	return a;
 }
 JSView.prototype.setX = function(x) {
 	this.x = x;
-	this.view.style.left = Std.string(x) + "px";
+	this.layer.style.left = Std.string(x) + "px";
 	return x;
 }
 JSView.prototype.setY = function(y) {
 	this.y = y;
-	this.view.style.top = Std.string(y) + "px";
+	this.layer.style.top = Std.string(y) + "px";
 	return y;
 }
 JSView.prototype.getWidth = function() {
 	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the width will be 0",{ fileName : "JSView.hx", lineNumber : 226, className : "JSView", methodName : "getWidth"});
-	return this.view.offsetWidth;
-	return this.view.scrollWidth;
-	return this.view.clientWidth;
+	return this.layer.offsetWidth;
+	return this.layer.scrollWidth;
+	return this.layer.clientWidth;
 }
 JSView.prototype.setWidth = function(w) {
 	this.width = w;
-	this.view.style.width = w + "px";
+	this.layer.style.width = w + "px";
 	return w;
 }
 JSView.prototype.getHeight = function() {
-	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the height would be 0",{ fileName : "JSView.hx", lineNumber : 237, className : "JSView", methodName : "getHeight"});
-	return this.view.offsetHeight;
-	return this.view.scrollHeight;
-	return this.view.clientHeight;
+	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the height will be 0",{ fileName : "JSView.hx", lineNumber : 237, className : "JSView", methodName : "getHeight"});
+	return this.layer.offsetHeight;
+	return this.layer.scrollHeight;
+	return this.layer.clientHeight;
 }
 JSView.prototype.setHeight = function(h) {
 	this.height = h;
-	this.view.style.height = h + "px";
+	this.layer.style.height = h + "px";
 	return h;
 }
 JSView.prototype.setScaleX = function(sx) {
@@ -352,15 +301,15 @@ JSView.prototype.setScaleY = function(sy) {
 	return this.scaleY_;
 }
 JSView.prototype.scale = function(sx,sy) {
-	this.view.style.WebkitTransformOrigin = "top left";
-	this.view.style.WebkitTransform = "scale(" + sx + "," + sy + ")";
+	this.layer.style.WebkitTransformOrigin = "top left";
+	this.layer.style.WebkitTransform = "scale(" + sx + "," + sy + ")";
 }
 JSView.prototype.startDrag = function(lockCenter,rect) {
 }
 JSView.prototype.stopDrag = function() {
 }
 JSView.prototype.getMouseX = function() {
-	return this.view.clientX;
+	return this.layer.clientX;
 	if(this.parent == null) return this.mouseX;
 	return this.parent.mouseX - this.x;
 }
@@ -1224,38 +1173,38 @@ RCTextView.prototype.init = function() {
 RCTextView.prototype.redraw = function() {
 	var wrap = this.size.width != null;
 	var multiline = this.size.height != 0;
-	this.view.style.whiteSpace = wrap?"normal":"nowrap";
-	this.view.style.wordWrap = wrap?"break-word":"normal";
+	this.layer.style.whiteSpace = wrap?"normal":"nowrap";
+	this.layer.style.wordWrap = wrap?"break-word":"normal";
 	var style = this.rcfont.selectable?"text":"none";
-	this.view.style.WebkitUserSelect = style;
-	this.view.style.MozUserSelect = style;
-	this.view.style.lineHeight = this.rcfont.leading + this.rcfont.size + "px";
-	this.view.style.fontFamily = this.rcfont.font;
-	this.view.style.fontSize = this.rcfont.size + "px";
-	this.view.style.fontWeight = this.rcfont.bold?"bold":"normal";
-	this.view.style.fontStyle = this.rcfont.italic?"italic":"normal";
-	this.view.style.letterSpacing = this.rcfont.letterSpacing + "px";
-	this.view.style.textAlign = this.rcfont.align;
+	this.layer.style.WebkitUserSelect = style;
+	this.layer.style.MozUserSelect = style;
+	this.layer.style.lineHeight = this.rcfont.leading + this.rcfont.size + "px";
+	this.layer.style.fontFamily = this.rcfont.font;
+	this.layer.style.fontSize = this.rcfont.size + "px";
+	this.layer.style.fontWeight = this.rcfont.bold?"bold":"normal";
+	this.layer.style.fontStyle = this.rcfont.italic?"italic":"normal";
+	this.layer.style.letterSpacing = this.rcfont.letterSpacing + "px";
+	this.layer.style.textAlign = this.rcfont.align;
 	if(this.rcfont.autoSize) {
-		this.view.style.width = multiline?this.size.width + "px":"auto";
-		this.view.style.height = "auto";
+		this.layer.style.width = multiline?this.size.width + "px":"auto";
+		this.layer.style.height = "auto";
 	} else {
-		this.view.style.width = this.size.width + "px";
-		this.view.style.height = this.size.height + "px";
+		this.layer.style.width = this.size.width + "px";
+		this.layer.style.height = this.size.height + "px";
 	}
-	this.view.innerHTML = "";
-	this.view.style.color = RCColor.HEXtoString(this.rcfont.color);
-	this.view.style.fontFamily = this.rcfont.font;
-	this.view.style.fontWeight = this.rcfont.bold;
-	this.view.style.fontSize = this.rcfont.size;
-	this.view.style.fontStyle = this.rcfont.getStyleSheet();
+	this.layer.innerHTML = "";
+	this.layer.style.color = RCColor.HEXtoString(this.rcfont.color);
+	this.layer.style.fontFamily = this.rcfont.font;
+	this.layer.style.fontWeight = this.rcfont.bold;
+	this.layer.style.fontSize = this.rcfont.size;
+	this.layer.style.fontStyle = this.rcfont.getStyleSheet();
 	if(this.size.width != null) this.setWidth(this.size.width);
 }
 RCTextView.prototype.getText = function() {
-	return this.view.innerHTML;
+	return this.layer.innerHTML;
 }
 RCTextView.prototype.setText = function(str) {
-	if(this.rcfont.html) this.view.innerHTML = str; else this.view.innerHTML = str;
+	if(this.rcfont.html) this.layer.innerHTML = str; else this.layer.innerHTML = str;
 	return str;
 }
 RCTextView.prototype.wheelHandler = function(e) {
@@ -1620,7 +1569,7 @@ RCImage.prototype.initWithContentsOfFile = function(URL) {
 RCImage.prototype.completeHandler = function(e) {
 	this.size.width = this.lastW = this.setWidth(this.loader.width);
 	this.size.height = this.lastH = this.setHeight(this.loader.height);
-	this.view.appendChild(this.loader);
+	this.layer.appendChild(this.loader);
 	this.isLoaded = true;
 	this.onComplete();
 }
@@ -1675,8 +1624,8 @@ RCSwf.prototype.id_ = null;
 RCSwf.prototype.initWithContentsOfFile = function(URL) {
 	this.isLoaded = false;
 	this.percentLoaded = 0;
-	this.view.id = this.id_;
-	RCWindow.target.appendChild(this.view);
+	this.layer.id = this.id_;
+	RCWindow.target.appendChild(this.layer);
 	this.target = new js.SWFObject(URL,this.id_,500,400,"9","#cecece");
 	this.target.addParam("AllowScriptAccess","always");
 	this.target.addParam("AllowNetworking","all");
@@ -1942,7 +1891,7 @@ RCDraw = function(x,y,w,h,color,alpha) {
 	this.setAlpha(alpha);
 	this.borderThickness = 1;
 	try {
-		this.graphics = this.view;
+		this.graphics = view;
 	} catch( e ) {
 		haxe.Log.trace(e,{ fileName : "RCDraw.hx", lineNumber : 36, className : "RCDraw", methodName : "new"});
 	}
@@ -2005,7 +1954,7 @@ RCRectangle.prototype.redraw = function() {
 	if(strokeColorStyle != null) html += "border-style:solid; border-width:" + this.borderThickness + "px; border-color:" + strokeColorStyle + ";";
 	if(this.roundness != null) html += "-moz-border-radius:" + this.roundness / 2 + "px; border-radius:" + this.roundness / 2 + "px;";
 	html += "\"></div>";
-	this.view.innerHTML = html;
+	this.layer.innerHTML = html;
 }
 RCRectangle.prototype.__class__ = RCRectangle;
 RCRectangle.__interfaces__ = [RCDrawInterface];
@@ -2235,13 +2184,14 @@ EVMouse.__super__ = RCSignal;
 for(var k in RCSignal.prototype ) EVMouse.prototype[k] = RCSignal.prototype[k];
 EVMouse.prototype.target = null;
 EVMouse.prototype.type = null;
+EVMouse.prototype.e = null;
 EVMouse.prototype.targets = null;
 EVMouse.prototype.addEventListener = function(pos) {
 	var $it0 = this.targets.iterator();
 	while( $it0.hasNext() ) {
 		var t = $it0.next();
 		if(t.target == this.target && t.type == this.type) {
-			haxe.Log.trace("Target already in use by this event type. Called from " + pos,{ fileName : "EVMouse.hx", lineNumber : 70, className : "EVMouse", methodName : "addEventListener"});
+			haxe.Log.trace("Target already in use by this event type. Called from " + pos,{ fileName : "EVMouse.hx", lineNumber : 71, className : "EVMouse", methodName : "addEventListener"});
 			return t.instance;
 		}
 	}
@@ -2269,7 +2219,7 @@ EVMouse.prototype.addEventListener = function(pos) {
 		this.target.ondblclick = $closure(this,"mouseHandler");
 		break;
 	default:
-		haxe.Log.trace("The mouse event you're trying to add does not exist. " + pos,{ fileName : "EVMouse.hx", lineNumber : 83, className : "EVMouse", methodName : "addEventListener"});
+		haxe.Log.trace("The mouse event you're trying to add does not exist. " + pos,{ fileName : "EVMouse.hx", lineNumber : 84, className : "EVMouse", methodName : "addEventListener"});
 	}
 	return this;
 }
@@ -2299,7 +2249,7 @@ EVMouse.prototype.removeEventListener = function() {
 	}
 }
 EVMouse.prototype.mouseHandler = function(e) {
-	this.dispatch([this],{ fileName : "EVMouse.hx", lineNumber : 112, className : "EVMouse", methodName : "mouseHandler"});
+	this.dispatch([this],{ fileName : "EVMouse.hx", lineNumber : 113, className : "EVMouse", methodName : "mouseHandler"});
 }
 EVMouse.prototype.destroy = function() {
 	this.removeEventListener();
@@ -2453,14 +2403,14 @@ RCSlider.prototype.valueChanged = null;
 RCSlider.prototype.configureDispatchers = function() {
 	RCControl.prototype.configureDispatchers.call(this);
 	this.valueChanged = new RCSignal();
-	this.mouseUpOverStage_ = new EVMouse(EVMouse.UP,RCWindow.stage,{ fileName : "RCSlider.hx", lineNumber : 82, className : "RCSlider", methodName : "configureDispatchers"});
-	this.mouseMoveOverStage_ = new EVMouse(EVMouse.MOVE,RCWindow.stage,{ fileName : "RCSlider.hx", lineNumber : 83, className : "RCSlider", methodName : "configureDispatchers"});
+	this.mouseUpOverStage_ = new EVMouse(EVMouse.UP,RCWindow.stage,{ fileName : "RCSlider.hx", lineNumber : 71, className : "RCSlider", methodName : "configureDispatchers"});
+	this.mouseMoveOverStage_ = new EVMouse(EVMouse.MOVE,RCWindow.stage,{ fileName : "RCSlider.hx", lineNumber : 72, className : "RCSlider", methodName : "configureDispatchers"});
 }
 RCSlider.prototype.setEnabled = function(c) {
 	return this.enabled_ = false;
 }
 RCSlider.prototype.mouseDownHandler = function(e) {
-	haxe.Log.trace("mouseDownHandler",{ fileName : "RCSlider.hx", lineNumber : 98, className : "RCSlider", methodName : "mouseDownHandler"});
+	haxe.Log.trace("mouseDownHandler",{ fileName : "RCSlider.hx", lineNumber : 83, className : "RCSlider", methodName : "mouseDownHandler"});
 	this.moving_ = true;
 	this.mouseUpOverStage_.add($closure(this,"mouseUpHandler"));
 	this.mouseMoveOverStage_.add($closure(this,"mouseMoveHandler"));
@@ -2502,7 +2452,7 @@ RCSlider.prototype.setValue = function(v) {
 		this.scrubber.setY(Zeta.lineEquationInt(x1,x2,v,this.minValue_,this.maxValue_));
 		break;
 	}
-	this.valueChanged.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 159, className : "RCSlider", methodName : "setValue"});
+	this.valueChanged.dispatch([this],{ fileName : "RCSlider.hx", lineNumber : 144, className : "RCSlider", methodName : "setValue"});
 	return this.value_;
 }
 RCSlider.prototype.setMinValue = function(v) {
@@ -2844,8 +2794,8 @@ RCEllipse.prototype.fillEllipse = function(xc,yc,width,height) {
 			iHtml[iHtml.length] = "<DIV style=\"position:absolute;overflow:hidden;left:" + (xc - xp) + "px;top:" + (yc + y) + "px;width:" + (2 * x + 1) + "px;height:" + divHeight + "px;background-color:" + hexColor + "\"></DIV>";
 		}
 	}
-	this.view.innerHTML = iHtml.join("");
-	return this.view;
+	this.layer.innerHTML = iHtml.join("");
+	return this.layer;
 }
 RCEllipse.prototype.__class__ = RCEllipse;
 RCEllipse.__interfaces__ = [RCDrawInterface];
@@ -3103,7 +3053,7 @@ RCWindow.addChild = function(child) {
 	if(child != null) {
 		child.viewWillAppear();
 		child.parent = RCWindow.target;
-		RCWindow.target.appendChild(child.view);
+		RCWindow.target.appendChild(child.layer);
 		child.viewDidAppear();
 	}
 }
@@ -3111,7 +3061,7 @@ RCWindow.removeChild = function(child) {
 	if(child != null) {
 		child.viewWillDisappear();
 		child.parent = null;
-		RCWindow.target.removeChild(child.view);
+		RCWindow.target.removeChild(child.layer);
 		child.viewDidDisappear();
 	}
 }
@@ -3221,65 +3171,52 @@ RCKeys.prototype.__class__ = RCKeys;
 Keyboard = function() { }
 Keyboard.__name__ = ["Keyboard"];
 Keyboard.prototype.__class__ = Keyboard;
-RCSegmentedControl = function(x,y,w,h,constructor_) {
+RCSegmentedControl = function(x,y,w,h,skin) {
 	if( x === $_ ) return;
-	JSView.call(this,x,y);
-	this.size.width = w;
-	this.size.height = h;
-	this.constructButton = constructor_;
+	JSView.call(this,x,y,w,h);
+	this.skin = skin;
 	this.items = new HashArray();
 	this.click = new RCSignal();
 }
 RCSegmentedControl.__name__ = ["RCSegmentedControl"];
 RCSegmentedControl.__super__ = JSView;
 for(var k in JSView.prototype ) RCSegmentedControl.prototype[k] = JSView.prototype[k];
-RCSegmentedControl.prototype.constructButton = null;
+RCSegmentedControl.prototype.skin = null;
 RCSegmentedControl.prototype.labels = null;
 RCSegmentedControl.prototype.items = null;
-RCSegmentedControl.prototype.segmentWidth = null;
 RCSegmentedControl.prototype.gapX = null;
 RCSegmentedControl.prototype.gapY = null;
 RCSegmentedControl.prototype.click = null;
 RCSegmentedControl.prototype.selectedIndex = null;
-RCSegmentedControl.prototype.initWithLabels = function(labels,constructor_) {
+RCSegmentedControl.prototype.initWithLabels = function(labels) {
 	this.labels = labels;
-	var constructorNow = this.constructButton;
-	if(Reflect.isFunction(constructor_)) constructorNow = constructor_;
-	if(!Reflect.isFunction(constructorNow)) return;
 	var i = 0;
 	var _g = 0;
 	while(_g < labels.length) {
 		var label = labels[_g];
 		++_g;
 		if(this.items.exists(label)) continue;
-		var b = constructorNow(i);
+		var b = this.constructButton(i);
 		b.click.add($closure(this,"clickHandler"));
 		this.items.set(label,b);
 		i++;
 	}
 	this.keepButtonsArranged();
 }
-RCSegmentedControl.prototype.defaultConstructor = function(i) {
-	var segmentLeft;
-	var segmentMiddle;
-	var segmentRight;
+RCSegmentedControl.prototype.constructButton = function(i) {
+	var position = "left";
 	switch(i) {
 	case 0:
-		segmentLeft = "L";
-		segmentMiddle = "M";
-		segmentRight = "MR";
+		position = "left";
 		break;
 	case this.items.arr.length - 1:
-		segmentLeft = "ML";
-		segmentMiddle = "M";
-		segmentRight = "R";
+		position = "right";
 		break;
 	default:
-		segmentLeft = "ML";
-		segmentMiddle = "M";
-		segmentRight = "MR";
+		position = "middle";
 	}
-	var s = new ios.SKSegment(this.labels[i],this.segmentWidth,this.size.height,segmentLeft,segmentMiddle,segmentRight,null);
+	var segmentWidth = Math.round(this.size.width / this.items.arr.length);
+	var s = new ios.SKSegment(this.labels[i],segmentWidth,this.size.height,position,null);
 	var b = new RCButtonRadio(0,0,s);
 	return b;
 }
@@ -3292,7 +3229,7 @@ RCSegmentedControl.prototype.setIndex = function(i) {
 }
 RCSegmentedControl.prototype.remove = function(label) {
 	if(this.items.exists(label)) {
-		Fugu.safeDestroy(this.items.get(label),null,{ fileName : "RCSegmentedControl.hx", lineNumber : 98, className : "RCSegmentedControl", methodName : "remove"});
+		Fugu.safeDestroy(this.items.get(label),null,{ fileName : "RCSegmentedControl.hx", lineNumber : 86, className : "RCSegmentedControl", methodName : "remove"});
 		this.items.remove(label);
 	}
 	this.keepButtonsArranged();
@@ -3300,7 +3237,7 @@ RCSegmentedControl.prototype.remove = function(label) {
 RCSegmentedControl.prototype.update = function(labels,constructor_) {
 	this.destroy();
 	this.items = new HashArray();
-	this.initWithLabels(labels,constructor_);
+	this.initWithLabels(labels);
 }
 RCSegmentedControl.prototype.keepButtonsArranged = function() {
 	var _g1 = 0, _g = this.items.array().length;
@@ -3355,14 +3292,6 @@ RCSegmentedControl.prototype.get = function(label) {
 RCSegmentedControl.prototype.exists = function(key) {
 	return this.items.exists(key);
 }
-RCSegmentedControl.prototype.enable = function(label) {
-	this.items.get(label).unlock();
-	this.items.get(label).setAlpha(1);
-}
-RCSegmentedControl.prototype.disable = function(label) {
-	this.items.get(label).lock();
-	this.items.get(label).setAlpha(0.4);
-}
 RCSegmentedControl.prototype.clickHandler = function(b) {
 }
 RCSegmentedControl.prototype.destroy = function() {
@@ -3370,10 +3299,12 @@ RCSegmentedControl.prototype.destroy = function() {
 		var $it0 = this.items.keys();
 		while( $it0.hasNext() ) {
 			var key = $it0.next();
-			Fugu.safeDestroy(this.items.get(key),null,{ fileName : "RCSegmentedControl.hx", lineNumber : 225, className : "RCSegmentedControl", methodName : "destroy"});
+			Fugu.safeDestroy(this.items.get(key),null,{ fileName : "RCSegmentedControl.hx", lineNumber : 213, className : "RCSegmentedControl", methodName : "destroy"});
 		}
 	}
 	this.items = null;
+	this.click.destroy();
+	JSView.prototype.destroy.call(this);
 }
 RCSegmentedControl.prototype.__class__ = RCSegmentedControl;
 RCGroup = function(x,y,gapX,gapY,constructor_) {
@@ -3458,7 +3389,7 @@ RCLine.__super__ = RCDraw;
 for(var k in RCDraw.prototype ) RCLine.prototype[k] = RCDraw.prototype[k];
 RCLine.prototype.lineWeight = null;
 RCLine.prototype.redraw = function() {
-	this.view.innerHTML = "";
+	this.layer.innerHTML = "";
 	this.drawLine(0,0,Math.round(this.size.width),Math.round(this.size.height));
 }
 RCLine.prototype.drawLine = function(x0,y0,x1,y1) {
@@ -3470,12 +3401,12 @@ RCLine.prototype.drawLine = function(x0,y0,x1,y1) {
 		return $r;
 	}(this))).fillColorStyle;
 	if(y0 == y1) {
-		if(x0 <= x1) this.view.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:" + x0 + "px;top:" + y0 + "px;width:" + (x1 - x0 + 1) + "px;height:" + this.lineWeight + ";background-color:" + hexColor + "\"></DIV>"; else if(x0 > x1) this.view.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:" + x1 + "px;top:" + y0 + "px;width:" + (x0 - x1 + 1) + "px;height:" + this.lineWeight + ";background-color:" + hexColor + "\"></DIV>";
-		return this.view;
+		if(x0 <= x1) this.layer.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:" + x0 + "px;top:" + y0 + "px;width:" + (x1 - x0 + 1) + "px;height:" + this.lineWeight + ";background-color:" + hexColor + "\"></DIV>"; else if(x0 > x1) this.layer.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:" + x1 + "px;top:" + y0 + "px;width:" + (x0 - x1 + 1) + "px;height:" + this.lineWeight + ";background-color:" + hexColor + "\"></DIV>";
+		return this.layer;
 	}
 	if(x0 == x1) {
-		if(y0 <= y1) this.view.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:" + x0 + "px;top:" + y0 + "px;width:" + this.lineWeight + ";height:" + (y1 - y0 + 1) + "px;background-color:" + hexColor + "\"></DIV>"; else if(y0 > y1) this.view.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:" + x0 + "px;top:" + y1 + "px;width:" + this.lineWeight + ";height:" + (y0 - y1 + 1) + "px;background-color:" + hexColor + "\"></DIV>";
-		return this.view;
+		if(y0 <= y1) this.layer.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:" + x0 + "px;top:" + y0 + "px;width:" + this.lineWeight + ";height:" + (y1 - y0 + 1) + "px;background-color:" + hexColor + "\"></DIV>"; else if(y0 > y1) this.layer.innerHTML = "<DIV style=\"position:absolute;overflow:hidden;left:" + x0 + "px;top:" + y1 + "px;width:" + this.lineWeight + ";height:" + (y0 - y1 + 1) + "px;background-color:" + hexColor + "\"></DIV>";
+		return this.layer;
 	}
 	var iHtml = new Array();
 	var yArray = new Array();
@@ -3563,8 +3494,8 @@ RCLine.prototype.drawLine = function(x0,y0,x1,y1) {
 			error = error + deltax;
 		}
 	}
-	this.view.innerHTML = iHtml.join("");
-	return this.view;
+	this.layer.innerHTML = iHtml.join("");
+	return this.layer;
 }
 RCLine.prototype.__class__ = RCLine;
 RCLine.__interfaces__ = [RCDrawInterface];
@@ -3674,15 +3605,34 @@ RCIndexPath.prototype.toString = function() {
 }
 RCIndexPath.prototype.__class__ = RCIndexPath;
 if(typeof ios=='undefined') ios = {}
-ios.SKSegment = function(label,w,h,posLeft,posMiddle,posRight,colors) {
+ios.SKSegment = function(label,w,h,pos,colors) {
 	if( label === $_ ) return;
 	RCSkin.call(this,colors);
-	var segLeft = new RCAttach(0,0,"Segment" + posLeft);
-	var segMiddle = new RCAttach(0,0,"Segment" + posMiddle);
-	var segRight = new RCAttach(0,0,"Segment" + posRight);
-	var segLeftSelected = new RCAttach(0,0,"Segment" + posLeft + "Selected");
-	var segMiddleSelected = new RCAttach(0,0,"Segment" + posMiddle + "Selected");
-	var segRightSelected = new RCAttach(0,0,"Segment" + posRight + "Selected");
+	var segmentLeft;
+	var segmentMiddle;
+	var segmentRight;
+	switch(pos) {
+	case "left":
+		segmentLeft = "L";
+		segmentMiddle = "M";
+		segmentRight = "MR";
+		break;
+	case "right":
+		segmentLeft = "ML";
+		segmentMiddle = "M";
+		segmentRight = "R";
+		break;
+	default:
+		segmentLeft = "ML";
+		segmentMiddle = "M";
+		segmentRight = "MR";
+	}
+	var segLeft = new RCAttach(0,0,"Segment" + segmentLeft);
+	var segMiddle = new RCAttach(0,0,"Segment" + segmentMiddle);
+	var segRight = new RCAttach(0,0,"Segment" + segmentRight);
+	var segLeftSelected = new RCAttach(0,0,"Segment" + segmentLeft + "Selected");
+	var segMiddleSelected = new RCAttach(0,0,"Segment" + segmentMiddle + "Selected");
+	var segRightSelected = new RCAttach(0,0,"Segment" + segmentRight + "Selected");
 	segLeft.setX(0);
 	segMiddle.setX(segLeft.getWidth());
 	segMiddle.setWidth(w - segLeft.getWidth() - segRight.getWidth());
@@ -3691,16 +3641,17 @@ ios.SKSegment = function(label,w,h,posLeft,posMiddle,posRight,colors) {
 	segMiddleSelected.setX(segLeftSelected.getWidth());
 	segMiddleSelected.setWidth(w - segLeftSelected.getWidth() - segRightSelected.getWidth());
 	segRightSelected.setX(w - segRightSelected.getWidth());
+	var font = RCFont.boldSystemFontOfSize(25);
 	this.normal.background = new JSView(0,0);
 	this.normal.background.addChild(segLeft);
 	this.normal.background.addChild(segMiddle);
 	this.normal.background.addChild(segRight);
-	this.normal.background.addChild(new RCTextView(0,28,w,30,label,RCFontManager.getFont("bold",{ size : 25, color : 7829367, align : "center"})));
+	this.normal.label = new RCTextView(0,28,w,30,label,font);
 	this.highlighted.background = new JSView(0,0);
 	this.highlighted.background.addChild(segLeftSelected);
 	this.highlighted.background.addChild(segMiddleSelected);
 	this.highlighted.background.addChild(segRightSelected);
-	this.highlighted.background.addChild(new RCTextView(0,28,w,30,label,RCFontManager.getFont("bold",{ size : 25, color : 16777215, align : "center"})));
+	this.highlighted.label = new RCTextView(0,28,w,30,label,font);
 	this.hit = new RCRectangle(0,0,w,h,0,0);
 }
 ios.SKSegment.__name__ = ["ios","SKSegment"];
@@ -4146,20 +4097,19 @@ Main.lin = null;
 Main.ph = null;
 Main.circ = null;
 Main.req = null;
-Main.signal = null;
 Main.main = function() {
 	haxe.Firebug.redirectTraces();
-	haxe.Log.trace("JS",{ fileName : "Main.hx", lineNumber : 22, className : "Main", methodName : "main"});
+	haxe.Log.trace("JS",{ fileName : "Main.hx", lineNumber : 21, className : "Main", methodName : "main"});
 	try {
-		haxe.Log.trace("BEGIN",{ fileName : "Main.hx", lineNumber : 23, className : "Main", methodName : "main"});
+		haxe.Log.trace("BEGIN",{ fileName : "Main.hx", lineNumber : 22, className : "Main", methodName : "main"});
 		RCWindow.init();
 		RCWindow.setBackgroundColor(14540253);
 		RCFontManager.init();
 		RCAssets.loadFileWithKey("photo","../CoreAnimation/3134265_large.jpg");
 		RCAssets.loadFileWithKey("some_text","data.txt");
 		RCAssets.onComplete = function() {
-			haxe.Log.trace("RCAssets did finish loading assets",{ fileName : "Main.hx", lineNumber : 31, className : "Main", methodName : "main"});
-			haxe.Log.trace(RCAssets.getFileWithKey("some_text"),{ fileName : "Main.hx", lineNumber : 31, className : "Main", methodName : "main"});
+			haxe.Log.trace("RCAssets did finish loading assets",{ fileName : "Main.hx", lineNumber : 30, className : "Main", methodName : "main"});
+			haxe.Log.trace(RCAssets.getFileWithKey("some_text"),{ fileName : "Main.hx", lineNumber : 30, className : "Main", methodName : "main"});
 		};
 		var rect = new RCRectangle(0,0,300,150,RCColor.greenColor());
 		RCWindow.addChild(rect);
@@ -4167,12 +4117,14 @@ Main.main = function() {
 		rect.setCenter(new RCPoint(RCWindow.width / 2,RCWindow.height / 2));
 		Main.circ = new RCEllipse(0,0,100,100,RCColor.darkGrayColor());
 		RCWindow.addChild(Main.circ);
-		var a1 = new CATween(Main.circ,{ x : RCWindow.width - 100, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 43, className : "Main", methodName : "main"});
-		var a2 = new CATween(Main.circ,{ x : RCWindow.width - 100, y : RCWindow.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 44, className : "Main", methodName : "main"});
-		var a3 = new CATween(Main.circ,{ x : 0, y : RCWindow.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 45, className : "Main", methodName : "main"});
-		var a4 = new CATween(Main.circ,{ x : 0, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 46, className : "Main", methodName : "main"});
+		var a1 = new CATween(Main.circ,{ x : RCWindow.width - 100, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 42, className : "Main", methodName : "main"});
+		var a2 = new CATween(Main.circ,{ x : RCWindow.width - 100, y : RCWindow.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 43, className : "Main", methodName : "main"});
+		var a3 = new CATween(Main.circ,{ x : 0, y : RCWindow.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 44, className : "Main", methodName : "main"});
+		var a4 = new CATween(Main.circ,{ x : 0, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 45, className : "Main", methodName : "main"});
 		var seq = new CASequence([a1,a2,a3,a4]);
 		seq.start();
+		Main.lin = new RCLine(30,300,400,600,16724736);
+		RCWindow.addChild(Main.lin);
 		Main.ph = new RCImage(1,1,"../CoreAnimation/3134265_large.jpg");
 		Main.ph.onComplete = Main.resizePhoto;
 		rect.addChild(Main.ph);
@@ -4193,63 +4145,51 @@ Main.main = function() {
 		var k = new RCKeys();
 		k.onLeft = Main.moveLeft;
 		k.onRight = Main.moveRight;
-		var m = new RCMouse(rect.view);
-		m.onOver = function() {
-			haxe.Log.trace("onOver",{ fileName : "Main.hx", lineNumber : 79, className : "Main", methodName : "main"});
-		};
-		Main.signal = new RCSignal();
-		Main.signal.add(Main.printNr);
-		Main.signal.addOnce(Main.printNr2,{ fileName : "Main.hx", lineNumber : 83, className : "Main", methodName : "main"});
-		Main.signal.remove(Main.printNr);
-		Main.signal.removeAll();
-		var _g = 0;
-		while(_g < 5) {
-			var i = _g++;
-			Main.signal.dispatch([Math.random()],{ fileName : "Main.hx", lineNumber : 88, className : "Main", methodName : "main"});
-		}
+		var m = new EVMouse(EVMouse.OVER,rect.layer,{ fileName : "Main.hx", lineNumber : 77, className : "Main", methodName : "main"});
+		m.add(function(_) {
+			haxe.Log.trace("onOver",{ fileName : "Main.hx", lineNumber : 78, className : "Main", methodName : "main"});
+		});
+		Main.testSignals();
 		var s = new haxe.SKButton("Play");
 		var b = new RCButton(50,200,s);
 		b.onClick = function() {
-			haxe.Log.trace("click",{ fileName : "Main.hx", lineNumber : 101, className : "Main", methodName : "main"});
+			haxe.Log.trace("click",{ fileName : "Main.hx", lineNumber : 93, className : "Main", methodName : "main"});
 		};
 		b.onOver = function() {
-			haxe.Log.trace("over",{ fileName : "Main.hx", lineNumber : 102, className : "Main", methodName : "main"});
+			haxe.Log.trace("over",{ fileName : "Main.hx", lineNumber : 94, className : "Main", methodName : "main"});
 		};
 		b.onOut = function() {
-			haxe.Log.trace("out",{ fileName : "Main.hx", lineNumber : 103, className : "Main", methodName : "main"});
+			haxe.Log.trace("out",{ fileName : "Main.hx", lineNumber : 95, className : "Main", methodName : "main"});
 		};
 		b.onPress = function() {
-			haxe.Log.trace("press",{ fileName : "Main.hx", lineNumber : 104, className : "Main", methodName : "main"});
+			haxe.Log.trace("press",{ fileName : "Main.hx", lineNumber : 96, className : "Main", methodName : "main"});
 		};
 		b.onRelease = function() {
-			haxe.Log.trace("release",{ fileName : "Main.hx", lineNumber : 105, className : "Main", methodName : "main"});
+			haxe.Log.trace("release",{ fileName : "Main.hx", lineNumber : 97, className : "Main", methodName : "main"});
 		};
 		RCWindow.addChild(b);
 		var s1 = new haxe.SKButtonRadio();
 		var b1 = new RCButtonRadio(200,200,s1);
 		RCWindow.addChild(b1);
-		haxe.Log.trace("1",{ fileName : "Main.hx", lineNumber : 111, className : "Main", methodName : "main"});
 		var group = new RCGroup(200,230,10,null,Main.createRadioButton);
 		RCWindow.addChild(group);
 		group.add([1,2,3,4,5,5]);
-		haxe.Log.trace("1",{ fileName : "Main.hx", lineNumber : 115, className : "Main", methodName : "main"});
-		var group1 = new RCSegmentedControl(200,300,10,null,Main.createRadioButton2);
-		RCWindow.addChild(group1);
-		group1.initWithLabels(["1","2","3","4","5"]);
-		haxe.Log.trace("1",{ fileName : "Main.hx", lineNumber : 119, className : "Main", methodName : "main"});
+		var seg = new RCSegmentedControl(200,300,160,50,ios.SKSegment);
+		RCWindow.addChild(seg);
+		seg.initWithLabels(["Masculin","Feminin"]);
 		var s2 = new haxe.SKSlider();
 		var sl = new RCSlider(50,250,160,10,s2);
 		RCWindow.addChild(sl);
 		sl.setValue(30);
 		Main.req = new HTTPRequest();
 		Main.req.onComplete = function() {
-			haxe.Log.trace(Main.req.result,{ fileName : "Main.hx", lineNumber : 132, className : "Main", methodName : "main"});
+			haxe.Log.trace(Main.req.result,{ fileName : "Main.hx", lineNumber : 124, className : "Main", methodName : "main"});
 		};
 		Main.req.onError = function() {
-			haxe.Log.trace(Main.req.result,{ fileName : "Main.hx", lineNumber : 133, className : "Main", methodName : "main"});
+			haxe.Log.trace(Main.req.result,{ fileName : "Main.hx", lineNumber : 125, className : "Main", methodName : "main"});
 		};
 		Main.req.onStatus = function() {
-			haxe.Log.trace(Main.req.status,{ fileName : "Main.hx", lineNumber : 134, className : "Main", methodName : "main"});
+			haxe.Log.trace(Main.req.status,{ fileName : "Main.hx", lineNumber : 126, className : "Main", methodName : "main"});
 		};
 		Main.req.readFile("data.txt");
 	} catch( e ) {
@@ -4257,36 +4197,31 @@ Main.main = function() {
 	}
 }
 Main.createRadioButton = function(indexPath) {
-	haxe.Log.trace(indexPath,{ fileName : "Main.hx", lineNumber : 140, className : "Main", methodName : "createRadioButton"});
 	var s = new haxe.SKButtonRadio();
 	var b = new RCButtonRadio(0,0,s);
 	return b;
 }
-Main.createRadioButton2 = function(i) {
+Main.createSegmentButton = function(i) {
 	var s = new haxe.SKButton("lklklk" + Std.random(10));
 	var b = new RCButtonRadio(0,0,s);
 	return b;
 }
 Main.resizePhoto = function() {
-	haxe.Log.trace("onComplete",{ fileName : "Main.hx", lineNumber : 161, className : "Main", methodName : "resizePhoto"});
-	haxe.Log.trace(Main.ph.getWidth(),{ fileName : "Main.hx", lineNumber : 162, className : "Main", methodName : "resizePhoto"});
-	haxe.Log.trace(Main.ph.size.width,{ fileName : "Main.hx", lineNumber : 163, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace("onComplete image",{ fileName : "Main.hx", lineNumber : 152, className : "Main", methodName : "resizePhoto"});
 	Main.ph.scaleToFill(298,148);
 	var ph2 = Main.ph.copy();
-	haxe.Log.trace(ph2,{ fileName : "Main.hx", lineNumber : 167, className : "Main", methodName : "resizePhoto"});
 	ph2.setX(800);
 	RCWindow.addChild(ph2);
-	return;
-	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 172, className : "Main", methodName : "resizePhoto"});
+	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 163, className : "Main", methodName : "resizePhoto"});
 	anim.repeatCount = 5;
 	anim.autoreverses = true;
 	CoreAnimation.add(anim);
 }
 Main.printNr = function(nr) {
-	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 179, className : "Main", methodName : "printNr"});
+	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 170, className : "Main", methodName : "printNr"});
 }
 Main.printNr2 = function(nr) {
-	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 182, className : "Main", methodName : "printNr2"});
+	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 173, className : "Main", methodName : "printNr2"});
 }
 Main.moveLeft = function() {
 	var _g = Main.circ;
@@ -4295,6 +4230,19 @@ Main.moveLeft = function() {
 Main.moveRight = function() {
 	var _g = Main.circ;
 	_g.setX(_g.x + 10);
+}
+Main.signal = null;
+Main.testSignals = function() {
+	Main.signal = new RCSignal();
+	Main.signal.add(Main.printNr);
+	Main.signal.addOnce(Main.printNr2,{ fileName : "Main.hx", lineNumber : 187, className : "Main", methodName : "testSignals"});
+	Main.signal.remove(Main.printNr);
+	Main.signal.removeAll();
+	var _g = 0;
+	while(_g < 5) {
+		var i = _g++;
+		Main.signal.dispatch([Math.random()],{ fileName : "Main.hx", lineNumber : 191, className : "Main", methodName : "testSignals"});
+	}
 }
 Main.prototype.__class__ = Main;
 haxe.Unserializer = function(buf) {

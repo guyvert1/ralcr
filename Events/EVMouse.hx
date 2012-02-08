@@ -22,6 +22,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 	
 	public var target :DisplayObjectContainer;
 	public var type :String;
+	public var e :MouseEvent;
 	
 	#if js
 		// JS events do not permit to attach more than one listeners to a target

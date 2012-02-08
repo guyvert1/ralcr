@@ -5,18 +5,7 @@
 //  Copyright (c) 2008-2012 milc.ro. All rights reserved.
 //
 
-#if (flash || nme)
-	import flash.display.DisplayObjectContainer;
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-	import flash.geom.Rectangle;
-#elseif js
-	import js.Dom;
-	import RCControl;
-	private typedef DisplayObjectContainer = JSView;
-	private typedef MouseEvent = Event;
-	private typedef Rectangle = RCRect;
-#end
+import RCControl;
 
 private enum Direction {
 	HORIZONTAL;
@@ -39,8 +28,8 @@ class RCSlider extends RCControl {
 	public var value (getValue, setValue) :Float;// default 0.0. this value will be pinned to min/max
 	public var minimumValueImage (default, setMinimumValueImage) :RCImage;// default is nil
 	public var maximumValueImage (default, setMaximumValueImage) :RCImage;
-	public var background :DisplayObjectContainer;
-	public var scrubber :DisplayObjectContainer;
+	public var background :RCView;
+	public var scrubber :RCView;
 
 	public var valueChanged :RCSignal<RCSlider->Void>;// sliders, etc.
 	
@@ -81,10 +70,6 @@ class RCSlider extends RCControl {
 		valueChanged = new RCSignal<RCSlider->Void>();
 		mouseUpOverStage_ = new EVMouse (EVMouse.UP, RCWindow.stage);
 		mouseMoveOverStage_ = new EVMouse (EVMouse.MOVE, RCWindow.stage);
-		//RCWindow.target/js
-/*		var m2 = new EVMouse (EVMouse.MOVE, RCWindow.stage);
-		trace(mouseMoveOverStage_ == m2);
-		trace(Reflect.compareMethods(m2, mouseMoveOverStage_));*/
 	}
 	override function setEnabled (c:Bool) :Bool {
 		return enabled_ = false;// The slider does not listen for the events on the entire object, but for the scrubber

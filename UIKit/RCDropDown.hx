@@ -1,144 +1,137 @@
 //
-//  DropDown is a group of buttons that are masked and only the selected one is shown
+//  RCDropDown is a group of RCButtons that are masked and only the selected one is shown
 //	When you click it all values drops down and you can select a new value
 //
 //  Created by Baluta Cristian on 2008-07-23.
 //  Copyright (c) 2008 milc.ro. All rights reserved.
 //  Copyright (c) 2010-2012 ralcr.com. All rights reserved.
 //
-import flash.display.Sprite;
-import flash.display.DisplayObjectContainer;
-import flash.display.DisplayObject;
-import flash.events.Event;
-import flash.events.MouseEvent;
 
-
-class RCDropDown<T:RCControl> extends RCView {
+class RCDropDown extends RCView {
 	
-	var background :DisplayObjectContainer;
+	var background :RCRectangle;
 	var scrollView :RCScrollView;
 	
-	var container_mc :Sprite;
-	var mask_mc :DisplayObjectContainer;
-	var open_but :DisplayObjectContainer;// symbol from Skin
-	var selected_but :T;
-	var group :RCGroupButtons<T>;
+	var open_but :RCButton;// symbol from Skin
 	
 	var labels :Array<String>;
-	var w :Int;
-	var h :Int;
+	var items :RCGroup<RCButton>;
+	var currentItem :RCButton;
+	
 	var maxLines :Int; // max number of lines that should display when opening the drop down
-	var button :String->T;
+	var button :String->RCButton;
 	
-	public var label :String; // selected label
-	dynamic public function dropDownDidOpen():Void {}
-	dynamic public function dropDownDidClose():Void {}
-	dynamic public function onClick():Void {}
+	public var dropDownDidOpen :RCSignal<RCDropDown>;
+	public var dropDownDidClose :RCSignal<RCDropDown>;
+	public var itemDidSelect :RCSignal<RCDropDown->String->Void>;
 	
 	
-	public function new (x, y, w:Int, h:Int, maxLines:Int, labels:Array<String>, skin:RCSkin, button:String->T) {
-		super();
+	public function new (x, y, w:Int, h:Int, skin:RCSkin) {
+		super (x, y);
 		
-		this.x = x;
-		this.y = y;
-		this.w = w;
-		this.h = h;
-		this.maxLines = maxLines;
-		this.button = button;
-		this.labels = labels;
+		this.size.width = w;
+		this.size.height = h;
+		//
+		//this.button = button;
 		
-		background = skin.background;
-		open_but = skin.up; // use the symbol as a button
-		mask_mc = skin.hit; // use the hitArea as a mask over container_mc
+		
+		//background = skin.background;
+		//open_but = skin.up; // use the symbol as a button
+		//mask_mc = skin.hit; // use the hitArea as a mask over container_mc
 		
 		// add selected value
-		select ( labels[0] );
+		//select ( labels[0] );
 	}
-	
+	public function init (labels:Array<String>, ?maxLines:Int=10) :Void {
+		this.labels = labels;
+		this.maxLines = maxLines;
+	}
 	
 	/**
 	 * Add the button with the current label
 	 */
 	public function select (label:String) :Void {
-		clean();
-		this.label = label;
+		closeDropDown();
 		
-		selected_but = this.button (label);
-		selected_but.onClick = addDropDown;
-		
-		this.addChild (selected_but);
+		currentItem = this.button (label);
+		currentItem.onClick = openDropDown;
+		this.addChild ( currentItem );
 		//this.addChild (open_but);
 	}
 	
-	function addDropDown () :Void {
-		clean();
-		dropDownDidOpen();
+	public function openDropDown () :Void {
+		//currentItem();
+		dropDownDidOpen.dispatch([this]);
 		
-		container_mc = new Sprite();
+/*		container_mc = new Sprite();
 		container_mc.addChild (background);
 		this.addChild (container_mc);
 		this.addChild (mask_mc);
-		container_mc.mask = mask_mc;
+		container_mc.mask = mask_mc;*/
 		
-		group = new RCGroupButtons<T> (0, 0, null, 0, this.button);
+/*		group = new RCGroupButtons<T> (0, 0, null, 0, this.button);
 		group.add (labels);
 		group.addEventListener (GroupEvent.CLICK, onClickHandler);
-		container_mc.addChild (group);
+		container_mc.addChild (group);*/
 		
 		// resize the background and the mask if is bigger than the group height
-		if (group.height < background.height) {
-			background.height = group.height;
-			mask_mc.height = group.height;
+		if (items.height < background.height) {
+			background.height = items.height;
+			//mask_mc.height = group.height;
 		}
 		
-		mask_mc.y = -mask_mc.height;
+		//mask_mc.y = -mask_mc.height;
 		//Tweener.addTween (mask_mc, {y:0, time:0.4});
 		
-		container_mc.addEventListener (MouseEvent.MOUSE_OVER, mouseOverHandler);
-		
+		//container_mc.addEventListener (MouseEvent.MOUSE_OVER, mouseOverHandler);
 	}
-	function onClickHandler (e:GroupEvent) :Void {trace(e.label);
-		select (e.label);
+	public function closeDropDown () :Void {
+/*		if (container_mc != null) {
+			//container_mc.removeEventListener (MouseEvent.MOUSE_OVER, mouseOverHandler);
+			//container_mc.removeEventListener (MouseEvent.ROLL_OUT, mouseOutHandler);
+			//container_mc.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+		}*/
+		
+/*		Fugu.safeRemove ([container_mc, mask_mc, background]);
+		Fugu.safeDestroy (group);
+		Fugu.safeRemove (selected_but);
+		group = null;
+		selected_but = null;
+		container_mc = null;*/
 	}
 	
-	function mouseOverHandler (e:MouseEvent) :Void {trace("over");
-		container_mc.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
-		container_mc.addEventListener (MouseEvent.ROLL_OUT, mouseOutHandler);
+	
+	
+	function onClickHandler (e:EVMouse) :Void {
+		//select (e.label);
 	}
-	function mouseOutHandler (e:MouseEvent) :Void {trace("mouesout");
-		clean();
-		select (label);
+	function mouseOverHandler (e:EVMouse) :Void {trace("over");
+		//container_mc.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+		//container_mc.addEventListener (MouseEvent.ROLL_OUT, mouseOutHandler);
 	}
-	function mouseMoveHandler (e:MouseEvent) :Void {
+	function mouseOutHandler (e:EVMouse) :Void {trace("mouesout");
+		closeDropDown();
+		//select (label);
+	}
+	function mouseMoveHandler (e:EVMouse) :Void {
 		var xm1 = 10;
 		var xm2 = background.height - 10;
 		var xm  = background.mouseY;
 		if (xm < xm1) xm = xm1;
 		if (xm > xm2) xm = xm2;
 		var x1  = 0;
-		var x2  = x1 - group.height + background.height;
+		var x2  = x1 - items.height + background.height;
 		
-		group.y = Zeta.lineEquationInt (x1,x2, xm,xm1,xm2);
+		items.y = Zeta.lineEquationInt (x1,x2, xm,xm1,xm2);
 	}
 	
 	
 	// clean mess
-	function clean () :Void {
-		if (container_mc != null) {
-			container_mc.removeEventListener (MouseEvent.MOUSE_OVER, mouseOverHandler);
-			container_mc.removeEventListener (MouseEvent.ROLL_OUT, mouseOutHandler);
-			container_mc.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
-		}
-		
-		Fugu.safeRemove ([container_mc, mask_mc, background]);
-		Fugu.safeDestroy (group);
-		Fugu.safeRemove (selected_but);
-		group = null;
-		selected_but = null;
-		container_mc = null;
-	}
 	
-	public function destroy () :Void {
-		clean();
+	
+	override public function destroy () :Void {
+		closeDropDown();
+		
+		super.destroy();
 	}
 }

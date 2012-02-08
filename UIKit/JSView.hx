@@ -4,13 +4,14 @@
 //  Created by Baluta Cristian on 2011-11-12.
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
+
 import js.Lib;
 import js.Dom;
 
 class JSView {
 	
 	public var parent :HtmlDom;
-	public var view :HtmlDom;
+	public var layer :HtmlDom;
 	public var size :RCSize; // Real size of the view
 	public var center (default, setCenter) :RCPoint;
 	public var clipsToBounds (default, setClipsToBounds) :Bool;
@@ -46,23 +47,23 @@ class JSView {
 	
 	
 	
-	public function new (x, y) {
+	public function new (x, y, ?w, ?h) {
 		
-		size = new RCSize (0, 0);
+		size = new RCSize (w, h);
 		scaleX_ = 1;
 		scaleY_ = 1;
 		alpha_ = 1;
 		//visible = true;
 		
 		#if canvas
-			view = Lib.document.createElement("canvas");
-			graphics = untyped view.getContext('2d');
+			layer = Lib.document.createElement("canvas");
+			graphics = untyped layer.getContext('2d');
 		#else
-			view = Lib.document.createElement("div");
+			layer = Lib.document.createElement("div");
 		#end
 		
-		view.style.position = "absolute";
-		view.style.margin = "0px 0px 0px 0px";
+		layer.style.position = "absolute";
+		layer.style.margin = "0px 0px 0px 0px";
 		
 		setX(x);
 		setY(y);
@@ -70,15 +71,15 @@ class JSView {
 	public function addChild (child:JSView) :Void {
 		if (child == null) return;
 		child.viewWillAppearHandler();
-		child.parent = view;
-		view.appendChild ( child.view );
+		child.parent = layer;
+		layer.appendChild ( child.layer );
 		child.viewDidAppearHandler();
 	}
 	public function removeChild (child:JSView) :Void {
 		if (child == null) return;
 		child.viewWillDisappearHandler();
 		child.parent = null;
-		view.removeChild ( child.view );
+		layer.removeChild ( child.layer );
 		child.viewDidDisappearHandler();
 	}
 	
@@ -86,9 +87,8 @@ class JSView {
 	 *  Change the color of the background
 	 */
 	public function setBackgroundColor (color:Null<Int>) :Null<Int> {
-		
 		if (color == null) {
-			view.style.background = null;
+			layer.style.background = null;
 			return color;
 		}
 		
@@ -97,7 +97,7 @@ class JSView {
 		var blue  = color & 0xFF;
 		var alpha = 1;
 		var color_ = "rgba("+red+","+green+","+blue+","+alpha+")";
-		view.style.background = color_;
+		layer.style.background = color_;
 		
 		return color;
 	}
@@ -111,26 +111,26 @@ class JSView {
 	
 	public function setClipsToBounds (clip:Bool) :Bool {
 		if (clip) {
-			view.style.overflow = "hidden";
+			layer.style.overflow = "hidden";
 			viewMask = Lib.document.createElement("div");
 			viewMask.style.width = size.width+"px";
 			viewMask.style.height = size.height+"px";
 			
-			while (view.hasChildNodes()) {
-				viewMask.appendChild ( view.removeChild ( view.firstChild));
+			while (layer.hasChildNodes()) {
+				viewMask.appendChild ( layer.removeChild ( layer.firstChild));
 			}
 
-			view.appendChild ( viewMask );
+			layer.appendChild ( viewMask );
 		}
 		else {
-			view.style.overflow = null;
-			view.removeChild ( viewMask );
+			layer.style.overflow = null;
+			layer.removeChild ( viewMask );
 
 			while (viewMask.hasChildNodes()) {
-				view.appendChild ( viewMask.removeChild ( viewMask.firstChild));
+				layer.appendChild ( viewMask.removeChild ( viewMask.firstChild));
 			}
 
-			viewMask = view;
+			viewMask = layer;
 		}
 		return clip;
 	}
@@ -182,7 +182,7 @@ class JSView {
 	}
 	
 	/**
-	 *  This methos is usually overriten by the extension class.
+	 *  Removes running animation, if any.
 	 */
 	public function destroy () :Void {
 		CoreAnimation.remove ( caobj );
@@ -191,57 +191,57 @@ class JSView {
 	
 	public function removeFromSuperView () :Void {
 		if (parent != null)
-			parent.removeChild ( this.view );
+			parent.removeChild ( this.layer );
 	}
 	
 	
-	// Simulate flash API
+	// Getters and setters
 	//
 	function setVisible (v:Bool) :Bool {
 		visible = v;
-		view.style.visibility = (v ? "visible" : "hidden");
+		layer.style.visibility = (v ? "visible" : "hidden");
 		return v;
 	}
 	public function setAlpha (a:Float) :Float {
 		alpha_ = a;
 /*		if (BrowserUtil.browserName == MSIE) {
-			untyped view.style.filter = "alpha(opacity="+Std.string(alpha*100)+")";
+			untyped layer.style.filter = "alpha(opacity="+Std.string(alpha*100)+")";
 		}
 		else {*/
-			untyped view.style.opacity = Std.string(a);
+			untyped layer.style.opacity = Std.string(a);
 //		}
 		return a;
 	}
 	public function setX (x:Float) :Float {
 		this.x = x;
-		view.style.left = Std.string(x) + "px";
+		layer.style.left = Std.string(x) + "px";
 		return x;
 	}
 	public function setY (y:Float) :Float {
 		this.y = y;
-		view.style.top = Std.string(y) + "px";
+		layer.style.top = Std.string(y) + "px";
 		return y;
 	}
 	public function getWidth () :Float {
 		if (parent == null) trace("This view doesn't have a parent, the width will be 0");
-		return view.offsetWidth;
-		return view.scrollWidth;
-		return view.clientWidth;
+		return layer.offsetWidth;
+		return layer.scrollWidth;
+		return layer.clientWidth;
 	}
 	public function setWidth (w:Float) :Float {
 		width = w;
-		view.style.width = w + "px";
+		layer.style.width = w + "px";
 		return w;
 	}
 	public function getHeight () :Float {
-		if (parent == null) trace("This view doesn't have a parent, the height would be 0");
-		return view.offsetHeight;
-		return view.scrollHeight;
-		return view.clientHeight;
+		if (parent == null) trace("This view doesn't have a parent, the height will be 0");
+		return layer.offsetHeight;
+		return layer.scrollHeight;
+		return layer.clientHeight;
 	}
 	public function setHeight (h:Float) :Float {
 		height = h;
-		view.style.height = h + "px";
+		layer.style.height = h + "px";
 		return h;
 	}
 	public function setScaleX (sx:Float) :Float {
@@ -255,8 +255,8 @@ class JSView {
 		return scaleY_;
 	}
 	public function scale (sx:Float, sy:Float) {
-		untyped view.style.WebkitTransformOrigin = "top left";
-		untyped view.style.WebkitTransform = "scale(" + sx + "," + sy + ")";
+		untyped layer.style.WebkitTransformOrigin = "top left";
+		untyped layer.style.WebkitTransform = "scale(" + sx + "," + sy + ")";
 	}
 	public function startDrag (?lockCenter:Bool, ?rect:RCRect) :Void {
 		
@@ -266,7 +266,7 @@ class JSView {
 	}
 	
 	function getMouseX () :Float {
-		return untyped view.clientX;
+		return untyped layer.clientX;
 		if (parent == null) return mouseX;
 		return untyped parent.mouseX - x;
 	}

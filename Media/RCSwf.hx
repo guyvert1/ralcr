@@ -44,8 +44,8 @@ class RCSwf extends RCImage {
 				loader.load ( new URLRequest ( URL ) );
 		#elseif js
 			// For JS target use the view element to add the swf
-			view.id = id_;
-			RCWindow.target.appendChild(view);
+			layer.id = id_;
+			RCWindow.target.appendChild ( layer );
 			target = new js.SWFObject (URL, id_, 500, 400, "9", "#cecece");
 			//target.addVariable("texto", "hello from...");
 			target.addParam("AllowScriptAccess","always");
@@ -64,7 +64,7 @@ class RCSwf extends RCImage {
 			this.target = loader.content;
 			this.size.width = loader.content.width;
 			this.size.height = loader.content.height;
-			this.view.addChild ( loader );
+			this.layer.addChild ( loader );
 		#end
 		onComplete();
 	}

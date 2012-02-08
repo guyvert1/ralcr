@@ -60,7 +60,7 @@ class RCTextInput extends RCTextView {
 		
 		target.defaultTextFormat = rcfont.format;
 		
-		view.addChild ( target );
+		layer.addChild ( target );
 	}
 /*	public function init2 (properties:RCFont) :Void {
 		// Duplicate the properties RCFont and apply exceptions
@@ -83,8 +83,8 @@ class RCTextInput extends RCTextView {
 		
 		// Remove the previous textfield
 		if (target != null)
-		if (this.view.contains ( target ))
-			this.view.removeChild ( target );
+		if (this.layer.contains ( target ))
+			this.layer.removeChild ( target );
 		
 		// Create a new textfield
 		target = new TextField();
@@ -105,7 +105,7 @@ class RCTextInput extends RCTextView {
 		//if (properties.format != null) target.setTextFormat ( properties.format );
 		if (properties.style  != null) target.styleSheet = properties.style;
 		
-		this.view.addChild ( target );
+		this.layer.addChild ( target );
 	}*/
 	
 	

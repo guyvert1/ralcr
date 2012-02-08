@@ -14,7 +14,6 @@ class Main {
 	static var ph :RCImage;
 	static var circ :RCEllipse;
 	static var req :HTTPRequest;
-	static var signal :RCSignal<Int->Void>;
 	
 	// change the HTML content of a DIV based on its ID
 	static function main() {
@@ -48,8 +47,8 @@ class Main {
 		var seq = new CASequence ([cast a1, cast a2, cast a3, cast a4]);
 		seq.start();
 		
-/*		lin = new RCLine(30,300, 400, 600, 0xff3300);
-		RCWindow.addChild ( lin );*/
+		lin = new RCLine(30,300, 400, 600, 0xff3300);
+		RCWindow.addChild ( lin );
 		
 		ph = new RCImage(1, 1, "../CoreAnimation/3134265_large.jpg");
 		ph.onComplete = resizePhoto;
@@ -75,17 +74,10 @@ class Main {
 			k.onLeft = moveLeft;
 			k.onRight = moveRight;
 		
-		var m = new RCMouse( rect.view );
-			m.onOver = function(){ trace("onOver"); }
+		var m = new EVMouse( EVMouse.OVER, rect.layer );
+			m.add ( function(_){ trace("onOver"); } );
 		
-		signal = new RCSignal<Int->Void>();
-		signal.add ( printNr );
-		signal.addOnce ( printNr2 );
-		signal.remove ( printNr );
-		signal.removeAll();
-		
-		for (i in 0...5)
-		signal.dispatch ([Math.random()]);
+		testSignals();
 		
 		
 		// Shared objects
@@ -108,15 +100,15 @@ class Main {
 		var s = new haxe.SKButtonRadio();
 		var b = new RCButtonRadio(200, 200, s);
 		RCWindow.addChild ( b );
-		trace("1");
+		
 		var group = new RCGroup<RCButtonRadio> (200,230,10,null,createRadioButton);
 		RCWindow.addChild ( group );
 		group.add([1,2,3,4,5,5]);
-		trace("1");
-		var group = new RCSegmentedControl (200,300,10,null,createRadioButton2);
-		RCWindow.addChild ( group );
-		group.initWithLabels(["1","2","3","4","5"]);
-		trace("1");
+		
+		var seg = new RCSegmentedControl (200,300,160,50,ios.SKSegment);
+		RCWindow.addChild ( seg );
+		seg.initWithLabels(["Masculin","Feminin"]);
+		
 		// Add slider
 		var s = new haxe.SKSlider();
 		var sl = new RCSlider(50, 250, 160, 10, s);
@@ -137,12 +129,11 @@ class Main {
 		}catch(e:Dynamic){Fugu.stack();}
     }
 	static function createRadioButton (indexPath:RCIndexPath) :RCButtonRadio {
-		trace(indexPath);
 		var s = new haxe.SKButtonRadio();
 		var b = new RCButtonRadio(0,0,s);
 		return b;
 	}
-	static function createRadioButton2 (i:Int) :RCButtonRadio {
+	static function createSegmentButton (i:Int) :RCButtonRadio {
 		var s = new haxe.SKButton("lklklk"+Std.random(10));
 		var b = new RCButtonRadio(0,0,s);
 		return b;
@@ -158,17 +149,17 @@ class Main {
 		lin.redraw();
 	}*/
 	static function resizePhoto(){
-		trace("onComplete");
-		trace(ph.width);
-		trace(ph.size.width);
+		trace("onComplete image");
+/*		trace(ph.width);
+		trace(ph.size.width);*/
 		ph.scaleToFill (300-2, 150-2);
 		//ph.scaleToFit (300-2, 150-2);
 		
-		var ph2 = ph.copy();trace(ph2);
+		var ph2 = ph.copy();
 		ph2.x = 800;
 		RCWindow.addChild(ph2);
 		
-		return;
+		//return;
 		var anim = new CATween (ph, {x:{fromValue:-ph.width, toValue:ph.width}}, 2, 0, caequations.Cubic.IN_OUT);
 			anim.repeatCount = 5;
 			anim.autoreverses = true;
@@ -186,5 +177,17 @@ class Main {
 	}
 	static function moveRight(){
 		circ.x += 10;
+	}
+
+
+	static var signal :RCSignal<Int->Void>;
+	static function testSignals(){
+		signal = new RCSignal<Int->Void>();
+		signal.add ( printNr );
+		signal.addOnce ( printNr2 );
+		signal.remove ( printNr );
+		signal.removeAll();
+		for (i in 0...5)
+		signal.dispatch ([Math.random()]);
 	}
 }

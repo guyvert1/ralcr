@@ -5,26 +5,20 @@
 //  Copyright (c) 2008-2012 milc.ro. All rights reserved.
 //
 
-#if flash
-	import flash.display.Sprite;
-	import flash.display.DisplayObjectContainer;
-	import flash.events.Event;
-	import flash.events.MouseEvent;
-#elseif js
-	import js.Dom;
-#end
+private enum Direction {
+	HORIZONTAL;
+	VERTICAL;
+}
 
-class RCSlider extends RCControl {
+
+class RCScrollBar extends RCControl {
 	
-	var background :DisplayObjectContainer;
-	var symbol :Dynamic;
-	var symbolColorNormal :Null<Int>;
-	var symbolColorOver :Null<Int>;
+	var skin :RCSkin;
 	var direction_ :Direction;
 	var value_ :Float;
 	var moving :Bool;
 	
-	public var minValue :Float;
+/*	public var minValue :Float;
 	public var maxValue :Float;
 	public var value (getValue, setValue) :Float;// default 0.0. this value will be pinned to min/max
 	public var minimumValueImage :RCView;// default is nil
@@ -45,9 +39,6 @@ class RCSlider extends RCControl {
 		
 		if (direction == null) return;
 		
-		// Skin
-		symbolColorNormal = skin.symbolColorUp;
-		symbolColorOver = skin.symbolColorOver;
 		
 		// display skin (background, symbol, hit)
 		background = skin.background;
@@ -69,14 +60,14 @@ class RCSlider extends RCControl {
 	override function configureDispatchers () {
 		super.configureDispatchers();
 		valueChanged = new RCSignal<RCControl->Void>();
-	}
+	}*/
 	
 	
 	/**
 	 * Step 1
 	 * Make the scroller object dragable
 	 */
-	function mouseDownHandler (e:MouseEvent) {
+/*	function mouseDownHandler (e:EVMouse) {
 		
 		var bound_w:Int=0, bound_h:Int=0;
 		
@@ -90,19 +81,19 @@ class RCSlider extends RCControl {
 		RCWindow.target.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
 		RCWindow.target.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 	}
-	function mouseUpHandler (e:MouseEvent) {
+	function mouseUpHandler (e:EVMouse) {
 		// When the mouse is released stop dragging the symbol
 		symbol.stopDrag ();
 		
 		RCWindow.target.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
 		RCWindow.target.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
-	}
+	}*/
 	
 	
 	/**
 	 * Set new value when the slider is moving, and dispatch an event
 	 */
-	function mouseMoveHandler (e:MouseEvent) {
+/*	function mouseMoveHandler (e:EVMouse) {
 		var y0=0.0, y1=0.0, y2=0.0;
 		
 		switch (direction) {
@@ -121,12 +112,12 @@ class RCSlider extends RCControl {
 		
 		e.updateAfterEvent();
 	}
-	
+	*/
 	
 	/**
 	 * Set the symbol correct position when the content changed his position
 	 */
-	function getValue () :Float {
+/*	function getValue () :Float {
 		return _value;
 	}
 	function setValue (percent:Float) :Float {
@@ -144,14 +135,14 @@ class RCSlider extends RCControl {
 		}
 		
 		return value;
-	}
+	}*/
 	
 	
 	/**
 	 *	Scale the background and the symbol
 	 *	
 	 */
-	function setW (w:Int) :Int {
+/*	function setW (w:Int) :Int {
 		if (_w == null) return w;
 		_w = w;
 		//TO DO
@@ -164,24 +155,25 @@ class RCSlider extends RCControl {
 		//TO DO
 		
 		return h;
-	}
+	}*/
 	
 	
 	/**
 	 *  Mouse Over and out effects
 	 */
-	function overHandler (e:MouseEvent) {
+/*	function overHandler (e:EVMouse) {
 		Fugu.color ( symbol, symbolColorOver );
 	}
-	function outHandler (e:MouseEvent) {
+	function outHandler (e:EVMouse) {
 		Fugu.color ( symbol, symbolColorNormal );
-	}
+	}*/
 	
 	
 	
 	// clean mess
-	public function destroy () :Void {
+/*	override public function destroy () :Void {
 		mouseUpHandler ( null );
 		symbol.removeEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
-	}
+		super.destroy();
+	}*/
 }

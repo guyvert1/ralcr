@@ -33,7 +33,7 @@ class RCDraw extends RCView {
 		this.borderThickness = 1;
 		
 #if js
-		try{ this.graphics = untyped view; }catch(e:Dynamic){trace(e);}//untyped view.getContext('2d');
+		try{ this.graphics = untyped view; }catch(e:Dynamic){trace(e);}//untyped layer.getContext('2d');
 #end
 		
 		// Parse the color

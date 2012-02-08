@@ -42,7 +42,7 @@ class RCRectangle extends RCDraw, implements RCDrawInterface {
 			if (roundness != null)
 			html += "-moz-border-radius:" + roundness/2 + "px; border-radius:" + roundness/2 + "px;";
 			html += "\"></div>";
-		view.innerHTML = html;
+		layer.innerHTML = html;
 #end
 	}
 }

@@ -5,18 +5,11 @@
 //  Copyright (c) 2008-2012 ralcr.com. All rights reserved.
 //
 
-#if (flash || nme)
-	import flash.display.DisplayObjectContainer;
-#elseif js
-	import js.Dom;
-	private typedef DisplayObjectContainer = JSView;
-#end
-
 typedef RCSkinElements = {
-	var background :DisplayObjectContainer;
-	var label :DisplayObjectContainer;
-	var image :DisplayObjectContainer;
-	var otherView :DisplayObjectContainer;
+	var background :RCView;
+	var label :RCView;
+	var image :RCView;
+	var otherView :RCView;
 	var colors :RCSkinColors;
 }
 typedef RCSkinColors = {
@@ -34,7 +27,7 @@ class RCSkin {
 	public var disabled :RCSkinElements;
 	public var selected :RCSkinElements;
 	
-	public var hit :DisplayObjectContainer;
+	public var hit :RCView;
 	
 	
 	public function new (?colors : Array<Null<Int>>)

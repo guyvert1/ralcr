@@ -143,7 +143,7 @@ class RCWindow {
 			#elseif js
 				child.viewWillAppear();
 				child.parent = target;
-				target.appendChild ( child.view );
+				target.appendChild ( child.layer );
 				child.viewDidAppear();
 			#end
 		}
@@ -156,7 +156,7 @@ class RCWindow {
 			#elseif js
 				child.viewWillDisappear();
 				child.parent = null;
-				target.removeChild ( child.view );
+				target.removeChild ( child.layer );
 				child.viewDidDisappear();
 			#end
 		}

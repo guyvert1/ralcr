@@ -60,13 +60,13 @@ class RCSliderSync {
 	 * Hold and resume actions
 	 */
 	public function hold () :Void {
-		target.removeEventListener (MouseEvent.MOUSE_WHEEL, wheelHandler);
-		slider.removeEventListener (SliderEvent.ON_MOVE, sliderChangedHandler);
+		//target.removeEventListener (MouseEvent.MOUSE_WHEEL, wheelHandler);
+		//slider.removeEventListener (SliderEvent.ON_MOVE, sliderChangedHandler);
 	}
 	
 	public function resume () :Void {
-		target.addEventListener (MouseEvent.MOUSE_WHEEL, wheelHandler);
-		slider.addEventListener (SliderEvent.ON_MOVE, sliderChangedHandler);
+		//target.addEventListener (MouseEvent.MOUSE_WHEEL, wheelHandler);
+		//slider.addEventListener (SliderEvent.ON_MOVE, sliderChangedHandler);
 	}
 	
 	
@@ -109,7 +109,7 @@ class RCSliderSync {
 		if (valueFinal < valueStart + valueMax - getContentSize())
 			valueFinal = Math.round ( valueStart + valueMax - getContentSize() );
 			
-		contentView.addEventListener (Event.ENTER_FRAME, loop);
+		//contentView.addEventListener (Event.ENTER_FRAME, loop);
 	}
 	
 	

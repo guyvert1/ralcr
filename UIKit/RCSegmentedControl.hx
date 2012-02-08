@@ -9,10 +9,9 @@
 
 class RCSegmentedControl extends RCView {
 	
-	var constructButton :Int->RCButtonRadio;
+	var skin :Class<RCSkin>;
 	var labels :Array<String>;
 	var items :HashArray<RCButtonRadio>;
-	var segmentWidth :Int;
 	var gapX :Null<Int>;
 	var gapY :Null<Int>;
 	
@@ -20,33 +19,25 @@ class RCSegmentedControl extends RCView {
 	public var selectedIndex (getIndex, setIndex) :Int;
 	
 	
-	public function new (x, y, w:Null<Int>, h:Null<Int>, ?constructor_:Int->RCButtonRadio) {
-		super (x, y);
-		this.size.width = w;
-		this.size.height = h;
+	public function new (x, y, w:Int, h:Int, ?skin:Class<RCSkin>) {
+		super (x, y, w, h);
 		
-		this.constructButton = constructor_;
+		this.skin = skin;
 		this.items = new HashArray<RCButtonRadio>();
 		click = new RCSignal<RCSegmentedControl->Void>();
 	}
-	public function initWithLabels (labels:Array<String>, ?constructor_:Int->RCButtonRadio) :Void {
+	public function initWithLabels (labels:Array<String>) :Void {
 		this.labels = labels;
-		var constructorNow :Int->RCButtonRadio = this.constructButton;
-		
-		if (Reflect.isFunction (constructor_)) {
-			constructorNow = constructor_;
-		}
-		if (!Reflect.isFunction (constructorNow)) return;
 		
 		// push the new values into main array
 		var i = 0;
 		for (label in labels) {
 			if (items.exists( label )) continue;
 			
-			var b = constructorNow ( i );
+			var b = constructButton ( i );
 				b.click.add ( clickHandler );
 			
-			// set the button into hash table
+			// Keep the button into the hash table
 			items.set( label, b);
 			
 			// dispatch an event that the buttons structure has changed
@@ -62,19 +53,16 @@ class RCSegmentedControl extends RCView {
 		}
 		*/
 	}
-	function defaultConstructor (i:Int) :RCButtonRadio {
+	function constructButton (i:Int) :RCButtonRadio {
 		
-		var segmentLeft :String;
-		var segmentMiddle :String;
-		var segmentRight :String;
-		
+		var position = "left";
 		switch (i) {
-			case 0: segmentLeft = "L"; segmentMiddle = "M"; segmentRight = "MR"; // First
-			case items.arr.length-1: segmentLeft = "ML"; segmentMiddle = "M"; segmentRight = "R"; // Last
-			default: segmentLeft = "ML"; segmentMiddle = "M"; segmentRight = "MR"; // Middle
+			case 0: position = "left"; // First
+			case items.arr.length-1: position = "right"; // Last
+			default: position = "middle"; // Middle
 		}
-		
-		var s = new ios.SKSegment (labels[i], segmentWidth, size.height, segmentLeft, segmentMiddle, segmentRight, null);
+		var segmentWidth = Math.round (size.width/items.arr.length);
+		var s = new ios.SKSegment (labels[i], segmentWidth, size.height, position, null);
 		var b = new RCButtonRadio (0, 0, s);
 		return b;
 	}
@@ -112,7 +100,7 @@ class RCSegmentedControl extends RCView {
 		// Recreate the array
 		items = new HashArray<RCButtonRadio>();
 		// Add the new buttons
-		initWithLabels (labels, constructor_);
+		initWithLabels ( labels );
 	}
 	
 	
@@ -202,14 +190,14 @@ class RCSegmentedControl extends RCView {
 	/**
 	 *	Enable or disable a button to be clicked
 	 */
-	public function enable (label:String) :Void {
+/*	public function enable (label:String) :Void {
 		items.get( label ).unlock();
 		items.get( label ).alpha = 1;
 	}
 	public function disable (label:String) :Void {
 		items.get( label ).lock();
 		items.get( label ).alpha = 0.4;
-	}
+	}*/
 	
 	
 	/**
@@ -224,5 +212,7 @@ class RCSegmentedControl extends RCView {
 		if (items != null)
 		for (key in items.keys()) Fugu.safeDestroy ( items.get( key ) );
 			items = null;
+		click.destroy();
+		super.destroy();
 	}
 }

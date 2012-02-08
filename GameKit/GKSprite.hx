@@ -27,7 +27,7 @@ class GKSprite extends Sprite {
 	public var isOnGround :Bool;
 	public var collisionArea :MovieClip;
 	
-	public var view :Sprite;
+	public var layer :Sprite;
 	public var registrationPoint (default, setRegistrationPoint) :Point;
 	
 	
@@ -35,8 +35,8 @@ class GKSprite extends Sprite {
 		super();
 		this.x = x;
 		this.y = y;
-		this.view = new Sprite();
-		this.addChild ( view );
+		this.layer = new Sprite();
+		this.addChild ( layer );
 	}
 	
 /*	public function init () :Void {
@@ -45,8 +45,8 @@ class GKSprite extends Sprite {
 	*/
 	
 	public function setRegistrationPoint (point:Point) :Point {
-		view.x = Math.round ( - point.x );
-		view.y = Math.round ( - point.y );
+		layer.x = Math.round ( - point.x );
+		layer.y = Math.round ( - point.y );
 		return point;
 	}
 	

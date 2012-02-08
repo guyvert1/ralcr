@@ -39,10 +39,10 @@ class GKCharacter extends GKSprite {
 		//trace("show "+key);
 		for (k in frames.keys()) {
 			if (k == key) {
-				view.addChild ( frames.get ( k ));
+				layer.addChild ( frames.get ( k ));
 			}
-			else if (view.contains ( frames.get ( k ) ))
-				view.removeChild ( frames.get ( k ) );
+			else if (layer.contains ( frames.get ( k ) ))
+				layer.removeChild ( frames.get ( k ) );
 		}
 		// Keep the collisionArea in front
 		if (collisionArea != null)

@@ -2,7 +2,7 @@
 //  RCView
 //
 //  Created by Baluta Cristian on 2009-02-14.
-//  Copyright (c) 2009-2011 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2009-2012 http://ralcr.com. All rights reserved.
 //
 
 #if (flash || nme)
@@ -13,8 +13,9 @@ import flash.events.Event;
 
 class RCView extends Sprite {
 
-	public var view :DisplayObjectContainer;
-	public var size :RCSize; // Real size of the view
+	public var layer :Sprite;
+	public var bounds :RCRect; // Real size of the view
+	public var size :RCSize; // Visible size of the layer. You can get the real size with width and height
 	public var center (default, setCenter) :RCPoint;
 	public var clipsToBounds (default, setClipsToBounds) :Bool;
 	public var backgroundColor (default, setBackgroundColor) :Null<Int>;
@@ -33,15 +34,15 @@ class RCView extends Sprite {
 	public function viewDidDisappearHandler (e:Event) :Void { viewDidDisappear(); }
 	
 	
-	public function new (x, y) {
+	public function new (x, y, ?w, ?h) {
 		super();
-		size = new RCSize (0, 0);
+		size = new RCSize (w, h);
 		
-		view = this;
-		view.addEventListener (Event.ADDED_TO_STAGE, viewDidAppearHandler);
-		view.addEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappearHandler);
-		view.x = x;
-		view.y = y;
+		layer = this;
+		layer.addEventListener (Event.ADDED_TO_STAGE, viewDidAppearHandler);
+		layer.addEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappearHandler);
+		layer.x = x;
+		layer.y = y;
 	}
 	
 	
@@ -55,33 +56,55 @@ class RCView extends Sprite {
 		var blue  = color & 0xFF;
 		var mpl = 0;
 		
-		if (color != null)
-		
-		view.transform.colorTransform = new flash.geom.ColorTransform ( mpl,mpl,mpl,mpl,
-																		red,green,blue,view.alpha*255);
-		else
-		
-		view.transform.colorTransform = new flash.geom.ColorTransform  (1,	1,	1,	1,
-																		0,	0,	0,	0);
-		return color;
+		if (color != null) {
+			layer.graphics.clear();
+			layer.graphics.beginFill (color, 1);
+			layer.graphics.drawRect (0, 0, size.width, size.height);
+/*		layer.transform.colorTransform = new flash.geom.ColorTransform ( mpl,mpl,mpl,mpl,
+																		red,green,blue,layer.alpha*255);*/
+		} else {
+			layer.graphics.clear();
+/*		layer.transform.colorTransform = new flash.geom.ColorTransform  (1,	1,	1,	1,
+																		0,	0,	0,	0);*/
+		}
+		return backgroundColor = color;
 	}
 	
 	public function setCenter (point:RCPoint) :RCPoint {
 		this.center = point;
-		this.view.x = Std.int (point.x - size.width/2);
-		this.view.y = Std.int (point.y - size.height/2);
+		this.layer.x = Std.int (point.x - size.width/2);
+		this.layer.y = Std.int (point.y - size.height/2);
 		return this.center;
 	}
 	
 	public function setClipsToBounds (clip:Bool) :Bool {
-		view.cacheAsBitmap = clip;
+		layer.cacheAsBitmap = clip;
 		
 		if (clip)
-			view.scrollRect = new flash.geom.Rectangle (0, 0, size.width, size.height);
+			layer.scrollRect = new flash.geom.Rectangle (0, 0, size.width, size.height);
 		else
-			view.scrollRect = null;
+			layer.scrollRect = null;
 		
 		return clip;
+	}
+	
+	public function setX (x:Float) :Float {
+		layer.x = x;
+		return x;
+	}
+	public function setY (y:Float) :Float {
+		layer.y = y;
+		return y;
+	}
+	public function setWidth (w:Float) :Float {
+		size.width = w;
+		layer.width = w;
+		return w;
+	}
+	public function setHeight (h:Float) :Float {
+		size.height = h;
+		layer.height = h;
+		return h;
 	}
 	
 	
@@ -91,39 +114,39 @@ class RCView extends Sprite {
 	public function scaleToFit (w:Int, h:Int) :Void {
 		
 		if (size.width/w > size.height/h && size.width > w) {
-			view.width = w;
-			view.height = view.width * size.height / size.width;
+			layer.width = w;
+			layer.height = layer.width * size.height / size.width;
 		}
 		else if (size.height > h) {
-			view.height = h;
-			view.width = view.height * size.width / size.height;
+			layer.height = h;
+			layer.width = layer.height * size.width / size.height;
 		}
 		else if (size.width > lastW && size.height > lastH) {
-			view.width = size.width;
-			view.height = size.height;
+			layer.width = size.width;
+			layer.height = size.height;
 		}
 		else
 			resetScale();
 		
-		lastW = view.width;
-		lastH = view.height;
+		lastW = layer.width;
+		lastH = layer.height;
 	}
 	
 	public function scaleToFill (w:Int, h:Int) :Void {
 		
 		if (w/size.width > h/size.height) {
-			view.width = w;
-			view.height = view.width * size.height / size.width;
+			layer.width = w;
+			layer.height = layer.width * size.height / size.width;
 		}
 		else {
-			view.height = h;
-			view.width = view.height * size.width / size.height;
+			layer.height = h;
+			layer.width = layer.height * size.width / size.height;
 		}
 	}
 	
 	public function resetScale () :Void {
-		view.width = lastW;
-		view.height = lastH;
+		layer.width = lastW;
+		layer.height = lastH;
 	}
 	
 	public function animate (obj:CAObject) :Void {
@@ -135,17 +158,17 @@ class RCView extends Sprite {
 	 */
 	public function destroy () :Void {
 		CoreAnimation.remove ( caobj );
-		view.removeEventListener (Event.ADDED_TO_STAGE, viewDidAppearHandler);
-		view.removeEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappearHandler);
+		layer.removeEventListener (Event.ADDED_TO_STAGE, viewDidAppearHandler);
+		layer.removeEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappearHandler);
 	}
 	
 	
 	public function removeFromSuperView () :Void {
 		var parent = null;
-		try{parent = view.parent; } catch (e:Dynamic) { null; }
+		try{parent = layer.parent; } catch (e:Dynamic) { null; }
 		if (parent != null)
-		if (parent.contains ( view ))
-			parent.removeChild ( view );
+		if (parent.contains ( layer ))
+			parent.removeChild ( layer );
 	}
 }
 

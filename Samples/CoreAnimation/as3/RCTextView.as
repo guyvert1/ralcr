@@ -23,7 +23,7 @@ package  {
 		}
 		
 		public function redraw() : void {
-			if(this.target != null) if(this.view.contains(this.target)) this.view.removeChild(this.target);
+			if(this.target != null) if(this.layer.contains(this.target)) this.layer.removeChild(this.target);
 			this.target = new flash.text.TextField();
 			this.target.embedFonts = this.properties.embedFonts;
 			this.target.type = this.properties.type;
@@ -38,7 +38,7 @@ package  {
 			if(this.h != null && this.h != 0) this.target.height = this.h;
 			if(this.properties.format != null) this.target.defaultTextFormat = this.properties.format;
 			if(this.properties.style != null) this.target.styleSheet = this.properties.style;
-			this.view.addChild(this.target);
+			this.layer.addChild(this.target);
 		}
 		
 		public function getText() : String {

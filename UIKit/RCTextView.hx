@@ -56,8 +56,8 @@ class RCTextView extends RCView {
 		
 		// Remove the previous textfield
 		if (target != null)
-		if (this.view.contains ( target ))
-			this.view.removeChild ( target );
+		if (this.layer.contains ( target ))
+			this.layer.removeChild ( target );
 		
 		// Create a new textfield
 		target = new TextField();
@@ -91,7 +91,7 @@ class RCTextView extends RCView {
 		#if flash
 			if (rcfont.style  != null) target.styleSheet = rcfont.style;
 		#end
-		view.addChild ( target );
+		layer.addChild ( target );
 	}
 	
 #elseif js
@@ -101,46 +101,46 @@ class RCTextView extends RCView {
 		var wrap = size.width != null;
 		var multiline = size.height != 0;
 		
-		view.style.whiteSpace = (wrap ? "normal" : "nowrap");
-		view.style.wordWrap = (wrap ? "break-word" : "normal");
+		layer.style.whiteSpace = (wrap ? "normal" : "nowrap");
+		layer.style.wordWrap = (wrap ? "break-word" : "normal");
 		
 		var style = (rcfont.selectable ? "text" : "none");
-		untyped view.style.WebkitUserSelect = style;
-		untyped view.style.MozUserSelect = style;
+		untyped layer.style.WebkitUserSelect = style;
+		untyped layer.style.MozUserSelect = style;
 		
-		view.style.lineHeight = (rcfont.leading + rcfont.size) + "px";
-		view.style.fontFamily = rcfont.font;
-		view.style.fontSize = rcfont.size + "px";
-		view.style.fontWeight = (rcfont.bold ? "bold" : "normal");
-		view.style.fontStyle = (rcfont.italic ? "italic" : "normal");
-		view.style.letterSpacing = rcfont.letterSpacing + "px";
-		view.style.textAlign = rcfont.align;// "center", "left", "right"
+		layer.style.lineHeight = (rcfont.leading + rcfont.size) + "px";
+		layer.style.fontFamily = rcfont.font;
+		layer.style.fontSize = rcfont.size + "px";
+		layer.style.fontWeight = (rcfont.bold ? "bold" : "normal");
+		layer.style.fontStyle = (rcfont.italic ? "italic" : "normal");
+		layer.style.letterSpacing = rcfont.letterSpacing + "px";
+		layer.style.textAlign = rcfont.align;// "center", "left", "right"
 		
 		if (rcfont.autoSize) {
-			view.style.width = multiline ? size.width + "px" : "auto";
-			view.style.height = "auto";
+			layer.style.width = multiline ? size.width + "px" : "auto";
+			layer.style.height = "auto";
 		}
 		else {
-			view.style.width = size.width + "px";
-			view.style.height = size.height + "px";
+			layer.style.width = size.width + "px";
+			layer.style.height = size.height + "px";
 		}
 		
-		view.innerHTML = "";
-		view.style.color = RCColor.HEXtoString ( rcfont.color );
-		view.style.fontFamily = rcfont.font;
-		view.style.fontWeight = rcfont.bold;
-    	view.style.fontSize = rcfont.size;
-    	view.style.fontStyle = rcfont.style;
-    	//view.style.fontVariant = rcfont.variant;
+		layer.innerHTML = "";
+		layer.style.color = RCColor.HEXtoString ( rcfont.color );
+		layer.style.fontFamily = rcfont.font;
+		layer.style.fontWeight = rcfont.bold;
+    	layer.style.fontSize = rcfont.size;
+    	layer.style.fontStyle = rcfont.style;
+    	//layer.style.fontVariant = rcfont.variant;
 
 		if (size.width != null) setWidth ( size.width );
-		//view.style.textAlign = rcfont.align;
+		//layer.style.textAlign = rcfont.align;
 	}
 	
 #end
 	
 	public function getText() :String {
-		return #if (flash || nme) target.text #elseif js view.innerHTML #end;
+		return #if (flash || nme) target.text #elseif js layer.innerHTML #end;
 	}
 	
 	public function setText (str:String) :String {
@@ -151,7 +151,7 @@ class RCTextView extends RCView {
 				target.text = str;
 		#elseif js
 			if (rcfont.html) {
-				view.innerHTML = str;
+				layer.innerHTML = str;
 			}
 			else {
 /*				var content:String = Std.string(str);
@@ -160,7 +160,7 @@ class RCTextView extends RCView {
 				content = StringTools.htmlEscape(content);
 				content = content.split("~~~NEWLINE~~~").join("<br/>");
 				content = content.split("~~~TAB~~~").join("<span style='letter-spacing:1.3em'>&nbsp;</span>");*/
-				view.innerHTML = str;
+				layer.innerHTML = str;
 			}
 		#end
 		

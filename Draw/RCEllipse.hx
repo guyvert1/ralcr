@@ -25,8 +25,9 @@ class RCEllipse extends RCDraw, implements RCDrawInterface {
 		fillEllipse (Math.round(size.width/2), Math.round(size.height/2), size.width, size.height);
 #end
 	}
-	
+
 #if js
+
 	function fillEllipse(xc:Int, yc:Int, width:Float, height:Float)
     {
         var iHtml=new Array<String>();
@@ -108,8 +109,8 @@ class RCEllipse extends RCDraw, implements RCDrawInterface {
 		    }
  	    }
      	
- 	    view.innerHTML = iHtml.join("");
- 	    return view;
+ 	    layer.innerHTML = iHtml.join("");
+ 	    return layer;
     }
 #end
 /*	function drawEllipse(pen,center,width,height)
@@ -296,7 +297,7 @@ class RCEllipse extends RCDraw, implements RCDrawInterface {
 			    }	
  		    }
      		
- 		    view.innerHTML=iHtml.join("");
+ 		    layer.innerHTML=iHtml.join("");
  		    return view;
     }
 */
