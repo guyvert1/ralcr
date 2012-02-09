@@ -14,4 +14,7 @@ class RCSize {
 		this.width = w;
 		this.height = h;
 	}
+	public function toString () :String {
+		return "[RCSize width:"+width+", height:"+height+"]";
+	}
 }

@@ -12,13 +12,6 @@
 #end
 #if (flash || nme)
 	import flash.display.Sprite;
-	import flash.events.ProgressEvent;
-	import flash.events.ErrorEvent;
-	import flash.events.IOErrorEvent;
-	import flash.events.SecurityErrorEvent;
-	import flash.events.Event;
-	import flash.display.Loader;
-	import flash.net.URLRequest;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.PixelSnapping;

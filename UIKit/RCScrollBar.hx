@@ -9,171 +9,138 @@ private enum Direction {
 	HORIZONTAL;
 	VERTICAL;
 }
-
+import RCControl;// imports States
 
 class RCScrollBar extends RCControl {
 	
 	var skin :RCSkin;
+	var background :RCView;
+	var scrollbar :RCView;
+	
 	var direction_ :Direction;
 	var value_ :Float;
+	var minValue_ :Int;// 0...100
+	var maxValue_ :Int;
 	var moving :Bool;
+	var mouseUpOverStage_ :EVMouse;
+	var mouseMoveOverStage_ :EVMouse;
 	
-/*	public var minValue :Float;
-	public var maxValue :Float;
 	public var value (getValue, setValue) :Float;// default 0.0. this value will be pinned to min/max
-	public var minimumValueImage :RCView;// default is nil
-	public var maximumValueImage :RCView;
+	public var valueChanged :RCSignal<RCScrollBar->Void>;// sliders, etc.
 	
-	
-	public function new (x, y, w:Null<Int>, h:Null<Int>, skin:RCSkin) {
-		super(x,y);
+	public function new (x, y, w, h, skin:RCSkin) {
+		super (x, y, w, h);
 		
 		this.moving = false;
-		this.minValue = 0.0;
-		this.maxValue = 100.0;
+		this.minValue_ = 0;
+		this.maxValue_ = 100;
 		this.value_ = 0.0;
 		
 		// Decide the direction of movement
-		if (w != null) direction = horizontal;
-		if (h != null) direction = vertical;
-		
-		if (direction == null) return;
-		
+		direction_ = (size.width > size.height) ? HORIZONTAL : VERTICAL;
 		
 		// display skin (background, symbol, hit)
-		background = skin.background;
+		background = skin.normal.background;
 		this.addChild ( background );
-		symbol = skin.up;
-		symbol.buttonMode = true;
-		this.addChild ( symbol );
+		scrollbar = skin.normal.otherView;
+		scrollbar.alpha = 0.4;
+		this.addChild ( scrollbar );
 		// end skin
-		
-		// When the symbol is pressed start to move the slider
-		#if flash
-			symbol.addEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
-			symbol.addEventListener (MouseEvent.MOUSE_OVER, overHandler);
-			symbol.addEventListener (MouseEvent.MOUSE_OUT, outHandler);
-		#elseif js
-			
-		#end
 	}
 	override function configureDispatchers () {
 		super.configureDispatchers();
-		valueChanged = new RCSignal<RCControl->Void>();
-	}*/
-	
-	
-	/**
-	 * Step 1
-	 * Make the scroller object dragable
-	 */
-/*	function mouseDownHandler (e:EVMouse) {
-		
-		var bound_w:Int=0, bound_h:Int=0;
-		
-		switch (direction) {
-			case horizontal:	bound_w = Math.round (_w - symbol.width);
-			case vertical:		bound_h = Math.round (_h - symbol.height);
-		}
-		
-		symbol.startDrag (false, new Rectangle (0, 0, bound_w, bound_h));
-		
-		RCWindow.target.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
-		RCWindow.target.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+		valueChanged = new RCSignal<RCScrollBar->Void>();
+		mouseUpOverStage_ = new EVMouse (EVMouse.UP, RCWindow.stage);
+		mouseMoveOverStage_ = new EVMouse (EVMouse.MOVE, RCWindow.stage);
 	}
-	function mouseUpHandler (e:EVMouse) {
-		// When the mouse is released stop dragging the symbol
-		symbol.stopDrag ();
-		
-		RCWindow.target.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
-		RCWindow.target.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
-	}*/
+	override function mouseDownHandler (e:EVMouse) :Void {
+		trace("mouseDownHandler");
+		moving = true;
+		mouseUpOverStage_.add ( mouseUpHandler );
+		mouseMoveOverStage_.add ( mouseMoveHandler );
+		mouseMoveHandler ( e );
+		setState ( SELECTED );
+		onPress();
+	}
+	override function mouseUpHandler (e:EVMouse) :Void {
+		moving = false;
+		mouseUpOverStage_.remove ( mouseUpHandler );
+		mouseMoveOverStage_.remove ( mouseMoveHandler );
+		setState ( HIGHLIGHTED );
+		onRelease();
+	}
+	override function rollOverHandler (e:EVMouse) :Void {
+		setState ( HIGHLIGHTED );
+		scrollbar.alpha = 1;
+		onOver();
+	}
+	override function rollOutHandler (e:EVMouse) :Void {
+		setState ( NORMAL );
+		scrollbar.alpha = 0.4;
+		onOut();
+	}
+	override function clickHandler (e:EVMouse) :Void {
+		setState ( SELECTED );
+		onClick();
+	}
 	
 	
 	/**
 	 * Set new value when the slider is moving, and dispatch an event
 	 */
-/*	function mouseMoveHandler (e:EVMouse) {
+	function mouseMoveHandler (e:EVMouse) {
+		//trace("mouseMoveHandler");
 		var y0=0.0, y1=0.0, y2=0.0;
-		
-		switch (direction) {
-			case horizontal:
-				y0 = symbol.x;
-				y2 = _w - symbol.width;
-			case vertical:
-				y0 = symbol.y;
-				y2 = _h - symbol.height;
+		//#if js trace(e.clientX); #end
+		switch (direction_) {
+			case HORIZONTAL:
+				//y0 = scrubber.x;
+				y2 = size.width - scrollbar.width;
+				y0 = Zeta.limitsInt (this.mouseX - scrollbar.width/2, 0, y2);
+			case VERTICAL:
+				//y0 = scrubber.y;
+				y2 = size.height - scrollbar.height;
+				y0 = Zeta.limitsInt (this.mouseY - scrollbar.height/2, 0, y2);
 		}
 		
-		// set the new percent
-		_value = Zeta.lineEquation (minValue, maxValue,  y0, y1, y2);
+		// set the new value
+		setValue ( Zeta.lineEquation (minValue_, maxValue_,  y0, y1, y2) );
 		
-		this.dispatchEvent ( new SliderEvent (SliderEvent.ON_MOVE, _value));
-		
-		e.updateAfterEvent();
+		#if (flash || nme)
+			//e.updateAfterEvent();
+		#end
 	}
-	*/
 	
-	/**
-	 * Set the symbol correct position when the content changed his position
-	 */
-/*	function getValue () :Float {
-		return _value;
+	
+	
+	function getValue () :Float {
+		return value_;
 	}
-	function setValue (percent:Float) :Float {
+	/**
+	 * Set the scrubber position based on the new value
+	 */
+	public function setValue (v:Float) :Float {
 		var x1=0.0, x2=0.0;
-		
-		if (!moving) {
-			switch (direction) {
-				case horizontal:
-					x2 = _w - symbol.width;
-					symbol.x = Zeta.lineEquationInt (x1, x2,  percent, minValue, maxValue);
-				case vertical:
-					x2 = _h - symbol.height;
-					symbol.y = Zeta.lineEquationInt (x1, x2,  percent, minValue, maxValue);
-			}
+		value_ = v;
+		switch (direction_) {
+			case HORIZONTAL:
+				x2 = size.width - scrollbar.width;
+				scrollbar.x = Zeta.lineEquationInt (x1, x2,  v, minValue_, maxValue_);
+			case VERTICAL:
+				x2 = size.height - scrollbar.height;
+				scrollbar.y = Zeta.lineEquationInt (x1, x2,  v, minValue_, maxValue_);
 		}
 		
-		return value;
-	}*/
-	
-	
-	/**
-	 *	Scale the background and the symbol
-	 *	
-	 */
-/*	function setW (w:Int) :Int {
-		if (_w == null) return w;
-		_w = w;
-		//TO DO
-		
-		return w;
+		valueChanged.dispatch ( [this] );
+		return value_;
 	}
-	function setH (h:Int) :Int {
-		if (_h == null) return h;
-		_h = h;
-		//TO DO
-		
-		return h;
-	}*/
-	
-	
-	/**
-	 *  Mouse Over and out effects
-	 */
-/*	function overHandler (e:EVMouse) {
-		Fugu.color ( symbol, symbolColorOver );
-	}
-	function outHandler (e:EVMouse) {
-		Fugu.color ( symbol, symbolColorNormal );
-	}*/
 	
 	
 	
 	// clean mess
-/*	override public function destroy () :Void {
+	override public function destroy () :Void {
 		mouseUpHandler ( null );
-		symbol.removeEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
+		valueChanged.destroy();
 		super.destroy();
-	}*/
+	}
 }

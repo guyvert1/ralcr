@@ -46,6 +46,7 @@ import RCWedge;
 // Media
 import RCAudio;
 import RCImage;
+import RCImageStretchable;
 import RCProgressiveImage;
 import RCRadioStream;
 import RCRtmp;

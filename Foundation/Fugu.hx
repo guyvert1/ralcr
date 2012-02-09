@@ -79,8 +79,8 @@ class Fugu {
 	 */
 	public static function color (target:DisplayObjectContainer, color:Int) :Void {
 		#if (flash || nme)
-		var red   = color >> 16 & 0xFF; 
-		var green = color >> 8 & 0xFF; 
+		var red   = color >> 16 & 0xFF;
+		var green = color >> 8 & 0xFF;
 		var blue  = color & 0xFF;
 		target.transform.colorTransform = new flash.geom.ColorTransform (0, 0, 0, 1, red, green, blue, 1);
 		#end

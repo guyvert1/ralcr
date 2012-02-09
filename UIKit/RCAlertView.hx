@@ -1,18 +1,15 @@
 //
-//  Dialog window
+//  RCAlertView
 //
 //  Created by Baluta Cristian on 2009-03-02.
 //  Copyright (c) 2009 ralcr.com. All rights reserved.
 //
 
-import flash.display.DisplayObjectContainer;
-
-
 class RCAlertView extends RCView {
 	
 	var COLORS :Array<Null<Int>>;
-	var background :DisplayObjectContainer;
-	var text :DisplayObjectContainer;
+	var background :RCView;
+	var text :RCView;
 	var buttons :RCGroup<RCButton>;
 	
 	public var label :String;

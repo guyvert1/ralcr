@@ -58,8 +58,8 @@ class RCControl extends RCView {
 	dynamic public function onOut () :Void {}
 	
 	
-	public function new (x, y) {
-		super(x, y);
+	public function new (x, y, w, h) {
+		super (x, y, w, h);
 		
 		//this.mouseChildren = false;
 		
@@ -74,7 +74,7 @@ class RCControl extends RCView {
 		over = new EVMouse (EVMouse.OVER, this);
 		out = new EVMouse (EVMouse.OUT, this);
 	}
-	function configureListeners () :Void {
+	function addListeners () :Void {
 		//
 		click.addFirst ( clickHandler );
 		press.addFirst ( mouseDownHandler );
@@ -140,7 +140,7 @@ class RCControl extends RCView {
 	}
 	function setEnabled (c:Bool) :Bool {
 		enabled_ = c;
-		enabled_ ? configureListeners() : removeListeners();
+		enabled_ ? addListeners() : removeListeners();
 		return enabled_;
 	}
 	//

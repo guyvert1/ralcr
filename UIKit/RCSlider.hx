@@ -35,9 +35,8 @@ class RCSlider extends RCControl {
 	
 	
 	public function new (x, y, w, h, skin:RCSkin) {
-		super(x,y);
-		this.size.width = w;
-		this.size.height = h;
+		super (x, y, w, h);
+		
 		this.moving_ = false;
 		this.minValue_ = 0.0;
 		this.maxValue_ = 100.0;
@@ -47,10 +46,6 @@ class RCSlider extends RCControl {
 		// Resize skin elements based on the width and height
 		try { untyped skin.normal.background.setWidth(w); }catch(e:Dynamic){}
 		skin.normal.otherView.y = Math.round ((h - skin.normal.otherView.height)/2);
-		
-		
-		//this.size.width = skin.normal.background.width;
-		//this.size.height = skin.normal.background.height;
 		this.scrubber = skin.normal.otherView;
 		
 		addChild ( skin.normal.background );

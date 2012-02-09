@@ -4,38 +4,41 @@
 //  Created by Baluta Cristian on 2008-09-05.
 //  Copyright (c) 2008 ralcr.com. All rights reserved.
 //
-import flash.events.MouseEvent;
 
-
-class RCToolTip extends RCAlertView {
+class RCToolTip extends RCView {
 	
+	var skin :RCSkin;
 	var target :Dynamic;
+	var targetMoveSignal :EVMouse;
 	
 	
 	public function new (skin:RCSkin) {
-		super (skin);
+		super(0,0);
+		this.skin = skin;
 	}
 	
 	public function followMouse (parent:Dynamic) :Void {
 		if (parent == null) return;
 		target = parent;
-		target.addEventListener (MouseEvent.MOUSE_MOVE, dragHandler);
+		targetMoveSignal = new EVMouse (EVMouse.MOVE, target);
+		targetMoveSignal.add ( dragHandler );
 		//dragHandler ( null );
 	}
 	public function stopFollow () :Void {
-		target.removeEventListener (MouseEvent.MOUSE_MOVE, dragHandler);
+		targetMoveSignal.destroy();
 	}
 	
 	
-	function dragHandler (e:MouseEvent) :Void {
+	function dragHandler (e:EVMouse) :Void {
 		if (target == null) return;
 		this.x = target.mouseX;
 		this.y = target.mouseY;
-		e.updateAfterEvent();
+		//e.updateAfterEvent();
 	}
 	
 	
 	override public function destroy () :Void {
 		stopFollow();
+		super.destroy();
 	}
 }

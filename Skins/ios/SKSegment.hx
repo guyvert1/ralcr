@@ -10,7 +10,7 @@ class SKSegment extends RCSkin {
 	
 	public function new (label:String, w:Int, h:Float, pos:String, colors:Array<Null<Int>>) {
 		super ( colors );
-		
+		trace("new sksegment");
 		var segmentLeft :String;
 		var segmentMiddle :String;
 		var segmentRight :String;

@@ -29,7 +29,7 @@ class RCImageStretchable extends RCView {
 			setWidth(this.size.width);
 		}
 	}
-	public function setWidth (w:Float) :Float {
+	override public function setWidth (w:Float) :Float {
 		this.size.width = w;
 		l.x = 0;
 		r.x = w - r.width;

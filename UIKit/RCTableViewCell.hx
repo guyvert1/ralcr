@@ -16,8 +16,7 @@ class RCTableViewCell extends RCControl {
 	
 	
 	public function new (w, h) {
-		super (0, 0);
-		this.size = new RCSize (w, h);
+		super (0, 0, w, h);
 		init();
 	}
 	

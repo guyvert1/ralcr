@@ -156,8 +156,10 @@ class Main {
 		//ph.scaleToFit (300-2, 150-2);
 		
 		var ph2 = ph.copy();
-		ph2.x = 800;
-		RCWindow.addChild(ph2);
+		
+		var scrollview = new RCScrollView (780, 10, 300, 300);
+		scrollview.setContentView ( ph2 );
+		RCWindow.addChild(scrollview);
 		
 		//return;
 		var anim = new CATween (ph, {x:{fromValue:-ph.width, toValue:ph.width}}, 2, 0, caequations.Cubic.IN_OUT);

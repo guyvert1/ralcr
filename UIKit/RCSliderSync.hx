@@ -6,11 +6,10 @@
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
 #if (flash || nme)
-	import flash.events.MouseEvent;
-	import flash.events.Event;
 	import flash.display.DisplayObjectContainer;
 #elseif js
-	
+	import js.Dom;
+	private typedef DisplayObjectContainer = HtmlDom;
 #end
 
 private enum Direction {
@@ -25,8 +24,8 @@ private enum DecelerationRate {
 class RCSliderSync {
 	
 	var target :DisplayObjectContainer; // object to attach the mousewheel
-	var contentView :DisplayObjectContainer; // object to scroll
-	var slider :RCSlider;
+	var contentView :RCView; // object to scroll
+	var slider :RCScrollBar;
 	var direction :Direction;
 	var f :Int;
 	var decelerationRate :DecelerationRate;
@@ -40,8 +39,8 @@ class RCSliderSync {
 	dynamic public function onScrollRight() :Void {}
 	
 	
-	public function new (	target:DisplayObjectContainer, contentView:DisplayObjectContainer,
-							slider:RCSlider, valueMax:Int, direction:String)
+	public function new (	target:DisplayObjectContainer, contentView:RCView,
+							slider:RCScrollBar, valueMax:Int, direction:String)
 	{
 		this.target = target;
 		this.contentView = contentView;
@@ -71,17 +70,18 @@ class RCSliderSync {
 	
 	
 	/**
-	 *	Handle scrol events
+	 *	Handle scroll events
 	 *	When wheel is scrolled move the content rather the scrollbar
 	 */
-	function wheelHandler (e:MouseEvent) :Void {
+	function wheelHandler (e:EVMouse) :Void {
 		//trace(e);
 		// Calculate different values for mac and pc
 /*		(flash.system.Capabilities.os.toLowerCase().indexOf("mac") != -1)
 		? valueFinal += e.delta*50
 		: valueFinal += e.delta*50;*/
 	//	var delta = e.delta;
-		valueFinal += e.delta * 2;
+#if flash
+		valueFinal += e.e.delta * 2;
 		
 		startLoop();
 		
@@ -89,10 +89,11 @@ class RCSliderSync {
 		slider.value = Zeta.lineEquationInt (0, 100, valueFinal, valueStart, valueStart + valueMax - getContentSize());
 		
 		// dispatch an event with the direction the scroll is moving
-		(e.delta < 0) ? onScrollRight() : onScrollLeft();
+		(e.e.delta < 0) ? onScrollRight() : onScrollLeft();
+#end
 	}
 	
-	function sliderChangedHandler (e:RCSlider) :Void {
+	function sliderChangedHandler (e:RCScrollBar) :Void {
 		valueFinal = Zeta.lineEquationInt (valueStart, valueStart + valueMax - getContentSize(), e.value, 0, 100);
 		startLoop();
 	}
@@ -116,13 +117,13 @@ class RCSliderSync {
 	/**
 	 *	This moves the content with an easing equation
 	 */
-	function loop (e:Event) {
+	function loop () {
 		// Calculate the next position for target object
 		var next_value = ( valueFinal - getContentPosition() ) / 3;
 		
 		// remove the enterframe listener
 		if (Math.abs ( next_value ) < 1) {
-			contentView.removeEventListener (Event.ENTER_FRAME, loop);
+			//contentView.removeEventListener (Event.ENTER_FRAME, loop);
 			moveContentTo ( valueFinal );
 		}
 		else moveContentTo ( getContentPosition() + next_value );
@@ -160,7 +161,7 @@ class RCSliderSync {
 	
 	// Clean mess
 	public function destroy () :Void {
-		contentView.removeEventListener (Event.ENTER_FRAME, loop);
+		//contentView.removeEventListener (Event.ENTER_FRAME, loop);
 		hold();
 	}
 }

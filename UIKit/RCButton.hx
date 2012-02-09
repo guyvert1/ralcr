@@ -37,7 +37,7 @@ class RCButton extends RCControl {
 		this.skin.hit.alpha = 0;
 		fixSkin();
 		
-		super (x, y);
+		super (x, y, 0, 0);
 	}
 	
 	override public function setState (state:RCControlState) {

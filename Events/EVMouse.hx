@@ -110,7 +110,13 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 		#end
 	}
 	function mouseHandler (e:MouseEvent) {
+		this.e = e;
 		dispatch ( [this] );
+	}
+	public function updateAfterEvent () :Void {
+		#if flash
+			e.updateAfterEvent();
+		#end
 	}
 	override public function destroy () :Void {
 		removeEventListener();

@@ -26,7 +26,6 @@ class RCSkin {
 	public var highlighted :RCSkinElements;
 	public var disabled :RCSkinElements;
 	public var selected :RCSkinElements;
-	
 	public var hit :RCView;
 	
 	

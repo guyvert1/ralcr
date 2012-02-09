@@ -5,19 +5,13 @@
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
 
-#if flash
-	import flash.display.DisplayObjectContainer;
-#elseif js
-	import js.Dom;
-#end
-
 class RCScrollView extends RCView {
 	
-	public var contentView :DisplayObjectContainer;// You can access directly the contentView, but be carefull
+	public var contentView :RCView;
 	public var contentSize :RCSize;// You can access directly the contentView, but be carefull
 	
-	var verticalSliderIndicator :RCSlider;
-	var horizontalSliderIndicator :RCSlider;
+	var verticalSliderIndicator :RCScrollBar;
+	var horizontalSliderIndicator :RCScrollBar;
 	var verticalSliderSync :RCSliderSync;
 	var horizontalSliderSync :RCSliderSync;
 	
@@ -38,10 +32,9 @@ class RCScrollView extends RCView {
 	
 	
 	public function new (x, y, w, h) {
-		super(x, y);
-		size = new RCSize (w, h);
-		setContentView ( new RCView (0, 0) );
+		super (x, y, w, h);
 		clipsToBounds = true;
+		setContentView ( new RCView (0, 0) );
 	}
 	
 	
@@ -50,39 +43,41 @@ class RCScrollView extends RCView {
 	 */
 	public function setContentView (content:RCView) :Void {
 		contentView = content;
-		layer.addChild ( contentView );
+		contentSize = contentView.size;
+		addChild ( contentView );
+		try{setScrollEnabled ( true );}catch(e:Dynamic){Fugu.stack();}
 	}
 	function setScrollEnabled (b:Bool) :Bool {
 		//trace("setScrollEnabled "+b);
 		var colors = [null, null, 0xDDDDDD, 0xFFFFFF];
-		//trace("contentView.width "+contentView.width);
+		trace("contentView.width "+contentView.width);
 		
 		// Add or remove the horizontal scrollbar
 		if (contentView.width > size.width && horizontalSliderSync == null && b) {
-			//trace("add horz");
-			var scroller_w = Zeta.lineEquationInt (50, size.width-50, contentSize.width, size.width*10, size.width);
-			var skinH = new haxe.SKScrollBar (scroller_w, 5,/* size.width, 5,  0, */colors);
-			horizontalSliderIndicator = new RCSlider (0, size.height + 2, Math.round(size.width), null, skinH);
-			horizontalSliderSync = new RCSliderSync (RCWindow.target, contentView, horizontalSliderIndicator, Math.round(size.width), "horizontal");
-			horizontalSliderSync.onUpdate = scrollViewDidScrollHandler;
-			layer.addChild ( horizontalSliderIndicator );
+			trace("add horz");trace(size);
+			var scroller_w = Zeta.lineEquationInt (50, size.width-50, contentSize.width, size.width*10, size.width);trace("add horz");
+			var skinH = new haxe.SKScrollBar (scroller_w, 5, colors);trace("add horz");
+			horizontalSliderIndicator = new RCScrollBar (0, size.height + 2, Math.round(size.width), null, skinH);trace("add horz");
+			horizontalSliderSync = new RCSliderSync (RCWindow.target, contentView, horizontalSliderIndicator, Math.round(size.width), "horizontal");trace("add horz");
+			horizontalSliderSync.onUpdate = scrollViewDidScrollHandler;trace("add horz");
+			addChild ( horizontalSliderIndicator );trace("add horz");
 		}
 		else {
 			Fugu.safeDestroy ([horizontalSliderIndicator, horizontalSliderSync]);
 			horizontalSliderIndicator = null;
 			horizontalSliderSync = null;
 		}
-		//trace("contentView.height "+contentView.height);
+		trace("contentView.height "+contentView.height);
 		
 		// Add or remove the vertical scrollbar
 		if (contentView.height > size.height && verticalSliderSync == null && b) {
 			//trace("add vert");
 			var scroller_h = Zeta.lineEquationInt (50, size.height-50, contentSize.height, size.height*10, size.height);
 			var skinV = new haxe.SKScrollBar (5, scroller_h,/* 5, size.height,  0, */colors);
-			verticalSliderIndicator = new RCSlider (size.width + 2, 0, null, Math.round(size.height), skinV);
+			verticalSliderIndicator = new RCScrollBar (size.width + 2, 0, null, Math.round(size.height), skinV);
 			verticalSliderSync = new RCSliderSync (RCWindow.target, contentView, verticalSliderIndicator, Math.round(size.height), "vertical");
 			verticalSliderSync.onUpdate = scrollViewDidScrollHandler;
-			layer.addChild ( verticalSliderIndicator );
+			addChild ( verticalSliderIndicator );
 		}
 		else {
 			Fugu.safeDestroy ([verticalSliderIndicator, verticalSliderSync]);
