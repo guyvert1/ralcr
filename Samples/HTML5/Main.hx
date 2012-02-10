@@ -18,57 +18,44 @@ class Main {
 	// change the HTML content of a DIV based on its ID
 	static function main() {
 		haxe.Firebug.redirectTraces();
-		trace(#if flash "FLASH" #else "JS" #end);
-		try{trace("BEGIN");
+		
+		try{
 		RCWindow.init();
 		//RCWindow.setTarget ("js");
 		RCWindow.backgroundColor = 0xDDDDDD;
-		
+		trace("step1");
 		RCFontManager.init();
 		RCAssets.loadFileWithKey("photo", "../CoreAnimation/3134265_large.jpg");
 		RCAssets.loadFileWithKey("some_text", "data.txt");
 		RCAssets.onComplete = function(){trace("RCAssets did finish loading assets"); trace(RCAssets.getFileWithKey("some_text"));}
-		
+		trace("step2");
 		var rect = new RCRectangle(0,0, 300, 150, RCColor.greenColor());
 	 	RCWindow.addChild ( rect );
 		rect.clipsToBounds = true;
-		rect.center = new RCPoint(RCWindow.width/2 /* - #if flash 0 #else RCWindow.width/4 #end*/, RCWindow.height/2);
+		rect.center = new RCPoint (RCWindow.width/2, RCWindow.height/2);
+		ph = new RCImage(1, 1, "../CoreAnimation/3134265_large.jpg");
+		ph.onComplete = resizePhoto;
+		rect.addChild ( ph );
 		
+		trace("step3");
 		circ = new RCEllipse(0,0, 100, 100, RCColor.darkGrayColor());
 	 	RCWindow.addChild ( circ );
 		//circ.center = new RCPoint(120,120);
 		
-		
+		// Test the animation engine
 		var a1=new CATween (circ, {x:RCWindow.width-100, y:0}, 2, 0, caequations.Cubic.IN_OUT);
 		var a2=new CATween (circ, {x:RCWindow.width-100, y:RCWindow.height-100}, 2, 0, caequations.Cubic.IN_OUT);
 		var a3=new CATween (circ, {x:0, y:RCWindow.height-100}, 2, 0, caequations.Cubic.IN_OUT);
 		var a4=new CATween (circ, {x:0, y:0}, 2, 0, caequations.Cubic.IN_OUT);
-		
 		var seq = new CASequence ([cast a1, cast a2, cast a3, cast a4]);
 		seq.start();
 		
 		lin = new RCLine(30,300, 400, 600, 0xff3300);
 		RCWindow.addChild ( lin );
 		
-		ph = new RCImage(1, 1, "../CoreAnimation/3134265_large.jpg");
-		ph.onComplete = resizePhoto;
-		rect.addChild ( ph );
 		
-		var f = new RCFont();
-			f.color = 0xFFFFFF;
-			f.font = "Arial";
-			f.size = 30;
-			f.embedFonts = false;
-		var t = new RCTextView (50, 30, null, null, "HTML5", f);
-		RCWindow.addChild ( t );
 		
-		var f2 = f.copy();
-			f2.color = 0x333333;
-			f2.size = 16;
-		var r = new RCTextRoll (50, 60, 200, null, "We are working on the HTML5 version of the gallery...", f2.copy());
-		RCWindow.addChild ( r );
-		r.start();
-		r.backgroundColor = 0xFFFFFF;
+		
 		
 		var k = new RCKeys();
 			k.onLeft = moveLeft;
@@ -76,9 +63,12 @@ class Main {
 		
 		var m = new EVMouse( EVMouse.OVER, rect.layer );
 			m.add ( function(_){ trace("onOver"); } );
-		
+		trace("step4");
+		testTexts();
+		trace("step5");
 		testSignals();
-		
+		trace("step6");
+		testButtons();
 		
 		// Shared objects
 /*		RCUserDefaults.init("com.ralcr.html5.");
@@ -86,40 +76,18 @@ class Main {
 		RCUserDefaults.set ("key1", "blah blah");
 		trace(RCUserDefaults.stringForKey("key1"));*/
 		
-		
-		// Add some buttons
-		var s = new haxe.SKButton("Play");
-		var b = new RCButton(50, 200, s);
-		b.onClick = function(){trace("click");}
-		b.onOver = function(){trace("over");}
-		b.onOut = function(){trace("out");}
-		b.onPress = function(){trace("press");}
-		b.onRelease = function(){trace("release");}
-		RCWindow.addChild ( b );
-		
-		var s = new haxe.SKButtonRadio();
-		var b = new RCButtonRadio(200, 200, s);
-		RCWindow.addChild ( b );
-		
-		var group = new RCGroup<RCButtonRadio> (200,230,10,null,createRadioButton);
-		RCWindow.addChild ( group );
-		group.add([1,2,3,4,5,5]);
-		
-		var seg = new RCSegmentedControl (200,300,160,50,ios.SKSegment);
-		RCWindow.addChild ( seg );
-		seg.initWithLabels(["Masculin","Feminin"]);
-		
+		trace("step7");
 		// Add slider
-		var s = new haxe.SKSlider();
-		var sl = new RCSlider(50, 250, 160, 10, s);
+		var s = new haxe.SKSlider();trace("-");
+		var sl = new RCSlider(50, 250, 160, 10, s);trace("-");
 		//sl.valueChanged.add ( function(e:RCSlider){trace(e.value);} );
 		RCWindow.addChild ( sl );
-		//sl.maxValue = 500;
-		sl.value = 30;
+		sl.maxValue = 500;trace("-");
+		sl.value = 30;trace("-");
 		
 /*		var swf = new RCSwf(200,0,"../HeartEquation/heart.swf");
 		RCWindow.addChild(swf);*/
-		
+		trace("step8");
 		req = new HTTPRequest();
 		req.onComplete = function (){ trace(req.result); }
 		req.onError = function (){ trace(req.result); }
@@ -128,16 +96,7 @@ class Main {
 		
 		}catch(e:Dynamic){Fugu.stack();}
     }
-	static function createRadioButton (indexPath:RCIndexPath) :RCButtonRadio {
-		var s = new haxe.SKButtonRadio();
-		var b = new RCButtonRadio(0,0,s);
-		return b;
-	}
-	static function createSegmentButton (i:Int) :RCButtonRadio {
-		var s = new haxe.SKButton("lklklk"+Std.random(10));
-		var b = new RCButtonRadio(0,0,s);
-		return b;
-	}
+	
 	
 	
 	
@@ -158,8 +117,8 @@ class Main {
 		var ph2 = ph.copy();
 		
 		var scrollview = new RCScrollView (780, 10, 300, 300);
-		scrollview.setContentView ( ph2 );
 		RCWindow.addChild(scrollview);
+		scrollview.setContentView ( ph2 );
 		
 		//return;
 		var anim = new CATween (ph, {x:{fromValue:-ph.width, toValue:ph.width}}, 2, 0, caequations.Cubic.IN_OUT);
@@ -168,12 +127,7 @@ class Main {
 		CoreAnimation.add ( anim );
 	}
 	
-	static function printNr(nr:Int){
-		trace("printNr "+nr);
-	}
-	static function printNr2(nr:Int){
-		trace("printNr2 "+nr);
-	}
+	
 	static function moveLeft(){
 		circ.x -= 10;
 	}
@@ -191,5 +145,63 @@ class Main {
 		signal.removeAll();
 		for (i in 0...5)
 		signal.dispatch ([Math.random()]);
+	}
+	static function printNr(nr:Int){
+		trace("printNr "+nr);
+	}
+	static function printNr2(nr:Int){
+		trace("printNr2 "+nr);
+	}
+	
+	
+	
+	static function testButtons(){try{
+		// Add some buttons
+		var s = new haxe.SKButton("Switch");
+		var b = new RCButton(50, 200, s);
+		b.onRelease = function(){ HXAddress.href(#if flash "js.html" #else "flash.html" #end); }
+		b.onOver = function(){trace("over");}
+		b.onOut = function(){trace("out");}
+		b.onPress = function(){trace("press");}
+		//b.onRelease = function(){trace("release");}
+		RCWindow.addChild ( b );
+		
+		var s = new haxe.SKButtonRadio();
+		var b = new RCButtonRadio(200, 200, s);
+		RCWindow.addChild ( b );
+		
+		var group = new RCGroup<RCButtonRadio> (200,230,10,null,createRadioButton);
+		RCWindow.addChild ( group );
+		group.add([1,2,3,4,5,5]);
+		
+		var seg = new RCSegmentedControl (200,300,160,50,ios.SKSegment);
+		RCWindow.addChild ( seg );
+		seg.initWithLabels(["Masculin","Feminin"]);
+		}catch(e:Dynamic){Fugu.stack();}
+	}
+	static function createRadioButton (indexPath:RCIndexPath) :RCButtonRadio {
+		var s = new haxe.SKButtonRadio();
+		var b = new RCButtonRadio(0,0,s);
+		return b;
+	}
+	
+	
+	static function testTexts(){try{
+		var f = new RCFont();
+			f.color = 0xFFFFFF;
+			f.font = "Arial";
+			f.size = 30;
+			f.embedFonts = false;
+		var t = new RCTextView (50, 30, null, null, #if flash "FLASH" #else "HTML5" #end, f);
+		RCWindow.addChild ( t );
+		
+		var f2 = f.copy();
+			f2.color = 0x333333;
+			f2.size = 16;
+		var r = new RCTextRoll (50, 60, 200, null, "We are working on the HTML5 version of the gallery...", f2);
+		RCWindow.addChild ( r );
+		r.start();
+		r.backgroundColor = 0xFFFFFF;
+		}catch(e:Dynamic){Fugu.stack();}
 	}
 }

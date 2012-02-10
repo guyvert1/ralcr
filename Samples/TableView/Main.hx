@@ -15,7 +15,7 @@ class Main {
 	
 	static var indexes :Array<String>;
 	static var hellos :Array<Array<String>>;
-	static var tableView :RCTableView<RCTableViewCell>;
+	static var tableView :RCTableView;
 	
 	
 	static function main () {
@@ -31,7 +31,7 @@ class Main {
 	public static function init () {
 		
 		// register fonts, formats and stylesheets
-		FontManager.init();
+		RCFontManager.init();
 		//RegisterFonts.init();
 		
 		//MC.addChild ( new RCTextView (300, 50, 400, null, usage, RCFontManager.getRCFont("pixel")) );
@@ -71,9 +71,9 @@ class Main {
 		}
 		
 		trace(indexes);
-		MC.addChild ( new RCTextView (30, 6, null, null, "Hello in any language", RCFontManager.getRCFont("system", {color:0x000000})) );
+		MC.addChild ( new RCTextView (30, 6, null, null, "Hello in any language", RCFontManager.getFont("system", {color:0x000000})) );
 		
-		tableView = new RCTableView<RCTableViewCell> (20, 30, 300, 500);
+		tableView = new RCTableView(20, 30, 300, 500);
 		tableView.delegate = Main;
 		tableView.init();
 		MC.addChild ( tableView );
@@ -85,7 +85,7 @@ class Main {
 			cell.y = 44*indexPath.row;
 		return cell;
 	}
-	public static function claimDataForCell (cell:RCTableViewCell) :Void {
+	public static function dataForCell (cell:RCTableViewCell) :Void {
 		var arr = hellos[cell.indexPath.section][cell.indexPath.row].split("*");
 		cell.titleView.text = arr[4]+arr[0] + " ("+arr[1]+") '"+arr[3]+"'";
 	}
