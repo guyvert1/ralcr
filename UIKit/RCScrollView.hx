@@ -4,17 +4,19 @@
 //  Created by Cristi Baluta on 2011-02-08.
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
+/**
+ *  
+ **/
 
 class RCScrollView extends RCView {
 	
+	var vertScrollBar :RCScrollBar;
+	var horizScrollBar :RCScrollBar;
+	var vertScrollBarSync :RCSliderSync;
+	var horizScrollBarSync :RCSliderSync;
+	
 	public var contentView :RCView;
-	public var contentSize :RCSize;// You can access directly the contentView, but be carefull
-	
-	var verticalSliderIndicator :RCScrollBar;
-	var horizontalSliderIndicator :RCScrollBar;
-	var verticalSliderSync :RCSliderSync;
-	var horizontalSliderSync :RCSliderSync;
-	
+	public var contentSize :RCSize;
 	public var dragging :Bool;
 	public var autohideSliders :Bool;
 	public var enableMarginsFade (null, setMarginsFade) :Bool;
@@ -42,52 +44,53 @@ class RCScrollView extends RCView {
 	 *  Set a custom view as the contentView
 	 */
 	public function setContentView (content:RCView) :Void {
+		Fugu.safeRemove ( contentView );
 		contentView = content;
-		contentSize = contentView.size;
 		addChild ( contentView );
-		try{setScrollEnabled ( true );}catch(e:Dynamic){Fugu.stack();}
+		contentSize = contentView.size;
+		setScrollEnabled ( true );
 	}
 	function setScrollEnabled (b:Bool) :Bool {
 		//trace("setScrollEnabled "+b);
 		var colors = [null, null, 0xDDDDDD, 0xFFFFFF];
-		trace("contentView.width "+contentView.width);
+		trace("contentSize "+contentSize);
 		
 		// Add or remove the horizontal scrollbar
-		if (contentView.width > size.width && horizontalSliderSync == null && b) {
-			trace("add horz");trace(size);
-			var scroller_w = Zeta.lineEquationInt (50, size.width-50, contentSize.width, size.width*10, size.width);trace("add horz");
-			var skinH = new haxe.SKScrollBar (scroller_w, 5, colors);trace("add horz");
-			horizontalSliderIndicator = new RCScrollBar (0, size.height + 2, Math.round(size.width), null, skinH);trace("add horz");
-			horizontalSliderSync = new RCSliderSync (RCWindow.target, contentView, horizontalSliderIndicator, Math.round(size.width), "horizontal");trace("add horz");
-			horizontalSliderSync.onUpdate = scrollViewDidScrollHandler;trace("add horz");
-			addChild ( horizontalSliderIndicator );trace("add horz");
+		if (contentView.width > size.width && horizScrollBarSync == null && b) {
+			trace("add horiz");
+			var scroller_w = Zeta.lineEquationInt (size.width/2, size.width, contentSize.width, size.width*2, size.width);
+			var skinH = new haxe.SKScrollBar ( colors );
+			horizScrollBar = new RCScrollBar (0, size.height - 10, size.width, 8, scroller_w, skinH);
+			horizScrollBarSync = new RCSliderSync (RCWindow.target, contentView, horizScrollBar, size.width, "horizontal");
+			horizScrollBarSync.valueChanged.add ( scrollViewDidScrollHandler );
+			addChild ( horizScrollBar );
 		}
 		else {
-			Fugu.safeDestroy ([horizontalSliderIndicator, horizontalSliderSync]);
-			horizontalSliderIndicator = null;
-			horizontalSliderSync = null;
+			Fugu.safeDestroy ([horizScrollBar, horizScrollBarSync]);
+			horizScrollBar = null;
+			horizScrollBarSync = null;
 		}
 		trace("contentView.height "+contentView.height);
 		
 		// Add or remove the vertical scrollbar
-		if (contentView.height > size.height && verticalSliderSync == null && b) {
-			//trace("add vert");
-			var scroller_h = Zeta.lineEquationInt (50, size.height-50, contentSize.height, size.height*10, size.height);
-			var skinV = new haxe.SKScrollBar (5, scroller_h,/* 5, size.height,  0, */colors);
-			verticalSliderIndicator = new RCScrollBar (size.width + 2, 0, null, Math.round(size.height), skinV);
-			verticalSliderSync = new RCSliderSync (RCWindow.target, contentView, verticalSliderIndicator, Math.round(size.height), "vertical");
-			verticalSliderSync.onUpdate = scrollViewDidScrollHandler;
-			addChild ( verticalSliderIndicator );
+		if (contentView.height > size.height && vertScrollBarSync == null && b) {
+			trace("add vert");
+			var scroller_h = Zeta.lineEquationInt (size.height/2, size.height, contentSize.height, size.height*2, size.height);
+			var skinV = new haxe.SKScrollBar ( colors );
+			vertScrollBar = new RCScrollBar (size.width - 10, 0, 8, size.height, scroller_h, skinV);
+			vertScrollBarSync = new RCSliderSync (RCWindow.target, contentView, vertScrollBar, size.height, "vertical");
+			vertScrollBarSync.valueChanged.add ( scrollViewDidScrollHandler );
+			addChild ( vertScrollBar );
 		}
 		else {
-			Fugu.safeDestroy ([verticalSliderIndicator, verticalSliderSync]);
-			verticalSliderIndicator = null;
-			verticalSliderSync = null;
+			Fugu.safeDestroy ([vertScrollBar, vertScrollBarSync]);
+			vertScrollBar = null;
+			vertScrollBarSync = null;
 		}
 		
 		return b;
 	}
-	function scrollViewDidScrollHandler () :Void {
+	function scrollViewDidScrollHandler (s:RCSliderSync) :Void {
 		scrollViewDidScroll();
 	}
 	
@@ -112,23 +115,23 @@ class RCScrollView extends RCView {
 	
 	
 	public function resume () :Void {
-		if (verticalSliderSync != null)
-			verticalSliderSync.resume();
-		if (horizontalSliderSync != null)
-			horizontalSliderSync.resume();
+		if (vertScrollBarSync != null)
+			vertScrollBarSync.resume();
+		if (horizScrollBarSync != null)
+			horizScrollBarSync.resume();
 	}
 	
 	public function hold () :Void {
-		if (verticalSliderSync != null)
-			verticalSliderSync.hold();
-		if (horizontalSliderSync != null)
-			horizontalSliderSync.hold();
+		if (vertScrollBarSync != null)
+			vertScrollBarSync.hold();
+		if (horizScrollBarSync != null)
+			horizScrollBarSync.hold();
 	}
 	
 	override public function destroy () :Void {
-		Fugu.safeDestroy ([verticalSliderSync, horizontalSliderSync]);
-		verticalSliderSync = null;
-		horizontalSliderSync = null;
+		Fugu.safeDestroy ([vertScrollBarSync, horizScrollBarSync, vertScrollBar, horizScrollBar]);
+		vertScrollBarSync = null;
+		horizScrollBarSync = null;
 		super.destroy();
 	}
 }

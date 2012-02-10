@@ -1,5 +1,6 @@
 //
-//  MouseGestures
+//  RCGestureRecognizer
+//	UIKit
 //
 //  Created by Baluta Cristian on 2008-12-29.
 //  Copyright (c) 2008 http://imagin.ro. All rights reserved.

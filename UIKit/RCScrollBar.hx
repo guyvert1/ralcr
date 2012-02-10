@@ -1,5 +1,5 @@
 //
-//  Scroll
+//  RCScrollBar
 //
 //  Created by Baluta Cristian on 2008-06-25.
 //  Copyright (c) 2008-2012 milc.ro. All rights reserved.
@@ -16,7 +16,7 @@ class RCScrollBar extends RCControl {
 	var skin :RCSkin;
 	var background :RCView;
 	var scrollbar :RCView;
-	
+	var indicatorSize :Float;
 	var direction_ :Direction;
 	var value_ :Float;
 	var minValue_ :Int;// 0...100
@@ -28,21 +28,34 @@ class RCScrollBar extends RCControl {
 	public var value (getValue, setValue) :Float;// default 0.0. this value will be pinned to min/max
 	public var valueChanged :RCSignal<RCScrollBar->Void>;// sliders, etc.
 	
-	public function new (x, y, w, h, skin:RCSkin) {
+	/**
+	*  w and h are the bounds of the scrollbar
+	*  indicatorSize is the width or height of the scrollbar indicator
+	*/
+	public function new (x, y, w:Float, h:Float, indicatorSize:Float, skin:RCSkin) {
 		super (x, y, w, h);
 		
 		this.moving = false;
 		this.minValue_ = 0;
 		this.maxValue_ = 100;
 		this.value_ = 0.0;
-		
+		this.skin = skin;
+		this.indicatorSize = indicatorSize;
+		this.viewDidAppear = init;
+	}
+	function init () {
 		// Decide the direction of movement
 		direction_ = (size.width > size.height) ? HORIZONTAL : VERTICAL;
 		
 		// display skin (background, symbol, hit)
 		background = skin.normal.background;
+		background.setWidth ( size.width );
+		background.setHeight ( size.height );
 		this.addChild ( background );
+		
 		scrollbar = skin.normal.otherView;
+		scrollbar.setWidth ( direction_ == HORIZONTAL ? indicatorSize : size.width );
+		scrollbar.setHeight ( direction_ == VERTICAL ? indicatorSize : size.height );
 		scrollbar.alpha = 0.4;
 		this.addChild ( scrollbar );
 		// end skin
@@ -103,12 +116,10 @@ class RCScrollBar extends RCControl {
 				y0 = Zeta.limitsInt (this.mouseY - scrollbar.height/2, 0, y2);
 		}
 		
-		// set the new value
+		// Set the new value
 		setValue ( Zeta.lineEquation (minValue_, maxValue_,  y0, y1, y2) );
 		
-		#if (flash || nme)
-			//e.updateAfterEvent();
-		#end
+		e.updateAfterEvent();
 	}
 	
 	
@@ -137,10 +148,12 @@ class RCScrollBar extends RCControl {
 	
 	
 	
-	// clean mess
+	// Clean mess
 	override public function destroy () :Void {
-		mouseUpHandler ( null );
 		valueChanged.destroy();
+		mouseUpOverStage_.destroy();
+		mouseMoveOverStage_.destroy();
+		skin.destroy();
 		super.destroy();
 	}
 }

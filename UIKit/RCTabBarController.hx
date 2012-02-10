@@ -11,7 +11,7 @@ class RCTabBarController extends RCView {
 	var symbols :Array<String>;
 	var constructor_ :Int->RCTabBarItem;
 	
-	public var background :RCRectangle;
+	public var placeholder :RCView;
 	public var tabBar :RCTabBar;
 	public var viewControllers :Array<Dynamic>;
 	public var selectedIndex (getIndex, setIndex) :Int;
@@ -19,23 +19,20 @@ class RCTabBarController extends RCView {
 	public var didSelectViewController :RCSignal<RCTabBarController->Dynamic->Void>;
 	
 	
-	public function new (x, y, ?constructor_:Int->RCTabBarItem) {
-		super (x, y);
-		this.size.width = 640;
-		this.size.height = 98;
+	public function new (x, y, w:Float, h:Float, ?constructor_:Int->RCTabBarItem) {
+		super (x, y, w, h);
 		this.constructor_ = constructor_;
 		viewControllers = new Array<Dynamic>();
 		didSelectViewController = new RCSignal<RCTabBarController->Dynamic->Void>();
 		
-		// Draw background
-		this.addChild ( background = new RCRectangle (0, 0, this.size.width, this.size.height, 0x222222) );
-		background.addChild ( new RCRectangle (0, this.size.height/2, this.size.width, this.size.height/2, 0x000000) );
+		placeholder = new RCView (0, 0);
+		this.addChild ( placeholder );
 	}
 	public function initWithLabels (labels:Array<String>, symbols:Array<String>) {
 		this.labels = labels;
 		this.symbols = symbols;
 		
-		tabBar = new RCTabBar (0, 3, /*6, null, */constructor_ == null ? constructButton : constructor_);
+		tabBar = new RCTabBar (0, size.height-50, size.width, 50, constructor_ == null ? constructButton : constructor_);
 		this.addChild ( tabBar );
 		tabBar.add ( labels );
 		tabBar.didSelectItem.add ( didSelectItemHandler );

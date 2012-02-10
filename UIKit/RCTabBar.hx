@@ -11,13 +11,21 @@ class RCTabBar extends RCGroup<RCTabBarItem> {
 	public var selectedIndex (getIndex, setIndex) :Int;
 	public var didSelectItem :RCSignal<RCTabBarItem->Void>;// called when a new view is selected by the user (but not programatically)
 	var constructor2_ :Int->RCTabBarItem;
+	var background :RCRectangle;
 	
 	
-	public function new (x, y, constructor2_:Int->RCTabBarItem) {
+	public function new (x, y, w:Float, h:Float, constructor2_:Int->RCTabBarItem) {
 		this.constructor2_ = constructor2_;
 		this.selectedIndex = 0;
 		didSelectItem = new RCSignal<RCTabBarItem->Void>();
 		super (x, y, 160, null, constructButton);
+		size.width = w;
+		size.height = w;
+		
+		// Draw background
+		background = new RCRectangle (0, 0, this.size.width, this.size.height, 0x222222);
+		background.addChild ( new RCRectangle (0, this.size.height/2, this.size.width, this.size.height/2, 0x000000) );
+		this.addChild ( background );
 	}
 	function constructButton (indexPath:RCIndexPath) :RCTabBarItem {
 		var but:RCTabBarItem = constructor2_ ( indexPath.row );

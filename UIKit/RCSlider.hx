@@ -22,15 +22,17 @@ class RCSlider extends RCControl {
 	var mouseUpOverStage_ :EVMouse;
 	var mouseMoveOverStage_ :EVMouse;
 	
-	public var skin :RCSkin;
+	var skin :RCSkin;
+	var sliderNormal :RCView;
+	var sliderHighlighted :RCView;
+	var scrubber :RCView;
+	
 	public var minValue (default, setMinValue) :Float;
 	public var maxValue (default, setMaxValue) :Float;
 	public var value (getValue, setValue) :Float;// default 0.0. this value will be pinned to min/max
 	public var minimumValueImage (default, setMinimumValueImage) :RCImage;// default is nil
 	public var maximumValueImage (default, setMaximumValueImage) :RCImage;
-	public var background :RCView;
-	public var scrubber :RCView;
-
+	
 	public var valueChanged :RCSignal<RCSlider->Void>;// sliders, etc.
 	
 	
@@ -42,14 +44,23 @@ class RCSlider extends RCControl {
 		this.maxValue_ = 100.0;
 		this.value_ = 0.0;
 		this.skin = skin;
-		
+	}
+	override public function viewDidAppear(){
 		// Resize skin elements based on the width and height
-		try { untyped skin.normal.background.setWidth(w); }catch(e:Dynamic){}
-		skin.normal.otherView.y = Math.round ((h - skin.normal.otherView.height)/2);
-		this.scrubber = skin.normal.otherView;
+		sliderNormal = skin.normal.background;
+		if (sliderNormal == null) sliderNormal = new RCView(0,0);
+		sliderNormal.setWidth ( size.width );
 		
-		addChild ( skin.normal.background );
-		//addChild ( skin.highlighted.background );
+		sliderHighlighted = skin.highlighted.background;
+		if (sliderHighlighted == null) sliderHighlighted = new RCView(0,0);
+		sliderHighlighted.setWidth ( size.width );
+		
+		scrubber = skin.normal.otherView;
+		if (scrubber == null) scrubber = new RCView(0,0);
+		scrubber.y = Math.round ((size.height - scrubber.height)/2);
+		
+		addChild ( sliderNormal );
+		addChild ( sliderHighlighted );
 		addChild ( scrubber );
 		
 		// Decide the direction of movement
@@ -129,11 +140,11 @@ class RCSlider extends RCControl {
 			case HORIZONTAL:
 				x2 = size.width - scrubber.width;
 				scrubber.x = Zeta.lineEquationInt (x1, x2,  v, minValue_, maxValue_);
-				if (skin.highlighted.background != null)
-					skin.highlighted.background.width = scrubber.x;
+				sliderHighlighted.setWidth ( scrubber.x + scrubber.width/2 );
 			case VERTICAL:
 				x2 = size.height - scrubber.height;
 				scrubber.y = Zeta.lineEquationInt (x1, x2,  v, minValue_, maxValue_);
+				sliderHighlighted.setHeight ( scrubber.y + scrubber.height/2 );
 		}
 		
 		valueChanged.dispatch ( [this] );

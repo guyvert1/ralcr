@@ -1,5 +1,6 @@
 //
 //  RCGroup
+//	UIKit
 //	This component will align a collection of views horizontally or vertically or in a matrix
 //	Matrix is not suported yet
 //
@@ -22,7 +23,7 @@ class RCGroup<T:RCView> extends RCView {
 	
 	public function new (x, y, gapX:Null<Int>, gapY:Null<Int>, constructor_:RCIndexPath->T) {
 		
-		super(x,y);
+		super (x, y);
 		
 		this.gapX = gapX;
 		this.gapY = gapY;

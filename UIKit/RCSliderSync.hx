@@ -13,8 +13,8 @@
 #end
 
 private enum Direction {
-	Horizontal;
-	Vertical;
+	HORIZONTAL;
+	VERTICAL;
 }
 private enum DecelerationRate {
 	RCScrollViewDecelerationRateNormal;
@@ -29,28 +29,34 @@ class RCSliderSync {
 	var direction :Direction;
 	var f :Int;
 	var decelerationRate :DecelerationRate;
+	var ticker :EVLoop;
+	var mouseWheel :EVMouse;
 	
 	public var valueMax (default, setMaxValue) :Int;
 	public var valueStart (default, setStartValue) :Int;
 	public var valueFinal (default, setFinalValue) :Int;// the current value between start and max
 	
-	dynamic public function onUpdate() :Void {}
+	public var valueChanged :RCSignal<RCSliderSync->Void>;
+	public var contentValueChanged :RCSignal<Void>;
 	dynamic public function onScrollLeft() :Void {}
 	dynamic public function onScrollRight() :Void {}
 	
 	
 	public function new (	target:DisplayObjectContainer, contentView:RCView,
-							slider:RCScrollBar, valueMax:Int, direction:String)
+							slider:RCScrollBar, valueMax:Float, direction:String)
 	{
 		this.target = target;
 		this.contentView = contentView;
 		this.slider = slider;
-		this.direction = direction == "horizontal" ? Horizontal : Vertical;
-		this.valueMax = valueMax;
+		this.direction = direction == "horizontal" ? HORIZONTAL : VERTICAL;
+		this.valueMax = Math.round ( valueMax );
 		this.valueStart = Math.round ( getContentPosition() );
 		this.valueFinal = valueStart;
 		this.f = 1;
 		
+		valueChanged = new RCSignal<RCSliderSync->Void>();
+		ticker = new EVLoop();
+		mouseWheel = new EVMouse (EVMouse.WHEEL, target);
 		resume();
 	}
 	
@@ -59,13 +65,12 @@ class RCSliderSync {
 	 * Hold and resume actions
 	 */
 	public function hold () :Void {
-		//target.removeEventListener (MouseEvent.MOUSE_WHEEL, wheelHandler);
-		//slider.removeEventListener (SliderEvent.ON_MOVE, sliderChangedHandler);
+		mouseWheel.remove ( wheelHandler );
+		slider.valueChanged.remove ( sliderChangedHandler );
 	}
-	
 	public function resume () :Void {
-		//target.addEventListener (MouseEvent.MOUSE_WHEEL, wheelHandler);
-		//slider.addEventListener (SliderEvent.ON_MOVE, sliderChangedHandler);
+		mouseWheel.add ( wheelHandler );
+		slider.valueChanged.add ( sliderChangedHandler );
 	}
 	
 	
@@ -110,7 +115,7 @@ class RCSliderSync {
 		if (valueFinal < valueStart + valueMax - getContentSize())
 			valueFinal = Math.round ( valueStart + valueMax - getContentSize() );
 			
-		//contentView.addEventListener (Event.ENTER_FRAME, loop);
+		ticker.run = loop;
 	}
 	
 	
@@ -123,26 +128,26 @@ class RCSliderSync {
 		
 		// remove the enterframe listener
 		if (Math.abs ( next_value ) < 1) {
-			//contentView.removeEventListener (Event.ENTER_FRAME, loop);
+			ticker.run = null;
 			moveContentTo ( valueFinal );
 		}
 		else moveContentTo ( getContentPosition() + next_value );
 		
-		onUpdate();
+		valueChanged.dispatch([this]);
 	}
 	
 	function moveContentTo (next_value:Float) :Void {
-		(direction == Horizontal)
+		(direction == HORIZONTAL)
 		? contentView.x = Math.round ( next_value )
 		: contentView.y = Math.round ( next_value );
 	}
 	
 	function getContentPosition () :Float {
-		return (direction == Horizontal) ? contentView.x : contentView.y;
+		return (direction == HORIZONTAL) ? contentView.x : contentView.y;
 	}
 	
 	function getContentSize () :Float {
-		return (direction == Horizontal) ? contentView.width : contentView.height;
+		return (direction == HORIZONTAL) ? contentView.width : contentView.height;
 	}
 	
 	
@@ -163,5 +168,6 @@ class RCSliderSync {
 	public function destroy () :Void {
 		//contentView.removeEventListener (Event.ENTER_FRAME, loop);
 		hold();
+		valueChanged.destroy();
 	}
 }

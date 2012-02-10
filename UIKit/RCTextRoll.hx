@@ -33,6 +33,9 @@ class RCTextRoll extends RCView {
 		// Add the first TextField
 		txt1 = new RCTextView (0, 0, null, h, str, properties);
 		this.addChild ( txt1 );
+		#if flash
+			viewDidAppear();
+		#end
 	}
 	
 	// JS target is not able to get elements dimensions if they are not on the display list
