@@ -5,16 +5,10 @@
 //  Copyright (c) 2008 ralcr.com. All rights reserved.
 //
 
-#if (flash || (nme && flash))
-	typedef Ticker = flash.display.Sprite;
-#else
-	typedef Ticker = haxe.Timer;
-#end
-
 class CoreAnimation {
 	
 	static var latest :CAObject;
-	static var ticker :Ticker;
+	static var ticker :EVLoop;
 	
 	public static var defaultTimingFunction :Dynamic = caequations.Linear.NONE;
 	public static var defaultDuration = 0.8;
@@ -48,13 +42,8 @@ class CoreAnimation {
 		obj.initTime();
 		
 		if (ticker == null) {
-#if (flash || (nme && flash))
-			ticker = new Ticker();
-			ticker.addEventListener (flash.events.Event.ENTER_FRAME, updateAnimations);
-#else
-			ticker = new Ticker( 10 );
+			ticker = new EVLoop();
 			ticker.run = updateAnimations;
-#end
 		}
 	}
 	
@@ -88,11 +77,7 @@ class CoreAnimation {
 	
 	static function removeTimer () :Void {
 		if (latest == null && ticker != null) {
-#if (flash || (nme && flash))
-			ticker.removeEventListener (flash.events.Event.ENTER_FRAME, updateAnimations);
-#else
-			ticker.stop();
-#end
+			ticker.destroy();
 			ticker = null;
 		}
 	}
@@ -109,7 +94,7 @@ class CoreAnimation {
 	/**
 	 *	Update the animations
 	 */
-	static function updateAnimations (#if (flash || (nme && flash)) _ #end) :Void {
+	static function updateAnimations () :Void {
 		
 		var current_time = timestamp();
 		var time_diff = 0.0;

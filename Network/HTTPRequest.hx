@@ -15,16 +15,18 @@
 	#if nme
 		import flash.net.URLRequest;
 	#end
-#end
-#if js
-	private typedef URLRequest = Dynamic;
+	#if js
+		private typedef URLRequest = Dynamic;
+	#end
 #end
 
 class HTTPRequest extends RCRequest {
 	
 	var scripts_path :String; // Path to the folder that contains all php scripts
 	
-	
+	/**
+	 *  Some of the features work hand in hand with the php scripts, so we need to pass the parth to them.
+	 **/
 	public function new (?scripts_path:String) {
 		this.scripts_path = scripts_path;
 		super ();
@@ -42,9 +44,9 @@ class HTTPRequest extends RCRequest {
 	/**
 	 * Read the content of a folder.
 	 */
-	public function readDirectory (directory:String) :Void {
+	public function readDirectory (directoryName:String) :Void {
 		var variables = new URLVariables();
-			variables.path = directory;
+			variables.path = directoryName;
 		
 		load ( scripts_path + "filesystem/readDirectory.php", variables );
 	}
@@ -55,18 +57,17 @@ class HTTPRequest extends RCRequest {
 	 */
 	public function call (script:String, variables_list:Dynamic, ?method:String="POST") :Void {
 		#if (flash || nme)
-		var variables = new URLVariables();
-		if (variables_list != null)
-			for (f in Reflect.fields (variables_list)) {
-				Reflect.setField (variables, f, Reflect.field (variables_list, f));
-			}
-		
-		var request = new URLRequest ( scripts_path + script );
-		#if flash
-			request.data = variables;
-			request.method = method=="POST" ? URLRequestMethod.POST : URLRequestMethod.GET;
-		#end
-		loader.load ( request );
+			var variables = new URLVariables();
+			if (variables_list != null)
+				for (f in Reflect.fields (variables_list)) {
+					Reflect.setField (variables, f, Reflect.field (variables_list, f));
+				}
+			var request = new URLRequest ( scripts_path + script );
+			#if flash
+				request.data = variables;
+				request.method = method=="POST" ? URLRequestMethod.POST : URLRequestMethod.GET;
+			#end
+			loader.load ( request );
 		#elseif js
 			
 		#end

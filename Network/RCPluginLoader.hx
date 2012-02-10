@@ -1,9 +1,11 @@
 //
-//  RCPlugin
+//  RCPluginLoader
 //
 //  Created by Cristi Baluta on 2011-02-23.
 //  Copyright (c) 2011 ralcr.com. All rights reserved.
 //
+
+#if flash
 import flash.display.Loader;
 import flash.net.URLLoader;
 import flash.net.URLLoaderDataFormat;
@@ -87,8 +89,11 @@ class RCPluginLoader extends Loader {
 	}
 	
 	
-	
+	/**
+	 *  Check if a class name exists in the current application domain, meaning the current swf or the loaded swf's.
+	 **/
 	public static function exists (key:String) {
 		return ApplicationDomain.currentDomain.hasDefinition ( key );
 	}
 }
+#end

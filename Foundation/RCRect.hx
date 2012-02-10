@@ -13,4 +13,10 @@ class RCRect {
 		this.origin = new RCPoint (x, y);
 		this.size = new RCSize (w, h);
 	}
+	public function copy () :RCRect {
+		return new RCRect (origin.x, origin.y, size.width, size.height);
+	}
+	public function toString () :String {
+		return "[RCRect x:"+origin.x+", y:"+origin.y+", width:"+size.width+", height:"+size.height+"]";
+	}
 }

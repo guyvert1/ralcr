@@ -19,6 +19,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 	public static var MOVE = "mousemove";
 	public static var CLICK = "mouseclick";
 	public static var DOUBLE_CLICK = "mousedoubleclick";
+	public static var WHEEL = "mousewheel";
 	
 	public var target :DisplayObjectContainer;
 	public var type :String;
@@ -44,9 +45,9 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 		#if js
 			targets = new List<EVMouseRelationship>();
 			if (Std.is(target, JSView))
-			this.target = target.view;
+				this.target = cast(target,JSView).layer;
 			else
-			this.target = target;
+				this.target = target;
 		#else
 			this.target = target;
 		#end
@@ -62,6 +63,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 				case MOVE: target.addEventListener (MouseEvent.MOUSE_MOVE, mouseHandler);
 				case CLICK: target.addEventListener (MouseEvent.CLICK, mouseHandler);
 				case DOUBLE_CLICK: target.addEventListener (MouseEvent.DOUBLE_CLICK, mouseHandler);
+				case WHEEL: target.addEventListener (MouseEvent.MOUSE_WHEEL, mouseHandler);
 				default: trace("The mouse event you're trying to add does not exist. "+pos);
 			}
 		#elseif js
@@ -96,6 +98,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 				case MOVE: target.removeEventListener (MouseEvent.MOUSE_MOVE, mouseHandler);
 				case CLICK: target.removeEventListener (MouseEvent.CLICK, mouseHandler);
 				case DOUBLE_CLICK: target.removeEventListener (MouseEvent.DOUBLE_CLICK, mouseHandler);
+				case WHEEL: target.removeEventListener (MouseEvent.MOUSE_WHEEL, mouseHandler);
 			}
 		#elseif js
 			switch (type) {

@@ -74,6 +74,7 @@ class Zeta {
 	 *	Usualy received as descending by modified date
 	 *	array2 is used to sort the array with priority on elements from array2
 	 */
+		 // Not working in nme for a reason
 #if !nme
 	public static function sort<T> (array:Array<T>, sort_type:String, ?sort_array:Array<T>) :Array<T> {
 		

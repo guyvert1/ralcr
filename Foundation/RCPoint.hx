@@ -15,4 +15,10 @@ class RCPoint {
 		this.x = x;
 		this.y = y;
 	}
+	public function copy () :RCPoint {
+		return new RCPoint (x, y);
+	}
+	public function toString () :String {
+		return "[RCPoint x:"+x+", y:"+y+"]";
+	}
 }

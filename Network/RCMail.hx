@@ -1,12 +1,27 @@
 //
-//  Mail
+//  RCMail
 //
 //  Created by Baluta Cristian on 2008-07-23.
 //  Copyright (c) 2008 milc.ro. All rights reserved.
 //
-import flash.net.URLRequest;
-import flash.net.URLVariables;
-import flash.net.URLRequestMethod;
+/**
+ *  Sent mails through the mail php script
+ **/
+
+#if (flash || (flash && nme))
+	import flash.net.URLRequest;
+	import flash.net.URLVariables;
+	import flash.net.URLRequestMethod;
+#else
+	private class URLVariables implements Dynamic { public function new(){} }
+	private typedef URLRequestMethod = Dynamic;
+	#if nme
+		import flash.net.URLRequest;
+	#end
+	#if js
+		private typedef URLRequest = Dynamic;
+	#end
+#end
 
 
 class RCMail extends RCRequest {
@@ -16,7 +31,7 @@ class RCMail extends RCRequest {
 	
 	public function new (scripts_path:String) {
 		this.scripts_path = scripts_path;
-		super ();
+		super();
 	}
 	
 	public function send (to:String, subject:String, message:String, from:String) :Void {

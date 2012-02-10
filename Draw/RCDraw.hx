@@ -5,7 +5,7 @@
 //  Copyright (c) 2010-2012 ralcr.com. All rights reserved.
 //
 
-#if nme
+#if (nme || js)
 	private typedef UInt = Int;
 #end
 #if (flash || nme)
@@ -14,7 +14,6 @@
 #elseif js
 	typedef Matrix = Dynamic;
 	private class LineScaleMode { static public var NONE = null; }
-	private typedef UInt = Int;
 	import RCView;
 #end
 
@@ -25,15 +24,13 @@ class RCDraw extends RCView {
 	
 	
 	public function new (x:Float, y:Float, w:Float, h:Float, color:Dynamic, alpha:Float=1.0) {
-		super (x, y);
+		super (x, y, w, h);
 		
-		this.size.width = w;
-		this.size.height = h;
 		this.alpha = alpha;
 		this.borderThickness = 1;
 		
 #if js
-		try{ this.graphics = untyped view; }catch(e:Dynamic){trace(e);}//untyped layer.getContext('2d');
+		try{ this.graphics = untyped layer; }catch(e:Dynamic){trace(e);}//untyped layer.getContext('2d');
 #end
 		
 		// Parse the color

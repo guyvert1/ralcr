@@ -62,16 +62,16 @@ class RCRequest {
 	public function load (URL:String, ?variables:URLVariables, ?method:String="POST") :Void {
 		#if (flash || nme)
 			loader = new URLLoader();
-			configureListeners ( loader );
+			addListeners ( loader );
 			var request = new URLRequest ( URL );
-				#if flash
-					request.data = variables;
-					request.method = method == "POST" ? URLRequestMethod.POST : URLRequestMethod.GET;
-				#end
+			#if flash
+				request.data = variables;
+				request.method = method == "POST" ? URLRequestMethod.POST : URLRequestMethod.GET;
+			#end
 			loader.load ( request );
 		#elseif js
 			loader = new Http ( URL );
-			configureListeners ( loader );
+			addListeners ( loader );
 			loader.request ( method == "POST" ? true : false );
 		#end
 	}
@@ -80,7 +80,7 @@ class RCRequest {
 	/**
 	 * Configure and remove listeners
 	 */
-	function configureListeners (dispatcher:IEventDispatcher) :Void {
+	function addListeners (dispatcher:IEventDispatcher) :Void {
 		#if (flash || nme)
 			dispatcher.addEventListener (Event.OPEN, openHandler);
 			dispatcher.addEventListener (Event.COMPLETE, completeHandler);
@@ -169,7 +169,8 @@ class RCRequest {
     }
 	
 	
-	/** Stop executing any request and remove listeners
+	/**
+	 *	Stop executing any request and remove listeners
 	 */
 	public function destroy () :Void {
 		removeListeners ( loader );
