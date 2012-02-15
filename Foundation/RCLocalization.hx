@@ -15,7 +15,6 @@ class RCLocalization {
 		
 		if (inited) return;
 		
-		percentLoaded = 0;
 		hash = new Hash<String>();
 		list = new RCLocalizationProxy ( hash.get );
 		inited = true;

@@ -15,7 +15,7 @@
 class RCAppDelegate extends MovieClip {
 	
 	public function new () {
-		super();
+		super(#if js 0, 0 #end);
 		
 		// The RCWindow should be initialized before anything
 		RCWindow.init();

@@ -1,6 +1,6 @@
 using Zeta;
 
-class Files {
+class RCFiles {
 	
 	inline public static var PHOTOS :Array<String> = [".jpg", ".jpeg", ".png", ".gif"];
 	inline public static var MUSIC :Array<String> = [".mp3"];
