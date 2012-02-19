@@ -49,14 +49,14 @@ class HXAddressManager {
     }
 	
 	static function call (key:String="") :Void {
-        
+        trace("key: "+key);
 		if (_pages.exists (key)) {
 			// Try executing the function asociated with this page
 			try {
-				_pages.get (key)();
+				_pages.get(key)();
 			}
 			catch (e:Dynamic) {
-				trace ("[HXAddressManager error on executing: {"+_pages.get(key)+"}], {"+e+"}");
+				trace ("[HXAddressManager error on executing page key: {"+key+"}], {"+e+"}");
 			}
 		}
     }

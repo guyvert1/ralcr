@@ -5,29 +5,30 @@
 //  Copyright (c) 2007-2012 http://ralcr.com. All rights reserved.
 //
 
-#if (flash || (nme && flash))
-	import flash.system.LoaderContext;
-	import flash.system.ApplicationDomain;
-#end
 #if (flash || nme)
 	import flash.events.Event;
 	import flash.display.Loader;
 	import flash.net.URLRequest;
+	#if flash
+		import flash.system.LoaderContext;
+		import flash.system.ApplicationDomain;
+	#end
 #elseif js
 	import js.Dom;// Includes the js.Event
 #end
+
 
 class RCSwf extends RCImage {
 	
 	public var target :Dynamic;
 	public var event :Event;
 	var newDomain :Bool;
-	var id_ :String;// Generate an unique id (JS)
+	var id_ :String;// Generate an unique id (for JS)
 	
 	
 	public function new (x, y, URL:String, ?newDomain:Bool=true) {
 		this.newDomain = newDomain;
-		this.id_ = "swf_";//Date.now().toString();
+		this.id_ = "swf_"+Date.now().toString();
 		super (x, y, URL);
 	}
 	
@@ -36,14 +37,12 @@ class RCSwf extends RCImage {
 		percentLoaded = 0;
 		
 		#if (flash || (nme && flash))
-			loader = new Loader();
-		
 			if (newDomain)
 				loader.load ( new URLRequest ( URL ), new LoaderContext (true, new ApplicationDomain()) );
 			else
 				loader.load ( new URLRequest ( URL ) );
 		#elseif js
-			// For JS target use the view element to add the swf
+			// For JS target use swfobject
 			layer.id = id_;
 			RCWindow.target.appendChild ( layer );
 			target = new js.SWFObject (URL, id_, 500, 400, "9", "#cecece");
@@ -56,7 +55,7 @@ class RCSwf extends RCImage {
 	}
 	
 	// Do not bitmapize the swf
-	override function completeHandler (e:Event) :Void {
+	override function completeHandler (e:Event) :Void {trace(e);
 		#if flash
 			//trace("swf loaded");
 			this.isLoaded = true;
@@ -64,8 +63,9 @@ class RCSwf extends RCImage {
 			this.target = loader.content;
 			this.size.width = loader.content.width;
 			this.size.height = loader.content.height;
-			this.layer.addChild ( loader );
+			this.addChild ( loader );
 		#end
+		this.isLoaded = true;
 		onComplete();
 	}
 	

@@ -4,14 +4,13 @@
 //  Created by Baluta Cristian on 2008-10-12.
 //  Copyright (c) 2008 ralcr.com. All rights reserved.
 //
-import flash.geom.Point;
 
 class RCPolygon extends RCDraw, implements RCDrawInterface {
 	
-	public var points :Array<Point>;
+	public var points :Array<RCPoint>;
 	
 	
-	public function new (x, y, points:Array<Point>, color:Dynamic, ?alpha:Float=1.0) {
+	public function new (x, y, points:Array<RCPoint>, color:Dynamic, ?alpha:Float=1.0) {
 		super (x, y, 0, 0, color, alpha);
 		
 		this.points = points;

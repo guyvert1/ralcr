@@ -7,18 +7,10 @@
 
 #if (flash || (flash && nme))
 	import flash.net.URLVariables;
-	import flash.net.URLRequest;
-	import flash.net.URLRequestMethod;
-#else
+#elseif js
 	private class URLVariables implements Dynamic { public function new(){} }
-	private typedef URLRequestMethod = Dynamic;
-	#if nme
-		import flash.net.URLRequest;
-	#end
-	#if js
-		private typedef URLRequest = Dynamic;
-	#end
 #end
+
 
 class HTTPRequest extends RCRequest {
 	
@@ -29,7 +21,7 @@ class HTTPRequest extends RCRequest {
 	 **/
 	public function new (?scripts_path:String) {
 		this.scripts_path = scripts_path;
-		super ();
+		super();
 	}
 	
 	
@@ -62,12 +54,7 @@ class HTTPRequest extends RCRequest {
 				for (f in Reflect.fields (variables_list)) {
 					Reflect.setField (variables, f, Reflect.field (variables_list, f));
 				}
-			var request = new URLRequest ( scripts_path + script );
-			#if flash
-				request.data = variables;
-				request.method = method=="POST" ? URLRequestMethod.POST : URLRequestMethod.GET;
-			#end
-			loader.load ( request );
+			load (scripts_path + script, variables, method);
 		#elseif js
 			
 		#end

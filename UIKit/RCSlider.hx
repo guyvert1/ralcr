@@ -37,13 +37,13 @@ class RCSlider extends RCControl {
 	
 	
 	public function new (x, y, w, h, skin:RCSkin) {
-		super (x, y, w, h);
-		
 		this.moving_ = false;
 		this.minValue_ = 0.0;
 		this.maxValue_ = 100.0;
 		this.value_ = 0.0;
 		this.skin = skin;
+		super (x, y, w, h);
+		#if flash viewDidAppear(); #end
 	}
 	override public function viewDidAppear(){
 		// Resize skin elements based on the width and height

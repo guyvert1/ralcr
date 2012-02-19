@@ -82,16 +82,23 @@ class RCAssets {
 			key = Std.string ( Math.random() );
 			
 		if (URL.toLowerCase().indexOf(".swf") != -1)
+		{
 			loadSwf (key, URL, newDomain);
-			
+		}
 		else if(URL.toLowerCase().indexOf(".xml") != -1 ||
 				URL.toLowerCase().indexOf(".txt") != -1 ||
 				URL.toLowerCase().indexOf(".css") != -1)
+		{
 			loadText (key, URL);
-			
-		else
+		}
+		else if(URL.toLowerCase().indexOf(".ttf") != -1 ||
+				URL.toLowerCase().indexOf(".otf") != -1)
+		{
+			loadFont (key, URL);
+		}
+		else {
 			loadPhoto (key, URL);
-		
+		}
 		return true;
 	}
 	function loadPhoto (key:String, URL:String) :Void {
@@ -116,13 +123,34 @@ class RCAssets {
 			data.onError = callback (errorHandler, key, data);
 			data.readFile ( URL );
 	}
+	function loadFont (key:String, URL:String) :Void {
+		#if js
+		// http://www.css3.info/preview/web-fonts-with-font-face/
+		//@font-face { font-family: Delicious; src: url('Delicious-Roman.otf'); } 
+		//@font-face { font-family: Delicious; font-weight: bold; src: url('Delicious-Bold.otf'); }\
+		//h3 { font-family: Delicious, sans-serif; }
+		var fontType:String = "";
+/*		if (URL.toLowerCase().indexOf(".ttf") != -1)
+			fontType = " format(\"truetype\")";*/
+
+		//Create a 'style' element	
+		var st = js.Lib.document.createElement("style");
+			st.innerHTML = "@font-face{font-family:"+key+" ; src: url('"+URL+"')" +fontType+ ";}";
+
+		// Now add this new element to the head tag
+		js.Lib.document.getElementsByTagName("head")[0].appendChild(st);
+		
+		onCompleteHandler();
+		#end
+	}
+	
 	
 	
 	/**
 	*  Dispatch onComplete and onError events
 	*/
 	function errorHandler (key:String, media:Dynamic) :Void {
-		trace("Error loading URL for key: '"+key+"' with object: "+media);
+		//trace("Error loading URL for key: '"+key+"' with object: "+media);
 		max --;
 		onError();
 		if (nr >= max)
@@ -139,7 +167,7 @@ class RCAssets {
 			case "RCImage" : photoList.set ( key, obj );
 			case "HTTPRequest" : dataList.set ( key, obj.result );
 			case "RCSwf" : swfList.set ( key, obj );
-			default : trace("this asset does not belong to any supported category. key="+key);
+			default : trace("This asset is not added to any list. key="+key);
 		}
 		onCompleteHandler();
 	}

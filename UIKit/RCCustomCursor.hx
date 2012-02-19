@@ -2,28 +2,30 @@
 //  CustomCursor
 //
 //  Created by Baluta Cristian on 2008-12-29.
-//  Copyright (c) 2008 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2008-2012 http://ralcr.com. All rights reserved.
 //
+
 #if (flash || nme)
-	import flash.events.Event;
-	import flash.events.MouseEvent;
 	import flash.ui.Mouse;
 #elseif js
 	import js.Dom;
 #end
 
+
 class RCCustomCursor extends RCView {
 	
 	var target :Dynamic;
 	var cursor :Dynamic;
+	var mouseMove :EVMouse;
 	
 	
 	public function new (target:Dynamic) {
-		super(0,0);
+		super (0, 0);
 		this.target = target;
 		
 		//Stage.MC.addEventListener (Event.MOUSE_LEAVE, hideCustomCursor);
-		target.addEventListener (MouseEvent.MOUSE_MOVE, moveHandler);
+		mouseMove = new EVMouse (EVMouse.MOVE, target);
+		mouseMove.add ( moveHandler );
 	}
 	
 	public function draw (obj:Dynamic) :Void {
@@ -35,23 +37,33 @@ class RCCustomCursor extends RCView {
 		cursor.mouseEnabled = false;
 		Fugu.safeAdd (this, cursor);
 		this.mouseEnabled = false;
-		Mouse.hide();
+		#if flash
+			Mouse.hide();
+		#elseif js
+			//Lib.document.body.style.cursor = "none";
+			Lib.document.body.style.cursor = "url(" + cursorURL + ") " + x +" " + y +", auto");
+		#end
 	}
 	
 	
-	function moveHandler (e:MouseEvent) :Void {
+	function moveHandler (e:EVMouse) :Void {
 		//if (!cursor.visible) cursor.visible = true;
-		this.x = e.stageX;
-		this.y = e.stageY;
+		this.x = e.e.stageX;
+		this.y = e.e.stageY;
 		e.updateAfterEvent();
 	}
-	function hideCustomCursor (event:Event) :Void {
+/*	function hideCustomCursor (event:Event) :Void {
 		cursor.visible = false;
-	}
+	}*/
 	
 	override public function destroy () :Void {
-		Mouse.show();
+		#if flash
+			Mouse.hide();
+		#elseif js
+			Lib.document.body.style.cursor = "auto";
+		#end
+		
 		//Stage.MC.removeEventListener (Event.MOUSE_LEAVE, hideCustomCursor);
-		target.removeEventListener (MouseEvent.MOUSE_MOVE, moveHandler);
+		mouseMove.destroy();
 	}
 }

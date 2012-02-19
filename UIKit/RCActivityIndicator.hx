@@ -9,17 +9,18 @@ class RCActivityIndicator extends RCProgressIndicator {
 	
 	public var stepX :Int;// The distance after the symbol position is reseted to 0
 	public var speedX :Int;
-	
+	var enterFrame :EVLoop;
 	
 	public function new (x, y, stepX:Int, skin:RCSkin) {
 		super (x, y, skin);
 		
 		this.stepX = stepX;
 		this.speedX = 1;
-		this.addEventListener (flash.events.Event.ENTER_FRAME, loop);
+		enterFrame = new EVLoop();
+		enterFrame.run = loop;
 	}
 	
-	function loop (_) :Void {
+	function loop () :Void {
 		skin.normal.otherView.x -= speedX;
 		if (Math.abs(skin.normal.otherView.x) >= Math.abs(stepX))
 			skin.normal.otherView.x = 0;
@@ -27,7 +28,7 @@ class RCActivityIndicator extends RCProgressIndicator {
 	
 	// CLEAN MESS
 	override public function destroy() :Void {
-		this.removeEventListener (flash.events.Event.ENTER_FRAME, loop);
+		enterFrame.destroy();
 		super.destroy();
 	}
 }

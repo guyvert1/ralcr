@@ -27,6 +27,7 @@
 	typedef IOErrorEvent = Event;
 #end
 
+
 class RCImage extends RCView {
 	
 	public var loader :Loader;
@@ -83,8 +84,12 @@ class RCImage extends RCView {
 	}
 #end
 	
+	
+	
+	
+	
 	public function new (x, y, URL:String) {
-		super(x, y);
+		super (x, y);
 		
 		#if (nme || flash)
 			loader = new Loader();

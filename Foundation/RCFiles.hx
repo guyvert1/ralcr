@@ -8,6 +8,7 @@ class RCFiles {
 	inline public static var PANO2VR :Array<String> = [".pano2vr"];
 	inline public static var VIDEOS :Array<String> = [".flv", ".f4v", ".mp4", ".m4v", ".ytb"];
 	inline public static var TEXT :Array<String> = [".txt", ".data"];
+	inline public static var IGNORE :Array<String> = ['.', '..', '.DS_Store', '_vti_cnf', 'Thumbs.db', '_thumb.jpg'];
 	
 	public var dir :Array<String>;
 	public var media :Array<String>;//all pictures and videos
@@ -40,6 +41,7 @@ class RCFiles {
 	}
 	
 	public function push (file:String) :Void {
+		if (file.isIn (IGNORE, "end")) return;
 		if (file.isIn (PHOTOS, "end")) {
 			photos.push ( file );
 			media.push ( file );

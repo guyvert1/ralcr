@@ -30,19 +30,22 @@ class RCView extends Sprite {
 	dynamic public function viewDidDisappear () :Void {}
 	public function viewWillAppearHandler (e:Event) :Void { viewWillAppear(); }
 	public function viewWillDisappearHandler (e:Event) :Void { viewWillDisappear(); }
-	public function viewDidAppearHandler (e:Event) :Void { viewDidAppear(); }
+	function viewDidAppearHandler (e:Event) :Void { trace("viewDidAppearHandler");viewDidAppear();trace("fin"); }
 	public function viewDidDisappearHandler (e:Event) :Void { viewDidDisappear(); }
 	
 	
 	public function new (x, y, ?w, ?h) {
 		super();
 		size = new RCSize (w, h);
-		
+		bounds = new RCRect (x, y, w, h);
 		layer = this;
-		layer.addEventListener (Event.ADDED_TO_STAGE, viewDidAppearHandler);
-		layer.addEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappearHandler);
+		//layer.addEventListener (Event.ADDED_TO_STAGE, viewDidAppearHandler);
+		//layer.addEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappearHandler);
 		layer.x = x;
 		layer.y = y;
+		#if flash
+			viewDidAppear();
+		#end
 	}
 	
 	

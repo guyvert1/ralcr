@@ -44,7 +44,7 @@ class RCWindow {
 	
 	
 	public static function init () {
-		trace("init");
+		//trace("init");
 		if (init_) return;
 			init_ = true;
 		#if (flash || nme)
@@ -59,7 +59,7 @@ class RCWindow {
 			target.style.margin = "0px 0px 0px 0px";
 			width = target.scrollWidth;
 			height = target.scrollHeight;
-			backgroundColor = 0x333333;
+			backgroundColor = 0xFFFFFF;
 		#end
 		#if flash
 			URL = flash.Lib.current.loaderInfo.url;

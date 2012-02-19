@@ -69,6 +69,7 @@ class RCRequest {
 				request.method = method == "POST" ? URLRequestMethod.POST : URLRequestMethod.GET;
 			#end
 			loader.load ( request );
+			
 		#elseif js
 			loader = new Http ( URL );
 			addListeners ( loader );
