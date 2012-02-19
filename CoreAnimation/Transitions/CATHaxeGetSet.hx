@@ -31,7 +31,7 @@ class CATHaxeGetSet extends CAObject, implements CATransitionInterface {
 		}
 	}
 	
-	override public function animate (time_diff:Float) :Void {
+	override public function animate (time_diff:Float) :Void {trace(time_diff);
 		// Iterate over properties that should be tweened for this object
 		for (prop in Reflect.fields (toValues)) try {
 			modifierFunction (calculate (time_diff, prop));
