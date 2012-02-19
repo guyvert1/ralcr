@@ -1476,6 +1476,110 @@ RCScrollBar.prototype.destroy = function() {
 	RCControl.prototype.destroy.call(this);
 }
 RCScrollBar.prototype.__class__ = RCScrollBar;
+CAObject = function(obj,properties,duration,delay,Eq,pos) {
+	if( obj === $_ ) return;
+	this.target = obj;
+	this.properties = properties;
+	this.repeatCount = 0;
+	this.autoreverses = false;
+	this.fromTime = Date.now().getTime();
+	this.duration = duration == null?CoreAnimation.defaultDuration:duration <= 0?0.001:duration;
+	this.delay = delay == null || delay < 0?0:delay;
+	if(Eq == null) this.timingFunction = CoreAnimation.defaultTimingFunction; else this.timingFunction = Eq;
+	this.delegate = new CADelegate();
+	this.delegate.pos = pos;
+	this.fromValues = { };
+	this.toValues = { };
+}
+CAObject.__name__ = ["CAObject"];
+CAObject.prototype.target = null;
+CAObject.prototype.prev = null;
+CAObject.prototype.next = null;
+CAObject.prototype.properties = null;
+CAObject.prototype.fromValues = null;
+CAObject.prototype.toValues = null;
+CAObject.prototype.fromTime = null;
+CAObject.prototype.delay = null;
+CAObject.prototype.duration = null;
+CAObject.prototype.repeatCount = null;
+CAObject.prototype.autoreverses = null;
+CAObject.prototype.timingFunction = null;
+CAObject.prototype.modifierFunction = null;
+CAObject.prototype.constraintBounds = null;
+CAObject.prototype.delegate = null;
+CAObject.prototype.init = function() {
+	throw "CAObject should be extended (" + this.delegate.pos + ")";
+}
+CAObject.prototype.animate = function(time_diff) {
+	throw "CAObject should be extended (" + this.delegate.pos + ")";
+}
+CAObject.prototype.initTime = function() {
+	this.fromTime = Date.now().getTime();
+	this.duration = this.duration * 1000;
+	this.delay = this.delay * 1000;
+}
+CAObject.prototype.repeat = function() {
+	this.fromTime = Date.now().getTime();
+	this.delay = 0;
+	if(this.autoreverses) {
+		var v = this.fromValues;
+		this.fromValues = this.toValues;
+		this.toValues = v;
+	}
+	this.repeatCount--;
+}
+CAObject.prototype.calculate = function(time_diff,prop) {
+	return this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null);
+}
+CAObject.prototype.toString = function() {
+	return "[CAObject: target=" + this.target + ", duration=" + this.duration + ", delay=" + this.delay + ", fromTime=" + this.fromTime + ", properties=" + this.properties + ", repeatCount=" + this.repeatCount + "]";
+}
+CAObject.prototype.__class__ = CAObject;
+CATHaxeGetSet = function(obj,properties,duration,delay,Eq,pos) {
+	if( obj === $_ ) return;
+	CAObject.call(this,obj,properties,duration,delay,Eq,pos);
+}
+CATHaxeGetSet.__name__ = ["CATHaxeGetSet"];
+CATHaxeGetSet.__super__ = CAObject;
+for(var k in CAObject.prototype ) CATHaxeGetSet.prototype[k] = CAObject.prototype[k];
+CATHaxeGetSet.prototype.init = function() {
+	this.modifierFunction = Reflect.field(this.properties,"modifierFunction");
+	Reflect.deleteField(this.properties,"modifierFunction");
+	var _g = 0, _g1 = Reflect.fields(this.properties);
+	while(_g < _g1.length) {
+		var p = _g1[_g];
+		++_g;
+		if(Std["is"](Reflect.field(this.properties,p),Int) || Std["is"](Reflect.field(this.properties,p),Float)) {
+			this.fromValues[p] = Reflect.field(this.target,p);
+			this.toValues[p] = Reflect.field(this.properties,p);
+		} else try {
+			this.fromValues[p] = Reflect.field(Reflect.field(this.properties,p),"fromValue");
+			try {
+				this.modifierFunction(Reflect.field(this.fromValues,p));
+			} catch( e ) {
+				haxe.Log.trace(e,{ fileName : "CATHaxeGetSet.hx", lineNumber : 26, className : "CATHaxeGetSet", methodName : "init"});
+			}
+			this.toValues[p] = Reflect.field(Reflect.field(this.properties,p),"toValue");
+		} catch( e ) {
+			haxe.Log.trace(e,{ fileName : "CATHaxeGetSet.hx", lineNumber : 29, className : "CATHaxeGetSet", methodName : "init"});
+		}
+	}
+}
+CATHaxeGetSet.prototype.animate = function(time_diff) {
+	haxe.Log.trace(time_diff,{ fileName : "CATHaxeGetSet.hx", lineNumber : 34, className : "CATHaxeGetSet", methodName : "animate"});
+	var _g = 0, _g1 = Reflect.fields(this.toValues);
+	while(_g < _g1.length) {
+		var prop = _g1[_g];
+		++_g;
+		try {
+			this.modifierFunction(this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null));
+		} catch( e ) {
+			haxe.Log.trace(e,{ fileName : "CATHaxeGetSet.hx", lineNumber : 38, className : "CATHaxeGetSet", methodName : "animate"});
+		}
+	}
+}
+CATHaxeGetSet.prototype.__class__ = CATHaxeGetSet;
+CATHaxeGetSet.__interfaces__ = [CATransitionInterface];
 RCTextView = function(x,y,w,h,str,rcfont) {
 	if( x === $_ ) return;
 	JSView.call(this,Math.round(x),Math.round(y));
@@ -1746,6 +1850,7 @@ CoreAnimation.updateAnimations = function() {
 		}
 		time_diff = current_time - a.fromTime - a.delay;
 		if(time_diff >= a.duration) time_diff = a.duration;
+		haxe.Log.trace(time_diff,{ fileName : "CoreAnimation.hx", lineNumber : 115, className : "CoreAnimation", methodName : "updateAnimations"});
 		if(time_diff > 0) {
 			a.animate(time_diff);
 			if(time_diff > 0 && !a.delegate.startPointPassed) a.delegate.start();
@@ -1949,7 +2054,7 @@ RCSwf = function(x,y,URL,newDomain) {
 	if( x === $_ ) return;
 	if(newDomain == null) newDomain = true;
 	this.newDomain = newDomain;
-	this.id_ = "swf_";
+	this.id_ = "swf_" + Date.now().toString();
 	RCImage.call(this,x,y,URL);
 }
 RCSwf.__name__ = ["RCSwf"];
@@ -1971,6 +2076,8 @@ RCSwf.prototype.initWithContentsOfFile = function(URL) {
 	this.target.write(this.id_);
 }
 RCSwf.prototype.completeHandler = function(e) {
+	haxe.Log.trace(e,{ fileName : "RCSwf.hx", lineNumber : 58, className : "RCSwf", methodName : "completeHandler"});
+	this.isLoaded = true;
 	this.onComplete();
 }
 RCSwf.prototype.callMethod = function(method,params) {
@@ -2558,6 +2665,48 @@ haxe.Firebug.trace = function(v,inf) {
 	console[type]((inf == null?"":inf.fileName + ":" + inf.lineNumber + " : ") + Std.string(v));
 }
 haxe.Firebug.prototype.__class__ = haxe.Firebug;
+haxe.Timer = function(time_ms) {
+	if( time_ms === $_ ) return;
+	var arr = haxe_timers;
+	this.id = arr.length;
+	arr[this.id] = this;
+	this.timerId = window.setInterval("haxe_timers[" + this.id + "].run();",time_ms);
+}
+haxe.Timer.__name__ = ["haxe","Timer"];
+haxe.Timer.delay = function(f,time_ms) {
+	var t = new haxe.Timer(time_ms);
+	t.run = function() {
+		t.stop();
+		f();
+	};
+	return t;
+}
+haxe.Timer.measure = function(f,pos) {
+	var t0 = haxe.Timer.stamp();
+	var r = f();
+	haxe.Log.trace(haxe.Timer.stamp() - t0 + "s",pos);
+	return r;
+}
+haxe.Timer.stamp = function() {
+	return Date.now().getTime() / 1000;
+}
+haxe.Timer.prototype.id = null;
+haxe.Timer.prototype.timerId = null;
+haxe.Timer.prototype.stop = function() {
+	if(this.id == null) return;
+	window.clearInterval(this.timerId);
+	var arr = haxe_timers;
+	arr[this.id] = null;
+	if(this.id > 100 && this.id == arr.length - 1) {
+		var p = this.id - 1;
+		while(p >= 0 && arr[p] == null) p--;
+		arr = arr.slice(0,p + 1);
+	}
+	this.id = null;
+}
+haxe.Timer.prototype.run = function() {
+}
+haxe.Timer.prototype.__class__ = haxe.Timer;
 EVMouse = function(type,target,pos) {
 	if( type === $_ ) return;
 	if(target == null) throw "Can't use a null target. " + pos;
@@ -2653,48 +2802,6 @@ EVMouse.prototype.destroy = function() {
 	RCSignal.prototype.destroy.call(this);
 }
 EVMouse.prototype.__class__ = EVMouse;
-haxe.Timer = function(time_ms) {
-	if( time_ms === $_ ) return;
-	var arr = haxe_timers;
-	this.id = arr.length;
-	arr[this.id] = this;
-	this.timerId = window.setInterval("haxe_timers[" + this.id + "].run();",time_ms);
-}
-haxe.Timer.__name__ = ["haxe","Timer"];
-haxe.Timer.delay = function(f,time_ms) {
-	var t = new haxe.Timer(time_ms);
-	t.run = function() {
-		t.stop();
-		f();
-	};
-	return t;
-}
-haxe.Timer.measure = function(f,pos) {
-	var t0 = haxe.Timer.stamp();
-	var r = f();
-	haxe.Log.trace(haxe.Timer.stamp() - t0 + "s",pos);
-	return r;
-}
-haxe.Timer.stamp = function() {
-	return Date.now().getTime() / 1000;
-}
-haxe.Timer.prototype.id = null;
-haxe.Timer.prototype.timerId = null;
-haxe.Timer.prototype.stop = function() {
-	if(this.id == null) return;
-	window.clearInterval(this.timerId);
-	var arr = haxe_timers;
-	arr[this.id] = null;
-	if(this.id > 100 && this.id == arr.length - 1) {
-		var p = this.id - 1;
-		while(p >= 0 && arr[p] == null) p--;
-		arr = arr.slice(0,p + 1);
-	}
-	this.id = null;
-}
-haxe.Timer.prototype.run = function() {
-}
-haxe.Timer.prototype.__class__ = haxe.Timer;
 IntHash = function(p) {
 	if( p === $_ ) return;
 	this.h = {}
@@ -2757,12 +2864,12 @@ _RCSlider.Direction.VERTICAL.toString = $estr;
 _RCSlider.Direction.VERTICAL.__enum__ = _RCSlider.Direction;
 RCSlider = function(x,y,w,h,skin) {
 	if( x === $_ ) return;
-	RCControl.call(this,x,y,w,h);
 	this.moving_ = false;
 	this.minValue_ = 0.0;
 	this.maxValue_ = 100.0;
 	this.value_ = 0.0;
 	this.skin = skin;
+	RCControl.call(this,x,y,w,h);
 }
 RCSlider.__name__ = ["RCSlider"];
 RCSlider.__super__ = RCControl;
@@ -2914,65 +3021,6 @@ caequations.Cubic.OUT_IN = function(t,b,c,d,p_params) {
 	return caequations.Cubic.IN(t * 2 - d,b + c / 2,c / 2,d,null);
 }
 caequations.Cubic.prototype.__class__ = caequations.Cubic;
-CAObject = function(obj,properties,duration,delay,Eq,pos) {
-	if( obj === $_ ) return;
-	this.target = obj;
-	this.properties = properties;
-	this.repeatCount = 0;
-	this.autoreverses = false;
-	this.fromTime = Date.now().getTime();
-	this.duration = duration == null?CoreAnimation.defaultDuration:duration <= 0?0.001:duration;
-	this.delay = delay == null || delay < 0?0:delay;
-	if(Eq == null) this.timingFunction = CoreAnimation.defaultTimingFunction; else this.timingFunction = Eq;
-	this.delegate = new CADelegate();
-	this.delegate.pos = pos;
-	this.fromValues = { };
-	this.toValues = { };
-}
-CAObject.__name__ = ["CAObject"];
-CAObject.prototype.target = null;
-CAObject.prototype.prev = null;
-CAObject.prototype.next = null;
-CAObject.prototype.properties = null;
-CAObject.prototype.fromValues = null;
-CAObject.prototype.toValues = null;
-CAObject.prototype.fromTime = null;
-CAObject.prototype.delay = null;
-CAObject.prototype.duration = null;
-CAObject.prototype.repeatCount = null;
-CAObject.prototype.autoreverses = null;
-CAObject.prototype.timingFunction = null;
-CAObject.prototype.modifierFunction = null;
-CAObject.prototype.constraintBounds = null;
-CAObject.prototype.delegate = null;
-CAObject.prototype.init = function() {
-	throw "CAObject should be extended (" + this.delegate.pos + ")";
-}
-CAObject.prototype.animate = function(time_diff) {
-	throw "CAObject should be extended (" + this.delegate.pos + ")";
-}
-CAObject.prototype.initTime = function() {
-	this.fromTime = Date.now().getTime();
-	this.duration = this.duration * 1000;
-	this.delay = this.delay * 1000;
-}
-CAObject.prototype.repeat = function() {
-	this.fromTime = Date.now().getTime();
-	this.delay = 0;
-	if(this.autoreverses) {
-		var v = this.fromValues;
-		this.fromValues = this.toValues;
-		this.toValues = v;
-	}
-	this.repeatCount--;
-}
-CAObject.prototype.calculate = function(time_diff,prop) {
-	return this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null);
-}
-CAObject.prototype.toString = function() {
-	return "[CAObject: target=" + this.target + ", duration=" + this.duration + ", delay=" + this.delay + ", fromTime=" + this.fromTime + ", properties=" + this.properties + ", repeatCount=" + this.repeatCount + "]";
-}
-CAObject.prototype.__class__ = CAObject;
 if(!haxe.remoting) haxe.remoting = {}
 haxe.remoting.Connection = function() { }
 haxe.remoting.Connection.__name__ = ["haxe","remoting","Connection"];
@@ -3766,14 +3814,13 @@ RCWindow.width = null;
 RCWindow.height = null;
 RCWindow.backgroundColor = null;
 RCWindow.init = function() {
-	haxe.Log.trace("init",{ fileName : "RCWindow.hx", lineNumber : 47, className : "RCWindow", methodName : "init"});
 	if(RCWindow.init_) return;
 	RCWindow.init_ = true;
 	RCWindow.target.style.position = "absolute";
 	RCWindow.target.style.margin = "0px 0px 0px 0px";
 	RCWindow.width = RCWindow.target.scrollWidth;
 	RCWindow.height = RCWindow.target.scrollHeight;
-	RCWindow.setBackgroundColor(3355443);
+	RCWindow.setBackgroundColor(16777215);
 	RCNotificationCenter.addObserver("resize",RCWindow.resizeHandler);
 }
 RCWindow.resizeHandler = function(w,h) {
@@ -4291,18 +4338,6 @@ CATween.prototype.animate = function(time_diff) {
 }
 CATween.prototype.__class__ = CATween;
 CATween.__interfaces__ = [CATransitionInterface];
-RCNotification = function(name,functionToCall) {
-	if( name === $_ ) return;
-	this.name = name;
-	this.functionToCall = functionToCall;
-}
-RCNotification.__name__ = ["RCNotification"];
-RCNotification.prototype.name = null;
-RCNotification.prototype.functionToCall = null;
-RCNotification.prototype.toString = function() {
-	return "[RCNotification with name: '" + this.name + "', functionToCall: " + this.functionToCall + "]";
-}
-RCNotification.prototype.__class__ = RCNotification;
 EVLoop = function(p) {
 	if( p === $_ ) return;
 	this.ticker = new haxe.Timer(10);
@@ -4319,6 +4354,18 @@ EVLoop.prototype.destroy = function() {
 	this.ticker.stop();
 }
 EVLoop.prototype.__class__ = EVLoop;
+RCNotification = function(name,functionToCall) {
+	if( name === $_ ) return;
+	this.name = name;
+	this.functionToCall = functionToCall;
+}
+RCNotification.__name__ = ["RCNotification"];
+RCNotification.prototype.name = null;
+RCNotification.prototype.functionToCall = null;
+RCNotification.prototype.toString = function() {
+	return "[RCNotification with name: '" + this.name + "', functionToCall: " + this.functionToCall + "]";
+}
+RCNotification.prototype.__class__ = RCNotification;
 HashArray = function(p) {
 	if( p === $_ ) return;
 	Hash.call(this);
@@ -4615,7 +4662,7 @@ RCAssets.prototype.set = function(key,URL,newDomain) {
 	haxe.Log.trace("set " + key + ", " + URL,{ fileName : "RCAssets.hx", lineNumber : 78, className : "RCAssets", methodName : "set"});
 	this.max++;
 	if(key == null) key = Std.string(Math.random());
-	if(URL.toLowerCase().indexOf(".swf") != -1) this.loadSwf(key,URL,newDomain); else if(URL.toLowerCase().indexOf(".xml") != -1 || URL.toLowerCase().indexOf(".txt") != -1 || URL.toLowerCase().indexOf(".css") != -1) this.loadText(key,URL); else this.loadPhoto(key,URL);
+	if(URL.toLowerCase().indexOf(".swf") != -1) this.loadSwf(key,URL,newDomain); else if(URL.toLowerCase().indexOf(".xml") != -1 || URL.toLowerCase().indexOf(".txt") != -1 || URL.toLowerCase().indexOf(".css") != -1) this.loadText(key,URL); else if(URL.toLowerCase().indexOf(".ttf") != -1 || URL.toLowerCase().indexOf(".otf") != -1) this.loadFont(key,URL); else this.loadPhoto(key,URL);
 	return true;
 }
 RCAssets.prototype.loadPhoto = function(key,URL) {
@@ -4674,8 +4721,14 @@ RCAssets.prototype.loadText = function(key,URL) {
 	})($closure(this,"errorHandler"),key,data);
 	data.readFile(URL);
 }
+RCAssets.prototype.loadFont = function(key,URL) {
+	var fontType = "";
+	var st = js.Lib.document.createElement("style");
+	st.innerHTML = "@font-face{font-family:" + key + " ; src: url('" + URL + "')" + fontType + ";}";
+	js.Lib.document.getElementsByTagName("head")[0].appendChild(st);
+	this.onCompleteHandler();
+}
 RCAssets.prototype.errorHandler = function(key,media) {
-	haxe.Log.trace("Error loading URL for key: '" + key + "' with object: " + media,{ fileName : "RCAssets.hx", lineNumber : 125, className : "RCAssets", methodName : "errorHandler"});
 	this.max--;
 	RCAssets.onError();
 	if(this.nr >= this.max) RCAssets.onComplete();
@@ -4696,7 +4749,7 @@ RCAssets.prototype.completeHandler = function(key,obj) {
 		this.swfList.set(key,obj);
 		break;
 	default:
-		haxe.Log.trace("this asset does not belong to any supported category. key=" + key,{ fileName : "RCAssets.hx", lineNumber : 142, className : "RCAssets", methodName : "completeHandler"});
+		haxe.Log.trace("This asset is not added to any list. key=" + key,{ fileName : "RCAssets.hx", lineNumber : 170, className : "RCAssets", methodName : "completeHandler"});
 	}
 	this.onCompleteHandler();
 }
@@ -4871,15 +4924,14 @@ Main.main = function() {
 	try {
 		RCWindow.init();
 		RCWindow.setBackgroundColor(14540253);
-		haxe.Log.trace("step1",{ fileName : "Main.hx", lineNumber : 26, className : "Main", methodName : "main"});
+		haxe.Log.trace("step1",{ fileName : "Main.hx", lineNumber : 25, className : "Main", methodName : "main"});
 		RCFontManager.init();
 		RCAssets.loadFileWithKey("photo","../CoreAnimation/3134265_large.jpg");
 		RCAssets.loadFileWithKey("some_text","data.txt");
-		RCAssets.onComplete = function() {
-			haxe.Log.trace("RCAssets did finish loading assets",{ fileName : "Main.hx", lineNumber : 30, className : "Main", methodName : "main"});
-			haxe.Log.trace(RCAssets.getFileWithKey("some_text"),{ fileName : "Main.hx", lineNumber : 30, className : "Main", methodName : "main"});
-		};
-		haxe.Log.trace("step2",{ fileName : "Main.hx", lineNumber : 31, className : "Main", methodName : "main"});
+		RCAssets.loadFileWithKey("Urban","FFF Urban.ttf");
+		RCAssets.loadFileWithKey("Futu","FUTUNEBI.TTF");
+		RCAssets.onComplete = Main.testJsFont;
+		haxe.Log.trace("step2",{ fileName : "Main.hx", lineNumber : 39, className : "Main", methodName : "main"});
 		var rect = new RCRectangle(0,0,300,150,RCColor.greenColor());
 		RCWindow.addChild(rect);
 		rect.setClipsToBounds(true);
@@ -4887,67 +4939,79 @@ Main.main = function() {
 		Main.ph = new RCImage(1,1,"../CoreAnimation/3134265_large.jpg");
 		Main.ph.onComplete = Main.resizePhoto;
 		rect.addChild(Main.ph);
-		haxe.Log.trace("step3",{ fileName : "Main.hx", lineNumber : 40, className : "Main", methodName : "main"});
+		haxe.Log.trace("step3",{ fileName : "Main.hx", lineNumber : 50, className : "Main", methodName : "main"});
 		Main.circ = new RCEllipse(0,0,100,100,RCColor.darkGrayColor());
 		RCWindow.addChild(Main.circ);
-		var a1 = new CATween(Main.circ,{ x : RCWindow.width - 100, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 46, className : "Main", methodName : "main"});
-		var a2 = new CATween(Main.circ,{ x : RCWindow.width - 100, y : RCWindow.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 47, className : "Main", methodName : "main"});
-		var a3 = new CATween(Main.circ,{ x : 0, y : RCWindow.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 48, className : "Main", methodName : "main"});
-		var a4 = new CATween(Main.circ,{ x : 0, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 49, className : "Main", methodName : "main"});
+		var a1 = new CATween(Main.circ,{ x : RCWindow.width - 100, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 56, className : "Main", methodName : "main"});
+		var a2 = new CATween(Main.circ,{ x : RCWindow.width - 100, y : RCWindow.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 57, className : "Main", methodName : "main"});
+		var a3 = new CATween(Main.circ,{ x : 0, y : RCWindow.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 58, className : "Main", methodName : "main"});
+		var a4 = new CATween(Main.circ,{ x : 0, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 59, className : "Main", methodName : "main"});
 		var seq = new CASequence([a1,a2,a3,a4]);
-		seq.start();
 		Main.lin = new RCLine(30,300,400,600,16724736);
 		RCWindow.addChild(Main.lin);
 		var k = new RCKeys();
 		k.onLeft = Main.moveLeft;
 		k.onRight = Main.moveRight;
-		var m = new EVMouse(EVMouse.OVER,rect.layer,{ fileName : "Main.hx", lineNumber : 64, className : "Main", methodName : "main"});
+		var m = new EVMouse(EVMouse.OVER,rect.layer,{ fileName : "Main.hx", lineNumber : 74, className : "Main", methodName : "main"});
 		m.add(function(_) {
-			haxe.Log.trace("onOver",{ fileName : "Main.hx", lineNumber : 65, className : "Main", methodName : "main"});
+			haxe.Log.trace("onOver",{ fileName : "Main.hx", lineNumber : 75, className : "Main", methodName : "main"});
 		});
-		haxe.Log.trace("step4",{ fileName : "Main.hx", lineNumber : 66, className : "Main", methodName : "main"});
+		haxe.Log.trace("step4",{ fileName : "Main.hx", lineNumber : 76, className : "Main", methodName : "main"});
 		Main.testTexts();
-		haxe.Log.trace("step5",{ fileName : "Main.hx", lineNumber : 68, className : "Main", methodName : "main"});
+		haxe.Log.trace("step5",{ fileName : "Main.hx", lineNumber : 78, className : "Main", methodName : "main"});
 		Main.testSignals();
-		haxe.Log.trace("step6",{ fileName : "Main.hx", lineNumber : 70, className : "Main", methodName : "main"});
+		haxe.Log.trace("step6",{ fileName : "Main.hx", lineNumber : 80, className : "Main", methodName : "main"});
 		Main.testButtons();
-		haxe.Log.trace("step7",{ fileName : "Main.hx", lineNumber : 79, className : "Main", methodName : "main"});
+		haxe.Log.trace("step7",{ fileName : "Main.hx", lineNumber : 89, className : "Main", methodName : "main"});
 		var s = new haxe.SKSlider();
-		haxe.Log.trace("-",{ fileName : "Main.hx", lineNumber : 81, className : "Main", methodName : "main"});
+		haxe.Log.trace("-",{ fileName : "Main.hx", lineNumber : 91, className : "Main", methodName : "main"});
 		var sl = new RCSlider(50,250,160,10,s);
-		haxe.Log.trace("-",{ fileName : "Main.hx", lineNumber : 82, className : "Main", methodName : "main"});
+		haxe.Log.trace("-",{ fileName : "Main.hx", lineNumber : 92, className : "Main", methodName : "main"});
 		RCWindow.addChild(sl);
 		sl.setMaxValue(500);
-		haxe.Log.trace("-",{ fileName : "Main.hx", lineNumber : 85, className : "Main", methodName : "main"});
+		haxe.Log.trace("-",{ fileName : "Main.hx", lineNumber : 95, className : "Main", methodName : "main"});
 		sl.setValue(30);
-		haxe.Log.trace("-",{ fileName : "Main.hx", lineNumber : 86, className : "Main", methodName : "main"});
-		haxe.Log.trace("step8",{ fileName : "Main.hx", lineNumber : 90, className : "Main", methodName : "main"});
+		haxe.Log.trace("-",{ fileName : "Main.hx", lineNumber : 96, className : "Main", methodName : "main"});
+		haxe.Log.trace("step8",{ fileName : "Main.hx", lineNumber : 100, className : "Main", methodName : "main"});
 		Main.req = new HTTPRequest();
 		Main.req.onComplete = function() {
-			haxe.Log.trace(Main.req.result,{ fileName : "Main.hx", lineNumber : 92, className : "Main", methodName : "main"});
+			haxe.Log.trace(Main.req.result,{ fileName : "Main.hx", lineNumber : 102, className : "Main", methodName : "main"});
 		};
 		Main.req.onError = function() {
-			haxe.Log.trace(Main.req.result,{ fileName : "Main.hx", lineNumber : 93, className : "Main", methodName : "main"});
+			haxe.Log.trace(Main.req.result,{ fileName : "Main.hx", lineNumber : 103, className : "Main", methodName : "main"});
 		};
 		Main.req.onStatus = function() {
-			haxe.Log.trace(Main.req.status,{ fileName : "Main.hx", lineNumber : 94, className : "Main", methodName : "main"});
+			haxe.Log.trace(Main.req.status,{ fileName : "Main.hx", lineNumber : 104, className : "Main", methodName : "main"});
 		};
 		Main.req.readFile("data.txt");
+		var anim = new CATHaxeGetSet(Main,{ modifierFunction : Main.setAlpha_, alpha : { fromValue : 0, toValue : 1}},0,0.3,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 108, className : "Main", methodName : "main"});
+		CoreAnimation.add(anim);
 	} catch( e ) {
 		Fugu.stack();
 	}
 }
+Main.setAlpha_ = function(a) {
+	haxe.Log.trace(a,{ fileName : "Main.hx", lineNumber : 114, className : "Main", methodName : "setAlpha_"});
+}
+Main.testJsFont = function() {
+	var f = new RCFont();
+	f.color = 0;
+	f.font = "Futu";
+	f.size = 34;
+	f.embedFonts = false;
+	var t = new RCTextView(50,120,null,null,"blah blah blah",f);
+	RCWindow.addChild(t);
+}
 Main.resizePhoto = function() {
-	haxe.Log.trace("onComplete image",{ fileName : "Main.hx", lineNumber : 111, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace("onComplete image",{ fileName : "Main.hx", lineNumber : 134, className : "Main", methodName : "resizePhoto"});
 	Main.ph.scaleToFill(298,148);
 	var ph2 = Main.ph.copy();
 	var scrollview = new RCScrollView(780,10,300,300);
 	RCWindow.addChild(scrollview);
 	scrollview.setContentView(ph2);
-	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 124, className : "Main", methodName : "resizePhoto"});
+	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 147, className : "Main", methodName : "resizePhoto"});
 	anim.repeatCount = 5;
 	anim.autoreverses = true;
-	CoreAnimation.add(anim);
 }
 Main.moveLeft = function() {
 	var _g = Main.circ;
@@ -4961,20 +5025,20 @@ Main.signal = null;
 Main.testSignals = function() {
 	Main.signal = new RCSignal();
 	Main.signal.add(Main.printNr);
-	Main.signal.addOnce(Main.printNr2,{ fileName : "Main.hx", lineNumber : 143, className : "Main", methodName : "testSignals"});
+	Main.signal.addOnce(Main.printNr2,{ fileName : "Main.hx", lineNumber : 166, className : "Main", methodName : "testSignals"});
 	Main.signal.remove(Main.printNr);
 	Main.signal.removeAll();
 	var _g = 0;
 	while(_g < 5) {
 		var i = _g++;
-		Main.signal.dispatch([Math.random()],{ fileName : "Main.hx", lineNumber : 147, className : "Main", methodName : "testSignals"});
+		Main.signal.dispatch([Math.random()],{ fileName : "Main.hx", lineNumber : 170, className : "Main", methodName : "testSignals"});
 	}
 }
 Main.printNr = function(nr) {
-	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 150, className : "Main", methodName : "printNr"});
+	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 173, className : "Main", methodName : "printNr"});
 }
 Main.printNr2 = function(nr) {
-	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 153, className : "Main", methodName : "printNr2"});
+	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 176, className : "Main", methodName : "printNr2"});
 }
 Main.testButtons = function() {
 	try {
@@ -4984,13 +5048,13 @@ Main.testButtons = function() {
 			HXAddress.href("flash.html");
 		};
 		b.onOver = function() {
-			haxe.Log.trace("over",{ fileName : "Main.hx", lineNumber : 163, className : "Main", methodName : "testButtons"});
+			haxe.Log.trace("over",{ fileName : "Main.hx", lineNumber : 186, className : "Main", methodName : "testButtons"});
 		};
 		b.onOut = function() {
-			haxe.Log.trace("out",{ fileName : "Main.hx", lineNumber : 164, className : "Main", methodName : "testButtons"});
+			haxe.Log.trace("out",{ fileName : "Main.hx", lineNumber : 187, className : "Main", methodName : "testButtons"});
 		};
 		b.onPress = function() {
-			haxe.Log.trace("press",{ fileName : "Main.hx", lineNumber : 165, className : "Main", methodName : "testButtons"});
+			haxe.Log.trace("press",{ fileName : "Main.hx", lineNumber : 188, className : "Main", methodName : "testButtons"});
 		};
 		RCWindow.addChild(b);
 		var s1 = new haxe.SKButtonRadio();

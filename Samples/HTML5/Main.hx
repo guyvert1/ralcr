@@ -4,7 +4,6 @@
 //  Created by Cristi Baluta on 2010-05-28.
 //  Copyright (c) 2010 ralcr.com. All rights reserved.
 //
-//import js.Dom;
 import RCView;
 import RCWindow;
 
@@ -24,11 +23,22 @@ class Main {
 		//RCWindow.setTarget ("js");
 		RCWindow.backgroundColor = 0xDDDDDD;
 		trace("step1");
+		
+/*		var swf = new RCSwf (200,0,"../HeartEquation/heart.swf");
+		RCWindow.addChild(swf);*/
+		
+		
+		
 		RCFontManager.init();
 		RCAssets.loadFileWithKey("photo", "../CoreAnimation/3134265_large.jpg");
 		RCAssets.loadFileWithKey("some_text", "data.txt");
-		RCAssets.onComplete = function(){trace("RCAssets did finish loading assets"); trace(RCAssets.getFileWithKey("some_text"));}
+		RCAssets.loadFileWithKey("Urban", "FFF Urban.ttf");
+		RCAssets.loadFileWithKey("Futu", "FUTUNEBI.TTF");
+		RCAssets.onComplete = testJsFont;
+		//function(){trace("RCAssets did finish loading assets"); trace(RCAssets.getFileWithKey("some_text"));}
 		trace("step2");
+		
+		
 		var rect = new RCRectangle(0,0, 300, 150, RCColor.greenColor());
 	 	RCWindow.addChild ( rect );
 		rect.clipsToBounds = true;
@@ -48,7 +58,7 @@ class Main {
 		var a3=new CATween (circ, {x:0, y:RCWindow.height-100}, 2, 0, caequations.Cubic.IN_OUT);
 		var a4=new CATween (circ, {x:0, y:0}, 2, 0, caequations.Cubic.IN_OUT);
 		var seq = new CASequence ([cast a1, cast a2, cast a3, cast a4]);
-		seq.start();
+		//seq.start();
 		
 		lin = new RCLine(30,300, 400, 600, 0xff3300);
 		RCWindow.addChild ( lin );
@@ -85,8 +95,8 @@ class Main {
 		sl.maxValue = 500;trace("-");
 		sl.value = 30;trace("-");
 		
-/*		var swf = new RCSwf(200,0,"../HeartEquation/heart.swf");
-		RCWindow.addChild(swf);*/
+		
+		
 		trace("step8");
 		req = new HTTPRequest();
 		req.onComplete = function (){ trace(req.result); }
@@ -94,11 +104,24 @@ class Main {
 		req.onStatus = function (){ trace(req.status); }
 		req.readFile("data.txt");
 		
+		
+		var anim = new CATHaxeGetSet (Main, {modifierFunction:setAlpha_, alpha:{fromValue:0, toValue:1}}, 0, 0.3, caequations.Cubic.IN_OUT);
+		CoreAnimation.add( anim );
+		
+		
 		}catch(e:Dynamic){Fugu.stack();}
     }
+	static function setAlpha_ (a:Float){trace(a);}
 	
-	
-	
+	static function testJsFont () {
+		var f = new RCFont();
+			f.color = 0x000000;
+			f.font = "Futu";
+			f.size = 34;
+			f.embedFonts = false;
+		var t = new RCTextView (50, 120, null, null, "blah blah blah", f);
+		RCWindow.addChild ( t );
+	}
 	
 	
 	
@@ -124,7 +147,7 @@ class Main {
 		var anim = new CATween (ph, {x:{fromValue:-ph.width, toValue:ph.width}}, 2, 0, caequations.Cubic.IN_OUT);
 			anim.repeatCount = 5;
 			anim.autoreverses = true;
-		CoreAnimation.add ( anim );
+		//CoreAnimation.add ( anim );
 	}
 	
 	
