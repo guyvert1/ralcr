@@ -21,7 +21,7 @@ class Main {
 		try{
 		RCWindow.init();
 		//RCWindow.setTarget ("js");
-		RCWindow.backgroundColor = 0xDDDDDD;
+		RCWindow.backgroundColor = 0xefefef;
 		trace("step1");
 		
 /*		var swf = new RCSwf (200,0,"../HeartEquation/heart.swf");
@@ -105,13 +105,13 @@ class Main {
 		req.readFile("data.txt");
 		
 		
-		var anim = new CATHaxeGetSet (Main, {modifierFunction:setAlpha_, alpha:{fromValue:0, toValue:1}}, 0, 0.3, caequations.Cubic.IN_OUT);
-		CoreAnimation.add( anim );
+		var anim = new CATCallFunc (setAlpha_, {alpha:{fromValue:0, toValue:1}}, 2.8, 0, caequations.Cubic.IN_OUT);
+		CoreAnimation.add ( anim );
 		
 		
 		}catch(e:Dynamic){Fugu.stack();}
     }
-	static function setAlpha_ (a:Float){trace(a);}
+	static function setAlpha_ (a:Float){lin.alpha=a;}
 	
 	static function testJsFont () {
 		var f = new RCFont();

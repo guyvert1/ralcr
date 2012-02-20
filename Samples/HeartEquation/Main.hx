@@ -1,48 +1,21 @@
-#if (flash || nme)
-import flash.display.Sprite;
-import flash.events.TimerEvent;
-import flash.utils.Timer;
-#elseif js
-import js.Lib;
-import js.Dom;
-#end
 
-
-class Main {
+class Main extends RCAppDelegate {
 	
 	inline static var PARTICLES = 200;
 	
-	#if (flash || nme)
-		var root : flash.display.MovieClip;
-		var defaultFrameRate : Float;
-	#elseif js
-		var root : HtmlDom;
-		var timer : haxe.Timer;
-	#end
-	
-	
 	static function main() {
 		haxe.Firebug.redirectTraces();
-#if (flash || nme)
-		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
-		var root = flash.Lib.current;
-#elseif js
-		var root = js.Lib.document.getElementById("draw");
-#end
-		
-		new Main(root);
+		RCWindow.init();
+		RCWindow.addChild ( new Main() );
 	}
 	
 	
 	
-	public function new ( root ) {
-#if (flash || nme)
-		this.root = root;
-		this.root.graphics.lineStyle (1, 0x000000);
-		this.root.graphics.moveTo (0, 0);
-#end	
+	public function new () {
+		super();
 		heart1();
 		//heart2();
+		addChild ( new RCStats() );
 	}
 	
 	
@@ -60,16 +33,16 @@ class Main {
 		
 		var p1 = new Particle(400, 400, t, -1);
 		var p2 = new Particle(400, 400, t, 1);
-		root.addChild( p1 );
-		root.addChild( p2 );
+		RCWindow.addChild( p1 );
+		RCWindow.addChild( p2 );
 	}
-	/*
+	
 	function heart2 () {
 		var iterator = new RCIterator (4, 0, PARTICLES, 1);
 			iterator.run = drawParticle2;
 			iterator.start();
 	}
-	function drawParticle2 (i:Float) {		
+	function drawParticle2 (i:Float) {
 		var scale = 20;
 		var t = i/(PARTICLES/60);
 		var a = 0.01 * (-t*t + 40*t + 1200);
@@ -77,10 +50,15 @@ class Main {
 		var x = a * Math.sin(Math.PI*t/180);
 		var y = a * Math.cos(Math.PI*t/180);
 		
-		this.graphics.drawRect (800-x*scale, 400-y*scale, 1, 1);
-		this.graphics.drawRect (800+x*scale, 400-y*scale, 1, 1);
+/*		this.graphics.drawRect (800-x*scale, 400-y*scale, 1, 1);
+		this.graphics.drawRect (800+x*scale, 400-y*scale, 1, 1);*/
+		var p1 = new Particle(800-x*scale, 400-y*scale, t, -1);
+		var p2 = new Particle(800-x*scale, 400-y*scale, t, 1);
+		RCWindow.addChild( p1 );
+		RCWindow.addChild( p2 );
 	}
-	*/
+	
+	
 	function logx(val:Float, base:Float=10):Float {
 		return Math.log(val) / Math.log(base);
 	}
@@ -91,9 +69,10 @@ class Main {
 
 
 
-class Particle #if (flash || nme) extends Sprite #end {
+class Particle extends RCView {
 	
 	var timer :haxe.Timer;
+	var loopEvent :EVLoop;
 	var o_x :Float;
 	var o_y :Float;
 	var f_x :Float;
@@ -104,25 +83,22 @@ class Particle #if (flash || nme) extends Sprite #end {
 	
 	
 	public function new (x, y, t, s) {
-#if (flash || nme)	super(); #end
+		super(x,y);
 		
-		this.x = o_x = x;
-		this.y = o_y = y;
+		o_x = x;
+		o_y = y;
 		theta = t;
 		f_x = x;
 		f_y = y;
 		current_theta = 0.001;
 		sign = s;
 		
-		this.graphics.lineStyle (1, 0x000000);
-		this.graphics.moveTo (0, 0);
-		this.graphics.drawRect (0, 0, 1, 1);
+		addChild ( new RCRectangle (0,0,1,1,0x000000) );
 		
+		loopEvent = new EVLoop();
+		loopEvent.run = loopTheta;
 		timer = new haxe.Timer ( 40/*Math.round (50*t)*/ );
 		timer.run = advanceTheta;
-#if (flash || nme)
-		this.addEventListener (flash.events.Event.ENTER_FRAME, loopTheta);
-#end
 	}
 	function advanceTheta () {
 		current_theta += (theta - current_theta)/5;
@@ -131,17 +107,13 @@ class Particle #if (flash || nme) extends Sprite #end {
 		if (Math.abs(current_theta - theta) <= 0.001) {
 			current_theta = theta;
 			timer.stop();
-#if (flash || nme)
-			this.removeEventListener (flash.events.Event.ENTER_FRAME, loopTheta);
-#end
+			loopEvent.stop();
 			fxy();
 			o_x = o_x - f_x*500*sign;
 			o_y = o_y - f_y*500;
 			
 			changeDirection();
-#if (flash || nme)
-			this.addEventListener (flash.events.Event.ENTER_FRAME, loop);
-#end
+			loopEvent.run = loop;
 		}
 	}
 	// Heart equation
@@ -153,12 +125,12 @@ class Particle #if (flash || nme) extends Sprite #end {
 		f_x = o_x + 6 - Math.random()*12;
 		f_y = o_y + 6 - Math.random()*12;
 	}
-	function loopTheta (_) {
+	function loopTheta () {
 		// Multiply the heart scale by 500
 		this.x = o_x - f_x*500*sign;
 		this.y = o_y - f_y*500;
 	}
-	function loop (_) {
+	function loop () {
 		this.x += (f_x - this.x) / 3;
 		this.y += (f_y - this.y) / 3;
 		

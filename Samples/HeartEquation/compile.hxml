@@ -11,3 +11,4 @@ all.hxml
 -cp Samples/HeartEquation
 all.hxml
 -main Main.hx
+#--dead-code-elimination

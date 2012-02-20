@@ -170,6 +170,9 @@ JSView.prototype.addChild = function(child) {
 	this.layer.appendChild(child.layer);
 	child.viewDidAppearHandler();
 }
+JSView.prototype.addChildAt = function(child,index) {
+	this.addChild(child);
+}
 JSView.prototype.removeChild = function(child) {
 	if(child == null) return;
 	child.viewWillDisappearHandler();
@@ -269,7 +272,7 @@ JSView.prototype.setY = function(y) {
 	return y;
 }
 JSView.prototype.getWidth = function() {
-	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the width will be 0",{ fileName : "JSView.hx", lineNumber : 226, className : "JSView", methodName : "getWidth"});
+	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the width will be 0",{ fileName : "JSView.hx", lineNumber : 229, className : "JSView", methodName : "getWidth"});
 	return this.layer.offsetWidth;
 	return this.layer.scrollWidth;
 	return this.layer.clientWidth;
@@ -280,7 +283,7 @@ JSView.prototype.setWidth = function(w) {
 	return w;
 }
 JSView.prototype.getHeight = function() {
-	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the height will be 0",{ fileName : "JSView.hx", lineNumber : 237, className : "JSView", methodName : "getHeight"});
+	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the height will be 0",{ fileName : "JSView.hx", lineNumber : 240, className : "JSView", methodName : "getHeight"});
 	return this.layer.offsetHeight;
 	return this.layer.scrollHeight;
 	return this.layer.clientHeight;
@@ -1034,12 +1037,12 @@ RCSliderSync.prototype.sliderChangedHandler = function(e) {
 RCSliderSync.prototype.startLoop = function() {
 	if(this.valueFinal > this.valueStart) this.setFinalValue(this.valueStart);
 	if(this.valueFinal < this.valueStart + this.valueMax - this.getContentSize()) this.setFinalValue(Math.round(this.valueStart + this.valueMax - this.getContentSize()));
-	this.ticker.run = $closure(this,"loop");
+	this.ticker.setFuncToCall($closure(this,"loop"));
 }
 RCSliderSync.prototype.loop = function() {
 	var next_value = (this.valueFinal - this.getContentPosition()) / 3;
 	if(Math.abs(next_value) < 1) {
-		this.ticker.run = null;
+		this.ticker.setFuncToCall(null);
 		this.moveContentTo(this.valueFinal);
 	} else this.moveContentTo(this.getContentPosition() + next_value);
 	this.valueChanged.dispatch([this],{ fileName : "RCSliderSync.hx", lineNumber : 136, className : "RCSliderSync", methodName : "loop"});
@@ -1476,110 +1479,6 @@ RCScrollBar.prototype.destroy = function() {
 	RCControl.prototype.destroy.call(this);
 }
 RCScrollBar.prototype.__class__ = RCScrollBar;
-CAObject = function(obj,properties,duration,delay,Eq,pos) {
-	if( obj === $_ ) return;
-	this.target = obj;
-	this.properties = properties;
-	this.repeatCount = 0;
-	this.autoreverses = false;
-	this.fromTime = Date.now().getTime();
-	this.duration = duration == null?CoreAnimation.defaultDuration:duration <= 0?0.001:duration;
-	this.delay = delay == null || delay < 0?0:delay;
-	if(Eq == null) this.timingFunction = CoreAnimation.defaultTimingFunction; else this.timingFunction = Eq;
-	this.delegate = new CADelegate();
-	this.delegate.pos = pos;
-	this.fromValues = { };
-	this.toValues = { };
-}
-CAObject.__name__ = ["CAObject"];
-CAObject.prototype.target = null;
-CAObject.prototype.prev = null;
-CAObject.prototype.next = null;
-CAObject.prototype.properties = null;
-CAObject.prototype.fromValues = null;
-CAObject.prototype.toValues = null;
-CAObject.prototype.fromTime = null;
-CAObject.prototype.delay = null;
-CAObject.prototype.duration = null;
-CAObject.prototype.repeatCount = null;
-CAObject.prototype.autoreverses = null;
-CAObject.prototype.timingFunction = null;
-CAObject.prototype.modifierFunction = null;
-CAObject.prototype.constraintBounds = null;
-CAObject.prototype.delegate = null;
-CAObject.prototype.init = function() {
-	throw "CAObject should be extended (" + this.delegate.pos + ")";
-}
-CAObject.prototype.animate = function(time_diff) {
-	throw "CAObject should be extended (" + this.delegate.pos + ")";
-}
-CAObject.prototype.initTime = function() {
-	this.fromTime = Date.now().getTime();
-	this.duration = this.duration * 1000;
-	this.delay = this.delay * 1000;
-}
-CAObject.prototype.repeat = function() {
-	this.fromTime = Date.now().getTime();
-	this.delay = 0;
-	if(this.autoreverses) {
-		var v = this.fromValues;
-		this.fromValues = this.toValues;
-		this.toValues = v;
-	}
-	this.repeatCount--;
-}
-CAObject.prototype.calculate = function(time_diff,prop) {
-	return this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null);
-}
-CAObject.prototype.toString = function() {
-	return "[CAObject: target=" + this.target + ", duration=" + this.duration + ", delay=" + this.delay + ", fromTime=" + this.fromTime + ", properties=" + this.properties + ", repeatCount=" + this.repeatCount + "]";
-}
-CAObject.prototype.__class__ = CAObject;
-CATHaxeGetSet = function(obj,properties,duration,delay,Eq,pos) {
-	if( obj === $_ ) return;
-	CAObject.call(this,obj,properties,duration,delay,Eq,pos);
-}
-CATHaxeGetSet.__name__ = ["CATHaxeGetSet"];
-CATHaxeGetSet.__super__ = CAObject;
-for(var k in CAObject.prototype ) CATHaxeGetSet.prototype[k] = CAObject.prototype[k];
-CATHaxeGetSet.prototype.init = function() {
-	this.modifierFunction = Reflect.field(this.properties,"modifierFunction");
-	Reflect.deleteField(this.properties,"modifierFunction");
-	var _g = 0, _g1 = Reflect.fields(this.properties);
-	while(_g < _g1.length) {
-		var p = _g1[_g];
-		++_g;
-		if(Std["is"](Reflect.field(this.properties,p),Int) || Std["is"](Reflect.field(this.properties,p),Float)) {
-			this.fromValues[p] = Reflect.field(this.target,p);
-			this.toValues[p] = Reflect.field(this.properties,p);
-		} else try {
-			this.fromValues[p] = Reflect.field(Reflect.field(this.properties,p),"fromValue");
-			try {
-				this.modifierFunction(Reflect.field(this.fromValues,p));
-			} catch( e ) {
-				haxe.Log.trace(e,{ fileName : "CATHaxeGetSet.hx", lineNumber : 26, className : "CATHaxeGetSet", methodName : "init"});
-			}
-			this.toValues[p] = Reflect.field(Reflect.field(this.properties,p),"toValue");
-		} catch( e ) {
-			haxe.Log.trace(e,{ fileName : "CATHaxeGetSet.hx", lineNumber : 29, className : "CATHaxeGetSet", methodName : "init"});
-		}
-	}
-}
-CATHaxeGetSet.prototype.animate = function(time_diff) {
-	haxe.Log.trace(time_diff,{ fileName : "CATHaxeGetSet.hx", lineNumber : 34, className : "CATHaxeGetSet", methodName : "animate"});
-	var _g = 0, _g1 = Reflect.fields(this.toValues);
-	while(_g < _g1.length) {
-		var prop = _g1[_g];
-		++_g;
-		try {
-			this.modifierFunction(this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null));
-		} catch( e ) {
-			haxe.Log.trace(e,{ fileName : "CATHaxeGetSet.hx", lineNumber : 38, className : "CATHaxeGetSet", methodName : "animate"});
-		}
-	}
-}
-CATHaxeGetSet.prototype.__class__ = CATHaxeGetSet;
-CATHaxeGetSet.__interfaces__ = [CATransitionInterface];
 RCTextView = function(x,y,w,h,str,rcfont) {
 	if( x === $_ ) return;
 	JSView.call(this,Math.round(x),Math.round(y));
@@ -1810,7 +1709,7 @@ CoreAnimation.add = function(obj) {
 	obj.initTime();
 	if(CoreAnimation.ticker == null) {
 		CoreAnimation.ticker = new EVLoop();
-		CoreAnimation.ticker.run = CoreAnimation.updateAnimations;
+		CoreAnimation.ticker.setFuncToCall(CoreAnimation.updateAnimations);
 	}
 }
 CoreAnimation.remove = function(obj) {
@@ -1850,7 +1749,6 @@ CoreAnimation.updateAnimations = function() {
 		}
 		time_diff = current_time - a.fromTime - a.delay;
 		if(time_diff >= a.duration) time_diff = a.duration;
-		haxe.Log.trace(time_diff,{ fileName : "CoreAnimation.hx", lineNumber : 115, className : "CoreAnimation", methodName : "updateAnimations"});
 		if(time_diff > 0) {
 			a.animate(time_diff);
 			if(time_diff > 0 && !a.delegate.startPointPassed) a.delegate.start();
@@ -3021,6 +2919,64 @@ caequations.Cubic.OUT_IN = function(t,b,c,d,p_params) {
 	return caequations.Cubic.IN(t * 2 - d,b + c / 2,c / 2,d,null);
 }
 caequations.Cubic.prototype.__class__ = caequations.Cubic;
+CAObject = function(target,properties,duration,delay,Eq,pos) {
+	if( target === $_ ) return;
+	this.target = target;
+	this.properties = properties;
+	this.repeatCount = 0;
+	this.autoreverses = false;
+	this.fromTime = Date.now().getTime();
+	this.duration = duration == null?CoreAnimation.defaultDuration:duration <= 0?0.001:duration;
+	this.delay = delay == null || delay < 0?0:delay;
+	if(Eq == null) this.timingFunction = CoreAnimation.defaultTimingFunction; else this.timingFunction = Eq;
+	this.delegate = new CADelegate();
+	this.delegate.pos = pos;
+	this.fromValues = { };
+	this.toValues = { };
+}
+CAObject.__name__ = ["CAObject"];
+CAObject.prototype.target = null;
+CAObject.prototype.prev = null;
+CAObject.prototype.next = null;
+CAObject.prototype.properties = null;
+CAObject.prototype.fromValues = null;
+CAObject.prototype.toValues = null;
+CAObject.prototype.fromTime = null;
+CAObject.prototype.delay = null;
+CAObject.prototype.duration = null;
+CAObject.prototype.repeatCount = null;
+CAObject.prototype.autoreverses = null;
+CAObject.prototype.timingFunction = null;
+CAObject.prototype.constraintBounds = null;
+CAObject.prototype.delegate = null;
+CAObject.prototype.init = function() {
+	throw "CAObject should be extended (" + this.delegate.pos + ")";
+}
+CAObject.prototype.animate = function(time_diff) {
+	throw "CAObject should be extended (" + this.delegate.pos + ")";
+}
+CAObject.prototype.initTime = function() {
+	this.fromTime = Date.now().getTime();
+	this.duration = this.duration * 1000;
+	this.delay = this.delay * 1000;
+}
+CAObject.prototype.repeat = function() {
+	this.fromTime = Date.now().getTime();
+	this.delay = 0;
+	if(this.autoreverses) {
+		var v = this.fromValues;
+		this.fromValues = this.toValues;
+		this.toValues = v;
+	}
+	this.repeatCount--;
+}
+CAObject.prototype.calculate = function(time_diff,prop) {
+	return this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null);
+}
+CAObject.prototype.toString = function() {
+	return "[CAObject: target=" + this.target + ", duration=" + this.duration + ", delay=" + this.delay + ", fromTime=" + this.fromTime + ", properties=" + this.properties + ", repeatCount=" + this.repeatCount + "]";
+}
+CAObject.prototype.__class__ = CAObject;
 if(!haxe.remoting) haxe.remoting = {}
 haxe.remoting.Connection = function() { }
 haxe.remoting.Connection.__name__ = ["haxe","remoting","Connection"];
@@ -3820,7 +3776,6 @@ RCWindow.init = function() {
 	RCWindow.target.style.margin = "0px 0px 0px 0px";
 	RCWindow.width = RCWindow.target.scrollWidth;
 	RCWindow.height = RCWindow.target.scrollHeight;
-	RCWindow.setBackgroundColor(16777215);
 	RCNotificationCenter.addObserver("resize",RCWindow.resizeHandler);
 }
 RCWindow.resizeHandler = function(w,h) {
@@ -4298,9 +4253,52 @@ RCLine.prototype.drawLine = function(x0,y0,x1,y1) {
 }
 RCLine.prototype.__class__ = RCLine;
 RCLine.__interfaces__ = [RCDrawInterface];
-CATween = function(obj,properties,duration,delay,Eq,pos) {
-	if( obj === $_ ) return;
-	CAObject.call(this,obj,properties,duration,delay,Eq,pos);
+CATCallFunc = function(target,properties,duration,delay,Eq,pos) {
+	if( target === $_ ) return;
+	CAObject.call(this,target,properties,duration,delay,Eq,pos);
+}
+CATCallFunc.__name__ = ["CATCallFunc"];
+CATCallFunc.__super__ = CAObject;
+for(var k in CAObject.prototype ) CATCallFunc.prototype[k] = CAObject.prototype[k];
+CATCallFunc.prototype.init = function() {
+	if(!Reflect.isFunction(this.target)) throw "Function must be of type: Float->Void";
+	var _g = 0, _g1 = Reflect.fields(this.properties);
+	while(_g < _g1.length) {
+		var p = _g1[_g];
+		++_g;
+		if(Std["is"](Reflect.field(this.properties,p),Int) || Std["is"](Reflect.field(this.properties,p),Float)) {
+			this.fromValues[p] = 0;
+			this.toValues[p] = Reflect.field(this.properties,p);
+		} else try {
+			this.fromValues[p] = Reflect.field(Reflect.field(this.properties,p),"fromValue");
+			try {
+				this.target(Reflect.field(this.fromValues,p));
+			} catch( e ) {
+				haxe.Log.trace(e,{ fileName : "CATCallFunc.hx", lineNumber : 26, className : "CATCallFunc", methodName : "init"});
+			}
+			this.toValues[p] = Reflect.field(Reflect.field(this.properties,p),"toValue");
+		} catch( e ) {
+			haxe.Log.trace(e,{ fileName : "CATCallFunc.hx", lineNumber : 29, className : "CATCallFunc", methodName : "init"});
+		}
+	}
+}
+CATCallFunc.prototype.animate = function(time_diff) {
+	var _g = 0, _g1 = Reflect.fields(this.toValues);
+	while(_g < _g1.length) {
+		var prop = _g1[_g];
+		++_g;
+		try {
+			this.target(this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null));
+		} catch( e ) {
+			haxe.Log.trace(e,{ fileName : "CATCallFunc.hx", lineNumber : 39, className : "CATCallFunc", methodName : "animate"});
+		}
+	}
+}
+CATCallFunc.prototype.__class__ = CATCallFunc;
+CATCallFunc.__interfaces__ = [CATransitionInterface];
+CATween = function(target,properties,duration,delay,Eq,pos) {
+	if( target === $_ ) return;
+	CAObject.call(this,target,properties,duration,delay,Eq,pos);
 }
 CATween.__name__ = ["CATween"];
 CATween.__super__ = CAObject;
@@ -4339,19 +4337,27 @@ CATween.prototype.animate = function(time_diff) {
 CATween.prototype.__class__ = CATween;
 CATween.__interfaces__ = [CATransitionInterface];
 EVLoop = function(p) {
-	if( p === $_ ) return;
-	this.ticker = new haxe.Timer(10);
-	this.ticker.run = $closure(this,"loop");
 }
 EVLoop.__name__ = ["EVLoop"];
 EVLoop.prototype.ticker = null;
-EVLoop.prototype.run = function() {
+EVLoop.prototype.run = null;
+EVLoop.prototype.setFuncToCall = function(func) {
+	this.stop();
+	this.run = func;
+	this.ticker = new haxe.Timer(Math.round(1 / EVLoop.FPS * 1000));
+	this.ticker.run = $closure(this,"loop");
+	return func;
 }
 EVLoop.prototype.loop = function() {
-	if($closure(this,"run") != null) this.run();
+	if(this.run != null) this.run();
+}
+EVLoop.prototype.stop = function() {
+	if(this.ticker == null) return;
+	this.ticker.stop();
+	this.ticker = null;
 }
 EVLoop.prototype.destroy = function() {
-	this.ticker.stop();
+	this.stop();
 }
 EVLoop.prototype.__class__ = EVLoop;
 RCNotification = function(name,functionToCall) {
@@ -4923,7 +4929,7 @@ Main.main = function() {
 	haxe.Firebug.redirectTraces();
 	try {
 		RCWindow.init();
-		RCWindow.setBackgroundColor(14540253);
+		RCWindow.setBackgroundColor(15724527);
 		haxe.Log.trace("step1",{ fileName : "Main.hx", lineNumber : 25, className : "Main", methodName : "main"});
 		RCFontManager.init();
 		RCAssets.loadFileWithKey("photo","../CoreAnimation/3134265_large.jpg");
@@ -4984,14 +4990,14 @@ Main.main = function() {
 			haxe.Log.trace(Main.req.status,{ fileName : "Main.hx", lineNumber : 104, className : "Main", methodName : "main"});
 		};
 		Main.req.readFile("data.txt");
-		var anim = new CATHaxeGetSet(Main,{ modifierFunction : Main.setAlpha_, alpha : { fromValue : 0, toValue : 1}},0,0.3,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 108, className : "Main", methodName : "main"});
+		var anim = new CATCallFunc(Main.setAlpha_,{ alpha : { fromValue : 0, toValue : 1}},2.8,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 108, className : "Main", methodName : "main"});
 		CoreAnimation.add(anim);
 	} catch( e ) {
 		Fugu.stack();
 	}
 }
 Main.setAlpha_ = function(a) {
-	haxe.Log.trace(a,{ fileName : "Main.hx", lineNumber : 114, className : "Main", methodName : "setAlpha_"});
+	Main.lin.setAlpha(a);
 }
 Main.testJsFont = function() {
 	var f = new RCFont();
@@ -5952,6 +5958,7 @@ Keyboard.DOWN = 40;
 Keyboard.ENTER = 13;
 Keyboard.SPACE = 32;
 Keyboard.ESCAPE = 27;
+EVLoop.FPS = 60;
 Zeta.FIT = "fit";
 Zeta.END = "end";
 Zeta.ANYWHERE = "anywhere";
