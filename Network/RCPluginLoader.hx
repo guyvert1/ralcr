@@ -6,6 +6,7 @@
 //
 
 #if flash
+
 import flash.display.Loader;
 import flash.net.URLLoader;
 import flash.net.URLLoaderDataFormat;
@@ -96,4 +97,9 @@ class RCPluginLoader extends Loader {
 		return ApplicationDomain.currentDomain.hasDefinition ( key );
 	}
 }
+
+#elseif js
+
+typedef RCPluginLoader = JSPluginLoader;
+
 #end

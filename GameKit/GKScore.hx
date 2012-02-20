@@ -32,7 +32,7 @@ class GKScore {
 		totalScore += s;
 		
 		CoreAnimation.remove ( obj );
-		obj = new CATHaxeGetSet (this, {modifierFunction:update, val:{fromValue:score, toValue:totalScore}}, 1, 0, caequations.Cubic.IN_OUT);
+		obj = new CATCallFunc (update, {value:{fromValue:score, toValue:totalScore}}, 1, 0, caequations.Cubic.IN_OUT);
 		CoreAnimation.add ( obj );
 		
 		return totalScore;

@@ -1,5 +1,4 @@
-import flash.events.TimerEvent;
-import flash.utils.Timer;
+import haxe.Timer;
 
 
 class RCIterator {
@@ -16,6 +15,12 @@ class RCIterator {
 	dynamic public function onComplete():Void {}
 	
 	
+	/**
+	*  @param interval - 
+	*  @param min - 
+	*  @param max - 
+	*  @param step - 
+	*/
 	public function new (interval:Int, min:Float, max:Float, step:Float) {
 		
 		this.interval = interval;
@@ -24,15 +29,14 @@ class RCIterator {
 		this.step = step;
 		
 		timer = new Timer ( interval );
-		timer.addEventListener (TimerEvent.TIMER, loop);
 	}
 	
 	public function start() {
 		run ( min );
-		timer.start();
+		timer.run = loop;
 	}
 	
-	function loop (_) {
+	function loop () {
 		min += step;
 		run ( min );
 		if (min >= max) {
@@ -45,7 +49,6 @@ class RCIterator {
 	public function destroy () {
 		if (timer != null) {
 			timer.stop();
-			timer.removeEventListener (TimerEvent.TIMER, loop);
 			timer = null;
 		}
 	}

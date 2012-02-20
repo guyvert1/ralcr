@@ -39,9 +39,13 @@ class RCStringTools {
 		var fin = str.length > limit ? "..." : "";
 		return ( str.substr (0, limit) + fin );
 	}
-	public static function cutStringAtLine (textfield:flash.text.TextField, line:Int) :String {
-		var index = textfield.getLineOffset ( line );
-		return ( textfield.text.substr (0, index) + " ..." );
+	public static function cutStringAtLine (textfield:RCTextView, line:Int) :String {
+		#if flash
+			var index = textfield.target.getLineOffset ( line );
+			return ( textfield.text.substr (0, index) + " ..." );
+		#elseif js
+			return textfield.text;
+		#end
 	}
 	
 	

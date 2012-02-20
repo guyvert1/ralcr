@@ -9,18 +9,9 @@
  **/
 
 #if (flash || (flash && nme))
-	import flash.net.URLRequest;
 	import flash.net.URLVariables;
-	import flash.net.URLRequestMethod;
 #else
 	private class URLVariables implements Dynamic { public function new(){} }
-	private typedef URLRequestMethod = Dynamic;
-	#if nme
-		import flash.net.URLRequest;
-	#end
-	#if js
-		private typedef URLRequest = Dynamic;
-	#end
 #end
 
 
@@ -42,10 +33,6 @@ class RCMail extends RCRequest {
 			variables.message = message;
 			variables.from = from;
 		
-		var request = new URLRequest (scripts_path + "others/sendMail.php");
-			request.data = variables;
-			request.method = URLRequestMethod.POST;
-		
-		loader.load ( request );
+		load (scripts_path + "others/sendMail.php", variables, "POST");
 	}
 }

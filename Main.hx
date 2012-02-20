@@ -87,7 +87,7 @@ import CATColors;
 import CATDistort;
 import CATFilters;
 import CATFrames;
-import CATHaxeGetSet;
+import CATCallFunc;
 import CATKenBurns;
 import CATMorph;
 import CATPixelator;

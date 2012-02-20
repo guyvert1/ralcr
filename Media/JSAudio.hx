@@ -1,11 +1,10 @@
 
-
 /**
  * Handle loading the audio file. Event handlers seem to fail
  * on lot of browsers.
  * @private
  */
-lime.audio.Audio.prototype.loadHandler_ = function() {
+/*lime.audio.Audio.prototype.loadHandler_ = function() {
     if (this.baseElement.readyState > 2) {
         this.loaded_ = true;
         clearTimeout(this.loadInterval);
@@ -19,23 +18,23 @@ lime.audio.Audio.prototype.loadHandler_ = function() {
         clearTimeout(this.loadInterval);
         // this means that ios audio anly works if called from user action
     }
-};
+};*/
 
 /**
  * Returns true if audio file has been loaded
  * @return {boolean} Audio has been loaded.
  */
-lime.audio.Audio.prototype.isLoaded = function() {
+/*lime.audio.Audio.prototype.isLoaded = function() {
     return this.loaded_;
-};
+};*/
 
 /**
  * Returns true if audio file is playing
  * @return {boolean} Audio is playing.
  */
-lime.audio.Audio.prototype.isPlaying = function() {
+/*lime.audio.Audio.prototype.isPlaying = function() {
     return this.playing_;
-};
+};*/
 
 
 //
@@ -44,8 +43,10 @@ lime.audio.Audio.prototype.isPlaying = function() {
 //  Created by Baluta Cristian on 2012-01-23.
 //  Copyright (c) 2012 ralcr.com. All rights reserved.
 //
+
 import js.Lib;
 import js.Dom;
+
 
 class JSAudio implements RCAudioInterface {
 	
@@ -88,33 +89,26 @@ class JSAudio implements RCAudioInterface {
 		this.volume_ = 1;
 	}
 	public function init () :Void {
-	    if(filePath && goog.isFunction(filePath.data)){
-	        filePath = filePath.data();
-	    }
+		if(filePath && goog.isFunction(filePath.data)){
+			filePath = filePath.data();
+		}
 
-	    this.loaded_ = false;
+		this.loaded_ = false;
+		this.playing_ = false;
 
-	    /**
-	     * @type {boolean}
-	     * @private
-	     */
-	    this.playing_ = false;
+		sound = document.createElement('audio');
+		sound.preload = true;
+		sound.loop = false;
 
-	    sound = document.createElement('audio');
-	    sound.preload = true;
-	    sound.loop = false;
+/*		if (goog.userAgent.GECKO && (/\.mp3$/).test(filePath)) {
+			filePath = filePath.replace(/\.mp3$/, '.ogg');
+		}*/
 
-	    if (goog.userAgent.GECKO && (/\.mp3$/).test(filePath)) {
-	        filePath = filePath.replace(/\.mp3$/, '.ogg');
-	    }
+		sound.src = URL;
+		sound.load();
 
-	    sound.src = URL;
-	    sound.load();
-
-	    this.loaded_ = false;
-			
-		timer = new Timer ( updateTime );
-		timer.addEventListener (TimerEvent.TIMER, loop);
+		timer = new haxe.Timer ( updateTime );
+		timer.run = loop;
 	}
 	
 	/**
@@ -124,10 +118,10 @@ class JSAudio implements RCAudioInterface {
 		
 		if (sound == null) init();
 			
-	    if (this.isLoaded() && !this.isPlaying()) {
-	        sound.play();
-	        this.playing_ = true;
-	    }
+		if (this.isLoaded() && !this.isPlaying()) {
+			sound.play();
+			this.playing_ = true;
+		}
 		
 		timer.start();
 		setVolume ( _volume );
@@ -136,15 +130,14 @@ class JSAudio implements RCAudioInterface {
 	}
 	
 	public function stop () :Void {
+		if (this.isPlaying()) {
+			this.baseElement.pause();
+			this.playing_ = false;
+		}
 		
-	    if (this.isPlaying()) {
-	        this.baseElement.pause();
-	        this.playing_ = false;
-	    }
-		
-		channel.stop();
+/*		channel.stop();
 		channel.removeEventListener (Event.SOUND_COMPLETE, soundCompleteHandler);
-		channel = null;
+		channel = null;*/
 		time = 0;
 		
 		if (timer != null)
@@ -203,18 +196,15 @@ class JSAudio implements RCAudioInterface {
 	
 	public function setVolume (volume:Float) :Float {
 		_volume = volume > 1 ? 1 : volume;
-		if (channel != null)
-			channel.soundTransform = new SoundTransform ( _volume );
+
 		return _volume;
 	}
 	
 	
-	/**
-	 * Stop the playing sound and remove event listeners
-	 */
 	public function destroy () :Void {
 		stop();
-		timer.removeEventListener (TimerEvent.TIMER, loop);
-		timer = null;
+		if (timer != null)
+			timer.stop();
+			timer = null;
 	}
 }
