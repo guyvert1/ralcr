@@ -126,7 +126,7 @@ class Csv<T> implements ArrayAccess<T> {
 				break;
 			
 			col += c;
-			index++;				
+			index++;
 		}
 		return col;
 	}
@@ -150,7 +150,7 @@ class Csv<T> implements ArrayAccess<T> {
 				break;
 			}
 			col += c;
-			index++;				
+			index++;
 		}
 		return col;
 	}

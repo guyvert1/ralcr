@@ -22,8 +22,8 @@ private enum MovementDirection {
 
 class RCGestureRecognizer {
 	
-	var target :DisplayObjectContainer;// Where to attach mouse events to
-	var clickableTarget :DisplayObjectContainer;
+	var target :RCView;// Where to attach mouse events to
+	var clickableTarget :RCView;
 	var lastDirection :MovementDirection;
 	var lastGesture :MovementDirection;
 	var lastX :Float;
@@ -45,7 +45,7 @@ class RCGestureRecognizer {
 	dynamic public function onClick () :Void {}
 	
 	
-	public function new (target:DisplayObjectContainer, ?target_click:DisplayObjectContainer) {
+	public function new (target:RCView, ?target_click:RCView) {
 		
 		this.target = target;
 		clickableTarget = target_click == null ? target : target_click;

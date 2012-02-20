@@ -29,28 +29,28 @@ class RCCustomCursor extends RCView {
 	}
 	
 	public function draw (obj:Dynamic) :Void {
-		// Remove the current cursor
-		Fugu.safeRemove ( cursor );
-		
-		// Add the new cursor
-		cursor = obj;
-		cursor.mouseEnabled = false;
-		Fugu.safeAdd (this, cursor);
-		this.mouseEnabled = false;
 		#if flash
+			Fugu.safeRemove ( cursor );
+			cursor = obj;
+			cursor.mouseEnabled = false;
+			Fugu.safeAdd (this, cursor);
+			this.mouseEnabled = false;
 			Mouse.hide();
 		#elseif js
 			//Lib.document.body.style.cursor = "none";
-			Lib.document.body.style.cursor = "url(" + cursorURL + ") " + x +" " + y +", auto");
+			var x = 0, y=0;
+			js.Lib.document.body.style.cursor = "url(" + obj + ") " + x +" " + y +", auto";
 		#end
 	}
 	
 	
 	function moveHandler (e:EVMouse) :Void {
 		//if (!cursor.visible) cursor.visible = true;
-		this.x = e.e.stageX;
-		this.y = e.e.stageY;
-		e.updateAfterEvent();
+		#if flash
+			this.x = e.e.stageX;
+			this.y = e.e.stageY;
+			e.updateAfterEvent();
+		#end
 	}
 /*	function hideCustomCursor (event:Event) :Void {
 		cursor.visible = false;
@@ -60,7 +60,7 @@ class RCCustomCursor extends RCView {
 		#if flash
 			Mouse.hide();
 		#elseif js
-			Lib.document.body.style.cursor = "auto";
+			js.Lib.document.body.style.cursor = "auto";
 		#end
 		
 		//Stage.MC.removeEventListener (Event.MOUSE_LEAVE, hideCustomCursor);

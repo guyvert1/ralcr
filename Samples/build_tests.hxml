@@ -6,6 +6,6 @@
 #-cmd haxe Samples/Csv/compile.hxml
 #-cmd haxe Samples/QuickTests/compile.hxml
 -cmd haxe Samples/loadHaxeInHaxe/compile.hxml
-#-cmd haxe Samples/HeartEquation/compile.hxml
+-cmd haxe Samples/HeartEquation/compile.hxml
 -cmd haxe Samples/TableView/compile.hxml
 #-cmd haxe Samples/cpp/compile.hxml

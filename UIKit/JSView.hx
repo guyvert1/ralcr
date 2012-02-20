@@ -75,6 +75,9 @@ class JSView {
 		layer.appendChild ( child.layer );
 		child.viewDidAppearHandler();
 	}
+	public function addChildAt (child:JSView, index:Int) :Void {
+		addChild ( child );
+	}
 	public function removeChild (child:JSView) :Void {
 		if (child == null) return;
 		child.viewWillDisappearHandler();

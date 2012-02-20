@@ -1,14 +1,13 @@
-import flash.geom.Rectangle;
-
 
 class Evaluate {
 	
 	
 	/**
-	 *	Returns an int from a string operation
-	 *	obj - pass an object to get width and height instead the stage width and height
+	 *	Returns an Int from a string operation.
+	 *	@param strOperation - The mathematical operation
+	 *  @param rect - bounds of the photowidth, photoheight
 	 */
-	public static function operations (strOperation:String, ?rect:Rectangle) :Int {
+	public static function operations (strOperation:String, ?rect:RCRect) :Int {
 		
 		var result :Int = 0;
 		var operators = ["+", "-", "*", "/"];
@@ -33,7 +32,7 @@ class Evaluate {
 		return makeOperation (result, word, lastOperator, rect);
 	}
 	
-	static function makeOperation (result:Int, word:String, operator:String, rect:Rectangle) :Int {
+	static function makeOperation (result:Int, word:String, operator:String, rect:RCRect) :Int {
 		return switch ( operator ) {
 			case "+": result + parseInt ( word, rect );
 			case "-": result - parseInt ( word, rect );
@@ -44,12 +43,12 @@ class Evaluate {
 	
 	
 	
-	public static function parseInt (str:String, ?rect:Rectangle) :Int {
+	public static function parseInt (str:String, ?rect:RCRect) :Int {
 		return Math.round ( switch ( str ) {
 			case "stagewidth":	RCWindow.width;
 			case "stageheight":	RCWindow.height;
-			case "photowidth":	rect == null ? 0.0 : rect.width;
-			case "photoheight":	rect == null ? 0.0 : rect.height;
+			case "photowidth":	rect == null ? 0.0 : rect.size.width;
+			case "photoheight":	rect == null ? 0.0 : rect.size.height;
 			default :			Std.parseInt ( str );
 		});
 	}

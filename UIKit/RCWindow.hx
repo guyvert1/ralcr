@@ -59,7 +59,7 @@ class RCWindow {
 			target.style.margin = "0px 0px 0px 0px";
 			width = target.scrollWidth;
 			height = target.scrollHeight;
-			backgroundColor = 0xFFFFFF;
+			//backgroundColor = 0xFFFFFF;
 		#end
 		#if flash
 			URL = flash.Lib.current.loaderInfo.url;
