@@ -55,5 +55,4 @@ class CATDistort extends CAObject, implements CATransitionInterface {
 	function setDistortion (o:DisplayObjectContainer, points:Array<Point>) :Void {
 		
 	}
-	
 }

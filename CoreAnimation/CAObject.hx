@@ -7,9 +7,9 @@
 
 class CAObject {
 	
-	public var target :Dynamic;// The object that is animated (DisplayObjectContainer, TextField, Sound)
-	public var prev :CAObject;// Previous object in the list
-	public var next :CAObject;// Next object in the list
+	public var target :Dynamic;// The object that is being animated (DisplayObjectContainer, TextField, Sound, or Function)
+	public var prev :CAObject;// Previous caobject in the list
+	public var next :CAObject;// Next caobject in the list
 	
 	// Properties to be animated:
 	public var properties :Dynamic;
@@ -23,7 +23,6 @@ class CAObject {
 	public var repeatCount :Int;
 	public var autoreverses :Bool;
 	public var timingFunction :Dynamic;//Float -> Float -> Float -> Float -> Dynamic -> Float;
-	public var modifierFunction :Float -> Void;//function used to modify values in HaxeGetSet transition
 	public var constraintBounds :RCRect;// used by kenburns and slide
 	public var delegate :CADelegate;
 	
@@ -33,7 +32,7 @@ class CAObject {
 	 *	properties: x, y, width, height, scaleX, scaleY, ....
 	 *	parameters: duration, transition, equation, onComplete, onCompleteParams
 	 */
-	public function new (	obj :Dynamic,
+	public function new (	target :Dynamic,
 							properties :Dynamic,
 							?duration :Null<Float>,
 							?delay :Null<Float>,
@@ -41,7 +40,7 @@ class CAObject {
 							?pos :haxe.PosInfos)
 	{
 		
-		this.target = obj;
+		this.target = target;
 		this.properties = properties;
 		this.repeatCount = 0;
 		this.autoreverses = false;
@@ -67,7 +66,7 @@ class CAObject {
 	
 	
 	/**
-	 *	Create starting and ending points for each parameter of the object to animate
+	 *	Creates starting and ending points for each parameter of the object to animate.
 	 *  This is not called till is not added to CoreAnimation
 	 */
 	public function initTime () :Void {

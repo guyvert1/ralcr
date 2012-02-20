@@ -4,6 +4,7 @@
 //  Created by Baluta Cristian on 2009-03-20.
 //  Copyright (c) 2009 http://ralcr.com. All rights reserved.
 //
+
 class CATKenBurns extends CAObject, implements CATransitionInterface {
 	
 	override public function init () :Void {
@@ -121,10 +122,10 @@ class CATKenBurns extends CAObject, implements CATransitionInterface {
 		? delegate.kenBurnsPointIn
 		: (duration - delegate.kenBurnsPointOut);
 		
-		return  timingFunction (	time_diff,
-									fromAlpha,
-									toAlpha - fromAlpha,
-									duration, null
+		return timingFunction (	time_diff,
+								fromAlpha,
+								toAlpha - fromAlpha,
+								duration, null
 								);
 	}
 }

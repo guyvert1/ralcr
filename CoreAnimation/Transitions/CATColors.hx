@@ -4,8 +4,9 @@
 //  Created by Baluta Cristian on 2009-03-20.
 //  Copyright (c) 2009 http://ralcr.com. All rights reserved.
 //
-import flash.geom.ColorTransform;
-
+#if flash
+	import flash.geom.ColorTransform;
+#end
 
 class CATColors extends CAObject, implements CATransitionInterface {
 	
@@ -54,34 +55,34 @@ class CATColors extends CAObject, implements CATransitionInterface {
 		// multiplier = 1 if we want to use color burn and dodge
 		//				0 if we want to manipulate the overall color
 		var redMultiplier	= getColorTransform (target, "redMultiplier");
-		var redOffset 		= getColorTransform (target, "redOffset");
+		var redOffset		= getColorTransform (target, "redOffset");
 		var greenMultiplier = getColorTransform (target, "greenMultiplier");
-		var greenOffset 	= getColorTransform (target, "greenOffset");
-		var blueMultiplier 	= getColorTransform (target, "blueMultiplier");
-		var blueOffset 		= getColorTransform (target, "blueOffset");
+		var greenOffset		= getColorTransform (target, "greenOffset");
+		var blueMultiplier	= getColorTransform (target, "blueMultiplier");
+		var blueOffset		= getColorTransform (target, "blueOffset");
 		var alphaMultiplier = getColorTransform (target, "alphaMultiplier");
-		var alphaOffset 	= getColorTransform (target, "alphaOffset");
+		var alphaOffset		= getColorTransform (target, "alphaOffset");
 		
 		// Set the starting and ending properties to the CAObject
-		fromValues = {redMultiplier	: redMultiplier,
-							redOffset		: fromOffset != null ? fromOffset : redOffset,
-							greenMultiplier	: greenMultiplier,
-							greenOffset		: fromOffset != null ? fromOffset : greenOffset,
-							blueMultiplier	: blueMultiplier,
-							blueOffset		: fromOffset != null ? fromOffset : blueOffset,
-							alphaMultiplier	: alphaMultiplier,
-							alphaOffset		: fromAlpha
-						};
+		fromValues = {	redMultiplier	: redMultiplier,
+						redOffset		: fromOffset != null ? fromOffset : redOffset,
+						greenMultiplier	: greenMultiplier,
+						greenOffset		: fromOffset != null ? fromOffset : greenOffset,
+						blueMultiplier	: blueMultiplier,
+						blueOffset		: fromOffset != null ? fromOffset : blueOffset,
+						alphaMultiplier	: alphaMultiplier,
+						alphaOffset		: fromAlpha
+					};
 		//
 		toValues = {	redMultiplier	: toMultiplier,//redMultiplier,
-							redOffset		: toOffset == null ? numberToR (toColor) : toOffset,
-							greenMultiplier	: toMultiplier,//greenMultiplier,
-							greenOffset		: toOffset == null ? numberToG (toColor) : toOffset,
-							blueMultiplier	: toMultiplier,//blueMultiplier,
-							blueOffset		: toOffset == null ? numberToB (toColor) : toOffset,
-							alphaMultiplier	: 1,//alphaMultiplier,
-							alphaOffset		: toColor != null ? 0 : toAlpha
-						};
+						redOffset		: toOffset == null ? numberToR (toColor) : toOffset,
+						greenMultiplier	: toMultiplier,//greenMultiplier,
+						greenOffset		: toOffset == null ? numberToG (toColor) : toOffset,
+						blueMultiplier	: toMultiplier,//blueMultiplier,
+						blueOffset		: toOffset == null ? numberToB (toColor) : toOffset,
+						alphaMultiplier	: 1,//alphaMultiplier,
+						alphaOffset		: toColor != null ? 0 : toAlpha
+					};
 						//trace(Std.string(fromValues));
 						//trace(Std.string(toValues));
 		
@@ -145,7 +146,9 @@ class CATColors extends CAObject, implements CATransitionInterface {
 	 *	Reset the colorTransform of an object
 	 */
 	public function resetColors (obj:Dynamic) :Void {
+		#if flash
 		obj.transform.colorTransform = new ColorTransform (	1,	1,	1,	1,
 															0,	0,	0,	0	);
+		#end
 	}
 }

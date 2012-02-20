@@ -112,7 +112,7 @@ class CoreAnimation {
 			
 				time_diff = current_time - a.fromTime - a.delay;
 			if (time_diff >= a.duration)
-				time_diff = a.duration;trace(time_diff);
+				time_diff = a.duration;
 			if (time_diff > 0) {
 				
 				// Animate the object by calling "animate" method in "a.transition" class

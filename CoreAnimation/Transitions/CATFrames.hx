@@ -1,11 +1,9 @@
 //
-//  Frames
+//  CATFrames
 //
 //  Created by Cristi Baluta on 2010-09-30.
-//  Copyright (c) 2010 ralcr.com. All rights reserved.
+//  Copyright (c) 2010-2012 ralcr.com. All rights reserved.
 //
-import flash.display.MovieClip;
-
 
 class CATFrames extends CAObject, implements CATransitionInterface {
 	
@@ -35,6 +33,8 @@ class CATFrames extends CAObject, implements CATransitionInterface {
 	}
 	
 	override public function animate (time_diff:Float) :Void {
-		target.gotoAndStop ( Math.round (calculate (time_diff, "frame")) );
+		#if flash
+			target.gotoAndStop ( Math.round (calculate (time_diff, "frame")) );
+		#end
 	}
 }
