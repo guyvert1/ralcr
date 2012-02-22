@@ -72,6 +72,10 @@ class RCRequest {
 			
 		#elseif js
 			loader = new Http ( URL );
+			loader.async = true;
+			for (key in Reflect.fields(variables)) {
+				loader.setParameter (key, Reflect.field (variables, key));
+			}
 			addListeners ( loader );
 			loader.request ( method == "POST" ? true : false );
 		#end

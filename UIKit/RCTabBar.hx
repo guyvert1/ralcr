@@ -34,7 +34,7 @@ class RCTabBar extends RCGroup<RCTabBarItem> {
 	}
 	function clickHandler (s:EVMouse) :Void {
 		selectedItem = cast s.target;
-		didSelectItem.dispatch ( [selectedItem] );
+		didSelectItem.dispatch ( selectedItem );
 	}
 	
 	

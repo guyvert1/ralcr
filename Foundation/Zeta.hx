@@ -150,11 +150,11 @@ class Zeta {
 	 y0 = ----------------- +y1
 	           (x2-x1)
 	*/
-	inline public static function lineEquation (x1:Float, x2:Float, y0:Float, y1:Float, y2:Float) :Float {
+	public static function lineEquation (x1:Float, x2:Float, y0:Float, y1:Float, y2:Float) :Float {
 		return (x2 - x1) * (y0 - y1) / (y2 - y1) + x1;
 	}
 	
-	inline public static function lineEquationInt (x1:Float, x2:Float, y0:Float, y1:Float, y2:Float) :Int {
+	public static function lineEquationInt (x1:Float, x2:Float, y0:Float, y1:Float, y2:Float) :Int {
 		return Math.round ( (x2 - x1) * (y0 - y1) / (y2 - y1) + x1 );
 	}
 	
@@ -162,11 +162,11 @@ class Zeta {
 	/**
 	 *	Check a value to be in the limits
 	 */
-	inline public static function limits (val:Float, min:Float, max:Float) :Float {
+	public static function limits (val:Float, min:Float, max:Float) :Float {
 		return if (val < min) min; else if (val > max) max; else val;
 	}
 	
-	inline public static function limitsInt (val:Float, min:Float, max:Float) :Int {
+	public static function limitsInt (val:Float, min:Float, max:Float) :Int {
 		return Math.round ( if (val < min) min; else if (val > max) max; else val );
 	}
 }

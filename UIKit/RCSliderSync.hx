@@ -133,7 +133,7 @@ class RCSliderSync {
 		}
 		else moveContentTo ( getContentPosition() + next_value );
 		
-		valueChanged.dispatch([this]);
+		valueChanged.dispatch ( this );
 	}
 	
 	function moveContentTo (next_value:Float) :Void {

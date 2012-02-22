@@ -54,7 +54,7 @@ class RCGroup<T:RCView> extends RCView {
 			items.push ( s );
 			
 			// dispatch an event that the buttons structure has changed
-			itemPush.dispatch ( [new RCIndexPath(0,i)] );
+			itemPush.dispatch ( new RCIndexPath(0,i) );
 			i++;
 		}
 		
@@ -69,7 +69,7 @@ class RCGroup<T:RCView> extends RCView {
 		keepItemsArranged();
 		
 		// dispatch an event that the buttons structure has changed
-		itemRemove.dispatch ( [new RCIndexPath(0,i)] );
+		itemRemove.dispatch ( new RCIndexPath(0,i) );
 	}
 	
 	

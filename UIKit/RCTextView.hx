@@ -33,9 +33,7 @@ class RCTextView extends RCView {
 	
 	public function new (x:Float, y:Float, w:Null<Float>, h:Null<Float>, str:String, rcfont:RCFont) {
 		
-		super (Math.round(x), Math.round(y));
-		size.width = w;
-		size.height = h;
+		super (Math.round(x), Math.round(y), w, h);
 		this.rcfont = rcfont.copy();// This step is very important, otherwise the format does not exist correctly
 #if js
 		setWidth ( w );
@@ -162,6 +160,8 @@ class RCTextView extends RCView {
 				content = content.split("~~~TAB~~~").join("<span style='letter-spacing:1.3em'>&nbsp;</span>");*/
 				layer.innerHTML = str;
 			}
+			size.width = getWidth();
+			setWidth ( size.width );
 		#end
 		
 		return str;

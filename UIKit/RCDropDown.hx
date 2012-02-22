@@ -53,7 +53,7 @@ class RCDropDown extends RCView {
 	public function select (label:String) :Void {
 		closeDropDown();
 		
-		currentItem = this.button (label);
+		currentItem = this.button ( label );
 		currentItem.onClick = openDropDown;
 		this.addChild ( currentItem );
 		//this.addChild (open_but);
@@ -61,7 +61,7 @@ class RCDropDown extends RCView {
 	
 	public function openDropDown () :Void {
 		//currentItem();
-		dropDownDidOpen.dispatch([this]);
+		dropDownDidOpen.dispatch ( this );
 		
 /*		container_mc = new Sprite();
 		container_mc.addChild (background);

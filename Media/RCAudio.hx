@@ -181,6 +181,6 @@ class RCAudio implements RCAudioInterface {
 
 #elseif js
 
-typedef RCMp3 = JSAudio;
+typedef RCAudio = JSAudio;
 
 #end

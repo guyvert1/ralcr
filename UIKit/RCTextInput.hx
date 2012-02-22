@@ -86,15 +86,15 @@ class RCTextInput extends RCControl {
 	// RCControl events
 	override function clickHandler (e:EVMouse) :Void {
 		//target.setSelection (0, target.length);
-		editingDidBegin.dispatch ( [this] );
+		editingDidBegin.dispatch ( this );
 		super.clickHandler ( e );
 	}
 	
 /*	function keyUpHandler (event:KeyboardEvent) :Void {
 		trace(event);
 		switch (event.charCode) {
-			case 13: editingDidEndOnExit.dispatch ([this]);
-			default: editingChanged.dispatch ([this]);
+			case 13: editingDidEndOnExit.dispatch ( this );
+			default: editingChanged.dispatch ( this );
 		}
 	}*/
 	
@@ -111,7 +111,11 @@ class RCTextInput extends RCControl {
 	}*/
 	
 	function setPassword (t:Bool) :Bool {
+		#if flash
 		return textView.target.displayAsPassword = t;
+		#elseif js
+			return true;
+		#end
 	}
 	
 	public function setSelectable (t:Bool) :Bool {

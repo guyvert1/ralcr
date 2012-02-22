@@ -147,7 +147,7 @@ class RCSlider extends RCControl {
 				sliderHighlighted.setHeight ( scrubber.y + scrubber.height/2 );
 		}
 		
-		valueChanged.dispatch ( [this] );
+		valueChanged.dispatch ( this );
 		return value_;
 	}
 	public function setMinValue (v:Float) :Float {

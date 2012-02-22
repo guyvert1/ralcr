@@ -48,15 +48,11 @@ class HTTPRequest extends RCRequest {
 	 * Call a custom script and pass some variables
 	 */
 	public function call (script:String, variables_list:Dynamic, ?method:String="POST") :Void {
-		#if (flash || nme)
-			var variables = new URLVariables();
-			if (variables_list != null)
-				for (f in Reflect.fields (variables_list)) {
-					Reflect.setField (variables, f, Reflect.field (variables_list, f));
-				}
-			load (scripts_path + script, variables, method);
-		#elseif js
-			
-		#end
+		var variables = new URLVariables();
+		if (variables_list != null)
+			for (f in Reflect.fields (variables_list))
+				Reflect.setField (variables, f, Reflect.field (variables_list, f));
+		
+		load (scripts_path + script, variables, method);
 	}
 }

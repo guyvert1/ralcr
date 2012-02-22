@@ -63,7 +63,7 @@ class RCTabBarController extends RCView {
 	}
 	public function setIndex (i:Int) :Int {
 		tabBar.setIndex ( i );
-		didSelectViewController.dispatch ( [this, getViewController(i)] );
+		didSelectViewController.dispatch ( this, getViewController(i) );
 		return i;
 	}
 	

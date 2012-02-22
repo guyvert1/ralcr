@@ -126,7 +126,7 @@ class Fugu {
 	 *	Align an object in the specified width and height, with a margin of x and y px
 	 *	alignment string is of form: B,M or 20,20 or T,20
 	 */
-	public static function align (	obj:DisplayObjectContainer, alignment:String,
+	public static function align (	obj:RCView, alignment:String,
 									constraint_w:Float, constraint_h:Float,
 									?obj_w:Null<Float>, ?obj_h:Null<Float>,
 									?delay_x:Int=0, ?delay_y:Int=0)
@@ -135,8 +135,8 @@ class Fugu {
 		if (obj == null) return;
 		
 		var arr = alignment.toLowerCase().split(",");
-		if (obj_w == null) obj_w = obj.width;
-		if (obj_h == null) obj_h = obj.height;
+		if (obj_w == null) obj_w = obj.size.width;
+		if (obj_h == null) obj_h = obj.size.height;
 		
 		obj.x = switch ( arr[0] ) {
 			case "l": delay_x;

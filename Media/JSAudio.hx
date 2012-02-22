@@ -46,6 +46,7 @@
 
 import js.Lib;
 import js.Dom;
+import haxe.Timer;
 
 
 class JSAudio implements RCAudioInterface {
@@ -57,6 +58,8 @@ class JSAudio implements RCAudioInterface {
 	var channel :HtmlDom;
 	var timer :Timer;
 	var volume_ :Float;
+	var loaded_ :Bool;
+	var playing_ :Bool;
 	
 	public var errorMessage :String;
 	public var percentLoaded :Int;
@@ -89,26 +92,21 @@ class JSAudio implements RCAudioInterface {
 		this.volume_ = 1;
 	}
 	public function init () :Void {
-		if(filePath && goog.isFunction(filePath.data)){
+/*		if(filePath && goog.isFunction(filePath.data)){
 			filePath = filePath.data();
-		}
+		}*/
 
 		this.loaded_ = false;
 		this.playing_ = false;
 
-		sound = document.createElement('audio');
-		sound.preload = true;
-		sound.loop = false;
-
-/*		if (goog.userAgent.GECKO && (/\.mp3$/).test(filePath)) {
-			filePath = filePath.replace(/\.mp3$/, '.ogg');
-		}*/
-
-		sound.src = URL;
-		sound.load();
+		sound = js.Lib.document.createElement('audio');
+		untyped sound.preload = true;
+		untyped sound.loop = false;
+		untyped sound.src = URL;
+		untyped sound.load();
 
 		timer = new haxe.Timer ( updateTime );
-		timer.run = loop;
+		//timer.run = loop;
 	}
 	
 	/**
@@ -118,20 +116,20 @@ class JSAudio implements RCAudioInterface {
 		
 		if (sound == null) init();
 			
-		if (this.isLoaded() && !this.isPlaying()) {
-			sound.play();
+		if (loaded_ && !playing_) {
+			//sound.play();
 			this.playing_ = true;
 		}
 		
-		timer.start();
-		setVolume ( _volume );
+		timer.run = loop;
+		//setVolume ( volume_ );
 		
 		soundDidStartPlaying();
 	}
 	
 	public function stop () :Void {
-		if (this.isPlaying()) {
-			this.baseElement.pause();
+		if (playing_) {
+			//this.baseElement.pause();
 			this.playing_ = false;
 		}
 		
@@ -148,7 +146,7 @@ class JSAudio implements RCAudioInterface {
 	
 	
 	
-	function completeHandler (e:Event) :Void {
+/*	function completeHandler (e:Event) :Void {
 		onLoadComplete();
 	}
 	function id3Handler (e:Event) :Void {
@@ -175,13 +173,13 @@ class JSAudio implements RCAudioInterface {
 				timer.stop();
 			soundDidFinishPlaying();
 		}
-	}
+	}*/
 	
 	// Loop
-	function loop (e:TimerEvent) :Void {
-		time = Math.round ( channel.position / 1000 );
+	function loop () :Void {
+/*		time = Math.round ( channel.position / 1000 );
 		duration = Math.round ( sound.length / 1000 );
-		percentPlayed = Math.round ( time * 100 / duration );
+		percentPlayed = Math.round ( time * 100 / duration );*/
 		
 		onPlayingProgress();
 	}
@@ -191,13 +189,13 @@ class JSAudio implements RCAudioInterface {
 	 *	Control the volume
 	 */
 	public function getVolume () :Float {
-		return _volume;
+		return volume_;
 	}
 	
 	public function setVolume (volume:Float) :Float {
-		_volume = volume > 1 ? 1 : volume;
+		volume_ = volume > 1 ? 1 : volume;
 
-		return _volume;
+		return volume_;
 	}
 	
 	

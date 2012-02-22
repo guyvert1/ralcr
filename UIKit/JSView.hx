@@ -226,7 +226,7 @@ class JSView {
 		return y;
 	}
 	public function getWidth () :Float {
-		if (parent == null) trace("This view doesn't have a parent, the width will be 0");
+		//if (parent == null) trace("This view doesn't have a parent, the width will be 0");
 		return layer.offsetWidth;
 		return layer.scrollWidth;
 		return layer.clientWidth;
@@ -237,7 +237,7 @@ class JSView {
 		return w;
 	}
 	public function getHeight () :Float {
-		if (parent == null) trace("This view doesn't have a parent, the height will be 0");
+		//if (parent == null) trace("This view doesn't have a parent, the height will be 0");
 		return layer.offsetHeight;
 		return layer.scrollHeight;
 		return layer.clientHeight;

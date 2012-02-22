@@ -61,9 +61,9 @@ class RCGestureRecognizer {
 	 * Start listening for mouse actions
 	 */
 	public function resume () :Void {
-		target.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+/*		target.addEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 		clickableTarget.addEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
-		clickableTarget.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
+		clickableTarget.addEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);*/
 	}
 	
 	
@@ -71,9 +71,9 @@ class RCGestureRecognizer {
 	 * Hold all mouse actions
 	 */
 	public function hold () :Void {
-		target.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
+/*		target.removeEventListener (MouseEvent.MOUSE_MOVE, mouseMoveHandler);
 		clickableTarget.removeEventListener (MouseEvent.MOUSE_DOWN, mouseDownHandler);
-		clickableTarget.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);
+		clickableTarget.removeEventListener (MouseEvent.MOUSE_UP, mouseUpHandler);*/
 	}
 	
 	
@@ -81,10 +81,10 @@ class RCGestureRecognizer {
 	/**
 	 *	Handlers for finding the right gesture
 	 */
-	function mouseDownHandler (event:MouseEvent) :Void {
+	function mouseDownHandler (event:EVMouse) :Void {
 		lastClickedX = target.mouseX;
 	}
-	function mouseUpHandler (event:MouseEvent) :Void {
+	function mouseUpHandler (event:EVMouse) :Void {
 		if (target.mouseX > lastClickedX + DELAY_BEFORE_CHANGING_DIRECTION)
 			clickDragRightRelease();
 		else if (target.mouseX < lastClickedX - DELAY_BEFORE_CHANGING_DIRECTION)
@@ -93,7 +93,7 @@ class RCGestureRecognizer {
 			onClick();
 	}
 	
-	function mouseMoveHandler (e:MouseEvent) :Void {
+	function mouseMoveHandler (e:EVMouse) :Void {
 		
 		if ( updateDirection() )
 			if ( dispatchGesture() )

@@ -142,7 +142,7 @@ class RCScrollBar extends RCControl {
 				scrollbar.y = Zeta.lineEquationInt (x1, x2,  v, minValue_, maxValue_);
 		}
 		
-		valueChanged.dispatch ( [this] );
+		valueChanged.dispatch ( this );
 		return value_;
 	}
 	

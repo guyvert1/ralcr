@@ -41,8 +41,8 @@ class RCTextRoll extends RCView {
 	// JS target is not able to get elements dimensions if they are not on the display list
 	// So before we decide if we need a second textfield
 	override public function viewDidAppear () :Void {
-		trace("viewdidappear");
-		this.size.height = txt1.height;trace(size);
+		//trace("viewdidappear");
+		this.size.height = txt1.height;
 		if (txt1.width > size.width) {
 			txt2 = new RCTextView (Math.round (txt1.width + GAP), 0, null, size.height, text, txt1.rcfont);
 			this.addChild ( txt2 );
