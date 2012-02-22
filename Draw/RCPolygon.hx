@@ -18,14 +18,15 @@ class RCPolygon extends RCDraw, implements RCDrawInterface {
 	}
 	
 	public function redraw () {
-		
+#if (flash || nme)
 		this.graphics.clear();
 		this.configure();
 		
 		// Draw a polygon		
-			this.graphics.moveTo ( points[0].x, points[0].y );
+		this.graphics.moveTo ( points[0].x, points[0].y );
 		for (i in 1...points.length)
 			this.graphics.lineTo ( points[i].x, points[i].y );
 			this.graphics.endFill();
+#end
 	}
 }

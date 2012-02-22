@@ -21,7 +21,7 @@ class CATColors extends CAObject, implements CATransitionInterface {
 		
 		var color :Dynamic = Reflect.field (properties, "color");
 		if ( color != null )
-		if (Std.is (color, Int) || Std.is (color, UInt)) {
+		if (Std.is (color, Int)/* || Std.is (color, UInt)*/) {
 			
 			// Fade to a RGB color, flat color
 			toColor = color;
@@ -104,14 +104,19 @@ class CATColors extends CAObject, implements CATransitionInterface {
 	 * Generic function for the redMultiplier/redOffset/etc components of the new colorTransform
 	 */
 	inline function getColorTransform (obj:Dynamic, param:String) :Int {
+		#if flash
 		return Reflect.field (obj.transform.colorTransform, param);
+		#elseif js
+			return 0;
+		#end
 	}
 	
 	function setColorTransform (obj:Dynamic, prop:String, value:Int) :Void {
-		
+		#if flash
 		var ct:ColorTransform = obj.transform.colorTransform;
 		Reflect.setField (ct, prop, value);
 		obj.transform.colorTransform = ct;
+		#end
 	}
 	
 	
