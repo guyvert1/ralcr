@@ -41,7 +41,14 @@ class RCSignal<T> {
 	}
 	
 	
-	public function dispatch (?args:Array<Dynamic>, ?pos:haxe.PosInfos) :Void {
+	public function dispatch (?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?pos:haxe.PosInfos) :Void {
+		var args = new Array<Dynamic>();
+		for (p in [p1, p2, p3, p4])
+			if (p != null)
+				args.push ( p );
+			else
+				break;
+
 		for (listener in listeners)
 			callMethod (listener, args, pos);
 		if (exposableListener != null) {
