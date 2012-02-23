@@ -57,6 +57,7 @@ class RCWindow {
 		#elseif js
 			target.style.position = "absolute";
 			target.style.margin = "0px 0px 0px 0px";
+			target.style.overflow = "hidden";
 			width = target.scrollWidth;
 			height = target.scrollHeight;
 			//backgroundColor = 0xFFFFFF;

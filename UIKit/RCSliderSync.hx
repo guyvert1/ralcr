@@ -79,7 +79,7 @@ class RCSliderSync {
 	 *	When wheel is scrolled move the content rather the scrollbar
 	 */
 	function wheelHandler (e:EVMouse) :Void {
-		//trace(e);
+		trace(e);
 		// Calculate different values for mac and pc
 /*		(flash.system.Capabilities.os.toLowerCase().indexOf("mac") != -1)
 		? valueFinal += e.delta*50

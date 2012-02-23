@@ -83,6 +83,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 				case MOVE: target.onmousemove = mouseHandler;
 				case CLICK: target.onclick = mouseHandler;
 				case DOUBLE_CLICK: target.ondblclick = mouseHandler;
+				case WHEEL: target.onscroll = mouseHandler;
 				default: trace("The mouse event you're trying to add does not exist. "+pos);
 			}
 		#end
@@ -109,12 +110,13 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 				case MOVE: target.onmousemove = null;
 				case CLICK: target.onclick = null;
 				case DOUBLE_CLICK: target.ondblclick = null;
+				case WHEEL: target.onscroll = null;
 			}
 		#end
 	}
 	function mouseHandler (e:MouseEvent) {
 		this.e = e;
-		dispatch ( [this] );
+		dispatch ( this );
 	}
 	public function updateAfterEvent () :Void {
 		#if flash

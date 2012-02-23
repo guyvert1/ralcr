@@ -135,8 +135,8 @@ class Fugu {
 		if (obj == null) return;
 		
 		var arr = alignment.toLowerCase().split(",");
-		if (obj_w == null) obj_w = obj.size.width;
-		if (obj_h == null) obj_h = obj.size.height;
+		if (obj_w == null) obj_w = obj.width;
+		if (obj_h == null) obj_h = obj.height;
 		
 		obj.x = switch ( arr[0] ) {
 			case "l": delay_x;

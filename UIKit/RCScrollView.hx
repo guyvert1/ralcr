@@ -25,6 +25,7 @@ class RCScrollView extends RCView {
 	public var pagingEnabled :Bool;
 	public var scrollEnabled (null, setScrollEnabled) :Bool;
 	public var scrollIndicatorInsets :RCPoint;
+	var scrollHappening :EVMouse;
 	
 	dynamic public function scrollViewDidScroll():Void{}
 	dynamic public function scrollViewWillBeginDragging():Void{}
@@ -36,9 +37,17 @@ class RCScrollView extends RCView {
 	public function new (x, y, w, h) {
 		super (x, y, w, h);
 		clipsToBounds = true;
+		#if js
+			// http://help.dottoro.com/ljrmdnar.php
+		layer.style.overflow = "auto";
+		scrollHappening = new EVMouse (EVMouse.WHEEL, this);
+		scrollHappening.add ( scrollViewDidScrollHandler_ );
+		#end
 		setContentView ( new RCView (0, 0) );
 	}
-	
+	function scrollViewDidScrollHandler_ (e:EVMouse) {trace("scroll");
+		scrollViewDidScroll();
+	}
 	
 	/**
 	 *  Set a custom view as the contentView
