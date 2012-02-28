@@ -12,7 +12,7 @@ class SKButton extends RCSkin {
 			f.color = 0x000000;
 			f.align = "center";
 		normal.label = new RCTextView (0, 4, 70, 20, label_str, f);
-		normal.label.y = Math.round ((20-normal.label.height)/2);
+		normal.label.y = Math.round ((20-11/*normal.label.height*/)/2);
 		
 		//var fm = RCFontManager.getRCFont("system",{embedFonts:false});
 		//normal.label = new RCTextView (0, 0, null, null, label_str, fm);

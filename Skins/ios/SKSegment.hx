@@ -1,16 +1,17 @@
 //
-//  SkinButtonBuy
+//  SKSegment
 //
 //  Created by Cristi Baluta on 2010-09-07.
-//  Copyright (c) 2010 ralcr.com. All rights reserved.
+//  Copyright (c) 2012 ralcr.com. All rights reserved.
 //
+
 package ios;
 
 class SKSegment extends RCSkin {
 	
 	public function new (label:String, w:Int, h:Float, pos:String, colors:Array<Null<Int>>) {
 		super ( colors );
-		trace("new sksegment");
+		
 		var segmentLeft :String;
 		var segmentMiddle :String;
 		var segmentRight :String;
@@ -41,20 +42,24 @@ class SKSegment extends RCSkin {
 		
 		//RCFontManager.getFont ("bold", {size:25, color:0x777777, align:"center"}))
 		var font = RCFont.boldSystemFontOfSize(25);
+			font.align = "center";
 		
-		normal.background = new RCView(0,0);
+		normal.background = new RCView (0, 0, w, h);
+		normal.background = new RCRectangle (0, 0, w, h, 0x000000);
 		normal.background.addChild ( segLeft );
 		normal.background.addChild ( segMiddle );
 		normal.background.addChild ( segRight );
-		normal.label = new RCTextView (0, 28, w, 30, label, font);
+		normal.label = new RCTextView (0, 0, w, null, label, font);
+		normal.label.y = Math.round ((h - 25)/2);
 		
-		highlighted.background = new RCView(0,0);
+		highlighted.background = new RCView (0, 0, w, h);
+		normal.background = new RCRectangle (0, 0, w, h, 0x666666, 1, 15);
 		highlighted.background.addChild ( segLeftSelected );
 		highlighted.background.addChild ( segMiddleSelected );
 		highlighted.background.addChild ( segRightSelected );
-		highlighted.label = new RCTextView (0, 28, w, 30, label, font);
+		highlighted.label = new RCTextView (0, 0, w, null, label, font);
+		highlighted.label.y = Math.round ((h - 25)/2);
 		
-		//background = new RCRectangle (0, 0, w, h, 0x000000, 0);
 		hit = new RCRectangle (0, 0, w, h, 0x000000, 0);
 	}
 }
