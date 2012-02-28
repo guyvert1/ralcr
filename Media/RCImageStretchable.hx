@@ -20,9 +20,9 @@ class RCImageStretchable extends RCView {
 		m.onComplete = onCompleteHandler;
 		r = new RCImage (0,0,imageRight);
 		r.onComplete = onCompleteHandler;
-		layer.addChild ( l );
-		layer.addChild ( m );
-		layer.addChild ( r );
+		addChild ( l );
+		addChild ( m );
+		addChild ( r );
 	}
 	function onCompleteHandler () {trace("onComplete");
 		if (l.isLoaded && m.isLoaded && r.isLoaded && this.size.width != null) {

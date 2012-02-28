@@ -26,13 +26,11 @@ class RCVideo extends RCView, implements RCVideoInterface {
 	public static var DEFAULT_VOLUME :Float = 0.8;
 	public static var DISPLAY_TIMER_UPDATE_DELAY :Int = 1000;
 	
-	public var w :Null<Int>;//width and height that the player is forced to take
-	public var h :Null<Int>;
 	var videoURL :String;
-	var inited :Bool;
-	var loaded :Bool;
-	var seeking :Bool;
-	var _volume :Float;
+	var inited_ :Bool;
+	var loaded_ :Bool;
+	var seeking_ :Bool;
+	var volume_ :Float;
 	
 	var timer :Timer;
 	var nc :NetConnection;
@@ -67,15 +65,12 @@ class RCVideo extends RCView, implements RCVideoInterface {
 	
 	
 	public function new (x, y, URL:String, ?w:Null<Int>, ?h:Null<Int>) {
-		super (x, y);
-		
-		this.size.width = w;
-		this.size.height = h;
+		super (x, y, w, h);
 		
 		this.videoURL = URL;
-		this.inited = false;
-		this.loaded = false;
-		this.seeking = false;
+		this.inited_ = false;
+		this.loaded_ = false;
+		this.seeking_ = false;
 		this.isPlaying = false;
 		this.percentLoaded = 0;
 		this.percentPlayed = 0;
@@ -83,7 +78,7 @@ class RCVideo extends RCView, implements RCVideoInterface {
 		this.duration = 0.0;
 		this.statusMessage = "Not inited";
 		this.updateTime = DISPLAY_TIMER_UPDATE_DELAY;
-		_volume = DEFAULT_VOLUME;
+		volume_ = DEFAULT_VOLUME;
 		
 		this.addChild ( background = new RCRectangle(0, 0, w, h, 0x000000) );
 	}
@@ -150,20 +145,16 @@ class RCVideo extends RCView, implements RCVideoInterface {
 		video = new Video();
 		video.attachNetStream ( ns );
 		video.smoothing = true;
-		this.addChild ( video );
+		layer.addChild ( video );
 		
-		setVolume ( _volume );
+		setVolume ( volume_ );
 		
 		onInit();
-		//this.dispatchEvent ( new VideoEvent (VideoEvent.INIT, 0.0, 0));
 	}
 	
 	function securityErrorHandler (e:SecurityErrorEvent) :Void {
 		statusMessage = e.text;
 		onError();
-		//var ev = new VideoEvent ( VideoEvent.ERROR, 0.0, 0);
-		//	ev.errorMessage = statusMessage;
-		//this.dispatchEvent ( ev );
     }
 	
 	function asyncErrorHandler (e:AsyncErrorEvent) :Void {
@@ -178,7 +169,7 @@ class RCVideo extends RCView, implements RCVideoInterface {
 	 */
 	function loop (e:TimerEvent) :Void { try {
 		if (ns == null) return;
-		if (!seeking) {
+		if (!seeking_) {
 			time = ns.time;
 			percentPlayed = Math.round (time / duration * 100);
 			onPlayingProgress();
@@ -193,9 +184,9 @@ class RCVideo extends RCView, implements RCVideoInterface {
 		}
 		
 		// update the loading progress
-		if (!loaded) {
+		if (!loaded_) {
 			percentLoaded = Math.round (ns.bytesLoaded / ns.bytesTotal * 100);
-			if (percentLoaded >= 100) loaded = true;
+			if (percentLoaded >= 100) loaded_ = true;
 			onLoadingProgress();
 			//this.dispatchEvent ( new VideoEvent (VideoEvent.LOADING_PROGRESS, time, duration));
 		}
@@ -213,7 +204,7 @@ class RCVideo extends RCView, implements RCVideoInterface {
 	 */
 	function onMetaData (meta:Dynamic) :Void {
 		trace("RCVideo medatada received. Now ready to play.");
-		if (seeking) return;
+		if (seeking_) return;
 		if (duration != 0) return;
 		
 		aspectRatio = (meta.width != null && meta.height != null) ? (meta.width / meta.height) : null;
@@ -223,8 +214,8 @@ class RCVideo extends RCView, implements RCVideoInterface {
 		for (m in Reflect.fields(meta)) trace(m + " -> "+Reflect.field(meta, m));
 		
 		// Check the size specified by the user
-		if (w != null && h != null) {
-			setSize (w, h);
+		if (size.width != null && size.height != null) {
+			setSize (size.width, size.height);
 		}
 		// Otherwise set it to the size from metadata
 		else setSize (meta.width, meta.height);
@@ -250,9 +241,9 @@ class RCVideo extends RCView, implements RCVideoInterface {
 		// check's, if the flv has already begun
 		// to download. if so, resume playback, else
 		// load the file
-		if (!inited) {
+		if (!inited_) {
 			ns.play (file != null ? file : videoURL);
-			inited = true;
+			inited_ = true;
 		}
 		else {
 			ns.resume();
@@ -263,7 +254,7 @@ class RCVideo extends RCView, implements RCVideoInterface {
 	public function replayVideo () : Void {
 		// Pause netstream, set time position to zero
 		if (ns != null) {
-			seeking = true;
+			seeking_ = true;
 			ns.pause();
 			ns.seek ( 0 );// This may cause the metadata to be called again
 			haxe.Timer.delay (doReplay, 2);
@@ -273,7 +264,7 @@ class RCVideo extends RCView, implements RCVideoInterface {
 	function doReplay(){
 		ns.resume();
 		isPlaying = true;
-		seeking = false;
+		seeking_ = false;
 		timer.start();
 	}
 	
@@ -323,7 +314,7 @@ class RCVideo extends RCView, implements RCVideoInterface {
 	 *  Seek video to time (sec)
 	 */
 	public function seekTo (time:Float) :Bool {
-		seeking = true;
+		seeking_ = true;
 		if (time > duration * percentLoaded / 100) return false;//Do not seek beyound current loaded 
 		if (ns != null)
 			ns.seek ( time );
@@ -331,7 +322,7 @@ class RCVideo extends RCView, implements RCVideoInterface {
 	}
 	
 	public function stopSeeking () :Void {
-		seeking = false;
+		seeking_ = false;
 	}
 	
 	
@@ -340,14 +331,14 @@ class RCVideo extends RCView, implements RCVideoInterface {
 	 *	Control the volume
 	 */
 	public function getVolume () :Float {
-		return _volume;
+		return volume_;
 	}
 	
 	public function setVolume (volume:Float) :Float {
-		_volume = volume > 1 ? 1 : volume;
+		volume_ = volume > 1 ? 1 : volume;
 		if (ns != null)
-			ns.soundTransform = new SoundTransform ( _volume );
-		return _volume;
+			ns.soundTransform = new SoundTransform ( volume_ );
+		return volume_;
 	}
 	
 	
@@ -355,8 +346,8 @@ class RCVideo extends RCView, implements RCVideoInterface {
 	 *	Sets the size of the video object and maintains its aspect ratio
 	 */
 	public function setSize (w, h) :Void {
-		this.w = w;
-		this.h = h;
+		size.width = w;
+		size.height = h;
 		background.width = w;
 		background.height = h;
 		

@@ -63,7 +63,7 @@ class RCSwf extends RCImage {
 			this.target = loader.content;
 			this.size.width = loader.content.width;
 			this.size.height = loader.content.height;
-			this.addChild ( loader );
+			layer.addChild ( loader );
 		#end
 		this.isLoaded = true;
 		onComplete();

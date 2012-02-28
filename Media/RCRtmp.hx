@@ -57,10 +57,10 @@ class RCRtmp extends RCVideo, implements RCVideoInterface {
 		ns.client = this;// call onMetaData and onCuePoint
 		ns.bufferTime = RCVideo.BUFFER_TIME;
 		
-		video = new Video (w, h);
+		video = new Video (0,0/*size.width, size.height*/);
 		video.attachNetStream ( ns );
 		video.smoothing = true;
-		this.addChild ( video );
+		layer.addChild ( video );
 		
 		setVolume ( RCVideo.DEFAULT_VOLUME );
 		startVideo ( file );
@@ -81,9 +81,9 @@ class RCRtmp extends RCVideo, implements RCVideoInterface {
 		// check's, if the flv has already begun
 		// to download. if so, resume playback, else
 		// load the file
-		if (!inited) {
+		if (!inited_) {
 			ns.play ( file );
-			inited = true;
+			inited_ = true;
 		}
 		else {
 			ns.close();
