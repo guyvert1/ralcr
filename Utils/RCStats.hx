@@ -20,8 +20,8 @@ class RCStats extends RCRectangle {
 		addChild ( new RCRectangle (1, 1, 150, 16, 0x333333, 0.3, 16) );
 		
 		var f = RCFont.systemFontOfSize(12);
-			f.color = 0x333333;
-		txt = new RCTextView (6, #if flash 1 #else 3 #end, 140, 20, "Calculating...", f);
+			f.color = 0xffffff;
+		txt = new RCTextView (6, #if flash 1 #else 3 #end, null, 20, "Calculating...", f);
 		addChild ( txt );
 		
 		last = CoreAnimation.timestamp();
