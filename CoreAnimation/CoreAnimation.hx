@@ -49,7 +49,7 @@ class CoreAnimation {
 	
 	
 	/**
-	 *	Removes an animation by the object that is animated
+	 *	Removes an animation.
 	 *	Iterate over all active animations and removes the one that coresponds to the object
 	 */
 	public static function remove (obj:Dynamic) :Void {
@@ -63,7 +63,8 @@ class CoreAnimation {
 	}
 	
 	/**
-	 *	Removes an animation by the CAObject that is animated
+	 *	Removes an animation by passing the CAObject that is being animated.
+	 *  @param a - Can be Ani Transition object: CATween, CATZoom, CATSound, CATText.....
 	 */
 	public static function removeCAObject (a:CAObject) :Void {
 		
@@ -83,7 +84,7 @@ class CoreAnimation {
 	}
 	
 	/**
-	 *  Stop the CoreAnimation loop
+	 *  Removes all animations.
 	 */
 	public static function destroy () :Void {
 		latest = null;
@@ -92,7 +93,7 @@ class CoreAnimation {
 	
 	
 	/**
-	 *	Update the animations
+	 *	Update the animations state
 	 */
 	static function updateAnimations () :Void {
 		
@@ -148,6 +149,9 @@ class CoreAnimation {
 		}
 	}
 	
+	/**
+	 *  Returns the timestamp depending on the platform.
+	 **/
 	inline public static function timestamp () :Float {
 		#if cpp
 			return cpp.Sys.time() * 1000;

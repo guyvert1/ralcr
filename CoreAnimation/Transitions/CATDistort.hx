@@ -4,6 +4,11 @@
 //  Created by Baluta Cristian on 2009-03-26.
 //  Copyright (c) 2009 http://ralcr.com. All rights reserved.
 //
+
+/**
+ *  Available for flash only
+ **/
+
 import flash.geom.Point;
 import flash.display.DisplayObjectContainer;
 

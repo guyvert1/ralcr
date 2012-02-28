@@ -5,6 +5,10 @@
 //  Copyright (c) 2010-2012 ralcr.com. All rights reserved.
 //
 
+/**
+ *  Available for flash only
+ **/
+
 class CATFrames extends CAObject, implements CATransitionInterface {
 	
 	override public function init () :Void {

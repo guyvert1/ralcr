@@ -4,18 +4,11 @@
 //  Created by Baluta Cristian on 2009-03-20.
 //  Copyright (c) 2009 http://ralcr.com. All rights reserved.
 //
+
 /*
- * com.vj.fx.Pixelator
- * 
- * @author: Erik Hallander
- * @build: 1.1 (21-08-08)
- * @purpose: "Pixelating" transition between two displayobjects.
- * @collaborators: None.
- *
- * @destructs: Nothing. Source objects gets hidden.
- * @modifies: Nothing.
- * 
+ * This transition is available for flash only.
  */
+
 import flash.display.DisplayObject;
 import flash.display.Sprite;
 import flash.display.Bitmap;

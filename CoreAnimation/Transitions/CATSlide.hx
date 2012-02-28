@@ -4,6 +4,7 @@
 //  Created by Baluta Cristian on 2009-03-26.
 //  Copyright (c) 2009 http://ralcr.com. All rights reserved.
 //
+
 class CATSlide extends CAObject, implements CATransitionInterface {
 	
 	override public function init () :Void {

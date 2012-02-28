@@ -31,23 +31,16 @@ class CATween extends CAObject, implements CATransitionInterface {
 		// Iterate over properties that should be tweened for this object
 		for (prop in Reflect.fields (toValues))
 			try {
-#if (flash || nme)
+/*			#if (flash || nme)
 				Reflect.setField (target, prop, calculate (time_diff, prop));
-#elseif js
-				var val = calculate (time_diff, prop);
+			#elseif js*/
+				
+				//var val = calculate (time_diff, prop);
 				var setter = "set"+prop.substr(0,1).toUpperCase()+prop.substr(1);
 				if (setter != null)
-				Reflect.callMethod (target, Reflect.field(target,setter), [val]);
-/*				switch ( prop ) {
-					case "x": target.setX ( val );
-					case "y": target.setY ( val );
-					case "width": target.setWidth ( val );
-					case "height": target.setHeight ( val );
-					case "scaleX": target.setScaleX ( val );
-					case "scaleY": target.setScaleY ( val );
-					case "alpha": target.setAlpha ( val );
-				}*/
-#end
+					//target.setter ( calculate (time_diff, prop) );
+				Reflect.callMethod (target, Reflect.field(target,setter), [calculate (time_diff, prop)]);
+			//#end
 			}
 			catch (e:Dynamic) { trace(e); }
 	}
