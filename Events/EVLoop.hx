@@ -4,6 +4,7 @@
 	typedef Ticker = haxe.Timer;
 #end
 
+
 class EVLoop {
 	var ticker :Ticker;
 	public var run (default, setFuncToCall) :Void->Void;

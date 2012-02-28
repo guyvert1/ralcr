@@ -15,7 +15,7 @@ class EVFullScreen extends RCSignal<Bool->Void> {
 	}
 #if (flash || (nme && flash))
 	function fullScreenHandler (e:FullScreenEvent) {
-		dispatch ( [flash.Lib.current.stage.displayState == StageDisplayState.FULL_SCREEN] );
+		dispatch ( flash.Lib.current.stage.displayState == StageDisplayState.FULL_SCREEN );
 	}
 #end
 }

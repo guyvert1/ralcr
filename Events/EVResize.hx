@@ -20,11 +20,13 @@ class EVResize extends RCSignal<Int->Int->Void> {
 			var w = flash.Lib.current.stage.stageWidth;
 			var h = flash.Lib.current.stage.stageHeight;
 		#elseif js
+			// The size of the app
 			//var w = js.Lib.document.body.scrollWidth;
 			//var h = js.Lib.document.body.scrollHeight;
+			// The size of the window
 			var w = js.Lib.window.innerWidth;
 			var h = js.Lib.window.innerHeight;
 		#end
-		dispatch ( [w, h] );
+		dispatch ( w, h );
 	}
 }
