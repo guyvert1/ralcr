@@ -161,7 +161,7 @@ class RCTextView extends RCView {
 				layer.innerHTML = str;
 			}
 			size.width = getWidth();
-			setWidth ( size.width );
+			//setWidth ( size.width );
 		#end
 		
 		return str;

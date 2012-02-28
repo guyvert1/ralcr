@@ -6,11 +6,7 @@
 //
 
 import RCView;
-#if (flash || nme)
-	import flash.events.Event;
-#elseif js
-	import js.Dom;
-#end
+
 
 class RCTextRoll extends RCView {
 	
@@ -26,21 +22,18 @@ class RCTextRoll extends RCView {
 	
 	
 	public function new (x, y, w:Float, h:Null<Float>, str:String, properties:RCFont) {
-		super(x, y);
-		this.size.width = w;
+		super(x, y, w, h);
 		this.continuous = true;
 		
 		// Add the first TextField
 		txt1 = new RCTextView (0, 0, null, h, str, properties);
 		this.addChild ( txt1 );
-		#if flash
-			viewDidAppear();
-		#end
+		viewDidAppear.add ( viewDidAppear_ );
 	}
 	
-	// JS target is not able to get elements dimensions if they are not on the display list
-	// So before we decide if we need a second textfield
-	override public function viewDidAppear () :Void {
+	// JS target is not able to get elements dimensions if they are not on the display list.
+	// So we decide if we need a second textfield only after the component is added to stage
+	function viewDidAppear_ () :Void {
 		//trace("viewdidappear");
 		this.size.height = txt1.height;
 		if (txt1.width > size.width) {

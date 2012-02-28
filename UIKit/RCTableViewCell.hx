@@ -30,7 +30,7 @@ class RCTableViewCell extends RCControl {
 		
 		titleView = new RCTextView (10, 6, null, null, " ", RCFont.systemFontOfSize(12));
 		titleView.y = Math.round ((size.height - titleView.height) / 2);
-		titleView.mouseChildren = false;
+		titleView.layer.mouseChildren = false;
 		this.addChild ( titleView );
 	}
 	

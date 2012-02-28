@@ -5,30 +5,28 @@
 //  Copyright (c) 2008-2012 www.ralcr.com. All rights reserved.
 //
 
-#if (flash || nme)
-	import flash.display.DisplayObjectContainer;
-#elseif js
-	import js.Dom;
-	private typedef DisplayObjectContainer = JSView;
-#end
 import RCControl;// Imports RCControlState
 
 
 class RCButton extends RCControl {
 	
 	public var skin :RCSkin;
+	
+	/**
+	 *  Set title for state
+	 **/
 	public function setTitle (title:String, state:RCControlState) {
 		
 	}
 	public function setTitleColor (color:Int, state:RCControlState) {
 		
 	}
-	//public function setBackgroundImage:(UIImage *)image forState:(UIControlState)state;
+	//public function setBackgroundImage (image:RCImage, state:RCControlState)
 
 	public var currentTitle :String;// normal/highlighted/selected/disabled. can return nil
 	public var currentTitleColor :Int;// normal/highlighted/selected/disabled. always returns non-nil. default is white(1,1)
-	public var currentImage :DisplayObjectContainer;// normal/highlighted/selected/disabled. can return nil
-	public var currentBackground :DisplayObjectContainer;// normal/highlighted/selected/disabled. can return nil
+	public var currentImage :RCView;// normal/highlighted/selected/disabled. can return nil
+	public var currentBackground :RCView;// normal/highlighted/selected/disabled. can return nil
 	
 	
 	public function new (x, y, skin:RCSkin) {
@@ -103,12 +101,12 @@ class RCButton extends RCControl {
 	/**
 	 *	Function to safely set color for objects in the button
 	 */
-	public function setObjectColor (obj:DisplayObjectContainer, color:Null<Int>) {
+/*	public function setObjectColor (obj:DisplayObjectContainer, color:Null<Int>) {
 		if (obj == null || color == null) return;
 		//Fugu.color (obj, color);
 	}
 	public function setObjectBrightness (obj:DisplayObjectContainer, brightness:Int) {
-/*		if (obj == null || !autoBrightness) return;
-		Fugu.brightness (obj, brightness);*/
-	}
+		if (obj == null || !autoBrightness) return;
+		Fugu.brightness (obj, brightness);
+	}*/
 }

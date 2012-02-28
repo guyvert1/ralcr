@@ -1,5 +1,6 @@
 //
-//  RCScrollBar
+//  RCScrollBar.hx
+//	UIKit
 //
 //  Created by Baluta Cristian on 2008-06-25.
 //  Copyright (c) 2008-2012 milc.ro. All rights reserved.
@@ -10,6 +11,7 @@ private enum Direction {
 	VERTICAL;
 }
 import RCControl;// imports States
+
 
 class RCScrollBar extends RCControl {
 	
@@ -41,7 +43,7 @@ class RCScrollBar extends RCControl {
 		this.value_ = 0.0;
 		this.skin = skin;
 		this.indicatorSize = indicatorSize;
-		this.viewDidAppear = init;
+		this.viewDidAppear.add ( init );
 	}
 	function init () {
 		// Decide the direction of movement

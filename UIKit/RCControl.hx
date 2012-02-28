@@ -82,8 +82,8 @@ class RCControl extends RCView {
 		over.addFirst ( rollOverHandler );
 		out.addFirst ( rollOutHandler );
 		#if flash
-			this.useHandCursor = true;
-			this.buttonMode = true;
+			layer.useHandCursor = true;
+			layer.buttonMode = true;
 		#end
 	}
 	function removeListeners () :Void {
@@ -94,8 +94,8 @@ class RCControl extends RCView {
 		over.remove ( rollOverHandler );
 		out.remove ( rollOutHandler );
 		#if flash
-			this.useHandCursor = false;
-			this.buttonMode = false;
+			layer.useHandCursor = false;
+			layer.buttonMode = false;
 		#end
 	}
 	

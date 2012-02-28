@@ -33,8 +33,8 @@ class RCCustomCursor extends RCView {
 			Fugu.safeRemove ( cursor );
 			cursor = obj;
 			cursor.mouseEnabled = false;
-			Fugu.safeAdd (this, cursor);
-			this.mouseEnabled = false;
+			Fugu.safeAdd (layer, cursor);
+			layer.mouseEnabled = false;
 			Mouse.hide();
 		#elseif js
 			//Lib.document.body.style.cursor = "none";

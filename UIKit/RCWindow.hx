@@ -136,29 +136,27 @@ class RCWindow {
 	/**
 	 *	Add and remove views
 	 */
-	public static function addChild (child:DisplayObjectContainer) :Void {
+	public static function addChild (child:RCView) :Void {
 		init();
 		if (child != null) {
-			#if (flash || nme)
-				target.addChild ( child );
-			#elseif js
-				child.viewWillAppear();
-				child.parent = target;
-				target.appendChild ( child.layer );
-				child.viewDidAppear();
-			#end
+			child.viewWillAppearHandler();
+			child.parent = target;
+			target.appendChild ( child.layer );
+			child.viewDidAppearHandler();
 		}
 	}
-	public static function removeChild (child:DisplayObjectContainer) :Void {
+	public static function removeChild (child:RCView) :Void {
 		if (child != null) {
 			#if (flash || nme)
-				if (target.contains ( child ))
-					target.removeChild ( child );
+				if (Std.is (child, RCView))
+					cast(child).viewWillDisappearHandler(null);
+				if (target.contains ( child.layer ))
+					target.removeChild ( child.layer );
 			#elseif js
-				child.viewWillDisappear();
+				child.viewWillDisappearHandler();
 				child.parent = null;
 				target.removeChild ( child.layer );
-				child.viewDidDisappear();
+				child.viewDidDisappearHandler();
 			#end
 		}
 	}

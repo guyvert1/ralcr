@@ -7,7 +7,6 @@
 //  Created by Cristi Baluta on 2011-02-08.
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
-//
 
 class RCGroup<T:RCView> extends RCView {
 	
@@ -94,9 +93,7 @@ class RCGroup<T:RCView> extends RCView {
 		}
 		update.dispatch();
 	}
-	override public function viewDidAppear () {
-		//keepItemsArranged();
-	}
+	
 	
 	/**
 	 *	Returns a reference to a specified view by index
@@ -124,5 +121,6 @@ class RCGroup<T:RCView> extends RCView {
 	override public function destroy() :Void {
 		Fugu.safeDestroy ( items );
 		items = null;
+		super.destroy();
 	}
 }

@@ -1,5 +1,7 @@
 //
-//  RCView
+//  RCView.hx
+//	UIKit
+//	Flash implementation of the RCDisplayObject
 //
 //  Created by Baluta Cristian on 2009-02-14.
 //  Copyright (c) 2009-2012 http://ralcr.com. All rights reserved.
@@ -8,51 +10,37 @@
 #if (flash || nme)
 
 import flash.display.Sprite;
-import flash.display.DisplayObjectContainer;
+import flash.display.Graphics;
 import flash.events.Event;
 
-class RCView extends Sprite {
 
-	public var layer :Sprite;
-	public var bounds :RCRect; // Real size of the view
-	public var size :RCSize; // Visible size of the layer. You can get the real size with width and height
-	public var center (default, setCenter) :RCPoint;
-	public var clipsToBounds (default, setClipsToBounds) :Bool;
-	public var backgroundColor (default, setBackgroundColor) :Null<Int>;
-	
-	var lastW :Float;
-	var lastH :Float;
-	var caobj :CAObject;
-	
-	dynamic public function viewWillAppear () :Void {}
-	dynamic public function viewWillDisappear () :Void {}
-	dynamic public function viewDidAppear () :Void {}
-	dynamic public function viewDidDisappear () :Void {}
-	public function viewWillAppearHandler (e:Event) :Void { viewWillAppear(); }
-	public function viewWillDisappearHandler (e:Event) :Void { viewWillDisappear(); }
-	function viewDidAppearHandler (e:Event) :Void { trace("viewDidAppearHandler");viewDidAppear();trace("fin"); }
-	public function viewDidDisappearHandler (e:Event) :Void { viewDidDisappear(); }
+class RCView extends RCDisplayObject {
+
+	public var layer :Sprite; // In flash the layer is a Sprite
+	public var parent :Sprite;
+	public var graphics :Graphics;
 	
 	
 	public function new (x, y, ?w, ?h) {
 		super();
-		size = new RCSize (w, h);
-		bounds = new RCRect (x, y, w, h);
-		layer = this;
-		//layer.addEventListener (Event.ADDED_TO_STAGE, viewDidAppearHandler);
-		//layer.addEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappearHandler);
+		
+		layer = new Sprite();
 		layer.x = x;
 		layer.y = y;
-		#if flash
-			viewDidAppear();
-		#end
+		graphics = layer.graphics;
+		size = new RCSize (w, h);
+		
+		layer.addEventListener (Event.ADDED_TO_STAGE, viewDidAppearHandler_);
+		layer.addEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappearHandler_);
 	}
+	public function viewDidAppearHandler_ (e:Event) :Void { viewDidAppear.dispatch(); }
+	public function viewDidDisappearHandler_ (e:Event) :Void { viewDidDisappear.dispatch(); }
 	
 	
 	/**
 	 *  Change the color of the Sprite
 	 */
-	public function setBackgroundColor (color:Null<Int>) :Null<Int> {
+	override public function setBackgroundColor (color:Null<Int>) :Null<Int> {
 		
 		var red   = (color & 0xff0000) >> 16;
 		var green = (color & 0xff00) >> 8;
@@ -73,14 +61,8 @@ class RCView extends Sprite {
 		return backgroundColor = color;
 	}
 	
-	public function setCenter (point:RCPoint) :RCPoint {
-		this.center = point;
-		this.layer.x = Std.int (point.x - size.width/2);
-		this.layer.y = Std.int (point.y - size.height/2);
-		return this.center;
-	}
 	
-	public function setClipsToBounds (clip:Bool) :Bool {
+	override public function setClipsToBounds (clip:Bool) :Bool {
 		layer.cacheAsBitmap = clip;
 		
 		if (clip)
@@ -91,80 +73,32 @@ class RCView extends Sprite {
 		return clip;
 	}
 	
-	public function setX (x:Float) :Float {
+	// Position and size
+	override public function setX (x:Float) :Float {
 		layer.x = x;
-		return x;
+		return super.setX ( x );
 	}
-	public function setY (y:Float) :Float {
+	override public function setY (y:Float) :Float {
 		layer.y = y;
-		return y;
+		return super.setY ( y );
 	}
-	public function setWidth (w:Float) :Float {
-		size.width = w;
+	override public function setWidth (w:Float) :Float {
 		layer.width = w;
-		return w;
+		return super.setWidth ( w );
 	}
-	public function setHeight (h:Float) :Float {
-		size.height = h;
+	override public function setHeight (h:Float) :Float {
 		layer.height = h;
-		return h;
-	}
-	
-	
-	/**
-	 *  Scale methods
-	 */
-	public function scaleToFit (w:Int, h:Int) :Void {
-		
-		if (size.width/w > size.height/h && size.width > w) {
-			layer.width = w;
-			layer.height = layer.width * size.height / size.width;
-		}
-		else if (size.height > h) {
-			layer.height = h;
-			layer.width = layer.height * size.width / size.height;
-		}
-		else if (size.width > lastW && size.height > lastH) {
-			layer.width = size.width;
-			layer.height = size.height;
-		}
-		else
-			resetScale();
-		
-		lastW = layer.width;
-		lastH = layer.height;
-	}
-	
-	public function scaleToFill (w:Int, h:Int) :Void {
-		
-		if (w/size.width > h/size.height) {
-			layer.width = w;
-			layer.height = layer.width * size.height / size.width;
-		}
-		else {
-			layer.height = h;
-			layer.width = layer.height * size.width / size.height;
-		}
-	}
-	
-	public function resetScale () :Void {
-		layer.width = lastW;
-		layer.height = lastH;
-	}
-	
-	public function animate (obj:CAObject) :Void {
-		CoreAnimation.add ( this.caobj = obj );
+		return super.setHeight ( h );
 	}
 	
 	/**
-	 *  This methos is usually overriten by the extension class.
+	 *  This method is usually overriten by the super class.
 	 */
-	public function destroy () :Void {
-		CoreAnimation.remove ( caobj );
-		layer.removeEventListener (Event.ADDED_TO_STAGE, viewDidAppearHandler);
-		layer.removeEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappearHandler);
+	override public function destroy () :Void {
+		layer.removeEventListener (Event.ADDED_TO_STAGE, viewDidAppearHandler_);
+		layer.removeEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappearHandler_);
+		super.destroy();
 	}
-	
 	
 	public function removeFromSuperView () :Void {
 		var parent = null;

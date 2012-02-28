@@ -45,7 +45,8 @@ class RCScrollView extends RCView {
 		#end
 		setContentView ( new RCView (0, 0) );
 	}
-	function scrollViewDidScrollHandler_ (e:EVMouse) {trace("scroll");
+	function scrollViewDidScrollHandler_ (e:EVMouse) {
+		//trace("scroll");
 		scrollViewDidScroll();
 	}
 	

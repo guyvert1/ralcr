@@ -42,10 +42,10 @@ class RCSlider extends RCControl {
 		this.maxValue_ = 100.0;
 		this.value_ = 0.0;
 		this.skin = skin;
-		super (x, y, w, h);
-		#if flash viewDidAppear(); #end
+		super (x, y, w, h);// Important to init the superclass at this point
+		viewDidAppear.add ( viewDidAppear_ );
 	}
-	override public function viewDidAppear(){
+	public function viewDidAppear_(){
 		// Resize skin elements based on the width and height
 		sliderNormal = skin.normal.background;
 		if (sliderNormal == null) sliderNormal = new RCView(0,0);

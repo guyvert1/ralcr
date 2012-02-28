@@ -15,21 +15,20 @@ class RCAttach extends RCView {
 	
 	
 	public function new (x, y, id:String) {
-		super(x,y);
+		super (x, y);
 		this.id = id;
 		
+		try {
 		#if (flash && !nme)
-			try {
-				target = flash.Lib.attach ( id );
-				this.addChild ( target );
-			}
-			catch(e:Dynamic){trace(e);}
+			target = flash.Lib.attach ( id );
+			layer.addChild ( target );
 		#elseif (nme || js)
 			target = RCAssets.getFileWithKey( id );
 		#end
+		}catch(e:Dynamic){trace(e);}
 	}
 	
-	public function clone () :RCAttach {
+	public function copy () :RCAttach {
 		return new RCAttach (this.x, this.y, this.id);
 	}
 }
