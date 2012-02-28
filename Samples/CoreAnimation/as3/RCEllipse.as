@@ -7,10 +7,10 @@ package  {
 		}}
 		
 		public function redraw() : void {
-			this.graphics.clear();
+			layer.graphics.clear();
 			this.configure();
-			this.graphics.drawEllipse(0,0,this.w,this.h);
-			this.graphics.endFill();
+			layer.graphics.drawEllipse(0,0,this.w,this.h);
+			layer.graphics.endFill();
 		}
 		
 	}

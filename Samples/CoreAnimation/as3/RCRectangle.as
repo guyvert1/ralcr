@@ -10,11 +10,11 @@ package  {
 		
 		public var roundness : *;
 		public function redraw() : void {
-			this.graphics.clear();
+			layer.graphics.clear();
 			this.configure();
-			if(this.roundness != null) this.graphics.drawRoundRect(0,0,this.w,this.h,this.roundness);
-			else this.graphics.drawRect(0,0,this.w,this.h);
-			this.graphics.endFill();
+			if(this.roundness != null) layer.graphics.drawRoundRect(0,0,this.w,this.h,this.roundness);
+			else layer.graphics.drawRect(0,0,this.w,this.h);
+			layer.graphics.endFill();
 		}
 		
 		public function rectangle() : flash.geom.Rectangle {

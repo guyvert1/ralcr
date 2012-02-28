@@ -25,20 +25,20 @@ package  {
 		public var borderThickness : int;
 		public function configure() : void {
 			if(Std._is(this.color,RCColor)) {
-				if(this.color.fillColor != null) this.graphics.beginFill(this.color.fillColor,this.color.alpha);
+				if(this.color.fillColor != null) layer.graphics.beginFill(this.color.fillColor,this.color.alpha);
 				if(this.color.borderColor != null) {
 					var pixelHinting : Boolean = true;
 					var scaleMode : String = flash.display.LineScaleMode.NONE;
 					var caps : String = null;
 					var joints : String = null;
 					var miterLimit : int = 3;
-					this.graphics.lineStyle(this.borderThickness,this.color.borderColor,this.color.alpha,pixelHinting,scaleMode,caps,joints,miterLimit);
+					layer.graphics.lineStyle(this.borderThickness,this.color.borderColor,this.color.alpha,pixelHinting,scaleMode,caps,joints,miterLimit);
 				}
 			}
 			else if(Std._is(this.color,RCGradient)) {
 				var m : flash.geom.Matrix = new flash.geom.Matrix();
 				m.createGradientBox(this.w,this.h,this.color.matrixRotation,this.color.tx,this.color.ty);
-				this.graphics.beginGradientFill(this.color.gradientType,this.color.gradientColors,this.color.gradientAlphas,this.color.gradientRatios,m,this.color.spreadMethod,this.color.interpolationMethod,this.color.focalPointRatio);
+				layer.graphics.beginGradientFill(this.color.gradientType,this.color.gradientColors,this.color.gradientAlphas,this.color.gradientRatios,m,this.color.spreadMethod,this.color.interpolationMethod,this.color.focalPointRatio);
 			}
 		}
 		
