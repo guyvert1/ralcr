@@ -9,8 +9,8 @@ class Main extends flash.display.Sprite {
 	public function new(){
 		super();trace("new Main()");
 		
-		this.graphics.lineStyle (5, 0xff3300);
-		this.graphics.lineTo (400, 0);
+		graphics.lineStyle (5, 0xff3300);
+		graphics.lineTo (400, 0);
 		
 		plugin = new RCPluginLoader ("plugin.swf?"+Math.random());
 		//plugin.onComplete = completeHandler;

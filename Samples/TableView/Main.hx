@@ -71,12 +71,12 @@ class Main {
 		}
 		
 		trace(indexes);
-		MC.addChild ( new RCTextView (30, 6, null, null, "Hello in any language", RCFontManager.getFont("system", {color:0x000000})) );
+		RCWindow.addChild ( new RCTextView (30, 6, null, null, "Hello in any language", RCFontManager.getFont("system", {color:0x000000})) );
 		
 		tableView = new RCTableView(20, 30, 300, 500);
 		tableView.delegate = Main;
 		tableView.init();
-		MC.addChild ( tableView );
+		RCWindow.addChild ( tableView );
 	}
 	
 	public static function cellForRowAtIndexPath (indexPath:RCIndexPath) :RCTableViewCell {

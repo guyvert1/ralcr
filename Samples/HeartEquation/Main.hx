@@ -6,7 +6,7 @@ class Main extends RCAppDelegate {
 	static function main() {
 		haxe.Firebug.redirectTraces();
 		RCWindow.init();
-		RCWindow.addChild ( new Main() );
+		//RCWindow.addChild ( new Main() );
 	}
 	
 	
@@ -15,7 +15,7 @@ class Main extends RCAppDelegate {
 		super();
 		heart1();
 		//heart2();
-		addChild ( new RCStats() );
+		RCWindow.addChild ( new RCStats() );
 	}
 	
 	
@@ -50,8 +50,8 @@ class Main extends RCAppDelegate {
 		var x = a * Math.sin(Math.PI*t/180);
 		var y = a * Math.cos(Math.PI*t/180);
 		
-/*		this.graphics.drawRect (800-x*scale, 400-y*scale, 1, 1);
-		this.graphics.drawRect (800+x*scale, 400-y*scale, 1, 1);*/
+/*		layer.graphics.drawRect (800-x*scale, 400-y*scale, 1, 1);
+		layer.graphics.drawRect (800+x*scale, 400-y*scale, 1, 1);*/
 		var p1 = new Particle(800-x*scale, 400-y*scale, t, -1);
 		var p2 = new Particle(800-x*scale, 400-y*scale, t, 1);
 		RCWindow.addChild( p1 );

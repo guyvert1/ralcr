@@ -33,7 +33,7 @@ class Main {
 		RCAssets.loadFileWithKey("photo", "../CoreAnimation/3134265_large.jpg");
 		RCAssets.loadFileWithKey("some_text", "data.txt");
 		RCAssets.loadFileWithKey("Urban", "FFF Urban.ttf");
-		RCAssets.loadFileWithKey("Futu", "FUTUNEBI.TTF");
+		RCAssets.loadFontWithKey("Futu", "FUTUNEBI.TTF");
 		RCAssets.onComplete = testJsFont;
 		//function(){trace("RCAssets did finish loading assets"); trace(RCAssets.getFileWithKey("some_text"));}
 		trace("step2");
@@ -73,11 +73,9 @@ class Main {
 		
 		var m = new EVMouse( EVMouse.OVER, rect.layer );
 			m.add ( function(_){ trace("onOver"); } );
-		trace("step4");
+		
 		testTexts();
-		trace("step5");
 		testSignals();
-		trace("step6");
 		testButtons();
 		
 		// Shared objects
@@ -86,14 +84,13 @@ class Main {
 		RCUserDefaults.set ("key1", "blah blah");
 		trace(RCUserDefaults.stringForKey("key1"));*/
 		
-		trace("step7");
 		// Add slider
-		var s = new haxe.SKSlider();trace("-");
-		var sl = new RCSlider(50, 250, 160, 10, s);trace("-");
+		var s = new haxe.SKSlider();
+		var sl = new RCSlider(50, 250, 160, 10, s);
 		//sl.valueChanged.add ( function(e:RCSlider){trace(e.value);} );
 		RCWindow.addChild ( sl );
-		sl.maxValue = 500;trace("-");
-		sl.value = 30;trace("-");
+		sl.maxValue = 500;
+		sl.value = 30;
 		
 		
 		
@@ -167,7 +164,7 @@ class Main {
 		signal.remove ( printNr );
 		signal.removeAll();
 		for (i in 0...5)
-		signal.dispatch ([Math.random()]);
+		signal.dispatch ( Math.random() );
 	}
 	static function printNr(nr:Int){
 		trace("printNr "+nr);
@@ -186,7 +183,6 @@ class Main {
 		b.onOver = function(){trace("over");}
 		b.onOut = function(){trace("out");}
 		b.onPress = function(){trace("press");}
-		//b.onRelease = function(){trace("release");}
 		RCWindow.addChild ( b );
 		
 		var s = new haxe.SKButtonRadio();
@@ -197,15 +193,21 @@ class Main {
 		RCWindow.addChild ( group );
 		group.add([1,2,3,4,5,5]);
 		
-		var seg = new RCSegmentedControl (200,300,160,50,ios.SKSegment);
+		var seg = new RCSegmentedControl (100,400, 640,50, ios.SKSegment);
 		RCWindow.addChild ( seg );
-		seg.initWithLabels(["Masculin","Feminin"]);
+		seg.initWithLabels (["Masculin","Feminin","123","Label 12345"], false);
+		seg.backgroundColor = 0x000000;
+		seg.click.add(segClick);
+		
 		}catch(e:Dynamic){Fugu.stack();}
 	}
 	static function createRadioButton (indexPath:RCIndexPath) :RCButtonRadio {
 		var s = new haxe.SKButtonRadio();
 		var b = new RCButtonRadio(0,0,s);
 		return b;
+	}
+	static function segClick (s:RCSegmentedControl) {
+		trace(s.selectedIndex);
 	}
 	
 	

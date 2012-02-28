@@ -8,8 +8,8 @@ class Plugin extends flash.display.Sprite {
 	public function new(){
 		trace("new Plugin()");
 		super();
-		this.graphics.lineStyle(10, 0x000000);
-		this.graphics.lineTo(300, 300);
+		graphics.lineStyle(10, 0x000000);
+		graphics.lineTo(300, 300);
 		testFunction();
 	}
 	public function diff (a:Float, b:Float):Float{

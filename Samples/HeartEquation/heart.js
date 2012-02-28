@@ -26,6 +26,7 @@ RCWindow.init = function() {
 	RCWindow.init_ = true;
 	RCWindow.target.style.position = "absolute";
 	RCWindow.target.style.margin = "0px 0px 0px 0px";
+	RCWindow.target.style.overflow = "hidden";
 	RCWindow.width = RCWindow.target.scrollWidth;
 	RCWindow.height = RCWindow.target.scrollHeight;
 	RCNotificationCenter.addObserver("resize",RCWindow.resizeHandler);
@@ -57,18 +58,18 @@ RCWindow.setTarget = function(id) {
 RCWindow.addChild = function(child) {
 	RCWindow.init();
 	if(child != null) {
-		child.viewWillAppear();
+		child.viewWillAppearHandler();
 		child.parent = RCWindow.target;
 		RCWindow.target.appendChild(child.layer);
-		child.viewDidAppear();
+		child.viewDidAppearHandler();
 	}
 }
 RCWindow.removeChild = function(child) {
 	if(child != null) {
-		child.viewWillDisappear();
+		child.viewWillDisappearHandler();
 		child.parent = null;
 		RCWindow.target.removeChild(child.layer);
-		child.viewDidDisappear();
+		child.viewDidDisappearHandler();
 	}
 }
 RCWindow.prototype.__class__ = RCWindow;
@@ -159,8 +160,158 @@ if(typeof _RCDraw=='undefined') _RCDraw = {}
 _RCDraw.LineScaleMode = function() { }
 _RCDraw.LineScaleMode.__name__ = ["_RCDraw","LineScaleMode"];
 _RCDraw.LineScaleMode.prototype.__class__ = _RCDraw.LineScaleMode;
+RCDisplayObject = function(p) {
+	if( p === $_ ) return;
+	this.viewWillAppear = new RCSignal();
+	this.viewWillDisappear = new RCSignal();
+	this.viewDidAppear = new RCSignal();
+	this.viewDidDisappear = new RCSignal();
+}
+RCDisplayObject.__name__ = ["RCDisplayObject"];
+RCDisplayObject.prototype.viewWillAppear = null;
+RCDisplayObject.prototype.viewWillDisappear = null;
+RCDisplayObject.prototype.viewDidAppear = null;
+RCDisplayObject.prototype.viewDidDisappear = null;
+RCDisplayObject.prototype.viewWillAppearHandler = function() {
+	this.viewWillAppear.dispatch(null,null,null,null,{ fileName : "RCDisplayObject.hx", lineNumber : 8, className : "RCDisplayObject", methodName : "viewWillAppearHandler"});
+}
+RCDisplayObject.prototype.viewWillDisappearHandler = function() {
+	this.viewWillDisappear.dispatch(null,null,null,null,{ fileName : "RCDisplayObject.hx", lineNumber : 9, className : "RCDisplayObject", methodName : "viewWillDisappearHandler"});
+}
+RCDisplayObject.prototype.viewDidAppearHandler = function() {
+	this.viewDidAppear.dispatch(null,null,null,null,{ fileName : "RCDisplayObject.hx", lineNumber : 10, className : "RCDisplayObject", methodName : "viewDidAppearHandler"});
+}
+RCDisplayObject.prototype.viewDidDisappearHandler = function() {
+	this.viewDidDisappear.dispatch(null,null,null,null,{ fileName : "RCDisplayObject.hx", lineNumber : 11, className : "RCDisplayObject", methodName : "viewDidDisappearHandler"});
+}
+RCDisplayObject.prototype.bounds = null;
+RCDisplayObject.prototype.size = null;
+RCDisplayObject.prototype.center = null;
+RCDisplayObject.prototype.clipsToBounds = null;
+RCDisplayObject.prototype.backgroundColor = null;
+RCDisplayObject.prototype.x = null;
+RCDisplayObject.prototype.y = null;
+RCDisplayObject.prototype.width = null;
+RCDisplayObject.prototype.height = null;
+RCDisplayObject.prototype.scaleX = null;
+RCDisplayObject.prototype.scaleY = null;
+RCDisplayObject.prototype.alpha = null;
+RCDisplayObject.prototype.visible = null;
+RCDisplayObject.prototype.mouseX = null;
+RCDisplayObject.prototype.mouseY = null;
+RCDisplayObject.prototype.lastW_ = null;
+RCDisplayObject.prototype.lastH_ = null;
+RCDisplayObject.prototype.scaleX_ = null;
+RCDisplayObject.prototype.scaleY_ = null;
+RCDisplayObject.prototype.alpha_ = null;
+RCDisplayObject.prototype.caobj = null;
+RCDisplayObject.prototype.setVisible = function(v) {
+	return this.visible = v;
+}
+RCDisplayObject.prototype.setAlpha = function(a) {
+	return this.alpha = a;
+}
+RCDisplayObject.prototype.setX = function(x) {
+	return this.x = x;
+}
+RCDisplayObject.prototype.setY = function(y) {
+	return this.y = y;
+}
+RCDisplayObject.prototype.getWidth = function() {
+	return this.width;
+}
+RCDisplayObject.prototype.setWidth = function(w) {
+	return this.width = w;
+}
+RCDisplayObject.prototype.getHeight = function() {
+	return this.height;
+}
+RCDisplayObject.prototype.setHeight = function(h) {
+	return this.height = h;
+}
+RCDisplayObject.prototype.getBounds = function() {
+	return new RCRect(this.x,this.y,this.size.width,this.size.height);
+}
+RCDisplayObject.prototype.setBounds = function(b) {
+	this.setX(b.origin.x);
+	this.setY(b.origin.y);
+	this.setWidth(b.size.width);
+	this.setHeight(b.size.height);
+	return b;
+}
+RCDisplayObject.prototype.setScaleX = function(sx) {
+	this.scaleX_ = this.scaleX = sx;
+	this.scale(this.scaleX_,this.scaleY_);
+	return this.scaleX_;
+}
+RCDisplayObject.prototype.setScaleY = function(sy) {
+	this.scaleY_ = this.scaleY = sy;
+	this.scale(this.scaleX_,this.scaleY_);
+	return this.scaleY_;
+}
+RCDisplayObject.prototype.scale = function(sx,sy) {
+}
+RCDisplayObject.prototype.setClipsToBounds = function(clip) {
+	return clip;
+}
+RCDisplayObject.prototype.setBackgroundColor = function(color) {
+	return color;
+}
+RCDisplayObject.prototype.setCenter = function(pos) {
+	this.center = pos;
+	this.setX(Std["int"](pos.x - this.size.width / 2));
+	this.setY(Std["int"](pos.y - this.size.height / 2));
+	return this.center;
+}
+RCDisplayObject.prototype.scaleToFit = function(w,h) {
+	if(this.size.width / w > this.size.height / h && this.size.width > w) {
+		this.setWidth(w);
+		this.setHeight(this.width * this.size.height / this.size.width);
+	} else if(this.size.height > h) {
+		this.setHeight(h);
+		this.setWidth(this.height * this.size.width / this.size.height);
+	} else if(this.size.width > this.lastW_ && this.size.height > this.lastH_) {
+		this.setWidth(this.size.width);
+		this.setHeight(this.size.height);
+	} else this.resetScale();
+	this.lastW_ = this.width;
+	this.lastH_ = this.height;
+}
+RCDisplayObject.prototype.scaleToFill = function(w,h) {
+	if(w / this.size.width > h / this.size.height) {
+		this.setWidth(w);
+		this.setHeight(this.width * this.size.height / this.size.width);
+	} else {
+		this.setHeight(h);
+		this.setWidth(this.height * this.size.width / this.size.height);
+	}
+}
+RCDisplayObject.prototype.resetScale = function() {
+	this.setWidth(this.lastW_);
+	this.setHeight(this.lastH_);
+}
+RCDisplayObject.prototype.getMouseX = function() {
+	return 0;
+}
+RCDisplayObject.prototype.getMouseY = function() {
+	return 0;
+}
+RCDisplayObject.prototype.addChild = function(child) {
+}
+RCDisplayObject.prototype.addChildAt = function(child,index) {
+}
+RCDisplayObject.prototype.removeChild = function(child) {
+}
+RCDisplayObject.prototype.animate = function(obj) {
+	CoreAnimation.add(this.caobj = obj);
+}
+RCDisplayObject.prototype.destroy = function() {
+	CoreAnimation.remove(this.caobj);
+}
+RCDisplayObject.prototype.__class__ = RCDisplayObject;
 JSView = function(x,y,w,h) {
 	if( x === $_ ) return;
+	RCDisplayObject.call(this);
 	this.size = new RCSize(w,h);
 	this.scaleX_ = 1;
 	this.scaleY_ = 1;
@@ -172,50 +323,12 @@ JSView = function(x,y,w,h) {
 	this.setY(y);
 }
 JSView.__name__ = ["JSView"];
+JSView.__super__ = RCDisplayObject;
+for(var k in RCDisplayObject.prototype ) JSView.prototype[k] = RCDisplayObject.prototype[k];
 JSView.prototype.parent = null;
 JSView.prototype.layer = null;
-JSView.prototype.size = null;
-JSView.prototype.center = null;
-JSView.prototype.clipsToBounds = null;
-JSView.prototype.backgroundColor = null;
-JSView.prototype.x = null;
-JSView.prototype.y = null;
-JSView.prototype.scaleX = null;
-JSView.prototype.scaleY = null;
-JSView.prototype.width = null;
-JSView.prototype.height = null;
-JSView.prototype.alpha = null;
-JSView.prototype.visible = null;
-JSView.prototype.mouseX = null;
-JSView.prototype.mouseY = null;
-JSView.prototype.viewMask = null;
-JSView.prototype.lastW = null;
-JSView.prototype.lastH = null;
-JSView.prototype.scaleX_ = null;
-JSView.prototype.scaleY_ = null;
-JSView.prototype.alpha_ = null;
-JSView.prototype.caobj = null;
+JSView.prototype.layerScrollable = null;
 JSView.prototype.graphics = null;
-JSView.prototype.viewWillAppear = function() {
-}
-JSView.prototype.viewWillDisappear = function() {
-}
-JSView.prototype.viewDidAppear = function() {
-}
-JSView.prototype.viewDidDisappear = function() {
-}
-JSView.prototype.viewWillAppearHandler = function() {
-	this.viewWillAppear();
-}
-JSView.prototype.viewWillDisappearHandler = function() {
-	this.viewWillDisappear();
-}
-JSView.prototype.viewDidAppearHandler = function() {
-	this.viewDidAppear();
-}
-JSView.prototype.viewDidDisappearHandler = function() {
-	this.viewDidDisappear();
-}
 JSView.prototype.addChild = function(child) {
 	if(child == null) return;
 	child.viewWillAppearHandler();
@@ -224,7 +337,7 @@ JSView.prototype.addChild = function(child) {
 	child.viewDidAppearHandler();
 }
 JSView.prototype.addChildAt = function(child,index) {
-	this.addChild(child);
+	if(this.layer.childNodes[index] != null) this.layer.insertBefore(child.layer,this.layer.childNodes[index]); else this.layer.appendChild(child.layer);
 }
 JSView.prototype.removeChild = function(child) {
 	if(child == null) return;
@@ -246,63 +359,22 @@ JSView.prototype.setBackgroundColor = function(color) {
 	this.layer.style.background = color_;
 	return color;
 }
-JSView.prototype.setCenter = function(pos) {
-	this.center = pos;
-	this.setX(Std["int"](pos.x - this.size.width / 2));
-	this.setY(Std["int"](pos.y - this.size.height / 2));
-	return this.center;
-}
 JSView.prototype.setClipsToBounds = function(clip) {
 	if(clip) {
 		this.layer.style.overflow = "hidden";
-		this.viewMask = js.Lib.document.createElement("div");
-		this.viewMask.style.width = this.size.width + "px";
-		this.viewMask.style.height = this.size.height + "px";
-		while(this.layer.hasChildNodes()) this.viewMask.appendChild(this.layer.removeChild(this.layer.firstChild));
-		this.layer.appendChild(this.viewMask);
+		this.layerScrollable = js.Lib.document.createElement("div");
+		this.layerScrollable.style.position = "absolute";
+		this.layerScrollable.style.width = this.size.width + "px";
+		this.layerScrollable.style.height = this.size.height + "px";
+		while(this.layer.hasChildNodes()) this.layerScrollable.appendChild(this.layer.removeChild(this.layer.firstChild));
+		this.layer.appendChild(this.layerScrollable);
 	} else {
+		while(this.layerScrollable.hasChildNodes()) this.layer.appendChild(this.layerScrollable.removeChild(this.layerScrollable.firstChild));
 		this.layer.style.overflow = null;
-		this.layer.removeChild(this.viewMask);
-		while(this.viewMask.hasChildNodes()) this.layer.appendChild(this.viewMask.removeChild(this.viewMask.firstChild));
-		this.viewMask = this.layer;
+		this.layer.removeChild(this.layerScrollable);
+		this.layerScrollable = null;
 	}
 	return clip;
-}
-JSView.prototype.scaleToFit = function(w,h) {
-	if(this.size.width / w > this.size.height / h && this.size.width > w) {
-		this.setWidth(w);
-		this.setHeight(this.getWidth() * this.size.height / this.size.width);
-	} else if(this.size.height > h) {
-		this.setHeight(h);
-		this.setWidth(this.getHeight() * this.size.width / this.size.height);
-	} else if(this.size.width > this.lastW && this.size.height > this.lastH) {
-		this.setWidth(this.size.width);
-		this.setHeight(this.size.height);
-	} else this.resetScale();
-	this.lastW = this.getWidth();
-	this.lastH = this.getHeight();
-}
-JSView.prototype.scaleToFill = function(w,h) {
-	if(w / this.size.width > h / this.size.height) {
-		this.setWidth(w);
-		this.setHeight(this.getWidth() * this.size.height / this.size.width);
-	} else {
-		this.setHeight(h);
-		this.setWidth(this.getHeight() * this.size.width / this.size.height);
-	}
-}
-JSView.prototype.resetScale = function() {
-	this.setWidth(this.lastW);
-	this.setHeight(this.lastH);
-}
-JSView.prototype.animate = function(obj) {
-	CoreAnimation.add(this.caobj = obj);
-}
-JSView.prototype.destroy = function() {
-	CoreAnimation.remove(this.caobj);
-}
-JSView.prototype.removeFromSuperView = function() {
-	if(this.parent != null) this.parent.removeChild(this.layer);
 }
 JSView.prototype.setVisible = function(v) {
 	this.visible = v;
@@ -315,36 +387,30 @@ JSView.prototype.setAlpha = function(a) {
 	return a;
 }
 JSView.prototype.setX = function(x) {
-	this.x = x;
 	this.layer.style.left = Std.string(x) + "px";
-	return x;
+	return RCDisplayObject.prototype.setX.call(this,x);
 }
 JSView.prototype.setY = function(y) {
-	this.y = y;
 	this.layer.style.top = Std.string(y) + "px";
-	return y;
+	return RCDisplayObject.prototype.setY.call(this,y);
 }
 JSView.prototype.getWidth = function() {
-	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the width will be 0",{ fileName : "JSView.hx", lineNumber : 229, className : "JSView", methodName : "getWidth"});
 	return this.layer.offsetWidth;
 	return this.layer.scrollWidth;
 	return this.layer.clientWidth;
 }
 JSView.prototype.setWidth = function(w) {
-	this.width = w;
 	this.layer.style.width = w + "px";
-	return w;
+	return RCDisplayObject.prototype.setWidth.call(this,w);
 }
 JSView.prototype.getHeight = function() {
-	if(this.parent == null) haxe.Log.trace("This view doesn't have a parent, the height will be 0",{ fileName : "JSView.hx", lineNumber : 240, className : "JSView", methodName : "getHeight"});
 	return this.layer.offsetHeight;
 	return this.layer.scrollHeight;
 	return this.layer.clientHeight;
 }
 JSView.prototype.setHeight = function(h) {
-	this.height = h;
 	this.layer.style.height = h + "px";
-	return h;
+	return RCDisplayObject.prototype.setHeight.call(this,h);
 }
 JSView.prototype.setScaleX = function(sx) {
 	this.scaleX_ = this.scaleX = sx;
@@ -373,6 +439,9 @@ JSView.prototype.getMouseY = function() {
 	if(this.parent == null) return this.mouseY;
 	return this.parent.mouseY - this.y;
 }
+JSView.prototype.removeFromSuperView = function() {
+	if(this.parent != null) this.parent.removeChild(this.layer);
+}
 JSView.prototype.__class__ = JSView;
 RCDraw = function(x,y,w,h,color,alpha) {
 	if( x === $_ ) return;
@@ -383,7 +452,7 @@ RCDraw = function(x,y,w,h,color,alpha) {
 	try {
 		this.graphics = this.layer;
 	} catch( e ) {
-		haxe.Log.trace(e,{ fileName : "RCDraw.hx", lineNumber : 33, className : "RCDraw", methodName : "new"});
+		haxe.Log.trace(e,{ fileName : "RCDraw.hx", lineNumber : 35, className : "RCDraw", methodName : "new"});
 	}
 	if(Std["is"](color,RCColor) || Std["is"](color,RCGradient)) this.color = color; else if(Std["is"](color,Int) || Std["is"](color,Int)) this.color = new RCColor(color); else if(Std["is"](color,Array)) this.color = new RCColor(color[0],color[1]); else this.color = new RCColor(0);
 }
@@ -549,6 +618,9 @@ StringTools.isEOF = function(c) {
 	return c != c;
 }
 StringTools.prototype.__class__ = StringTools;
+JSCanvas = function() { }
+JSCanvas.__name__ = ["JSCanvas"];
+JSCanvas.prototype.__class__ = JSCanvas;
 EVLoop = function(p) {
 }
 EVLoop.__name__ = ["EVLoop"];
@@ -886,7 +958,14 @@ RCSignal.prototype.removeAll = function() {
 	this.listeners = new List();
 	this.exposableListener = null;
 }
-RCSignal.prototype.dispatch = function(args,pos) {
+RCSignal.prototype.dispatch = function(p1,p2,p3,p4,pos) {
+	var args = new Array();
+	var _g = 0, _g1 = [p1,p2,p3,p4];
+	while(_g < _g1.length) {
+		var p = _g1[_g];
+		++_g;
+		if(p != null) args.push(p); else break;
+	}
 	var $it0 = this.listeners.iterator();
 	while( $it0.hasNext() ) {
 		var listener = $it0.next();
@@ -901,7 +980,7 @@ RCSignal.prototype.callMethod = function(listener,args,pos) {
 	try {
 		listener.apply(null,args);
 	} catch( e ) {
-		haxe.Log.trace("[RCSignal error when calling: " + listener + " from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 57, className : "RCSignal", methodName : "callMethod"});
+		haxe.Log.trace("[RCSignal error when calling: " + listener + " from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 64, className : "RCSignal", methodName : "callMethod"});
 	}
 }
 RCSignal.prototype.exists = function(listener) {
@@ -926,9 +1005,9 @@ EVResize.__name__ = ["EVResize"];
 EVResize.__super__ = RCSignal;
 for(var k in RCSignal.prototype ) EVResize.prototype[k] = RCSignal.prototype[k];
 EVResize.prototype.resizeHandler = function(e) {
-	var w = js.Lib.document.body.scrollWidth;
-	var h = js.Lib.document.body.scrollHeight;
-	this.dispatch([w,h],{ fileName : "EVResize.hx", lineNumber : 26, className : "EVResize", methodName : "resizeHandler"});
+	var w = js.Lib.window.innerWidth;
+	var h = js.Lib.window.innerHeight;
+	this.dispatch(w,h,null,null,{ fileName : "EVResize.hx", lineNumber : 30, className : "EVResize", methodName : "resizeHandler"});
 }
 EVResize.prototype.__class__ = EVResize;
 if(!haxe.remoting) haxe.remoting = {}
@@ -1471,8 +1550,8 @@ RCStats = function(x,y) {
 	RCRectangle.call(this,x,y,152,18,16777215,0.9,16);
 	this.addChild(new RCRectangle(1,1,150,16,3355443,0.3,16));
 	var f = RCFont.systemFontOfSize(12);
-	f.color = 3355443;
-	this.txt = new RCTextView(6,3,140,20,"Calculating...",f);
+	f.color = 16777215;
+	this.txt = new RCTextView(6,3,null,20,"Calculating...",f);
 	this.addChild(this.txt);
 	this.last = Date.now().getTime();
 	this.e = new EVLoop();
@@ -2525,9 +2604,7 @@ ValueType.TUnknown.toString = $estr;
 ValueType.TUnknown.__enum__ = ValueType;
 RCTextView = function(x,y,w,h,str,rcfont) {
 	if( x === $_ ) return;
-	JSView.call(this,Math.round(x),Math.round(y));
-	this.size.width = w;
-	this.size.height = h;
+	JSView.call(this,Math.round(x),Math.round(y),w,h);
 	this.rcfont = rcfont.copy();
 	this.setWidth(w);
 	this.setHeight(h);
@@ -2578,6 +2655,7 @@ RCTextView.prototype.getText = function() {
 }
 RCTextView.prototype.setText = function(str) {
 	if(this.rcfont.html) this.layer.innerHTML = str; else this.layer.innerHTML = str;
+	this.size.width = this.getWidth();
 	return str;
 }
 RCTextView.prototype.wheelHandler = function(e) {
@@ -2859,6 +2937,14 @@ RCGradient.prototype.tx = null;
 RCGradient.prototype.ty = null;
 RCGradient.prototype.matrixRotation = null;
 RCGradient.prototype.__class__ = RCGradient;
+EVFullScreen = function(p) {
+	if( p === $_ ) return;
+	RCSignal.call(this);
+}
+EVFullScreen.__name__ = ["EVFullScreen"];
+EVFullScreen.__super__ = RCSignal;
+for(var k in RCSignal.prototype ) EVFullScreen.prototype[k] = RCSignal.prototype[k];
+EVFullScreen.prototype.__class__ = EVFullScreen;
 RCRect = function(x,y,w,h) {
 	if( x === $_ ) return;
 	this.origin = new RCPoint(x,y);
@@ -2874,14 +2960,6 @@ RCRect.prototype.toString = function() {
 	return "[RCRect x:" + this.origin.x + ", y:" + this.origin.y + ", width:" + this.size.width + ", height:" + this.size.height + "]";
 }
 RCRect.prototype.__class__ = RCRect;
-EVFullScreen = function(p) {
-	if( p === $_ ) return;
-	RCSignal.call(this);
-}
-EVFullScreen.__name__ = ["EVFullScreen"];
-EVFullScreen.__super__ = RCSignal;
-for(var k in RCSignal.prototype ) EVFullScreen.prototype[k] = RCSignal.prototype[k];
-EVFullScreen.prototype.__class__ = EVFullScreen;
 RCAppDelegate = function(p) {
 	if( p === $_ ) return;
 	JSView.call(this,0,0);
@@ -2910,7 +2988,7 @@ Main = function(p) {
 	if( p === $_ ) return;
 	RCAppDelegate.call(this);
 	this.heart1();
-	this.addChild(new RCStats());
+	RCWindow.addChild(new RCStats());
 }
 Main.__name__ = ["Main"];
 Main.__super__ = RCAppDelegate;
@@ -2918,7 +2996,6 @@ for(var k in RCAppDelegate.prototype ) Main.prototype[k] = RCAppDelegate.prototy
 Main.main = function() {
 	haxe.Firebug.redirectTraces();
 	RCWindow.init();
-	RCWindow.addChild(new Main());
 }
 Main.prototype.heart1 = function() {
 	var _g = 0;
