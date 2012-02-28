@@ -133,14 +133,14 @@ class RCAssets {
 /*		if (URL.toLowerCase().indexOf(".ttf") != -1)
 			fontType = " format(\"truetype\")";*/
 
-		//Create a 'style' element	
+		// Create a 'style' element	
 		var st = js.Lib.document.createElement("style");
-			st.innerHTML = "@font-face{font-family:"+key+" ; src: url('"+URL+"')" +fontType+ ";}";
+			st.innerHTML = "@font-face{font-family:"+key+"; src: url('"+URL+"')" +fontType+ ";}";
 
 		// Now add this new element to the head tag
 		js.Lib.document.getElementsByTagName("head")[0].appendChild(st);
-		
-		onCompleteHandler();
+		// Make the load async by calling onComplete a little later
+		haxe.Timer.delay (onCompleteHandler, 16);
 		#end
 	}
 	
@@ -162,7 +162,7 @@ class RCAssets {
 	}
 	function completeHandler (key:String, obj:Dynamic) :Void {
 		//trace("completeHandler for key: '"+key+"' with object: "+obj);
-		// RCImage has some static fields and is causing problems checking non-strings
+		// RCImage has some static fields that is causing Type.getClass to return a complex type
 		switch (Type.getClassName(Type.getClass(obj))) {
 			case "RCImage" : photoList.set ( key, obj );
 			case "HTTPRequest" : dataList.set ( key, obj.result );

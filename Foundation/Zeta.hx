@@ -1,5 +1,6 @@
 //
-//  Zeta
+//  Zeta.hx
+//	Foundation
 //
 //  Created by Baluta Cristian on 2007-12-27.
 //  Copyright (c) 2007-2012 ralcr.com. All rights reserved.

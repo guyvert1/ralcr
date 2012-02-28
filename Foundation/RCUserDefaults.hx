@@ -72,6 +72,7 @@ class RCUserDefaults {
 
 import js.Cookie;
 
+// Simulate the flash SharedObjects with cookies
 class SharedObject {
 	
 	var identifier :String;

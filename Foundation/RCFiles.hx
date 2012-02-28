@@ -19,7 +19,7 @@ class RCFiles {
 	public var video :Array<String>;
 	public var text :Array<String>;
 	public var xml :Array<String>;
-	public var extra :Array<String>;// Add here any supplimentar files from outside
+	public var extra :Array<String>;// Add here any other files
 	
 	
 	public function new (files:Array<String>) {
@@ -80,7 +80,7 @@ class RCFiles {
 	}
 	
 	/**
-	*	Extract the files from a serialized string in the following format: [FILES::file1*file2*file3::FILES]
+	*  Extract the files from a serialized string in the following format: [FILES::file1*file2*file3::FILES]
 	*  The default separator is * but can be replaced with another one
 	*/
 	inline public static function extract (str:String, ?separator:String="*") :Array<String> {
