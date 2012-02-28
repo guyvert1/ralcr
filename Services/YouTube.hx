@@ -49,7 +49,7 @@ class YouTube extends RCVideo, implements RCVideoInterface, implements RCAudioIn
 	}
 	
 	function onLoaderInit(event:Event):Void {
-		this.addChild ( loader );
+		layer.addChild ( loader );
 		
 		loader.content.addEventListener("onReady", onPlayerReady);
 		loader.content.addEventListener("onError", onPlayerError);
@@ -107,7 +107,7 @@ class YouTube extends RCVideo, implements RCVideoInterface, implements RCAudioIn
 		// checks, if user is scrubbing. if so, seek in the video
 		// if not, just update the position of the scrubber according
 		// to the current time
-		if (!seeking) {
+		if (!seeking_) {
 			time = player.getCurrentTime();
 			duration = player.getDuration();
 			onPlayingProgress();
@@ -118,10 +118,10 @@ class YouTube extends RCVideo, implements RCVideoInterface, implements RCAudioIn
 			timer.stop();
 		
 		// Update the loading progress bar
-		if (!loaded) {
+		if (!loaded_) {
 			percentLoaded = Math.round (player.getVideoBytesLoaded() / player.getVideoBytesTotal() * 100);
 			if (percentLoaded >= 100)
-				loaded = true;
+				loaded_ = true;
 			onLoadingProgress();
 		}
 	}
@@ -135,10 +135,10 @@ class YouTube extends RCVideo, implements RCVideoInterface, implements RCAudioIn
 		// check's, if the flv has already begun
 		// to download. if so, resume playback, else
 		// load the file
-		if (!inited) {
+		if (!inited_) {
 			player.loadVideoById ( file != null ? file : videoId, 0, suggestedQuality );
-			setSize (w, h);
-			inited = true;
+			setSize (size.width, size.height);
+			inited_ = true;
 			timer.start();
 		}
 		else {
@@ -152,12 +152,12 @@ class YouTube extends RCVideo, implements RCVideoInterface, implements RCAudioIn
 		timer.stop();
 		pauseVideo();
 		seekTo ( 0 );
-		seeking = false;
+		seeking_ = false;
 		isPlaying = false;
 	}
 	
 	override public function seekTo (time:Float) :Bool {
-		seeking = true;
+		seeking_ = true;
 		if (player != null)
 			player.seekTo ( time );
 		return true;
@@ -198,10 +198,10 @@ class YouTube extends RCVideo, implements RCVideoInterface, implements RCAudioIn
 	
 	
 	override public function setVolume (volume:Float) :Float {
-		_volume = volume > 1 ? 1 : volume;
+		volume_ = volume > 1 ? 1 : volume;
 		if (player != null)
-			player.setVolume ( _volume*100 );
-		return _volume;
+			player.setVolume ( volume_*100 );
+		return volume_;
 	}
 	
 	
@@ -209,8 +209,8 @@ class YouTube extends RCVideo, implements RCVideoInterface, implements RCAudioIn
 	 *	Sets the size of the video object
 	 */
 	override public function setSize (w, h) :Void {
-		this.w = w;
-		this.h = h;
+		size.width = w;
+		size.height = h;
 		if (player != null)
 			player.setSize (w, h);
 	}
