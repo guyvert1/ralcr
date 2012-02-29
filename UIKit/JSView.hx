@@ -92,9 +92,9 @@ class JSView extends RCDisplayObject {
 		if (clip) {
 			layer.style.overflow = "hidden";
 			layerScrollable = Lib.document.createElement("div");
-			layerScrollable.style.position = "absolute";
-			layerScrollable.style.width = size.width+"px";
-			layerScrollable.style.height = size.height+"px";
+			//layerScrollable.style.position = "absolute"; // Using position absolute will cause the div to not show at all
+			layerScrollable.style.width = size.width + "px";
+			layerScrollable.style.height = size.height + "px";
 			
 			// Move the views from layer to layerScrollable
 			while (layer.hasChildNodes()) {
@@ -149,7 +149,7 @@ class JSView extends RCDisplayObject {
 		return layer.scrollWidth;
 		return layer.clientWidth;
 	}
-	override public function setWidth (w:Float) :Float {
+	override public function setWidth (w:Float) :Float {trace("setW "+w);
 		layer.style.width = w + "px";
 		return super.setWidth ( w );
 	}
@@ -159,7 +159,7 @@ class JSView extends RCDisplayObject {
 		return layer.scrollHeight;
 		return layer.clientHeight;
 	}
-	override public function setHeight (h:Float) :Float {
+	override public function setHeight (h:Float) :Float {trace("setH "+h);
 		layer.style.height = h + "px";
 		return super.setHeight ( h );
 	}

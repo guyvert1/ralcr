@@ -1,11 +1,11 @@
 -cp CoreAnimation
 -cp CoreAnimation/Transitions
--cp Draw
+-cp DrawKit
 -cp Events
 -cp Foundation
 -cp GameKit
 -cp IOKit
--cp Media
+-cp MediaKit
 -cp Network
 -cp Physics
 -cp Services

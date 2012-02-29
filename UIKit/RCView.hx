@@ -82,9 +82,15 @@ class RCView extends RCDisplayObject {
 		layer.y = y;
 		return super.setY ( y );
 	}
+	override public function getWidth () :Float {
+		return layer.width;
+	}
 	override public function setWidth (w:Float) :Float {
 		layer.width = w;
 		return super.setWidth ( w );
+	}
+	override public function getHeight () :Float {
+		return layer.height;
 	}
 	override public function setHeight (h:Float) :Float {
 		layer.height = h;

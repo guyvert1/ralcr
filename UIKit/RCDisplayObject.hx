@@ -19,8 +19,8 @@ class RCDisplayObject {
 	public var backgroundColor (default, setBackgroundColor) :Null<Int>;
 	public var x (default, setX) :Float;
 	public var y (default, setY) :Float;
-	public var width (default, setWidth) :Float; // Real size of the layer, can be different than the bounds
-	public var height (default, setHeight) :Float;
+	public var width (getWidth, setWidth) :Float; // Real size of the layer, can be different than the bounds
+	public var height (getHeight, setHeight) :Float;
 	public var scaleX (default, setScaleX) :Float;
 	public var scaleY (default, setScaleY) :Float;
 	public var alpha (default, setAlpha) :Float;
@@ -48,28 +48,28 @@ class RCDisplayObject {
 	// Getter / Setters methods
 	//
 	public function setVisible (v:Bool) :Bool {
-		return visible = v;
+		return visible = v;// Override it
 	}
 	public function setAlpha (a:Float) :Float {
-		return alpha = a;
+		return alpha = a;// Override it
 	}
 	public function setX (x:Float) :Float {
-		return this.x = x;
+		return this.x = x;// Override it
 	}
 	public function setY (y:Float) :Float {
-		return this.y = y;
+		return this.y = y;// Override it
 	}
 	public function getWidth () :Float {
-		return width;
+		return width;// Override it
 	}
 	public function setWidth (w:Float) :Float {
-		return width = w;
+		return width = w;// Override it
 	}
 	public function getHeight () :Float {
-		return height;
+		return height;// Override it
 	}
 	public function setHeight (h:Float) :Float {
-		return height = h;
+		return height = h;// Override it
 	}
 	public function getBounds () :RCRect {
 		return new RCRect (x, y, size.width, size.height);
@@ -91,14 +91,13 @@ class RCDisplayObject {
 		scale (scaleX_, scaleY_);
 		return scaleY_;
 	}
-	public function scale (sx:Float, sy:Float) {}
 	
 	
 	public function setClipsToBounds (clip:Bool) :Bool {
-		return clip;
+		return clip;// Override it
 	}
 	public function setBackgroundColor (color:Null<Int>) :Null<Int> {
-		return color;
+		return color;// Override it
 	}
 	public function setCenter (pos:RCPoint) :RCPoint {
 		this.center = pos;
@@ -127,8 +126,9 @@ class RCDisplayObject {
 			setWidth ( size.width );
 			setHeight ( size.height );
 		}
-		else
+		else {
 			resetScale();
+		}
 		
 		lastW_ = this.width;
 		lastH_ = this.height;
@@ -145,6 +145,8 @@ class RCDisplayObject {
 			setWidth ( this.height * size.width / size.height );
 		}
 	}
+
+	public function scale (sx:Float, sy:Float) {}
 	
 	public function resetScale () :Void {
 		setWidth ( lastW_ );

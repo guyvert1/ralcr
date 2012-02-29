@@ -30,20 +30,21 @@ class Main {
 		
 		
 		RCFontManager.init();
-		RCAssets.loadFileWithKey("photo", "../CoreAnimation/3134265_large.jpg");
-		RCAssets.loadFileWithKey("some_text", "data.txt");
-		RCAssets.loadFileWithKey("Urban", "FFF Urban.ttf");
-		RCAssets.loadFontWithKey("Futu", "FUTUNEBI.TTF");
+		RCAssets.loadFileWithKey("photo", "../assets/900x600.jpg");
+		RCAssets.loadFileWithKey("some_text", "../assets/data.txt");
+		RCAssets.loadFileWithKey("Urban", "../assets/FFF Urban.ttf");
+		RCAssets.loadFontWithKey("Futu", "../assets/FUTUNEBI.TTF");
 		RCAssets.onComplete = testJsFont;
 		//function(){trace("RCAssets did finish loading assets"); trace(RCAssets.getFileWithKey("some_text"));}
 		trace("step2");
 		
-		
+		// Draw a colored rectangle
 		var rect = new RCRectangle(0,0, 300, 150, RCColor.greenColor());
 	 	RCWindow.addChild ( rect );
 		rect.clipsToBounds = true;
 		rect.center = new RCPoint (RCWindow.width/2, RCWindow.height/2);
-		ph = new RCImage(1, 1, "../CoreAnimation/3134265_large.jpg");
+		
+		ph = new RCImage(1, 1, "../assets/900x600.jpg");
 		ph.onComplete = resizePhoto;
 		rect.addChild ( ph );
 		
@@ -129,16 +130,18 @@ class Main {
 	}*/
 	static function resizePhoto(){
 		trace("onComplete image");
-/*		trace(ph.width);
-		trace(ph.size.width);*/
-		ph.scaleToFill (300-2, 150-2);
-		//ph.scaleToFit (300-2, 150-2);
-		
-		var ph2 = ph.copy();
-		
+		trace(ph.width+", "+ph.height);
+		trace(ph.size.width);
+		//ph.scaleToFill (300-2, 150-2);
+		ph.scaleToFit (300-2, 150-2);
+		trace(ph.width+", "+ph.height);
+		trace(ph.size.width+", "+ph.size.height);
+		#if js
+			
+		#end
 		var scrollview = new RCScrollView (780, 10, 300, 300);
 		RCWindow.addChild(scrollview);
-		scrollview.setContentView ( ph2 );
+		scrollview.setContentView ( ph.copy() );
 		
 		//return;
 		var anim = new CATween (ph, {x:{fromValue:-ph.width, toValue:ph.width}}, 2, 0, caequations.Cubic.IN_OUT);

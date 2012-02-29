@@ -249,8 +249,6 @@ RCDisplayObject.prototype.setScaleY = function(sy) {
 	this.scale(this.scaleX_,this.scaleY_);
 	return this.scaleY_;
 }
-RCDisplayObject.prototype.scale = function(sx,sy) {
-}
 RCDisplayObject.prototype.setClipsToBounds = function(clip) {
 	return clip;
 }
@@ -266,25 +264,27 @@ RCDisplayObject.prototype.setCenter = function(pos) {
 RCDisplayObject.prototype.scaleToFit = function(w,h) {
 	if(this.size.width / w > this.size.height / h && this.size.width > w) {
 		this.setWidth(w);
-		this.setHeight(this.width * this.size.height / this.size.width);
+		this.setHeight(this.getWidth() * this.size.height / this.size.width);
 	} else if(this.size.height > h) {
 		this.setHeight(h);
-		this.setWidth(this.height * this.size.width / this.size.height);
+		this.setWidth(this.getHeight() * this.size.width / this.size.height);
 	} else if(this.size.width > this.lastW_ && this.size.height > this.lastH_) {
 		this.setWidth(this.size.width);
 		this.setHeight(this.size.height);
 	} else this.resetScale();
-	this.lastW_ = this.width;
-	this.lastH_ = this.height;
+	this.lastW_ = this.getWidth();
+	this.lastH_ = this.getHeight();
 }
 RCDisplayObject.prototype.scaleToFill = function(w,h) {
 	if(w / this.size.width > h / this.size.height) {
 		this.setWidth(w);
-		this.setHeight(this.width * this.size.height / this.size.width);
+		this.setHeight(this.getWidth() * this.size.height / this.size.width);
 	} else {
 		this.setHeight(h);
-		this.setWidth(this.height * this.size.width / this.size.height);
+		this.setWidth(this.getHeight() * this.size.width / this.size.height);
 	}
+}
+RCDisplayObject.prototype.scale = function(sx,sy) {
 }
 RCDisplayObject.prototype.resetScale = function() {
 	this.setWidth(this.lastW_);
@@ -363,7 +363,6 @@ JSView.prototype.setClipsToBounds = function(clip) {
 	if(clip) {
 		this.layer.style.overflow = "hidden";
 		this.layerScrollable = js.Lib.document.createElement("div");
-		this.layerScrollable.style.position = "absolute";
 		this.layerScrollable.style.width = this.size.width + "px";
 		this.layerScrollable.style.height = this.size.height + "px";
 		while(this.layer.hasChildNodes()) this.layerScrollable.appendChild(this.layer.removeChild(this.layer.firstChild));
@@ -400,6 +399,7 @@ JSView.prototype.getWidth = function() {
 	return this.layer.clientWidth;
 }
 JSView.prototype.setWidth = function(w) {
+	haxe.Log.trace("setW " + w,{ fileName : "JSView.hx", lineNumber : 152, className : "JSView", methodName : "setWidth"});
 	this.layer.style.width = w + "px";
 	return RCDisplayObject.prototype.setWidth.call(this,w);
 }
@@ -409,6 +409,7 @@ JSView.prototype.getHeight = function() {
 	return this.layer.clientHeight;
 }
 JSView.prototype.setHeight = function(h) {
+	haxe.Log.trace("setH " + h,{ fileName : "JSView.hx", lineNumber : 162, className : "JSView", methodName : "setHeight"});
 	this.layer.style.height = h + "px";
 	return RCDisplayObject.prototype.setHeight.call(this,h);
 }

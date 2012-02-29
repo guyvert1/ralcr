@@ -1,5 +1,6 @@
 //
-//  RCImage
+//  RCImage.hx
+//	MediaKit
 //
 //  Created by Baluta Cristian on 2008-04-01.
 //  Copyright (c) 2008-2012 http://ralcr.com. All rights reserved.
@@ -58,14 +59,15 @@ class RCImage extends RCView {
 		return new RCImage (0,0,path);
 	}
 	/**
-	 *  
+	 *  Create a non-distorted stretchable image
 	 **/
 	public static function resizableImageWithCapInsets (path:String, capWidth:Int) :RCImage {
 		return new RCImage (0,0,path);
 	}
+	
 #if (flash || nme)
 	/**
-	 *  Create an image from the ByteArray. Async
+	 *  Create an image from the ByteArray. Sync operation
 	 **/
 	public static function imageWithBytes (data:flash.utils.ByteArray) :RCImage {
 		var im = new RCImage (0,0,null);
@@ -87,7 +89,11 @@ class RCImage extends RCView {
 	
 	
 	
-	
+	/**
+	*  @param URL - For NME it tries to load the image from the assets with nme.Assets.getBitmapData.
+	*  For flash it tries to load it from external file with URLRequest.
+	*  For JS it loads it from external and from cache
+	**/
 	public function new (x, y, URL:String) {
 		super (x, y);
 		
@@ -102,7 +108,8 @@ class RCImage extends RCView {
 	}
 	
 	/**
-	 *  The image created through the constructor and this method is asyncronous for all platforms
+	 *  The image created through the constructor. This method is asyncronous for all platforms
+	 *  @param URL
 	 **/
 	public function initWithContentsOfFile (URL:String) {
 		isLoaded = false;
@@ -153,9 +160,9 @@ class RCImage extends RCView {
 				layer.addChild ( bitmap );
 			}
 		#elseif js
-			size.width = lastW_ = width = loader.width;
-			size.height = lastH_ = height = loader.height;
-			this.layer.appendChild ( loader );
+			size.width = lastW_ = loader.width;
+			size.height = lastH_ = loader.height;
+			layer.appendChild ( loader );
 		#end
 		this.isLoaded = true;
 		onComplete();
@@ -170,7 +177,6 @@ class RCImage extends RCView {
 		errorMessage = Std.string(e);
 		onError();
 	}
-	
 	function ioErrorHandler (e:IOErrorEvent) :Void {
 		errorMessage = Std.string(e);
 		onError();
@@ -181,15 +187,13 @@ class RCImage extends RCView {
 	 *  In flash and NME it creates in image based on the BitmapData.
 	 *  In JS it loads again the image from cache.
 	 */
-#if (flash || nme)
 	public function copy () :RCImage {
-		return imageWithBitmapData ( bitmapData );
+		#if (flash || nme)
+			return imageWithBitmapData ( bitmapData );
+		#elseif js
+			return new RCImage (0, 0, loader.src);
+		#end
 	}
-#elseif js
-	public function copy () :RCImage {
-		return new RCImage (0, 0, loader.src);
-	}
-#end
 	
 	function addListeners () :Void {
 		#if (flash || nme)
@@ -230,13 +234,13 @@ class RCImage extends RCView {
 #if js
 	override public function scaleToFit (w:Int, h:Int) :Void {
 		super.scaleToFit (w, h);
-		loader.style.width = width+"px";
-		loader.style.height = height+"px";
+		loader.style.width = size.width + "px";
+		loader.style.height = size.height + "px";
 	}
 	override public function scaleToFill (w:Int, h:Int) :Void {
 		super.scaleToFill (w, h);
-		loader.style.width = width+"px";
-		loader.style.height = height+"px";
+		loader.style.width = size.width + "px";
+		loader.style.height = size.height + "px";
 	}
 #end
 }
