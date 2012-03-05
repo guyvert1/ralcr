@@ -234,6 +234,7 @@ class RCAssets {
 		}
 #end
 		// No class was found with this definition name
+		trace("Asset with key: "+key+"  was not found.");
 		return null;
 	}
 	
@@ -245,7 +246,7 @@ class RCAssets {
 		
 		if (args == null)
 			args = [];
-			
+		
 		for (swf in swfList) if (swf.event.target.applicationDomain.hasDefinition ( className )) {
 			var def = swf.event.target.applicationDomain.getDefinition ( className );
 			var classInstance = Type.createInstance ( cast (def, Class<Dynamic>), args );

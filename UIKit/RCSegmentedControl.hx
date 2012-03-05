@@ -13,23 +13,25 @@ class RCSegmentedControl extends RCView {
 	var labels :Array<String>;
 	var items :HashArray<RCButtonRadio>;
 	var segmentsWidth :Array<Int>;
+	var selectedIndex_ :Int;
 	
 	public var click :RCSignal<RCSegmentedControl->Void>;
 	public var itemAdded :RCSignal<RCSegmentedControl->Void>;
 	public var itemRemoved :RCSignal<RCSegmentedControl->Void>;
-	public var selectedIndex (getIndex, setIndex) :Int;
+	public var selectedIndex (default, setIndex) :Int;
 	
 	
 	public function new (x, y, w:Int, h:Int, ?skin:Class<RCSkin>) {
 		super (x, y, w, h);
 		
+		//selectedIndex = -1;
 		items = new HashArray<RCButtonRadio>();
 		click = new RCSignal<RCSegmentedControl->Void>();
 		itemAdded = new RCSignal<RCSegmentedControl->Void>();
 		itemRemoved = new RCSignal<RCSegmentedControl->Void>();
 		this.skin = skin;
 		if (skin == null)
-			skin = ios.SKSegment;// Use by default this skin class
+			skin = ios.SKSegment;// If not otherwise specified use by default this Skin Class
 	}
 	public function initWithLabels (labels:Array<String>, ?equalSizes:Bool=true) :Void {
 		this.labels = labels;
@@ -81,7 +83,7 @@ class RCSegmentedControl extends RCView {
 			i++;
 		}
 		
-		// Finaly arrange all buttons and add them to stage
+		// Finaly arrange all buttons one after another
 		keepButtonsArranged();
 		
 /*		for (i in 0...values.length-1) {
@@ -106,13 +108,11 @@ class RCSegmentedControl extends RCView {
 		return b;
 	}
 	
-	public function getIndex () :Int {
-		return selectedIndex;
-	}
+	// Setter for selectedIndex
 	public function setIndex (i:Int) :Int {trace("setIndex "+i);
+		if (selectedIndex_ == i) return i;
 		select ( labels[i] );
-		selectedIndex = i;
-		return getIndex();
+		return selectedIndex_ = i;
 	}
 
 	/**
@@ -132,34 +132,16 @@ class RCSegmentedControl extends RCView {
 		itemRemoved.dispatch ( this );
 	}
 	
-/*	public function update (labels:Array<String>) :Void {
-		// Delete the old buttons
-		destroy();
-		// Recreate the array
-		items = new HashArray<RCButtonRadio>();
-		// Add the new buttons
-		initWithLabels ( labels );
-	}*/
-	
 	
 	/**
 	 *	Keep all the buttons arranged after an update operation
 	 */
 	public function keepButtonsArranged () :Void {
 		return;
-		// iterate over buttons and arrange them
+		// iterate over buttons and arrange them on x axis
 		for (i in 0...items.array.length) {
 			var newX = 0.0, newY = 0.0;
 			var new_b = items.get ( items.array[i] );
-/*			var old_b = items.get ( items.array[i-1] );
-			
-			if (i != 0) {
-				if (gapX != null) newX = old_b.x + old_b.width + gapX;
-				if (gapY != null) newY = old_b.y + old_b.height + gapY;
-			}
-			
-			new_b.x = newX;
-			new_b.y = newY;*/
 		}
 	}
 	
@@ -185,7 +167,7 @@ class RCSegmentedControl extends RCView {
 		if (can_unselect)
 			for (key in items.keys())
 				if (key != label)
-					//if (items.get( key ).toggable)
+					//if (items.get( key ).enabled)
 						unselect ( key );
 	}
 	
@@ -230,7 +212,7 @@ class RCSegmentedControl extends RCView {
 	
 	// Dispatch events
 	function clickHandler (label:String) :Void {
-		selectedIndex = items.indexForKey( label );
+		setIndex ( items.indexForKey( label ));
 		click.dispatch ( this );
 	}
 	

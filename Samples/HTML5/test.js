@@ -1670,7 +1670,8 @@ CASequence.prototype.animationDidStop = function(func) {
 		if(Reflect.isFunction(func)) try {
 			func.apply(null,[]);
 		} catch( e ) {
-			haxe.Log.trace(e,{ fileName : "CASequence.hx", lineNumber : 31, className : "CASequence", methodName : "animationDidStop"});
+			haxe.Log.trace(e,{ fileName : "CASequence.hx", lineNumber : 32, className : "CASequence", methodName : "animationDidStop"});
+			Fugu.stack();
 		}
 	}
 	if(this.objs.length > 0) this.start();
@@ -4049,6 +4050,7 @@ RCSegmentedControl.prototype.skin = null;
 RCSegmentedControl.prototype.labels = null;
 RCSegmentedControl.prototype.items = null;
 RCSegmentedControl.prototype.segmentsWidth = null;
+RCSegmentedControl.prototype.selectedIndex_ = null;
 RCSegmentedControl.prototype.click = null;
 RCSegmentedControl.prototype.itemAdded = null;
 RCSegmentedControl.prototype.itemRemoved = null;
@@ -4097,7 +4099,7 @@ RCSegmentedControl.prototype.initWithLabels = function(labels,equalSizes) {
 		})($closure(this,"clickHandler"),label);
 		this.addChild(b);
 		this.items.set(label,b);
-		this.itemAdded.dispatch(this,null,null,null,{ fileName : "RCSegmentedControl.hx", lineNumber : 79, className : "RCSegmentedControl", methodName : "initWithLabels"});
+		this.itemAdded.dispatch(this,null,null,null,{ fileName : "RCSegmentedControl.hx", lineNumber : 81, className : "RCSegmentedControl", methodName : "initWithLabels"});
 		i++;
 	}
 	this.keepButtonsArranged();
@@ -4124,14 +4126,11 @@ RCSegmentedControl.prototype.constructButton = function(i) {
 	var b = new RCButtonRadio(segmentX,0,s);
 	return b;
 }
-RCSegmentedControl.prototype.getIndex = function() {
-	return this.selectedIndex;
-}
 RCSegmentedControl.prototype.setIndex = function(i) {
 	haxe.Log.trace("setIndex " + i,{ fileName : "RCSegmentedControl.hx", lineNumber : 112, className : "RCSegmentedControl", methodName : "setIndex"});
+	if(this.selectedIndex_ == i) return i;
 	this.select(this.labels[i]);
-	this.selectedIndex = i;
-	return this.getIndex();
+	return this.selectedIndex_ = i;
 }
 RCSegmentedControl.prototype.remove = function(label) {
 	if(this.items.exists(label)) {
@@ -4152,7 +4151,7 @@ RCSegmentedControl.prototype.keepButtonsArranged = function() {
 }
 RCSegmentedControl.prototype.select = function(label,can_unselect) {
 	if(can_unselect == null) can_unselect = true;
-	haxe.Log.trace("select " + label + ", " + can_unselect,{ fileName : "RCSegmentedControl.hx", lineNumber : 173, className : "RCSegmentedControl", methodName : "select"});
+	haxe.Log.trace("select " + label + ", " + can_unselect,{ fileName : "RCSegmentedControl.hx", lineNumber : 155, className : "RCSegmentedControl", methodName : "select"});
 	if(this.items.exists(label)) {
 		this.items.get(label).toggle();
 		if(can_unselect) this.items.get(label).setEnabled(false); else this.items.get(label).setEnabled(true);
@@ -4188,14 +4187,14 @@ RCSegmentedControl.prototype.disable = function(label) {
 }
 RCSegmentedControl.prototype.clickHandler = function(label) {
 	this.setIndex(this.items.indexForKey(label));
-	this.click.dispatch(this,null,null,null,{ fileName : "RCSegmentedControl.hx", lineNumber : 234, className : "RCSegmentedControl", methodName : "clickHandler"});
+	this.click.dispatch(this,null,null,null,{ fileName : "RCSegmentedControl.hx", lineNumber : 216, className : "RCSegmentedControl", methodName : "clickHandler"});
 }
 RCSegmentedControl.prototype.destroy = function() {
 	if(this.items != null) {
 		var $it0 = this.items.keys();
 		while( $it0.hasNext() ) {
 			var key = $it0.next();
-			Fugu.safeDestroy(this.items.get(key),null,{ fileName : "RCSegmentedControl.hx", lineNumber : 240, className : "RCSegmentedControl", methodName : "destroy"});
+			Fugu.safeDestroy(this.items.get(key),null,{ fileName : "RCSegmentedControl.hx", lineNumber : 222, className : "RCSegmentedControl", methodName : "destroy"});
 		}
 	}
 	this.items = null;
@@ -4930,6 +4929,7 @@ RCAssets.prototype.get = function(key,returnAsBitmap) {
 	if(returnAsBitmap == null) returnAsBitmap = true;
 	RCAssets.init();
 	if(this.photoList.exists(key)) return this.photoList.get(key).copy(); else if(this.dataList.exists(key)) return this.dataList.get(key); else if(this.swfList.exists(key)) return this.swfList.get(key);
+	haxe.Log.trace("Asset with key: " + key + "  was not found.",{ fileName : "RCAssets.hx", lineNumber : 237, className : "RCAssets", methodName : "get"});
 	return null;
 }
 RCAssets.prototype.__class__ = RCAssets;
@@ -5244,7 +5244,7 @@ Main.createRadioButton = function(indexPath) {
 	return b;
 }
 Main.segClick = function(s) {
-	haxe.Log.trace(s.getIndex(),{ fileName : "Main.hx", lineNumber : 218, className : "Main", methodName : "segClick"});
+	haxe.Log.trace(s.selectedIndex,{ fileName : "Main.hx", lineNumber : 218, className : "Main", methodName : "segClick"});
 }
 Main.testTexts = function() {
 	try {

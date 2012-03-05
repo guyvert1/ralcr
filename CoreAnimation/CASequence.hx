@@ -1,8 +1,9 @@
 //
-//  CASequence
+//  CASequence.hx
+//	CoreAnimation engine
 //
 //  Created by Baluta Cristian on 2011-03-06.
-//  Copyright (c) 2011 ralcr.com. All rights reserved.
+//  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
 
 class CASequence {
@@ -28,7 +29,7 @@ class CASequence {
 		// Call the original method
 		if (func != null) {
 			if (Reflect.isFunction( func ))
-				try{ func.apply (null, []); }catch(e:Dynamic){trace(e);}
+				try{ func.apply (null, []); }catch(e:Dynamic){ trace(e); Fugu.stack(); }
 		}
 		
 		// Start the next animation

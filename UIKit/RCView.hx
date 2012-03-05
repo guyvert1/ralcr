@@ -96,6 +96,10 @@ class RCView extends RCDisplayObject {
 		layer.height = h;
 		return super.setHeight ( h );
 	}
+	override public function setRotation (r:Float) :Float {
+		layer.rotation = r;
+		return super.setRotation ( r );
+	}
 	
 	
 	override public function setVisible (v:Bool) :Bool {
