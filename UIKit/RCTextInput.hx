@@ -30,7 +30,7 @@ class RCTextInput extends RCControl {
 	public var password (null, setPassword) :Bool;
 	public var selectable (null, setSelectable) :Bool;
 	public var text (getText, setText) :String;
-	var textView :RCTextView;
+	public var textView :RCTextView;
 	
 	public function new (x:Float, y:Float, w:Null<Float>, h:Null<Float>, str:String, rcfont:RCFont) {
 		super (w, y, w, h);

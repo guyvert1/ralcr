@@ -102,7 +102,6 @@ class SharedObject {
 				Cookie.set (identifier + key, haxe.Serializer.run( value ), 31536000);
 			else
 				Cookie.remove (identifier + key);
-			
 		}
 	}
 }

@@ -28,7 +28,7 @@ class RCDraw extends RCView {
 	public function new (x:Float, y:Float, w:Float, h:Float, color:Dynamic, alpha:Float=1.0) {
 		super (x, y, w, h);
 		
-		this.alpha = alpha;
+		setAlpha ( alpha );
 		this.borderThickness = 1;
 		
 #if js

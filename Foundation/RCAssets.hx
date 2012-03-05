@@ -47,18 +47,22 @@ class RCAssets {
 		currentPercentLoaded = new Hash<Int>();
 		useCache = false;
 	}
-	public static function instance () : RCAssets {
+	
+	/**
+	 *  Convenience class methods to load assets and extract assets
+	 **/
+	public static function sharedAssets () : RCAssets {
 		init();
 		return INSTANCE;
 	}
 	public static function loadFileWithKey (key:String, URL:String) :Bool {
-		return instance().set (key, URL);
+		return sharedAssets().set (key, URL);
 	}
 	public static function loadFontWithKey (key:String, URL:String) :Bool {
-		return instance().set (key, URL, false);
+		return sharedAssets().set (key, URL, false);
 	}
 	public static function getFileWithKey (key:String, returnAsBitmap:Bool=true) :Dynamic {
-		return instance().get (key, returnAsBitmap);
+		return sharedAssets().get (key, returnAsBitmap);
 	}
 	
 	
@@ -192,8 +196,10 @@ class RCAssets {
 	
 	
 	/**
-	 *	Attach a Movieclip from the external loaded swf, or duplicate the loaded content from RCImage
-	 * 	Can return a Sprite or the class instance
+	 *	Get the asset.
+	 *  Can be RCImage, RCSwf, String, and Sprite or MovieClip as a RCView
+	 *	@param key - The key on which the asset was registered
+	 *  @param returnAsBitmap - When the asset is from an external swf you can force it to return as a Bitmap Sprite
 	 */
 	public function get (key:String, returnAsBitmap:Bool=true) :Dynamic {
 		init();
@@ -210,16 +216,21 @@ class RCAssets {
 		else if (swfList.exists ( key )) {
 			return swfList.get( key );// Returns RCSwf
 		}
-#if (flash || nme)
-		// Search for assets in each of the loaded swfList, might be there
+		
+#if (flash || (nme && flash))
+		// In the last instance search for assets in each of the loaded swf files, might be there
 		else {
-			var classInstance :Dynamic = createInstance ( key );
+			var classInstance :Dynamic = createInstance ( key );// Can be Sprite or MovieClip
 			if (classInstance == null) return null;
 			
-			if (returnAsBitmap)
-				return bitmapize ( classInstance );// Returns a Sprite
-			else
-				return classInstance;
+			if (returnAsBitmap) {
+				return bitmapize ( classInstance );// Returns a RCView
+			}
+			else {
+				var view = new RCView(0,0);
+					view.layer.addChild ( classInstance );
+				return view;
+			}
 		}
 #end
 		// No class was found with this definition name
@@ -245,17 +256,17 @@ class RCAssets {
 	
 	
 	/**
-	 *  Create a bitmap from the input and return it as a Sprite
+	 *  Create a Bitmap from the input mc and returns it as a RCView
 	 */
-	public function bitmapize (mc:Dynamic) :Sprite {
+	function bitmapize (mc:Dynamic) :RCView {
 		
 		if (mc.width > 2880 || mc.height > 2880) return null;
 		
 		var bitmap = new BitmapData (Math.round (mc.width), Math.round (mc.height), true, 0x000000ff );
 			bitmap.draw ( mc );
 		
-		var d = new Sprite();
-			d.addChild ( new Bitmap (bitmap, PixelSnapping.AUTO, true) );
+		var d = new RCView(0,0);
+			d.layer.addChild ( new Bitmap (bitmap, PixelSnapping.AUTO, true) );
 		
 		return d;
 	}

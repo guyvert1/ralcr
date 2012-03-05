@@ -141,7 +141,11 @@ class RCWindow {
 		if (child != null) {
 			child.viewWillAppearHandler();
 			child.parent = target;
-			target.appendChild ( child.layer );
+			#if flash
+				target.addChild ( child.layer );
+			#elseif js
+				target.appendChild ( child.layer );
+			#end
 			child.viewDidAppearHandler();
 		}
 	}

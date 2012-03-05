@@ -196,6 +196,7 @@ RCDisplayObject.prototype.height = null;
 RCDisplayObject.prototype.scaleX = null;
 RCDisplayObject.prototype.scaleY = null;
 RCDisplayObject.prototype.alpha = null;
+RCDisplayObject.prototype.rotation = null;
 RCDisplayObject.prototype.visible = null;
 RCDisplayObject.prototype.mouseX = null;
 RCDisplayObject.prototype.mouseY = null;
@@ -228,6 +229,9 @@ RCDisplayObject.prototype.getHeight = function() {
 }
 RCDisplayObject.prototype.setHeight = function(h) {
 	return this.height = h;
+}
+RCDisplayObject.prototype.setRotation = function(r) {
+	return this.rotation = r;
 }
 RCDisplayObject.prototype.getBounds = function() {
 	return new RCRect(this.x,this.y,this.size.width,this.size.height);
@@ -346,6 +350,9 @@ JSView.prototype.removeChild = function(child) {
 	this.layer.removeChild(child.layer);
 	child.viewDidDisappearHandler();
 }
+JSView.prototype.removeFromSuperView = function() {
+	if(this.parent != null) this.parent.removeChild(this.layer);
+}
 JSView.prototype.setBackgroundColor = function(color) {
 	if(color == null) {
 		this.layer.style.background = null;
@@ -376,14 +383,12 @@ JSView.prototype.setClipsToBounds = function(clip) {
 	return clip;
 }
 JSView.prototype.setVisible = function(v) {
-	this.visible = v;
 	this.layer.style.visibility = v?"visible":"hidden";
-	return v;
+	return RCDisplayObject.prototype.setVisible.call(this,v);
 }
 JSView.prototype.setAlpha = function(a) {
-	this.alpha_ = a;
 	this.layer.style.opacity = Std.string(a);
-	return a;
+	return RCDisplayObject.prototype.setAlpha.call(this,a);
 }
 JSView.prototype.setX = function(x) {
 	this.layer.style.left = Std.string(x) + "px";
@@ -399,7 +404,7 @@ JSView.prototype.getWidth = function() {
 	return this.layer.clientWidth;
 }
 JSView.prototype.setWidth = function(w) {
-	haxe.Log.trace("setW " + w,{ fileName : "JSView.hx", lineNumber : 152, className : "JSView", methodName : "setWidth"});
+	haxe.Log.trace("setW " + w,{ fileName : "JSView.hx", lineNumber : 156, className : "JSView", methodName : "setWidth"});
 	this.layer.style.width = w + "px";
 	return RCDisplayObject.prototype.setWidth.call(this,w);
 }
@@ -409,7 +414,7 @@ JSView.prototype.getHeight = function() {
 	return this.layer.clientHeight;
 }
 JSView.prototype.setHeight = function(h) {
-	haxe.Log.trace("setH " + h,{ fileName : "JSView.hx", lineNumber : 162, className : "JSView", methodName : "setHeight"});
+	haxe.Log.trace("setH " + h,{ fileName : "JSView.hx", lineNumber : 166, className : "JSView", methodName : "setHeight"});
 	this.layer.style.height = h + "px";
 	return RCDisplayObject.prototype.setHeight.call(this,h);
 }
@@ -439,9 +444,6 @@ JSView.prototype.getMouseX = function() {
 JSView.prototype.getMouseY = function() {
 	if(this.parent == null) return this.mouseY;
 	return this.parent.mouseY - this.y;
-}
-JSView.prototype.removeFromSuperView = function() {
-	if(this.parent != null) this.parent.removeChild(this.layer);
 }
 JSView.prototype.__class__ = JSView;
 RCDraw = function(x,y,w,h,color,alpha) {

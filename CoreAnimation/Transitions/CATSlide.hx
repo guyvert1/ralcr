@@ -9,7 +9,6 @@ class CATSlide extends CAObject, implements CATransitionInterface {
 	
 	override public function init () :Void {
 		
-		constraintBounds = Reflect.field (properties, "constraintBounds");
 		var fromScale = 1.;
 		var toScale = 1.;
 		var fromAlpha = .0;

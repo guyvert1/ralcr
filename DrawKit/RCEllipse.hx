@@ -1,5 +1,5 @@
 //
-//  Ellipse
+//  RCEllipse.hx
 //
 //  Created by Baluta Cristian on 2008-10-11.
 //  Copyright (c) 2008 ralcr.com. All rights reserved.

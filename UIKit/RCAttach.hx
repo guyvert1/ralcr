@@ -25,7 +25,7 @@ class RCAttach extends RCView {
 		#elseif (nme || js)
 			target = RCAssets.getFileWithKey( id );
 		#end
-		}catch(e:Dynamic){trace(e);}
+		}catch(e:Dynamic){ trace(e+" : id="+id); }
 	}
 	
 	public function copy () :RCAttach {

@@ -5,6 +5,7 @@
 //  Created by Cristi Baluta on 2011-02-09.
 //  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
 //
+
 #if (flash || nme)
 	import flash.display.DisplayObjectContainer;
 #elseif js
@@ -79,7 +80,7 @@ class RCSliderSync {
 	 *	When wheel is scrolled move the content rather the scrollbar
 	 */
 	function wheelHandler (e:EVMouse) :Void {
-		trace(e);
+		//trace(e);
 		// Calculate different values for mac and pc
 /*		(flash.system.Capabilities.os.toLowerCase().indexOf("mac") != -1)
 		? valueFinal += e.delta*50

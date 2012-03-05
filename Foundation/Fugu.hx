@@ -1,16 +1,10 @@
 //
-//  Fugu it's a static class that operates on DisplayObjectContainers
+//  Fugu.hx
+//	A static class that operates on RCView
 //
 //  Created by Baluta Cristian on 2008-10-13.
 //  Copyright (c) 2008 http://ralcr.com. All rights reserved.
 //
-
-#if (flash || nme)
-	import flash.display.DisplayObjectContainer;
-#elseif js
-	import js.Dom;
-	typedef DisplayObjectContainer = JSView;
-#end
 
 class Fugu {
 	
@@ -31,11 +25,15 @@ class Fugu {
 				}
 				catch (e:Dynamic) {
 					trace ("[Error when destroying object: "+o+", called from "+Std.string(pos)+"]");
-			 		trace (haxe.Stack.toString ( haxe.Stack.exceptionStack() ));
+					trace (haxe.Stack.toString ( haxe.Stack.exceptionStack() ));
 				}
-			
-			var parent = null; try { parent = o.parent; } catch (e:Dynamic) { null; }
-			if (parent != null) if (parent.contains ( o )) parent.removeChild ( o );
+			#if flash
+				var parent = null; try { parent = o.layer.parent; } catch (e:Dynamic) { null; }
+				if (parent != null) if (parent.contains ( o.layer )) parent.removeChild ( o.layer );
+			#elseif js
+				var parent = null; try { parent = o.parent; } catch (e:Dynamic) { null; }
+				if (parent != null) if (parent.contains ( o )) parent.removeChild ( o );
+			#end
 		}
 		return true;
 	}
@@ -44,7 +42,7 @@ class Fugu {
 		return safeDestroy (obj, false);
 	}
 	
-	public static function safeAdd (target:DisplayObjectContainer, obj:Dynamic) :Bool {
+	public static function safeAdd (target:RCView, obj:Dynamic) :Bool {
 		
 		if ( target == null || obj == null ) return false;
 		
@@ -61,7 +59,7 @@ class Fugu {
 	/**
 	 * Draws a glow on a target object
 	 */
-	public static function glow (	target:DisplayObjectContainer,
+	public static function glow (	target:RCView,
 									color:Null<Int>,
 									alpha:Null<Float>,
 									blur:Null<Float>,
@@ -69,7 +67,7 @@ class Fugu {
 	{
 		#if (flash || nme)
 		var filter = new flash.filters.GlowFilter (color, alpha, blur, blur, strength, 3, false, false);
-		target.filters = blur==null ? null : [filter];
+		target.layer.filters = blur==null ? null : [filter];
 		#end
 	}
 	
@@ -77,23 +75,23 @@ class Fugu {
 	/**
 	 * Changes the color of the targeted object
 	 */
-	public static function color (target:DisplayObjectContainer, color:Int) :Void {
+	public static function color (target:RCView, color:Int) :Void {
 		#if (flash || nme)
 		var red   = color >> 16 & 0xFF;
 		var green = color >> 8 & 0xFF;
 		var blue  = color & 0xFF;
-		target.transform.colorTransform = new flash.geom.ColorTransform (0, 0, 0, 1, red, green, blue, 1);
+		target.layer.transform.colorTransform = new flash.geom.ColorTransform (0, 0, 0, 1, red, green, blue, 1);
 		#end
 	}
 	
-	public static function resetColor (target:DisplayObjectContainer) :Void {
+	public static function resetColor (target:RCView) :Void {
 		#if (flash || nme)
-		target.transform.colorTransform = new flash.geom.ColorTransform (1,	1,	1,	1, 0,	0,	0,	0);
+		target.layer.transform.colorTransform = new flash.geom.ColorTransform (1,	1,	1,	1, 0,	0,	0,	0);
 		#end
 	}
 	
 	
-	public static function brightness (target:DisplayObjectContainer, brightness:Int) :Void {
+	public static function brightness (target:RCView, brightness:Int) :Void {
 		#if flash
         var m =  [	1,0,0,0,brightness,
 					0,1,0,0,brightness,
@@ -117,7 +115,7 @@ class Fugu {
 			}
 		}
 		
-		target.filters = [new flash.filters.ColorMatrixFilter ( matrix )];
+		target.layer.filters = [new flash.filters.ColorMatrixFilter ( matrix )];
 		#end
 	}
 	

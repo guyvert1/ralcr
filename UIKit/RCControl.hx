@@ -27,7 +27,7 @@ class RCControl extends RCView {
 	public var touchUpOutside :RCSignal<RCControl->Void>;
 	public var touchCancel :RCSignal<RCControl->Void>;
 #end
-	public var click :EVMouse;// RCSignal that dispatches EVMouse
+	public var click :EVMouse;// RCSignal that dispatches EVMouse: RCSignal<EVMouse->Void>
 	public var press :EVMouse;
 	public var release :EVMouse;
 	public var over :EVMouse;
@@ -49,7 +49,7 @@ class RCControl extends RCView {
 	
 	/**
 	 * The classical way of listening to events, override this methods from outside of the object
-	 *  You can redirect to only one function this events
+	 *  You can redirect to only one function at a time this events
 	 */
 	dynamic public function onClick () :Void {}
 	dynamic public function onPress () :Void {}
@@ -60,9 +60,9 @@ class RCControl extends RCView {
 	
 	public function new (x, y, w, h) {
 		super (x, y, w, h);
-		
-		//this.mouseChildren = false;
-		
+		#if flash
+			this.layer.mouseChildren = false;
+		#end
 		configureDispatchers();
 		setEnabled ( true );// This will configure the right mouse listeners
 		setState ( NORMAL );
@@ -129,12 +129,18 @@ class RCControl extends RCView {
 	
 	
 	/**
-	 * Getter and setter
+	 * Getters and setters
 	 */
 	function getSelected () :Bool {
 		return state_ == SELECTED;
 	}
 	//
+	/**
+	 * enabled = false - If the button is not enabled, you are no longer able to click it,
+	 * onClick, onPress, onRelease will not by dispactched.
+	 * Hand cursor is also disabled.
+	 * enabled = true - Events are dispatched again
+	 */
 	function getEnabled () :Bool {
 		return enabled_;
 	}
@@ -146,21 +152,6 @@ class RCControl extends RCView {
 	//
 	function getHighlighted () :Bool {
 		return state_ == HIGHLIGHTED;
-	}
-	
-	
-	/**
-	 * lock = If the button is locked, you are no longer able to click it,
-	 * onClick, onPress, onRelease will not by dispactched
-	 * hand cursor is also disabled
-	 * You can lock/unlock a button only if is lockable
-	 * unlock = Events are dispatched again
-	 */
-	public function lock () :Void {
-		setEnabled ( false );
-	}
-	public function unlock () :Void {
-		setEnabled ( true );
 	}
 	
 	

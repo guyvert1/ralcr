@@ -36,7 +36,7 @@ class Main {
 		RCAssets.loadFontWithKey("Futu", "../assets/FUTUNEBI.TTF");
 		RCAssets.onComplete = testJsFont;
 		//function(){trace("RCAssets did finish loading assets"); trace(RCAssets.getFileWithKey("some_text"));}
-		trace("step2");
+		trace("step2 - RCRectangle");
 		
 		// Draw a colored rectangle
 		var rect = new RCRectangle(0,0, 300, 150, RCColor.greenColor());
@@ -44,15 +44,17 @@ class Main {
 		rect.clipsToBounds = true;
 		rect.center = new RCPoint (RCWindow.width/2, RCWindow.height/2);
 		
+		trace("step2 - RCImage");
 		ph = new RCImage(1, 1, "../assets/900x600.jpg");
 		ph.onComplete = resizePhoto;
 		rect.addChild ( ph );
 		
-		trace("step3");
+		trace("step3 - ellipse");
 		circ = new RCEllipse(0,0, 100, 100, RCColor.darkGrayColor());
 	 	RCWindow.addChild ( circ );
 		//circ.center = new RCPoint(120,120);
 		
+		trace("step4 - CASequence");
 		// Test the animation engine
 		var a1=new CATween (circ, {x:RCWindow.width-100, y:0}, 2, 0, caequations.Cubic.IN_OUT);
 		var a2=new CATween (circ, {x:RCWindow.width-100, y:RCWindow.height-100}, 2, 0, caequations.Cubic.IN_OUT);
@@ -61,22 +63,25 @@ class Main {
 		var seq = new CASequence ([cast a1, cast a2, cast a3, cast a4]);
 		//seq.start();
 		
+		trace("step5 - line");
 		lin = new RCLine(30,300, 400, 600, 0xff3300);
 		RCWindow.addChild ( lin );
 		
 		
-		
-		
-		
+		trace("step6 - Keys");
 		var k = new RCKeys();
 			k.onLeft = moveLeft;
 			k.onRight = moveRight;
 		
+		trace("step7 - Mouse");
 		var m = new EVMouse( EVMouse.OVER, rect.layer );
 			m.add ( function(_){ trace("onOver"); } );
 		
+		trace("step8 - text");
 		testTexts();
+		trace("step8 - signals");
 		testSignals();
+		trace("step8 - buttons");
 		testButtons();
 		
 		// Shared objects
@@ -86,8 +91,10 @@ class Main {
 		trace(RCUserDefaults.stringForKey("key1"));*/
 		
 		// Add slider
+		trace("step9 - SKSlider");
 		var s = new haxe.SKSlider();
-		var sl = new RCSlider(50, 250, 160, 10, s);
+		trace("step9 - RCSlider");
+		var sl = new RCSlider(50, 250, 160, 10, s);trace("step9 - RCSlider");
 		//sl.valueChanged.add ( function(e:RCSlider){trace(e.value);} );
 		RCWindow.addChild ( sl );
 		sl.maxValue = 500;
@@ -95,19 +102,19 @@ class Main {
 		
 		
 		
-		trace("step8");
+		trace("step10 - Http");
 		req = new HTTPRequest();
-		req.onComplete = function (){ trace(req.result); }
-		req.onError = function (){ trace(req.result); }
-		req.onStatus = function (){ trace(req.status); }
-		req.readFile("data.txt");
+		req.onComplete = function (){ trace("http result "+req.result); }
+		req.onError = function (){ trace("http error "+req.result); }
+		req.onStatus = function (){ trace("http status "+req.status); }
+		req.readFile("../assets/data.txt");
 		
-		
+		trace("step11 - CATCallFunc");
 		var anim = new CATCallFunc (setAlpha_, {alpha:{fromValue:0, toValue:1}}, 2.8, 0, caequations.Cubic.IN_OUT);
 		CoreAnimation.add ( anim );
 		
 		
-		}catch(e:Dynamic){Fugu.stack();}
+		}catch(e:Dynamic){Fugu.stack(); trace(e); }
     }
 	static function setAlpha_ (a:Float){lin.alpha=a;}
 	
@@ -131,23 +138,21 @@ class Main {
 	static function resizePhoto(){
 		trace("onComplete image");
 		trace(ph.width+", "+ph.height);
-		trace(ph.size.width);
-		//ph.scaleToFill (300-2, 150-2);
-		ph.scaleToFit (300-2, 150-2);
+		trace(ph.size.width+", "+ph.size.height);
+		ph.scaleToFill (300-2, 150-2);
+		//ph.scaleToFit (300-2, 150-2);
 		trace(ph.width+", "+ph.height);
 		trace(ph.size.width+", "+ph.size.height);
-		#if js
-			
-		#end
+		
 		var scrollview = new RCScrollView (780, 10, 300, 300);
 		RCWindow.addChild(scrollview);
 		scrollview.setContentView ( ph.copy() );
 		
-		//return;
+		return;
 		var anim = new CATween (ph, {x:{fromValue:-ph.width, toValue:ph.width}}, 2, 0, caequations.Cubic.IN_OUT);
 			anim.repeatCount = 5;
 			anim.autoreverses = true;
-		//CoreAnimation.add ( anim );
+		CoreAnimation.add ( anim );
 	}
 	
 	
@@ -199,7 +204,7 @@ class Main {
 		var seg = new RCSegmentedControl (100,400, 640,50, ios.SKSegment);
 		RCWindow.addChild ( seg );
 		seg.initWithLabels (["Masculin","Feminin","123","Label 12345"], false);
-		seg.backgroundColor = 0x000000;
+		//seg.backgroundColor = 0x000000;
 		seg.click.add(segClick);
 		
 		}catch(e:Dynamic){Fugu.stack();}

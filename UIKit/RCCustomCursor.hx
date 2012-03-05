@@ -1,5 +1,6 @@
 //
-//  CustomCursor
+//  RCCustomCursor.hx
+//	UIKit
 //
 //  Created by Baluta Cristian on 2008-12-29.
 //  Copyright (c) 2008-2012 http://ralcr.com. All rights reserved.
@@ -28,12 +29,16 @@ class RCCustomCursor extends RCView {
 		mouseMove.add ( moveHandler );
 	}
 	
+	/**
+	 *  Use an object as a custom cursor
+	 *  @param obj : for flash can be a RCView, for js should be a String path to an image
+	 **/
 	public function draw (obj:Dynamic) :Void {
 		#if flash
 			Fugu.safeRemove ( cursor );
 			cursor = obj;
-			cursor.mouseEnabled = false;
-			Fugu.safeAdd (layer, cursor);
+			cursor.layer.mouseEnabled = false;
+			Fugu.safeAdd (this, cursor);
 			layer.mouseEnabled = false;
 			Mouse.hide();
 		#elseif js
@@ -47,8 +52,8 @@ class RCCustomCursor extends RCView {
 	function moveHandler (e:EVMouse) :Void {
 		//if (!cursor.visible) cursor.visible = true;
 		#if flash
-			this.x = e.e.stageX;
-			this.y = e.e.stageY;
+			setX ( e.e.stageX );
+			setY ( e.e.stageY );
 			e.updateAfterEvent();
 		#end
 	}
@@ -65,5 +70,6 @@ class RCCustomCursor extends RCView {
 		
 		//Stage.MC.removeEventListener (Event.MOUSE_LEAVE, hideCustomCursor);
 		mouseMove.destroy();
+		super.destroy();
 	}
 }

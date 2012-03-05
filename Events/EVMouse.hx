@@ -12,14 +12,14 @@
 
 class EVMouse extends RCSignal<EVMouse->Void> {
 	
-	public static var UP = "mouseup";
-	public static var DOWN = "mousedown";
-	public static var OVER = "mouseover";
-	public static var OUT = "mouseout";
-	public static var MOVE = "mousemove";
-	public static var CLICK = "mouseclick";
-	public static var DOUBLE_CLICK = "mousedoubleclick";
-	public static var WHEEL = "mousewheel";
+	inline public static var UP = "mouseup";
+	inline public static var DOWN = "mousedown";
+	inline public static var OVER = "mouseover";
+	inline public static var OUT = "mouseout";
+	inline public static var MOVE = "mousemove";
+	inline public static var CLICK = "mouseclick";
+	inline public static var DOUBLE_CLICK = "mousedoubleclick";
+	inline public static var WHEEL = "mousewheel";
 	
 	public var target :DisplayObjectContainer;
 	public var type :String;
@@ -33,8 +33,8 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 	#end
 	
 	/**
-	 *  type: the type of MouseEvent you want to listen to.
-	 *  target: displayobject you want to listen for events
+	 *  @param type: the type of MouseEvent you want to listen to.
+	 *  @param target: displayobject you want to listen for events
 	 **/
 	public function new (type:String, target:Dynamic, ?pos:haxe.PosInfos) {
 		if (target == null) throw "Can't use a null target. " + pos;
@@ -45,11 +45,14 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 		#if js
 			targets = new List<EVMouseRelationship>();
 			if (Std.is(target, JSView))
-				this.target = cast(target,JSView).layer;
+				this.target = cast(target, JSView).layer;
 			else
 				this.target = target;
 		#else
-			this.target = target;
+			if (Std.is(target, RCView))
+				this.target = cast(target, RCView).layer;
+			else
+				this.target = target;
 		#end
 		return addEventListener(pos);
 	}

@@ -34,9 +34,10 @@ class RCTextRoll extends RCView {
 	// JS target is not able to get elements dimensions if they are not on the display list.
 	// So we decide if we need a second textfield only after the component is added to stage
 	function viewDidAppear_ () :Void {
-		//trace("viewdidappear");
+		trace("RCTextRoll viewdidappear");
 		this.size.height = txt1.height;
 		if (txt1.width > size.width) {
+			if (txt2 != null) return;
 			txt2 = new RCTextView (Math.round (txt1.width + GAP), 0, null, size.height, text, txt1.rcfont);
 			this.addChild ( txt2 );
 			this.clipsToBounds = true;
@@ -49,6 +50,8 @@ class RCTextRoll extends RCView {
 	public function setText (str:String) :String {
 		return str;
 	}
+	
+	
 	/**
 	 *  Start and stop the rolling text
 	 **/
@@ -65,7 +68,7 @@ class RCTextRoll extends RCView {
 		reset();
 	}
 	
-	function stopRolling(){
+	function stopRolling(?pos:haxe.PosInfos){
 		if (timerLoop != null)
 			timerLoop.stop();
 			timerLoop = null;
@@ -81,8 +84,8 @@ class RCTextRoll extends RCView {
 	
 	function loop () :Void {
 		
-		txt1.x --;
-		txt2.x --;
+		txt1.x--;
+		txt2.x--;
 		
 		if (!continuous && txt2.x <= 0) {
 			stop();

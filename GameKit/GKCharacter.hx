@@ -25,7 +25,10 @@ class GKCharacter extends GKSprite {
 		try{
 		var mc = new MovieClip();
 		if (Std.is (sprite, MovieClip)) {
-			mc = sprite;trace(mc);
+			mc = sprite;
+		}
+		else if (Std.is (sprite, RCView)) {
+			mc.addChild ( sprite.layer );
 		}
 		else
 			mc.addChild ( sprite );
@@ -46,7 +49,7 @@ class GKCharacter extends GKSprite {
 		}
 		// Keep the collisionArea in front
 		if (collisionArea != null)
-			this.addChild ( collisionArea );
+			this.layer.addChild ( collisionArea );
 	}
 	
 	override public function destroy () :Void {

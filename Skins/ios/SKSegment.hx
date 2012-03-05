@@ -53,7 +53,7 @@ class SKSegment extends RCSkin {
 		normal.label.y = Math.round ((h - 25)/2);
 		
 		highlighted.background = new RCView (0, 0, w, h);
-		normal.background = new RCRectangle (0, 0, w, h, 0x666666, 1, 15);
+		highlighted.background = new RCRectangle (0, 0, w, h, RCColor.orangeColor());
 		highlighted.background.addChild ( segLeftSelected );
 		highlighted.background.addChild ( segMiddleSelected );
 		highlighted.background.addChild ( segRightSelected );

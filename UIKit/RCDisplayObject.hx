@@ -17,13 +17,14 @@ class RCDisplayObject {
 	public var center (default, setCenter) :RCPoint; // Position this view with the center
 	public var clipsToBounds (default, setClipsToBounds) :Bool;
 	public var backgroundColor (default, setBackgroundColor) :Null<Int>;
-	public var x (default, setX) :Float;
-	public var y (default, setY) :Float;
+	public var x (default, setX) :Float; // Animatable property
+	public var y (default, setY) :Float; // Animatable property
 	public var width (getWidth, setWidth) :Float; // Real size of the layer, can be different than the bounds
-	public var height (getHeight, setHeight) :Float;
-	public var scaleX (default, setScaleX) :Float;
-	public var scaleY (default, setScaleY) :Float;
-	public var alpha (default, setAlpha) :Float;
+	public var height (getHeight, setHeight) :Float; // Animatable property
+	public var scaleX (default, setScaleX) :Float; // Animatable property
+	public var scaleY (default, setScaleY) :Float; // Animatable property
+	public var alpha (default, setAlpha) :Float; // Animatable property
+	public var rotation (default, setRotation) :Float; // Animatable property
 	public var visible (default, setVisible) :Bool;
 	public var mouseX (getMouseX, null) :Float;
 	public var mouseY (getMouseY, null) :Float;
@@ -70,6 +71,9 @@ class RCDisplayObject {
 	}
 	public function setHeight (h:Float) :Float {
 		return height = h;// Override it
+	}
+	public function setRotation (r:Float) :Float {
+		return rotation = r;// Override it
 	}
 	public function getBounds () :RCRect {
 		return new RCRect (x, y, size.width, size.height);

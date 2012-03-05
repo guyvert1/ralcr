@@ -4,17 +4,15 @@
 //  Created by Cristi Baluta on 2010-10-26.
 //  Copyright (c) 2010 ralcr.com. All rights reserved.
 //
+
 import flash.display.MovieClip;
 import flash.display.Sprite;
-import flash.geom.Point;
 
 
-class GKSprite extends Sprite {
+class GKSprite extends RCView {
 	
 	inline public static var GRAVITY = 0.98;
 	
-	public var w :Float;
-	public var h :Float;
 	public var mass :Float;
 	public var vx :Float;// Velocity
 	public var vy :Float;
@@ -27,31 +25,23 @@ class GKSprite extends Sprite {
 	public var isOnGround :Bool;
 	public var collisionArea :MovieClip;
 	
-	public var layer :Sprite;
-	public var registrationPoint (default, setRegistrationPoint) :Point;
+	public var layer2 :Sprite;
+	public var registrationPoint (default, setRegistrationPoint) :RCPoint;
 	
 	
 	public function new (x, y) {
-		super();
-		this.x = x;
-		this.y = y;
-		this.layer = new Sprite();
-		this.addChild ( layer );
+		super(x, y);
+		this.layer2 = new Sprite();
+		this.layer.addChild ( layer2 );
 	}
-	
-/*	public function init () :Void {
-		
-	}
-	*/
-	
-	public function setRegistrationPoint (point:Point) :Point {
-		layer.x = Math.round ( - point.x );
-		layer.y = Math.round ( - point.y );
+
+	public function setRegistrationPoint (point:RCPoint) :RCPoint {
+		layer2.x = Math.round ( - point.x );
+		layer2.y = Math.round ( - point.y );
 		return point;
 	}
 	
-	
-	public function destroy () :Void {
-		
+	override public function destroy () :Void {
+		super.destroy();
 	}
 }

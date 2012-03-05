@@ -1,21 +1,15 @@
 //
-//  RCAppDelegate
-//	Your application should extend this class
+//  RCAppDelegate.hx
+//	Your application main should extend this class
 //
 //  Created by Cristi Baluta on 2010-05-14.
-//  Copyright (c) 2010 ralcr.com. All rights reserved.
+//  Copyright (c) 2010-2012 ralcr.com. All rights reserved.
 //
 
-#if (flash || nme)
-	import flash.display.MovieClip;
-#elseif js
-	private typedef MovieClip = JSView;
-#end
-
-class RCAppDelegate extends MovieClip {
+class RCAppDelegate extends RCView {
 	
 	public function new () {
-		super(#if js 0, 0 #end);
+		super (0, 0);
 		
 		// The RCWindow should be initialized before anything
 		RCWindow.init();

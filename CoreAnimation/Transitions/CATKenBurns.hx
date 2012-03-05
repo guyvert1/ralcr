@@ -1,5 +1,5 @@
 //
-//  KenBurns
+//  CATKenBurns.hx
 //
 //  Created by Baluta Cristian on 2009-03-20.
 //  Copyright (c) 2009 http://ralcr.com. All rights reserved.

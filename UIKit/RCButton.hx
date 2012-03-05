@@ -1,5 +1,6 @@
 //
-//  RCButton
+//  RCButton.hx
+//	UIKiit
 //
 //  Created by Baluta Cristian on 2008-03-23.
 //  Copyright (c) 2008-2012 www.ralcr.com. All rights reserved.
@@ -11,18 +12,6 @@ import RCControl;// Imports RCControlState
 class RCButton extends RCControl {
 	
 	public var skin :RCSkin;
-	
-	/**
-	 *  Set title for state
-	 **/
-	public function setTitle (title:String, state:RCControlState) {
-		
-	}
-	public function setTitleColor (color:Int, state:RCControlState) {
-		
-	}
-	//public function setBackgroundImage (image:RCImage, state:RCControlState)
-
 	public var currentTitle :String;// normal/highlighted/selected/disabled. can return nil
 	public var currentTitleColor :Int;// normal/highlighted/selected/disabled. always returns non-nil. default is white(1,1)
 	public var currentImage :RCView;// normal/highlighted/selected/disabled. can return nil
@@ -69,7 +58,7 @@ class RCButton extends RCControl {
 		super.setState ( state );
 	}
 	
-	// Make sure that all the properties of the skin are filled
+	// Make sure that all the skin elements neccesary for a button exists
 	function fixSkin () {
 		
 		// We need a label, if missing substitute it with the image or otherView
@@ -97,6 +86,21 @@ class RCButton extends RCControl {
 		currentBackground = skin.normal.background;
 		currentImage = skin.normal.label;
 	}
+	
+	
+	/**
+	 *  Set title for state
+	 **/
+	public function setTitle (title:String, state:RCControlState) {
+		
+	}
+	public function setTitleColor (color:Int, state:RCControlState) {
+		
+	}
+	public function setBackgroundImage (image:RCImage, state:RCControlState) {
+		
+	}
+	
 	
 	/**
 	 *	Function to safely set color for objects in the button

@@ -109,8 +109,8 @@ class RCSegmentedControl extends RCView {
 	public function getIndex () :Int {
 		return selectedIndex;
 	}
-	public function setIndex (i:Int) :Int {trace("set index "+i);
-		//buttons.select ( values[i] );
+	public function setIndex (i:Int) :Int {trace("setIndex "+i);
+		select ( labels[i] );
 		selectedIndex = i;
 		return getIndex();
 	}
@@ -170,15 +170,15 @@ class RCSegmentedControl extends RCView {
 	 *	@param can_unselect - Unselect the other buttons as soon as a new one is pressed
 	 */
 	public function select (label:String, ?can_unselect:Bool=true) :Void {
-		
+		trace("select "+label+", "+can_unselect);
 		if (items.exists( label )) {
 			// Select the current label
 			items.get( label ).toggle();
 
 			if (can_unselect)
-				items.get( label ).lock()
+				items.get( label ).enabled = false;
 			else
-				items.get( label ).unlock();
+				items.get( label ).enabled = true;
 		}
 		
 		// Unselect other labels
@@ -190,7 +190,7 @@ class RCSegmentedControl extends RCView {
 	}
 	
 	public function unselect (label:String) :Void {
-		items.get( label ).unlock();
+		items.get( label ).enabled = true;
 		items.get( label ).untoggle();
 	}
 	
@@ -219,11 +219,11 @@ class RCSegmentedControl extends RCView {
 	 *  @param label - The label of the button to enable/disable
 	 */
 	public function enable (label:String) :Void {
-		items.get( label ).unlock();
+		items.get( label ).enabled = true;
 		items.get( label ).alpha = 1;
 	}
 	public function disable (label:String) :Void {
-		items.get( label ).lock();
+		items.get( label ).enabled = false;
 		items.get( label ).alpha = 0.4;
 	}
 	

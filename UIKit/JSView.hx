@@ -66,6 +66,12 @@ class JSView extends RCDisplayObject {
 		layer.removeChild ( child.layer );
 		child.viewDidDisappearHandler();
 	}
+	public function removeFromSuperView () :Void {
+		if (parent != null)
+			parent.removeChild ( layer );
+	}
+	
+	
 	
 	/**
 	 *  Change the color of the background
@@ -121,19 +127,17 @@ class JSView extends RCDisplayObject {
 	// Getters and setters
 	//
 	override public function setVisible (v:Bool) :Bool {
-		visible = v;
 		layer.style.visibility = (v ? "visible" : "hidden");
-		return v;
+		return super.setVisible ( v );
 	}
 	override public function setAlpha (a:Float) :Float {
-		alpha_ = a;
 /*		if (BrowserUtil.browserName == MSIE) {
 			untyped layer.style.filter = "alpha(opacity="+Std.string(alpha*100)+")";
 		}
 		else {*/
 			untyped layer.style.opacity = Std.string(a);
 //		}
-		return a;
+		return super.setAlpha ( a );
 	}
 	override public function setX (x:Float) :Float {
 		layer.style.left = Std.string(x) + "px";
@@ -193,11 +197,5 @@ class JSView extends RCDisplayObject {
 	override function getMouseY () :Float {
 		if (parent == null) return mouseY;
 		return untyped parent.mouseY - y;
-	}
-	
-	
-	public function removeFromSuperView () :Void {
-		if (parent != null)
-			parent.removeChild ( layer );
 	}
 }

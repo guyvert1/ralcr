@@ -25,10 +25,10 @@ class RCView extends RCDisplayObject {
 		super();
 		
 		layer = new Sprite();
-		layer.x = x;
-		layer.y = y;
 		graphics = layer.graphics;
 		size = new RCSize (w, h);
+		setX(x);
+		setY(y);
 		
 		layer.addEventListener (Event.ADDED_TO_STAGE, viewDidAppearHandler_);
 		layer.addEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappearHandler_);
@@ -97,6 +97,16 @@ class RCView extends RCDisplayObject {
 		return super.setHeight ( h );
 	}
 	
+	
+	override public function setVisible (v:Bool) :Bool {
+		layer.visible = v;
+		return super.setVisible ( v );
+	}
+	override public function setAlpha (a:Float) :Float {
+		layer.alpha = a;
+		return super.setAlpha ( a );
+	}
+	
 	/**
 	 *  This method is usually overriten by the super class.
 	 */
@@ -106,6 +116,24 @@ class RCView extends RCDisplayObject {
 		super.destroy();
 	}
 	
+	
+	override public function addChild (child:RCView) :Void {
+		if (child == null) return;
+		child.viewWillAppearHandler();
+		child.parent = layer;
+		layer.addChild ( child.layer );
+		//child.viewDidAppearHandler();
+	}
+	override public function addChildAt (child:RCView, index:Int) :Void {
+		layer.addChildAt (child.layer, index);
+	}
+	override public function removeChild (child:RCView) :Void {
+		if (child == null) return;
+		child.viewWillDisappearHandler();
+		child.parent = null;
+		layer.removeChild ( child.layer );
+		//child.viewDidDisappearHandler();
+	}
 	public function removeFromSuperView () :Void {
 		var parent = null;
 		try{parent = layer.parent; } catch (e:Dynamic) { null; }
