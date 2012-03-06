@@ -62,13 +62,19 @@ class RCAudio implements RCAudioInterface {
 	}
 	
 	public function init () :Void {
-		sound = new Sound();
-		sound.addEventListener (Event.COMPLETE, completeHandler);
-		sound.addEventListener (Event.ID3, id3Handler);
-		sound.addEventListener (ErrorEvent.ERROR, errorHandler);
-		sound.addEventListener (IOErrorEvent.IO_ERROR, ioErrorHandler);
-		sound.addEventListener (ProgressEvent.PROGRESS, progressHandler);
-		sound.load ( new URLRequest ( URL ) );
+		#if nme
+		sound = nme.Assets.getSound ( URL );
+		#end
+		if (sound == null) {
+			// Create a sound object from scratch
+			sound = new Sound();
+			sound.addEventListener (Event.COMPLETE, completeHandler);
+			sound.addEventListener (Event.ID3, id3Handler);
+			sound.addEventListener (ErrorEvent.ERROR, errorHandler);
+			sound.addEventListener (IOErrorEvent.IO_ERROR, ioErrorHandler);
+			sound.addEventListener (ProgressEvent.PROGRESS, progressHandler);
+			sound.load ( new URLRequest ( URL ) );
+		}
 		
 		timer = new Timer ( updateTime );
 		timer.addEventListener (TimerEvent.TIMER, loop);

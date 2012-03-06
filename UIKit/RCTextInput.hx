@@ -111,8 +111,8 @@ class RCTextInput extends RCControl {
 	}*/
 	
 	function setPassword (t:Bool) :Bool {
-		#if flash
-		return textView.target.displayAsPassword = t;
+		#if (flash || nme)
+			return textView.target.displayAsPassword = t;
 		#elseif js
 			return true;
 		#end

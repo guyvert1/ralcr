@@ -122,10 +122,20 @@ class RCAssets {
 	function loadText (key:String, URL:String) :Void {
 		//trace("load text "+key+", "+URL);
 		var data = new HTTPRequest();
+		#if nme
+			// Search for the asset in NME library first
+			data.result = nme.Assets.getText ( URL );
+		#end
+		if (data.result == null) {
+			// If NME assets didn't contained the asset, load them with http request
 			data.onProgress = callback (progressHandler, key, data);
 			data.onComplete = callback (completeHandler, key, data);
 			data.onError = callback (errorHandler, key, data);
 			data.readFile ( URL );
+		}
+		else {
+			haxe.Timer.delay ( function() { completeHandler (key, data); }, 10);
+		}
 	}
 	function loadFont (key:String, URL:String) :Void {
 		#if js
@@ -217,7 +227,7 @@ class RCAssets {
 			return swfList.get( key );// Returns RCSwf
 		}
 		
-#if (flash || (nme && flash))
+#if (flash || nme)
 		// In the last instance search for assets in each of the loaded swf files, might be there
 		else {
 			var classInstance :Dynamic = createInstance ( key );// Can be Sprite or MovieClip
@@ -247,11 +257,20 @@ class RCAssets {
 		if (args == null)
 			args = [];
 		
-		for (swf in swfList) if (swf.event.target.applicationDomain.hasDefinition ( className )) {
-			var def = swf.event.target.applicationDomain.getDefinition ( className );
-			var classInstance = Type.createInstance ( cast (def, Class<Dynamic>), args );
-			return classInstance;
-		}
+		#if nme
+			// Search for the asset in NME swf library assets
+			return Type.createInstance ( Type.resolveClass ( className), args);
+		#else
+		
+			for (swf in swfList)
+			if (swf.event.target.applicationDomain.hasDefinition ( className ))
+			{
+				var def = swf.event.target.applicationDomain.getDefinition ( className );
+				var classInstance = Type.createInstance ( cast ( def, Class<Dynamic>), args );
+				return classInstance;
+			}
+			
+		#end
 		return null;
 	}
 	
@@ -263,11 +282,11 @@ class RCAssets {
 		
 		if (mc.width > 2880 || mc.height > 2880) return null;
 		
-		var bitmap = new BitmapData (Math.round (mc.width), Math.round (mc.height), true, 0x000000ff );
-			bitmap.draw ( mc );
+		var bitmapData = new BitmapData (Math.round (mc.width), Math.round (mc.height), true, 0x000000ff );
+			bitmapData.draw ( mc );
 		
 		var d = new RCView(0,0);
-			d.layer.addChild ( new Bitmap (bitmap, PixelSnapping.AUTO, true) );
+			d.layer.addChild ( new Bitmap (bitmapData, PixelSnapping.AUTO, true) );
 		
 		return d;
 	}

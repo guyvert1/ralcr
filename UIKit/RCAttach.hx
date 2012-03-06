@@ -19,7 +19,11 @@ class RCAttach extends RCView {
 		this.id = id;
 		
 		try {
-		#if (flash && !nme)
+		#if nme
+			target = new MovieClip();
+			target.addChild ( new nme.display.Bitmap (nme.Assets.getBitmapData ( id ), nme.display.PixelSnapping.AUTO, true));
+			layer.addChild ( target );
+		#elseif (flash && !nme)
 			target = flash.Lib.attach ( id );
 			layer.addChild ( target );
 		#elseif (nme || js)

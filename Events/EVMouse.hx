@@ -54,9 +54,9 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 			else
 				this.target = target;
 		#end
-		return addEventListener(pos);
+		addEventListener( pos );
 	}
-	function addEventListener (?pos:haxe.PosInfos) :EVMouse {
+	function addEventListener (?pos:haxe.PosInfos) :Void {
 		#if (flash || nme)
 			switch (type) {
 				case UP: target.addEventListener (MouseEvent.MOUSE_UP, mouseHandler);
@@ -74,7 +74,8 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 				if (t.target == target && t.type == type) {
 					// Target is already used for this mouse event
 					trace("Target already in use by this event type. Called from "+pos);
-					return t.instance;
+					//return t.instance;
+					return;
 				}
 			}
 			targets.add ({target:target, type:type, instance:this});
@@ -90,7 +91,6 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 				default: trace("The mouse event you're trying to add does not exist. "+pos);
 			}
 		#end
-		return this;
 	}
 	function removeEventListener () {
 		#if (flash || nme)

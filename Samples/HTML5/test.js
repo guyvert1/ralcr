@@ -2672,7 +2672,7 @@ EVMouse = function(type,target,pos) {
 		$r = $t;
 		return $r;
 	}(this))).layer; else this.target = target;
-	return this.addEventListener(pos);
+	this.addEventListener(pos);
 }
 EVMouse.__name__ = ["EVMouse"];
 EVMouse.__super__ = RCSignal;
@@ -2687,7 +2687,7 @@ EVMouse.prototype.addEventListener = function(pos) {
 		var t = $it0.next();
 		if(t.target == this.target && t.type == this.type) {
 			haxe.Log.trace("Target already in use by this event type. Called from " + pos,{ fileName : "EVMouse.hx", lineNumber : 76, className : "EVMouse", methodName : "addEventListener"});
-			return t.instance;
+			return;
 		}
 	}
 	this.targets.add({ target : this.target, type : this.type, instance : this});
@@ -2717,9 +2717,8 @@ EVMouse.prototype.addEventListener = function(pos) {
 		this.target.onscroll = $closure(this,"mouseHandler");
 		break;
 	default:
-		haxe.Log.trace("The mouse event you're trying to add does not exist. " + pos,{ fileName : "EVMouse.hx", lineNumber : 90, className : "EVMouse", methodName : "addEventListener"});
+		haxe.Log.trace("The mouse event you're trying to add does not exist. " + pos,{ fileName : "EVMouse.hx", lineNumber : 91, className : "EVMouse", methodName : "addEventListener"});
 	}
-	return this;
 }
 EVMouse.prototype.removeEventListener = function() {
 	switch(this.type) {
@@ -3344,7 +3343,7 @@ RCAttach = function(x,y,id) {
 	try {
 		this.target = RCAssets.getFileWithKey(id);
 	} catch( e ) {
-		haxe.Log.trace(e + " : id=" + id,{ fileName : "RCAttach.hx", lineNumber : 28, className : "RCAttach", methodName : "new"});
+		haxe.Log.trace(e + " : id=" + id,{ fileName : "RCAttach.hx", lineNumber : 32, className : "RCAttach", methodName : "new"});
 	}
 }
 RCAttach.__name__ = ["RCAttach"];
@@ -4859,23 +4858,28 @@ RCAssets.prototype.loadSwf = function(key,URL,newDomain) {
 	})($closure(this,"errorHandler"),key,swf);
 }
 RCAssets.prototype.loadText = function(key,URL) {
+	var me = this;
 	var data = new HTTPRequest();
-	data.onProgress = (function(f,a1,a2) {
-		return function() {
-			return f(a1,a2);
-		};
-	})($closure(this,"progressHandler"),key,data);
-	data.onComplete = (function(f,a1,a2) {
-		return function() {
-			return f(a1,a2);
-		};
-	})($closure(this,"completeHandler"),key,data);
-	data.onError = (function(f,a1,a2) {
-		return function() {
-			return f(a1,a2);
-		};
-	})($closure(this,"errorHandler"),key,data);
-	data.readFile(URL);
+	if(data.result == null) {
+		data.onProgress = (function(f,a1,a2) {
+			return function() {
+				return f(a1,a2);
+			};
+		})($closure(this,"progressHandler"),key,data);
+		data.onComplete = (function(f,a1,a2) {
+			return function() {
+				return f(a1,a2);
+			};
+		})($closure(this,"completeHandler"),key,data);
+		data.onError = (function(f,a1,a2) {
+			return function() {
+				return f(a1,a2);
+			};
+		})($closure(this,"errorHandler"),key,data);
+		data.readFile(URL);
+	} else haxe.Timer.delay(function() {
+		me.completeHandler(key,data);
+	},10);
 }
 RCAssets.prototype.loadFont = function(key,URL) {
 	var fontType = "";
@@ -4905,7 +4909,7 @@ RCAssets.prototype.completeHandler = function(key,obj) {
 		this.swfList.set(key,obj);
 		break;
 	default:
-		haxe.Log.trace("This asset is not added to any list. key=" + key,{ fileName : "RCAssets.hx", lineNumber : 174, className : "RCAssets", methodName : "completeHandler"});
+		haxe.Log.trace("This asset is not added to any list. key=" + key,{ fileName : "RCAssets.hx", lineNumber : 184, className : "RCAssets", methodName : "completeHandler"});
 	}
 	this.onCompleteHandler();
 }
@@ -4929,7 +4933,7 @@ RCAssets.prototype.get = function(key,returnAsBitmap) {
 	if(returnAsBitmap == null) returnAsBitmap = true;
 	RCAssets.init();
 	if(this.photoList.exists(key)) return this.photoList.get(key).copy(); else if(this.dataList.exists(key)) return this.dataList.get(key); else if(this.swfList.exists(key)) return this.swfList.get(key);
-	haxe.Log.trace("Asset with key: " + key + "  was not found.",{ fileName : "RCAssets.hx", lineNumber : 237, className : "RCAssets", methodName : "get"});
+	haxe.Log.trace("Asset with key: " + key + "  was not found.",{ fileName : "RCAssets.hx", lineNumber : 247, className : "RCAssets", methodName : "get"});
 	return null;
 }
 RCAssets.prototype.__class__ = RCAssets;
