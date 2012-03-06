@@ -1,9 +1,16 @@
 //
-//  CAProperties
+//  CAObject.hx
+//	CoreAnimation
 //
 //  Created by Baluta Cristian on 2009-03-22.
-//  Copyright (c) 2009 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2009-2012 http://ralcr.com. All rights reserved.
 //
+
+/**
+ *  The base object that holds the properties which will be animated.
+ *  However, this class should not be instantiated directly.
+ *  Instantiate one transition from Transitions folder.
+ **/
 
 class CAObject {
 	
@@ -23,7 +30,7 @@ class CAObject {
 	public var repeatCount :Int;
 	public var autoreverses :Bool;
 	public var timingFunction :Dynamic;//Float -> Float -> Float -> Float -> Dynamic -> Float;
-	public var constraintBounds :RCRect;// used by kenburns and slide
+	public var constraintBounds :RCRect;// Used by kenburns and slide
 	public var delegate :CADelegate;
 	
 	
