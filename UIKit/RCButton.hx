@@ -24,7 +24,7 @@ class RCButton extends RCControl {
 		this.skin.hit.alpha = 0;
 		fixSkin();
 		
-		super (x, y, currentBackground.width, currentBackground.height);
+		super (x, y, currentBackground.width, currentBackground.height);trace("RCButton size "+this.size);
 	}
 	
 	override public function setState (state:RCControlState) {
@@ -83,7 +83,7 @@ class RCButton extends RCControl {
 			if (Reflect.field (skin.disabled, key) == null)
 				Reflect.setField (skin.disabled, key, Reflect.field (skin.normal, key));
 		}
-		currentBackground = skin.normal.background;
+		currentBackground = skin.normal.background;trace(currentBackground);trace(currentBackground.width);
 		currentImage = skin.normal.label;
 	}
 	

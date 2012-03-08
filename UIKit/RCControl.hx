@@ -67,38 +67,21 @@ class RCControl extends RCView {
 		setEnabled ( true );// This will configure the right mouse listeners
 		setState ( NORMAL );
 	}
+	
 	function configureDispatchers () {
+		
 		click = new EVMouse (EVMouse.CLICK, this);
 		press = new EVMouse (EVMouse.DOWN, this);
 		release = new EVMouse (EVMouse.UP, this);
 		over = new EVMouse (EVMouse.OVER, this);
 		out = new EVMouse (EVMouse.OUT, this);
-	}
-	function addListeners () :Void {
-		//
+		
 		click.addFirst ( clickHandler );
 		press.addFirst ( mouseDownHandler );
 		release.addFirst ( mouseUpHandler );
 		over.addFirst ( rollOverHandler );
 		out.addFirst ( rollOutHandler );
-		#if flash
-			layer.useHandCursor = true;
-			layer.buttonMode = true;
-		#end
 	}
-	function removeListeners () :Void {
-		//
-		click.remove ( clickHandler );
-		press.remove ( mouseDownHandler );
-		release.remove ( mouseUpHandler );
-		over.remove ( rollOverHandler );
-		out.remove ( rollOutHandler );
-		#if flash
-			layer.useHandCursor = false;
-			layer.buttonMode = false;
-		#end
-	}
-	
 	
 	/**
 	* Mouse Handlers
@@ -146,7 +129,17 @@ class RCControl extends RCView {
 	}
 	function setEnabled (c:Bool) :Bool {
 		enabled_ = c;
-		enabled_ ? addListeners() : removeListeners();
+		
+		click.enabled = enabled_;
+		press.enabled = enabled_;
+		release.enabled = enabled_;
+		over.enabled = enabled_;
+		out.enabled = enabled_;
+		#if flash
+			layer.useHandCursor = enabled_;
+			layer.buttonMode = enabled_;
+		#end
+		
 		return enabled_;
 	}
 	//
