@@ -28,14 +28,14 @@ class Fugu {
 					trace ( stack() );
 				}
 			}
-			if (Std.is (o, RCView)) {trace("remove rcview");
+			if (Std.is (o, RCView)) {
 				o.removeFromSuperView();
 			}
-			else {trace("remove displayobject");
+			else {
 				// This must be a native flash display object
 				var parent = null;
-				try { parent = o.parent; } catch (e:Dynamic) { null; }trace(parent);
-				if (parent != null) {trace(parent.contains ( o.layer ));if (parent.contains ( o )) parent.removeChild ( o );}
+				try { parent = o.parent; } catch (e:Dynamic) { null; }
+				if (parent != null) if (parent.contains ( o )) parent.removeChild ( o );
 			}
 		}
 		return true;

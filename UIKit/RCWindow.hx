@@ -23,11 +23,12 @@
 class RCWindow {
 
 #if (flash || nme)
-	// NME goes blank if you're trying to init this 2 static variables right now
+	// NME goes blank if you're trying to init static variables right now,
+	// there's no general rule but is safer to not do it
 	public static var target :MovieClip;
 	public static var stage :Stage;
-	public static var SCREEN_W :Float = flash.system.Capabilities.screenResolutionX;
-	public static var SCREEN_H :Float = flash.system.Capabilities.screenResolutionY;
+	public static var SCREEN_W :Float;
+	public static var SCREEN_H :Float;
 #elseif js
 	public static var target :HtmlDom = js.Lib.document.body;
 	public static var stage :HtmlDom = js.Lib.document;
@@ -56,6 +57,8 @@ class RCWindow {
 			stage.align = StageAlign.TOP_LEFT;
 			width = stage.stageWidth;
 			height = stage.stageHeight;
+			SCREEN_W = flash.system.Capabilities.screenResolutionX;
+			SCREEN_H = flash.system.Capabilities.screenResolutionY;
 			#if (cpp || neko) trace("dpiScale "+stage.dpiScale); #end
 		#elseif js
 			target.style.position = "absolute";
@@ -72,8 +75,8 @@ class RCWindow {
 				url.pop();
 			URL = url.join("/") + "/";// URL without swf name
 		#end
-		//RCNotificationCenter.addObserver ("fullscreen", fullScreenHandler);
-		RCNotificationCenter.addObserver ("resize", resizeHandler);
+		// RCNotificationCenter.addObserver ("fullscreen", fullScreenHandler);
+		//RCNotificationCenter.addObserver ("resize", resizeHandler);
 	}
 	
 	static function resizeHandler (w, h) {

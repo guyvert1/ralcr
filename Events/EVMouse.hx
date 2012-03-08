@@ -21,7 +21,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 	inline public static var DOUBLE_CLICK = "mousedoubleclick";
 	inline public static var WHEEL = "mousewheel";
 	
-	public var target :Dynamic;
+	public var target :Dynamic;// The original object
 	public var type :String;
 	public var e :MouseEvent;
 	var layer :DisplayObjectContainer;// Object that gets the events
