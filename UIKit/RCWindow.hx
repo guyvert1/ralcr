@@ -40,7 +40,9 @@ class RCWindow {
 	public static var width :Int;
 	public static var height :Int;
 	public static var backgroundColor (null, setBackgroundColor) :Int;
+	public static var scaleFactor :Float = 1;
 	static var init_ :Bool = false;
+	static var modalView :RCView;// Only one at a time
 	
 	
 	public static function init () {
@@ -54,6 +56,7 @@ class RCWindow {
 			stage.align = StageAlign.TOP_LEFT;
 			width = stage.stageWidth;
 			height = stage.stageHeight;
+			#if (cpp || neko) trace("dpiScale "+stage.dpiScale); #end
 		#elseif js
 			target.style.position = "absolute";
 			target.style.margin = "0px 0px 0px 0px";
@@ -137,11 +140,12 @@ class RCWindow {
 	 *	Add and remove views
 	 */
 	public static function addChild (child:RCView) :Void {
+		trace("add child "+child);
 		init();
 		if (child != null) {
 			child.viewWillAppearHandler();
 			child.parent = target;
-			#if flash
+			#if (flash || nme)
 				target.addChild ( child.layer );
 			#elseif js
 				target.appendChild ( child.layer );
@@ -164,4 +168,28 @@ class RCWindow {
 			#end
 		}
 	}
+	
+	
+	/**
+	 *  Add or remove a modal view controller
+	 *  Only one can exist at a given time
+	 **/
+	public static function addModalViewController (view:RCView) :Void {
+		modalView = view;
+		modalView.x = 0;//RCWindow.getCenterX ( view.width );
+		
+		CoreAnimation.add ( new CATween (modalView, {y:{fromValue:height, toValue:0}}, 0.5, 0, caequations.Cubic.IN_OUT) );
+		RCWindow.addChild ( modalView );
+	}
+	public static function dismissModalViewController () :Void {
+		if (modalView == null) return;
+		var anim = new CATween (modalView, {y:RCWindow.height}, 0.3, 0, caequations.Cubic.IN);
+			anim.delegate.animationDidStop = destroyModalViewController;
+		CoreAnimation.add ( anim );
+	}
+	public static function destroyModalViewController () :Void {
+		Fugu.safeDestroy ( modalView );
+		modalView = null;
+	}
+	
 }

@@ -14,25 +14,24 @@ class SKTabBarItem extends RCSkin {
 		
 		// Attach an object from library
 		normal.background = new RCView(0,0);
-		var sn :RCImage = RCAssets.getFileWithKey(linkage);
-		sn.x = 50;
+		var sn :RCImage = RCAssets.getFileWithKey( linkage );
+		sn.x = 25;
 		sn.y = 4;
 		normal.background.addChild ( sn );
-		normal.background.addChild ( new RCTextView (0, 72, 155, null, label, RCFontManager.getFont("regular", {color:0xCCCCCC, align:"center"})) );
+		normal.background.addChild ( new RCTextView (0, 33, 78, null, label, RCFontManager.getFont("regular", {color:0xCCCCCC, align:"center"})) );
 
 		normal.label = new RCView(0,0);
 		
 		highlighted.background = new RCView(0,0);
-		highlighted.background.addChild ( new RCRectangle (0, 0, 155, 90, 0xFFFFFF, 0.2, 6) );
-		var sh :RCImage = RCAssets.getFileWithKey(linkage+"Selected");
-		sh.x = 50;
+		highlighted.background.addChild ( new RCRectangle (0, 0, 78, 45, 0xFFFFFF, 0.2, 6) );
+		var sh :RCImage = RCAssets.getFileWithKey( linkage+"Selected" );
+		sh.x = 25;
 		sh.y = 4;
 		highlighted.background.addChild ( sh );
-		highlighted.background.addChild ( new RCTextView (0, 72, 155, null, label, RCFontManager.getFont("regular", {color:0xFFFFFF, align:"center"})) );
+		highlighted.background.addChild ( new RCTextView (0, 33, 78, null, label, RCFontManager.getFont("regular", {color:0xFFFFFF, align:"center"})) );
 		
 		
-		// Draws a background as a hit area
-		//background = new RCRectangle (0, 0, 155, 90, 0x333333, 0);
-		hit = new RCRectangle (0, 0, 155, 90, 0x333333, 0);
+		// Hit area
+		hit = new RCRectangle (0, 0, 78, 45, 0x333333, 0);
 	}
 }

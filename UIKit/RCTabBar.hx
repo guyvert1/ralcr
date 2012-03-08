@@ -1,5 +1,7 @@
 //
-//  RCTabBar - is a group of RCTabBarItem's aligned horiz
+//  RCTabBar.hx
+//	UIKit
+//	A group of RCTabBarItem's aligned horiz
 //
 //  Created by Baluta Cristian on 2012-02-02.
 //  Copyright (c) 2012 ralcr.com. All rights reserved.
@@ -10,17 +12,20 @@ class RCTabBar extends RCGroup<RCTabBarItem> {
 	public var selectedItem :RCTabBarItem;
 	public var selectedIndex (getIndex, setIndex) :Int;
 	public var didSelectItem :RCSignal<RCTabBarItem->Void>;// called when a new view is selected by the user (but not programatically)
-	var constructor2_ :Int->RCTabBarItem;
+	var constructor2_ :Int->RCTabBarItem;// RCGroup already have a constructor
+	var selectedIndex_ :Int;
 	var background :RCRectangle;
 	
 	
 	public function new (x, y, w:Float, h:Float, constructor2_:Int->RCTabBarItem) {
+		
 		this.constructor2_ = constructor2_;
-		this.selectedIndex = 0;
+		this.selectedIndex_ = -1;
 		didSelectItem = new RCSignal<RCTabBarItem->Void>();
-		super (x, y, 160, null, constructButton);
+		
+		super (x, y, 2, null, constructButton);
 		size.width = w;
-		size.height = w;
+		size.height = h;
 		
 		// Draw background
 		background = new RCRectangle (0, 0, this.size.width, this.size.height, 0x222222);
@@ -39,14 +44,16 @@ class RCTabBar extends RCGroup<RCTabBarItem> {
 	
 	
 	public function getIndex () :Int {
-		return selectedIndex;
+		return selectedIndex_;
 	}
-	public function setIndex (i:Int) :Int {
-		if (items == null) return selectedIndex;
-		items[selectedIndex].untoggle();
-		selectedIndex = i;
-		items[selectedIndex].toggle();
-		return selectedIndex;
+	public function setIndex (i:Int) :Int {trace(items);
+		if (items == null) return selectedIndex_;
+		trace("setIndex "+i);trace(selectedIndex_);
+		if (selectedIndex_ > -1)
+		items[selectedIndex_].untoggle();
+		selectedIndex_ = i;
+		items[selectedIndex_].toggle();
+		return selectedIndex_;
 	}
 	
 	public function enable (i:Int) :Void {
@@ -55,4 +62,9 @@ class RCTabBar extends RCGroup<RCTabBarItem> {
 	public function disable (i:Int) :Void {
 		items[i].enabled = false;
 	}
+	
+	override public function toString () :String {
+		return "[RCTabBar selectedIndex:"+selectedIndex_+"]";
+	}
+	
 }

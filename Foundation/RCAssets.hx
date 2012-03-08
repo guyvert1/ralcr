@@ -231,7 +231,10 @@ class RCAssets {
 		// In the last instance search for assets in each of the loaded swf files, might be there
 		else {
 			var classInstance :Dynamic = createInstance ( key );// Can be Sprite or MovieClip
-			if (classInstance == null) return null;
+			if (classInstance == null) {
+				trace("Asset with key: "+key+"  was not found in swf assets.");
+				return null;
+			}
 			
 			if (returnAsBitmap) {
 				return bitmapize ( classInstance );// Returns a RCView
@@ -282,7 +285,11 @@ class RCAssets {
 		
 		if (mc.width > 2880 || mc.height > 2880) return null;
 		
+		#if neko
+		var bitmapData = new BitmapData (Math.round (mc.width), Math.round (mc.height), true, {rgb:0x000000, a:0} );
+		#else
 		var bitmapData = new BitmapData (Math.round (mc.width), Math.round (mc.height), true, 0x000000ff );
+		#end
 			bitmapData.draw ( mc );
 		
 		var d = new RCView(0,0);

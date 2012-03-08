@@ -1,5 +1,6 @@
 //
-//  SharedObjects
+//  RCUserDefaults.hx
+//	Foundation
 //	They are available anytime you open the application from the same computer
 //
 //  Created by Baluta Cristian on 2009-01-09.

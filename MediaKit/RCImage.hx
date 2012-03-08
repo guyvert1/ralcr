@@ -152,8 +152,12 @@ class RCImage extends RCView {
 				
 				}
 				
-				bitmapData = new BitmapData (w, h, true, 0x000000ff);
-				bitmapData.draw ( loader.content );
+				#if neko
+					bitmapData = new BitmapData (w, h, true, {rgb:0x000000, a:0});
+				#else
+					bitmapData = new BitmapData (w, h, true, 0x000000ff);
+				#end
+					bitmapData.draw ( loader.content );
 				
 				var bitmap = new Bitmap (bitmapData, PixelSnapping.AUTO, true);
 				layer.removeChild ( loader );

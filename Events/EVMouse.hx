@@ -21,9 +21,10 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 	inline public static var DOUBLE_CLICK = "mousedoubleclick";
 	inline public static var WHEEL = "mousewheel";
 	
-	public var target :DisplayObjectContainer;
+	public var target :Dynamic;
 	public var type :String;
 	public var e :MouseEvent;
+	var layer :DisplayObjectContainer;// Object that gets the events
 	
 	#if js
 		// JS events do not permit to attach more than one listeners to a target
@@ -34,7 +35,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 	
 	/**
 	 *  @param type: the type of MouseEvent you want to listen to.
-	 *  @param target: displayobject you want to listen for events
+	 *  @param target: RCView you want to listen for events. Can be also directy a DisplayObjectContainer
 	 **/
 	public function new (type:String, target:Dynamic, ?pos:haxe.PosInfos) {
 		if (target == null) throw "Can't use a null target. " + pos;
@@ -42,31 +43,33 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 		super();
 		
 		this.type = type;
+		this.target = target;
+		
 		#if js
 			targets = new List<EVMouseRelationship>();
 			if (Std.is(target, JSView))
-				this.target = cast(target, JSView).layer;
-			else
-				this.target = target;
+				layer = cast(target, JSView).layer;
 		#else
 			if (Std.is(target, RCView))
-				this.target = cast(target, RCView).layer;
-			else
-				this.target = target;
+				layer = cast(target, RCView).layer;
 		#end
+		
+		if (layer == null)
+			layer = target;
+		
 		addEventListener( pos );
 	}
 	function addEventListener (?pos:haxe.PosInfos) :Void {
 		#if (flash || nme)
 			switch (type) {
-				case UP: target.addEventListener (MouseEvent.MOUSE_UP, mouseHandler);
-				case DOWN: target.addEventListener (MouseEvent.MOUSE_DOWN, mouseHandler);
-				case OVER: target.addEventListener (MouseEvent.MOUSE_OVER, mouseHandler);
-				case OUT: target.addEventListener (MouseEvent.MOUSE_OUT, mouseHandler);
-				case MOVE: target.addEventListener (MouseEvent.MOUSE_MOVE, mouseHandler);
-				case CLICK: target.addEventListener (MouseEvent.CLICK, mouseHandler);
-				case DOUBLE_CLICK: target.addEventListener (MouseEvent.DOUBLE_CLICK, mouseHandler);
-				case WHEEL: target.addEventListener (MouseEvent.MOUSE_WHEEL, mouseHandler);
+				case UP:			layer.addEventListener (MouseEvent.MOUSE_UP, mouseHandler);
+				case DOWN: 			layer.addEventListener (MouseEvent.MOUSE_DOWN, mouseHandler);
+				case OVER: 			layer.addEventListener (MouseEvent.MOUSE_OVER, mouseHandler);
+				case OUT: 			layer.addEventListener (MouseEvent.MOUSE_OUT, mouseHandler);
+				case MOVE: 			layer.addEventListener (MouseEvent.MOUSE_MOVE, mouseHandler);
+				case CLICK: 		layer.addEventListener (MouseEvent.CLICK, mouseHandler);
+				case DOUBLE_CLICK:	layer.addEventListener (MouseEvent.DOUBLE_CLICK, mouseHandler);
+				case WHEEL:			layer.addEventListener (MouseEvent.MOUSE_WHEEL, mouseHandler);
 				default: trace("The mouse event you're trying to add does not exist. "+pos);
 			}
 		#elseif js
@@ -80,14 +83,14 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 			}
 			targets.add ({target:target, type:type, instance:this});
 			switch (type) {
-				case UP: target.onmouseup = mouseHandler;
-				case DOWN: target.onmousedown = mouseHandler;
-				case OVER: target.onmouseover = mouseHandler;
-				case OUT: target.onmouseout = mouseHandler;
-				case MOVE: target.onmousemove = mouseHandler;
-				case CLICK: target.onclick = mouseHandler;
-				case DOUBLE_CLICK: target.ondblclick = mouseHandler;
-				case WHEEL: target.onscroll = mouseHandler;
+				case UP:			layer.onmouseup = mouseHandler;
+				case DOWN:			layer.onmousedown = mouseHandler;
+				case OVER:			layer.onmouseover = mouseHandler;
+				case OUT:			layer.onmouseout = mouseHandler;
+				case MOVE:			layer.onmousemove = mouseHandler;
+				case CLICK:			layer.onclick = mouseHandler;
+				case DOUBLE_CLICK:	layer.ondblclick = mouseHandler;
+				case WHEEL:			layer.onscroll = mouseHandler;
 				default: trace("The mouse event you're trying to add does not exist. "+pos);
 			}
 		#end
@@ -95,25 +98,25 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 	function removeEventListener () {
 		#if (flash || nme)
 			switch (type) {
-				case UP: target.removeEventListener (MouseEvent.MOUSE_UP, mouseHandler);
-				case DOWN: target.removeEventListener (MouseEvent.MOUSE_DOWN, mouseHandler);
-				case OVER: target.removeEventListener (MouseEvent.MOUSE_OVER, mouseHandler);
-				case OUT: target.removeEventListener (MouseEvent.MOUSE_OUT, mouseHandler);
-				case MOVE: target.removeEventListener (MouseEvent.MOUSE_MOVE, mouseHandler);
-				case CLICK: target.removeEventListener (MouseEvent.CLICK, mouseHandler);
-				case DOUBLE_CLICK: target.removeEventListener (MouseEvent.DOUBLE_CLICK, mouseHandler);
-				case WHEEL: target.removeEventListener (MouseEvent.MOUSE_WHEEL, mouseHandler);
+				case UP:			layer.removeEventListener (MouseEvent.MOUSE_UP, mouseHandler);
+				case DOWN:			layer.removeEventListener (MouseEvent.MOUSE_DOWN, mouseHandler);
+				case OVER:			layer.removeEventListener (MouseEvent.MOUSE_OVER, mouseHandler);
+				case OUT:			layer.removeEventListener (MouseEvent.MOUSE_OUT, mouseHandler);
+				case MOVE:			layer.removeEventListener (MouseEvent.MOUSE_MOVE, mouseHandler);
+				case CLICK:			layer.removeEventListener (MouseEvent.CLICK, mouseHandler);
+				case DOUBLE_CLICK:	layer.removeEventListener (MouseEvent.DOUBLE_CLICK, mouseHandler);
+				case WHEEL:			layer.removeEventListener (MouseEvent.MOUSE_WHEEL, mouseHandler);
 			}
 		#elseif js
 			switch (type) {
-				case UP: target.onmouseup = null;
-				case DOWN: target.onmousedown = null;
-				case OVER: target.onmouseover = null;
-				case OUT: target.onmouseout = null;
-				case MOVE: target.onmousemove = null;
-				case CLICK: target.onclick = null;
-				case DOUBLE_CLICK: target.ondblclick = null;
-				case WHEEL: target.onscroll = null;
+				case UP:			layer.onmouseup = null;
+				case DOWN:			layer.onmousedown = null;
+				case OVER:			layer.onmouseover = null;
+				case OUT:			layer.onmouseout = null;
+				case MOVE:			layer.onmousemove = null;
+				case CLICK:			layer.onclick = null;
+				case DOUBLE_CLICK:	layer.ondblclick = null;
+				case WHEEL:			layer.onscroll = null;
 			}
 		#end
 	}

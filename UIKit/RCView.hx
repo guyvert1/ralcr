@@ -134,8 +134,8 @@ class RCView extends RCDisplayObject {
 	override public function removeChild (child:RCView) :Void {
 		if (child == null) return;
 		child.viewWillDisappearHandler();
-		child.parent = null;
 		layer.removeChild ( child.layer );
+		child.parent = null;
 		//child.viewDidDisappearHandler();
 	}
 	public function removeFromSuperView () :Void {

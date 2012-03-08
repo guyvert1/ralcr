@@ -1,3 +1,4 @@
+// The properties a display object must have
 
 class RCDisplayObject {
 	
@@ -55,22 +56,22 @@ class RCDisplayObject {
 		return alpha = a;// Override it
 	}
 	public function setX (x:Float) :Float {
-		return this.x = x;// Override it
+		return this.x = x*RCWindow.scaleFactor;// Override it
 	}
 	public function setY (y:Float) :Float {
-		return this.y = y;// Override it
+		return this.y = y*RCWindow.scaleFactor;// Override it
 	}
 	public function getWidth () :Float {
-		return width;// Override it
+		return width/RCWindow.scaleFactor;// Override it
 	}
 	public function setWidth (w:Float) :Float {
-		return width = w;// Override it
+		return width = w*RCWindow.scaleFactor;// Override it
 	}
 	public function getHeight () :Float {
-		return height;// Override it
+		return height/RCWindow.scaleFactor;// Override it
 	}
 	public function setHeight (h:Float) :Float {
-		return height = h;// Override it
+		return height = h*RCWindow.scaleFactor;// Override it
 	}
 	public function setRotation (r:Float) :Float {
 		return rotation = r;// Override it
@@ -175,9 +176,9 @@ class RCDisplayObject {
 	
 	
 	/**
-	 *  Pass an animation
+	 *  Start an animation
 	 **/
-	public function animate (obj:CAObject) :Void {
+	public function addAnimation (obj:CAObject) :Void {
 		CoreAnimation.add ( this.caobj = obj );
 	}
 	
@@ -187,5 +188,10 @@ class RCDisplayObject {
 	 */
 	public function destroy () :Void {
 		CoreAnimation.remove ( caobj );
+		size = null;
+	}
+	
+	public function toString () :String {
+		return "[RCView bounds:"+bounds+"]";
 	}
 }

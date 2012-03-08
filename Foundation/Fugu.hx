@@ -11,7 +11,7 @@ class Fugu {
 	/**
 	 * Destroy and/or remove from DisplayObjectList a list of objects
 	 */
-	public static function safeDestroy (obj:Dynamic, ?destroy:Null<Bool>, ?pos:haxe.PosInfos) :Bool {
+	public static function safeDestroy (obj:Dynamic, ?destroy:Null<Bool>=true, ?pos:haxe.PosInfos) :Bool {
 		
 		if (obj == null) return false;
 		
@@ -19,21 +19,24 @@ class Fugu {
 		
 		for (o in objs) {
 			if (o == null)	continue;
-			if (destroy == true || destroy == null)
+			if (destroy) {
 				try {
 					o.destroy();
 				}
 				catch (e:Dynamic) {
 					trace ("[Error when destroying object: "+o+", called from "+Std.string(pos)+"]");
-					trace (haxe.Stack.toString ( haxe.Stack.exceptionStack() ));
+					trace ( stack() );
 				}
-			#if flash
-				var parent = null; try { parent = o.layer.parent; } catch (e:Dynamic) { null; }
-				if (parent != null) if (parent.contains ( o.layer )) parent.removeChild ( o.layer );
-			#elseif js
-				var parent = null; try { parent = o.parent; } catch (e:Dynamic) { null; }
-				if (parent != null) if (parent.contains ( o )) parent.removeChild ( o );
-			#end
+			}
+			if (Std.is (o, RCView)) {trace("remove rcview");
+				o.removeFromSuperView();
+			}
+			else {trace("remove displayobject");
+				// This must be a native flash display object
+				var parent = null;
+				try { parent = o.parent; } catch (e:Dynamic) { null; }trace(parent);
+				if (parent != null) {trace(parent.contains ( o.layer ));if (parent.contains ( o )) parent.removeChild ( o );}
+			}
 		}
 		return true;
 	}

@@ -11,4 +11,7 @@ class RCTabBarItem extends RCButtonRadio {
 		badgeValue = value;
 		return value;
 	}
+	override public function toString () :String {
+		return "[RCTabBarItem ]";
+	}
 }

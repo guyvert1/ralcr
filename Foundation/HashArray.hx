@@ -11,7 +11,8 @@ class HashArray<T> extends Hash<T> {
 		super();
 		array = new Array<String>();
 	}
-	
+	// In neko this methods are inlined
+#if !neko
 	override public function set (key : String, value : T) : Void {
 		if (!super.exists( key ))
 			array.push ( key );
@@ -22,7 +23,7 @@ class HashArray<T> extends Hash<T> {
 		array.remove( key );
 		return super.remove( key );
 	}
-	
+#end
 	public function insert (pos : Int, key : String, value : T) : Void {
 		if (super.exists( key )) return;
 		array.insert (pos, key);

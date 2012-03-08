@@ -17,13 +17,21 @@ class RCAppDelegate extends RCView {
 		RCNotificationCenter.addObserver ("fullscreen", fullscreen);
 		
 		applicationDidFinishLaunching();
+		#if (nme && (cpp || neko))
+			RCWindow.stage.onQuit = applicationWillTerminate;
+		#end
 	}
 	
 	// Override this methods
 	public function applicationDidFinishLaunching () :Void {}
 	public function applicationDidBecomeActive () :Void {}
 	public function applicationWillEnterForeground () :Void {}
-	public function applicationWillTerminate () :Void {}
+	public function applicationWillTerminate () :Void {
+		trace("applicationWillTerminate");
+		#if (nme && (cpp || neko))
+			nme.Lib.close();
+		#end
+	}
 	public function resize (w:Int, h:Int) :Void {}
 	public function fullscreen (b:Bool) :Void {}
 }

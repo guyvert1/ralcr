@@ -9,34 +9,44 @@ class RCTabBarController extends RCView {
 	
 	var labels :Array<String>;
 	var symbols :Array<String>;
+	var controllers :Array<Class<Dynamic>>;
 	var constructor_ :Int->RCTabBarItem;
 	
 	public var placeholder :RCView;
 	public var tabBar :RCTabBar;
-	public var viewControllers :Array<Dynamic>;
+	public var viewControllers :Array<RCView>;
 	public var selectedIndex (getIndex, setIndex) :Int;
 	
-	public var didSelectViewController :RCSignal<RCTabBarController->Dynamic->Void>;
+	public var didSelectViewController :RCSignal<Dynamic->Void>;
 	
 	
 	public function new (x, y, w:Float, h:Float, ?constructor_:Int->RCTabBarItem) {
+		
 		super (x, y, w, h);
-		this.constructor_ = constructor_;
-		viewControllers = new Array<Dynamic>();
-		didSelectViewController = new RCSignal<RCTabBarController->Dynamic->Void>();
+		
+		this.constructor_ = (constructor_ == null) ? constructButton : constructor_;
+		viewControllers = new Array <RCView>();
+		didSelectViewController = new RCSignal <Dynamic->Void>();
 		
 		placeholder = new RCView (0, 0);
 		this.addChild ( placeholder );
 	}
-	public function initWithLabels (labels:Array<String>, symbols:Array<String>) {
+	
+	/**
+	 *  
+	 **/
+	public function initWithLabels (labels:Array<String>, symbols:Array<String>, controllers:Array<Class<Dynamic>>) {
+		
 		this.labels = labels;
 		this.symbols = symbols;
+		this.controllers = controllers;
 		
-		tabBar = new RCTabBar (0, size.height-50, size.width, 50, constructor_ == null ? constructButton : constructor_);
+		tabBar = new RCTabBar (0, size.height-50, size.width, 50, constructor_);
 		this.addChild ( tabBar );
 		tabBar.add ( labels );
 		tabBar.didSelectItem.add ( didSelectItemHandler );
 	}
+	
 	/**
 	 *  Default constructor for the RCTabBarItem
 	 *  Pass a different constructor if you want to use a custom RCTabBarItem
@@ -46,6 +56,7 @@ class RCTabBarController extends RCView {
 		var b = new RCTabBarItem (0, 0, s);
 		return b;
 	}
+	
 	function didSelectItemHandler (item:RCTabBarItem) :Void {
 		var i = 0;
 		for (it in tabBar.items) {
@@ -61,9 +72,20 @@ class RCTabBarController extends RCView {
 	public function getIndex () :Int {
 		return tabBar.selectedIndex;
 	}
-	public function setIndex (i:Int) :Int {
+	public function setIndex (i:Int) :Int {trace("set index "+i);
 		tabBar.setIndex ( i );
-		didSelectViewController.dispatch ( this, getViewController(i) );
+		
+		var view = getViewController(i);
+		if (view == null) try{
+			view = Type.createInstance ( controllers[i], [] );
+			setViewController (i, view);
+		}
+		catch(e:Dynamic){ trace(e); Fugu.stack(); }
+		
+		Fugu.safeRemove ( viewControllers );
+		placeholder.addChild ( view );
+		didSelectViewController.dispatch ( view );
+		
 		return i;
 	}
 	
