@@ -36,7 +36,7 @@ class RCGroup<T:RCView> extends RCView {
 	
 	/**
 	 *	Add items
-	 *	params = a list of parameters to pass to the function that returns the element
+	 *	@param params =
 	 */
 	public function add (params:Array<Dynamic>, ?alternativeConstructor:RCIndexPath->T) :Void {
 		

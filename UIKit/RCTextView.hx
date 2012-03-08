@@ -34,7 +34,8 @@ class RCTextView extends RCView {
 	public function new (x:Float, y:Float, w:Null<Float>, h:Null<Float>, str:String, rcfont:RCFont) {
 		
 		super (Math.round(x), Math.round(y), w, h);
-		this.rcfont = rcfont.copy();// This step is very important, otherwise the format does not exist correctly
+		// This step is very important, otherwise the TextFormat will not be created
+		this.rcfont = rcfont.copy();
 #if js
 		setWidth ( w );
 		setHeight ( h );
@@ -61,14 +62,21 @@ class RCTextView extends RCView {
 		target = new TextField();
 		target.embedFonts = rcfont.embedFonts;
 		target.type = rcfont.type;
-		target.autoSize = switch (rcfont.align) {
-			case "center": flash.text.TextFieldAutoSize.CENTER;
-			case "right": flash.text.TextFieldAutoSize.RIGHT;
-			default : flash.text.TextFieldAutoSize.LEFT;
-		};
+		
 		#if flash
+			// AutoSize does not work on NME cpp and neko targets
+			target.autoSize = switch (rcfont.align) {
+				case "center": flash.text.TextFieldAutoSize.CENTER;
+				case "right": flash.text.TextFieldAutoSize.RIGHT;
+				default : flash.text.TextFieldAutoSize.LEFT;
+			};
+			// antiAliasType and sharpness does not exist in NME
 			target.antiAliasType = rcfont.antiAliasType;
 			target.sharpness = rcfont.sharpness;
+			//if (rcfont.style != null) target.styleSheet = rcfont.style;
+		#else
+			// If NME, autoSize the textfield to left, will align it later
+			target.autoSize = flash.text.TextFieldAutoSize.LEFT;
 		#end
 		target.wordWrap = (size.width == null) ? false : true;
 		target.multiline = (size.height == 0) ? false : true;
@@ -84,11 +92,9 @@ class RCTextView extends RCView {
 						case "right": TextFormatAlign.RIGHT;
 						default: TextFormatAlign.LEFT;
 					};
-		target.defaultTextFormat = format;
-		//if (rcfont.format != null) target.setTextFormat ( rcfont.format );
-		#if flash
-			if (rcfont.style  != null) target.styleSheet = rcfont.style;
-		#end
+		target.defaultTextFormat = format;// This approach doesn't work on NME
+		target.setTextFormat ( format );
+		
 		layer.addChild ( target );
 	}
 	
@@ -143,11 +149,14 @@ class RCTextView extends RCView {
 	
 	public function setText (str:String) :String {
 		#if (flash || nme)
+			
 			if (rcfont.html)
 				target.htmlText = str;
 			else
 				target.text = str;
+			
 		#elseif js
+			
 			if (rcfont.html) {
 				layer.innerHTML = str;
 			}
@@ -162,6 +171,17 @@ class RCTextView extends RCView {
 			}
 			size.width = getWidth();
 			//setWidth ( size.width );
+		#end
+		
+		#if nme
+			// Align the text by doing some math for NME 
+			// because align is not supported in combination with autoSize
+			if (size.width != null)
+				target.x = switch (rcfont.align) {
+						case "center": Math.round ((size.width - target.width)/2);
+						case "right": Math.round (size.width - target.width);
+						default: 0;
+					}; 
 		#end
 		
 		return str;

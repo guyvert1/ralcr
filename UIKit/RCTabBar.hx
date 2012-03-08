@@ -58,10 +58,25 @@ class RCTabBar extends RCGroup<RCTabBarItem> {
 	
 	public function enable (i:Int) :Void {
 		items[i].enabled = true;
+		items[i].alpha = 1;
 	}
 	public function disable (i:Int) :Void {
 		items[i].enabled = false;
+		items[i].alpha = 0.4;
 	}
+	
+	override public function keepItemsArranged () :Void {
+		
+		// The gap between the left corners of 2 items
+		gapX = Math.round ( size.width / items.length );
+		
+		// iterate over items
+		for (i in 0...items.length) {
+			items[i].x = i*gapX;
+		}
+		update.dispatch();
+	}
+	
 	
 	override public function toString () :String {
 		return "[RCTabBar selectedIndex:"+selectedIndex_+"]";

@@ -1,13 +1,10 @@
 //
-//  RCTextInput
+//  RCTextInput.hx
 //
 //  Created by Baluta Cristian on 2008-03-22.
-//  Copyright (c) 2008 www.ralcr.com. All rights reserved.
+//  Copyright (c) 2008-2012 www.ralcr.com. All rights reserved.
 //
 
-#if (flash || (flash && nme))
-	import flash.text.AntiAliasType;
-#end
 #if (flash || nme)
 	import flash.text.TextField;
 	import flash.text.TextFieldType;
@@ -17,6 +14,9 @@
 	import flash.events.MouseEvent;
 	import flash.events.KeyboardEvent;
 	import flash.events.FocusEvent;
+	#if flash
+		import flash.text.AntiAliasType;
+	#end
 #elseif js
 	import js.Dom;
 	import RCView;
@@ -38,6 +38,7 @@ class RCTextInput extends RCControl {
 		addChild ( textView );
 		
 		#if flash
+			textView.target.type = flash.text.TextFieldType.INPUT;
 /*			textView.target.type = TextFieldType.INPUT;
 			textView.target.autoSize = TextFieldAutoSize.NONE;
 			textView.target.antiAliasType = rcfont.antiAliasType;
@@ -45,6 +46,8 @@ class RCTextInput extends RCControl {
 			textView.target.wordWrap = (size.width == null) ? false : true;
 			textView.target.multiline = (size.height == 0) ? false : true;
 			textView.target.selectable = true;*/
+		#elseif js
+			
 		#end
 	}
 	public function getText() :String {
@@ -75,11 +78,9 @@ class RCTextInput extends RCControl {
 		
 		layer.addChild ( target );*/
 	}
-	override function addListeners () :Void {
-		super.addListeners();
-	}
-	override function removeListeners () :Void {
-		super.removeListeners();
+	override function setEnabled (c:Bool) :Bool {
+		super.setEnabled ( c );
+		return c;
 	}
 	
 	

@@ -24,7 +24,7 @@ class RCWindow {
 
 #if (flash || nme)
 	// NME goes blank if you're trying to init static variables right now,
-	// there's no general rule but is safer to not do it
+	// Not all of them on all targets but is safer to not init them here.
 	public static var target :MovieClip;
 	public static var stage :Stage;
 	public static var SCREEN_W :Float;

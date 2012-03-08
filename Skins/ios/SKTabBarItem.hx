@@ -13,7 +13,7 @@ class SKTabBarItem extends RCSkin {
 		super (colors);
 		
 		// Attach an object from library
-		normal.background = new RCView(0,0);
+		normal.background = new RCView(0, 0, 80, 50);
 		var sn :RCImage = RCAssets.getFileWithKey( linkage );
 		sn.x = 25;
 		sn.y = 4;
