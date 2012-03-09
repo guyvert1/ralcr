@@ -1,6 +1,6 @@
 //
 //  RCButton.hx
-//	UIKiit
+//	UIKit
 //
 //  Created by Baluta Cristian on 2008-03-23.
 //  Copyright (c) 2008-2012 www.ralcr.com. All rights reserved.
@@ -24,7 +24,7 @@ class RCButton extends RCControl {
 		this.skin.hit.alpha = 0;
 		fixSkin();
 		
-		super (x, y, currentBackground.width, currentBackground.height);trace("RCButton size "+this.size);
+		super (x, y, currentBackground.width, currentBackground.height);
 	}
 	
 	override public function setState (state:RCControlState) {
@@ -32,7 +32,7 @@ class RCButton extends RCControl {
 		if (state_ == state) return;
 		
 		// Remove current state from display list
-		Fugu.safeRemove ( [currentBackground, currentImage] );//.removeFromSuperView();
+		Fugu.safeRemove ( [currentBackground, currentImage] );
 		
 		switch (state) {
 			case NORMAL :
@@ -83,7 +83,8 @@ class RCButton extends RCControl {
 			if (Reflect.field (skin.disabled, key) == null)
 				Reflect.setField (skin.disabled, key, Reflect.field (skin.normal, key));
 		}
-		currentBackground = skin.normal.background;trace(currentBackground);trace(currentBackground.width);
+		
+		currentBackground = skin.normal.background;
 		currentImage = skin.normal.label;
 	}
 	

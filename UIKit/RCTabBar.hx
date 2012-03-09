@@ -73,6 +73,7 @@ class RCTabBar extends RCGroup<RCTabBarItem> {
 		// iterate over items
 		for (i in 0...items.length) {
 			items[i].x = i*gapX;
+			items[i].y = 3;
 		}
 		update.dispatch();
 	}

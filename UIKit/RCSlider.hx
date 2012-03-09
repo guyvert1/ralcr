@@ -14,6 +14,7 @@ private enum Direction {
 
 class RCSlider extends RCControl {
 	
+	var init_ :Bool;
 	var value_ :Float;
 	var minValue_ :Float;
 	var maxValue_ :Float;
@@ -36,16 +37,26 @@ class RCSlider extends RCControl {
 	public var valueChanged :RCSignal<RCSlider->Void>;// sliders, etc.
 	
 	
-	public function new (x, y, w, h, skin:RCSkin) {
+	public function new (x, y, w, h, ?skin:RCSkin) {
+		
+		this.init_ = false;
 		this.moving_ = false;
 		this.minValue_ = 0.0;
 		this.maxValue_ = 100.0;
 		this.value_ = 0.0;
+		this.direction_ = (w > h) ? HORIZONTAL : VERTICAL;// Decide the direction of movement
+		if (skin == null)
+			skin = new haxe.SKSlider();// If not otherwise specified use by default this Skin
 		this.skin = skin;
-		super (x, y, w, h);// Important to init the superclass at this point
+		
+		// This is the right moment to call super
+		super (x, y, w, h);
+		
 		viewDidAppear.add ( viewDidAppear_ );
 	}
-	public function viewDidAppear_(){
+	
+	function viewDidAppear_(){
+		
 		// Resize skin elements based on the width and height
 		sliderNormal = skin.normal.background;
 		if (sliderNormal == null) sliderNormal = new RCView(0,0);
@@ -63,14 +74,16 @@ class RCSlider extends RCControl {
 		addChild ( sliderHighlighted );
 		addChild ( scrubber );
 		
-		// Decide the direction of movement
-		direction_ = (size.width > size.height) ? HORIZONTAL : VERTICAL;
-		
 		// When the symbol is pressed start to move the slider
 		press.add ( mouseDownHandler );
 		over.add ( rollOverHandler );
 		out.add ( rollOutHandler );
+		
+		init_ = true;
+		
+		setValue ( value_ );
 	}
+	
 	override function configureDispatchers () {
 		super.configureDispatchers();
 		valueChanged = new RCSignal<RCSlider->Void>();
@@ -134,8 +147,13 @@ class RCSlider extends RCControl {
 	 * Set the scrubber position based on the new value
 	 */
 	public function setValue (v:Float) :Float {
-		var x1=0.0, x2=0.0;
+		
 		value_ = v;
+		
+		if (!init_) return v;
+		
+		var x1=0.0, x2=0.0;
+		
 		switch (direction_) {
 			case HORIZONTAL:
 				x2 = size.width - scrubber.width;

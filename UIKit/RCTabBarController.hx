@@ -69,10 +69,17 @@ class RCTabBarController extends RCView {
 	}
 	
 	
+	
+	/**
+	 *  selectedIndex getter and setter
+	 **/
 	public function getIndex () :Int {
 		return tabBar.selectedIndex;
 	}
-	public function setIndex (i:Int) :Int {trace("set index "+i);
+	public function setIndex (i:Int) :Int {
+		trace("setIndex "+i);
+		if (tabBar.selectedIndex == i) return i;// Can't select twice the same element
+		
 		tabBar.setIndex ( i );
 		
 		var view = getViewController(i);
