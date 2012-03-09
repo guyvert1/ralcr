@@ -5,7 +5,7 @@
 //  Copyright (c) 2012 ralcr.com. All rights reserved.
 //
 
-package ios;
+package haxe;
 
 class SKSegment extends RCSkin {
 	

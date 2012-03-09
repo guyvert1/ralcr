@@ -16,19 +16,18 @@ class SKTabBarItem extends RCSkin {
 		normal.background = new RCView(0, 0, 80, 50);
 		var sn :RCImage = RCAssets.getFileWithKey( linkage );
 		sn.x = 25;
-		sn.y = 4;
+		sn.y = 3;
 		normal.background.addChild ( sn );
-		normal.background.addChild ( new RCTextView (0, 33, 78, null, label, RCFontManager.getFont("regular", {color:0xCCCCCC, align:"center"})) );
-
-		normal.label = new RCView(0,0);
+		normal.label = new RCTextView (0, 30, 78, null, label, RCFontManager.getFont("regular", {color:0xCCCCCC, align:"center"}));
+		
 		
 		highlighted.background = new RCView(0,0);
 		highlighted.background.addChild ( new RCRectangle (0, 0, 78, 45, 0xFFFFFF, 0.2, 6) );
 		var sh :RCImage = RCAssets.getFileWithKey( linkage+"Selected" );
 		sh.x = 25;
-		sh.y = 4;
+		sh.y = 3;
 		highlighted.background.addChild ( sh );
-		highlighted.background.addChild ( new RCTextView (0, 33, 78, null, label, RCFontManager.getFont("regular", {color:0xFFFFFF, align:"center"})) );
+		highlighted.label = new RCTextView (0, 30, 78, null, label, RCFontManager.getFont("regular", {color:0xFFFFFF, align:"center"}));
 		
 		
 		// Hit area
