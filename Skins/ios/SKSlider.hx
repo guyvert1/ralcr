@@ -29,7 +29,7 @@ class SKSlider extends RCSkin {
 		var srs = "Resources/ios/RCSlider/RSelected.png";
 		var sss = "Resources/ios/RCSlider/ScrubberSelected.png";
 		highlighted.background = new RCImageStretchable (0, 0, sls, sms, srs);
-		normal.otherView = new RCImage (0, 0, sss);
+		highlighted.otherView = new RCImage (0, 0, sss);
 		
 		// Creates a transparent background for mouse hit area
 		hit = new RCView (0, 0);

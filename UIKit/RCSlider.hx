@@ -59,15 +59,18 @@ class RCSlider extends RCControl {
 		
 		// Resize skin elements based on the width and height
 		sliderNormal = skin.normal.background;
-		if (sliderNormal == null) sliderNormal = new RCView(0,0);
+		if (sliderNormal == null)
+			sliderNormal = new RCView(0,0);
 		sliderNormal.setWidth ( size.width );
 		
 		sliderHighlighted = skin.highlighted.background;
-		if (sliderHighlighted == null) sliderHighlighted = new RCView(0,0);
+		if (sliderHighlighted == null)
+			sliderHighlighted = new RCView(0,0);
 		sliderHighlighted.setWidth ( size.width );
 		
 		scrubber = skin.normal.otherView;
-		if (scrubber == null) scrubber = new RCView(0,0);
+		if (scrubber == null)
+			scrubber = new RCView(0,0);
 		scrubber.y = Math.round ((size.height - scrubber.height)/2);
 		
 		addChild ( sliderNormal );
@@ -99,7 +102,6 @@ class RCSlider extends RCControl {
 	 *	Functions to move the slider
 	 */
 	override function mouseDownHandler (e:EVMouse) :Void {
-		trace("mouseDownHandler");
 		moving_ = true;
 		mouseUpOverStage_.add ( mouseUpHandler );
 		mouseMoveOverStage_.add ( mouseMoveHandler );
@@ -123,18 +125,18 @@ class RCSlider extends RCControl {
 			case HORIZONTAL:
 				//y0 = scrubber.x;
 				y2 = size.width - scrubber.width;
-				y0 = Zeta.limitsInt (this.mouseX -scrubber.width/2, 0, y2);
+				y0 = Zeta.limitsInt (this.mouseX - scrubber.width/2, 0, y2);
 			case VERTICAL:
 				//y0 = scrubber.y;
 				y2 = size.height - scrubber.height;
-				y0 = Zeta.limitsInt (this.mouseY-scrubber.height/2, 0, y2);
+				y0 = Zeta.limitsInt (this.mouseY - scrubber.height/2, 0, y2);
 		}
 		
 		// set the new value
 		setValue ( Zeta.lineEquation (minValue_, maxValue_,  y0, y1, y2) );
 		
-		#if (flash || nme)
-			//e.updateAfterEvent();
+		#if flash
+			e.updateAfterEvent();
 		#end
 	}
 	
@@ -158,6 +160,7 @@ class RCSlider extends RCControl {
 			case HORIZONTAL:
 				x2 = size.width - scrubber.width;
 				scrubber.x = Zeta.lineEquationInt (x1, x2,  v, minValue_, maxValue_);
+				scrubber.y = Math.round ((size.height - scrubber.height)/2);
 				sliderHighlighted.setWidth ( scrubber.x + scrubber.width/2 );
 			case VERTICAL:
 				x2 = size.height - scrubber.height;

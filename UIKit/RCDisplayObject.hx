@@ -158,11 +158,10 @@ class RCDisplayObject {
 		setHeight ( lastH_ );
 	}
 	
-	
+	// Get mouse position
 	function getMouseX () :Float {
 		return 0;
 	}
-
 	function getMouseY () :Float {
 		return 0;
 	}

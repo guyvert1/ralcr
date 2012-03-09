@@ -431,25 +431,16 @@ RCControl.prototype.onOver = function() {
 RCControl.prototype.onOut = function() {
 }
 RCControl.prototype.configureDispatchers = function() {
-	this.click = new EVMouse("mouseclick",this,{ fileName : "RCControl.hx", lineNumber : 71, className : "RCControl", methodName : "configureDispatchers"});
-	this.press = new EVMouse("mousedown",this,{ fileName : "RCControl.hx", lineNumber : 72, className : "RCControl", methodName : "configureDispatchers"});
-	this.release = new EVMouse("mouseup",this,{ fileName : "RCControl.hx", lineNumber : 73, className : "RCControl", methodName : "configureDispatchers"});
-	this.over = new EVMouse("mouseover",this,{ fileName : "RCControl.hx", lineNumber : 74, className : "RCControl", methodName : "configureDispatchers"});
-	this.out = new EVMouse("mouseout",this,{ fileName : "RCControl.hx", lineNumber : 75, className : "RCControl", methodName : "configureDispatchers"});
-}
-RCControl.prototype.addListeners = function() {
-	this.click.addFirst($closure(this,"clickHandler"),{ fileName : "RCControl.hx", lineNumber : 79, className : "RCControl", methodName : "addListeners"});
-	this.press.addFirst($closure(this,"mouseDownHandler"),{ fileName : "RCControl.hx", lineNumber : 80, className : "RCControl", methodName : "addListeners"});
-	this.release.addFirst($closure(this,"mouseUpHandler"),{ fileName : "RCControl.hx", lineNumber : 81, className : "RCControl", methodName : "addListeners"});
-	this.over.addFirst($closure(this,"rollOverHandler"),{ fileName : "RCControl.hx", lineNumber : 82, className : "RCControl", methodName : "addListeners"});
-	this.out.addFirst($closure(this,"rollOutHandler"),{ fileName : "RCControl.hx", lineNumber : 83, className : "RCControl", methodName : "addListeners"});
-}
-RCControl.prototype.removeListeners = function() {
-	this.click.remove($closure(this,"clickHandler"));
-	this.press.remove($closure(this,"mouseDownHandler"));
-	this.release.remove($closure(this,"mouseUpHandler"));
-	this.over.remove($closure(this,"rollOverHandler"));
-	this.out.remove($closure(this,"rollOutHandler"));
+	this.click = new EVMouse("mouseclick",this,{ fileName : "RCControl.hx", lineNumber : 73, className : "RCControl", methodName : "configureDispatchers"});
+	this.press = new EVMouse("mousedown",this,{ fileName : "RCControl.hx", lineNumber : 74, className : "RCControl", methodName : "configureDispatchers"});
+	this.release = new EVMouse("mouseup",this,{ fileName : "RCControl.hx", lineNumber : 75, className : "RCControl", methodName : "configureDispatchers"});
+	this.over = new EVMouse("mouseover",this,{ fileName : "RCControl.hx", lineNumber : 76, className : "RCControl", methodName : "configureDispatchers"});
+	this.out = new EVMouse("mouseout",this,{ fileName : "RCControl.hx", lineNumber : 77, className : "RCControl", methodName : "configureDispatchers"});
+	this.click.addFirst($closure(this,"clickHandler"),{ fileName : "RCControl.hx", lineNumber : 79, className : "RCControl", methodName : "configureDispatchers"});
+	this.press.addFirst($closure(this,"mouseDownHandler"),{ fileName : "RCControl.hx", lineNumber : 80, className : "RCControl", methodName : "configureDispatchers"});
+	this.release.addFirst($closure(this,"mouseUpHandler"),{ fileName : "RCControl.hx", lineNumber : 81, className : "RCControl", methodName : "configureDispatchers"});
+	this.over.addFirst($closure(this,"rollOverHandler"),{ fileName : "RCControl.hx", lineNumber : 82, className : "RCControl", methodName : "configureDispatchers"});
+	this.out.addFirst($closure(this,"rollOutHandler"),{ fileName : "RCControl.hx", lineNumber : 83, className : "RCControl", methodName : "configureDispatchers"});
 }
 RCControl.prototype.mouseDownHandler = function(e) {
 	this.setState(RCControlState.SELECTED);
@@ -482,7 +473,11 @@ RCControl.prototype.getEnabled = function() {
 }
 RCControl.prototype.setEnabled = function(c) {
 	this.enabled_ = c;
-	if(this.enabled_) this.addListeners(); else this.removeListeners();
+	this.click.enabled = this.enabled_;
+	this.press.enabled = this.enabled_;
+	this.release.enabled = this.enabled_;
+	this.over.enabled = this.enabled_;
+	this.out.enabled = this.enabled_;
 	return this.enabled_;
 }
 RCControl.prototype.getHighlighted = function() {
@@ -2587,16 +2582,18 @@ JSCanvas.__name__ = ["JSCanvas"];
 JSCanvas.prototype.__class__ = JSCanvas;
 RCSignal = function(p) {
 	if( p === $_ ) return;
+	this.enabled = true;
 	this.removeAll();
 }
 RCSignal.__name__ = ["RCSignal"];
 RCSignal.prototype.listeners = null;
 RCSignal.prototype.exposableListener = null;
+RCSignal.prototype.enabled = null;
 RCSignal.prototype.add = function(listener) {
 	this.listeners.add(listener);
 }
 RCSignal.prototype.addOnce = function(listener,pos) {
-	if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once as you expect. " + pos,{ fileName : "RCSignal.hx", lineNumber : 20, className : "RCSignal", methodName : "addOnce"});
+	if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once as you expect. " + pos,{ fileName : "RCSignal.hx", lineNumber : 22, className : "RCSignal", methodName : "addOnce"});
 	this.exposableListener = listener;
 }
 RCSignal.prototype.addFirst = function(listener,pos) {
@@ -2618,6 +2615,7 @@ RCSignal.prototype.removeAll = function() {
 	this.exposableListener = null;
 }
 RCSignal.prototype.dispatch = function(p1,p2,p3,p4,pos) {
+	if(!this.enabled) return;
 	var args = new Array();
 	var _g = 0, _g1 = [p1,p2,p3,p4];
 	while(_g < _g1.length) {
@@ -2639,7 +2637,7 @@ RCSignal.prototype.callMethod = function(listener,args,pos) {
 	try {
 		listener.apply(null,args);
 	} catch( e ) {
-		haxe.Log.trace("[RCSignal error: " + e + ", called from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 64, className : "RCSignal", methodName : "callMethod"});
+		haxe.Log.trace("[RCSignal error: " + e + ", called from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 67, className : "RCSignal", methodName : "callMethod"});
 		Fugu.stack();
 	}
 }
@@ -2863,10 +2861,13 @@ _RCSlider.Direction.VERTICAL.toString = $estr;
 _RCSlider.Direction.VERTICAL.__enum__ = _RCSlider.Direction;
 RCSlider = function(x,y,w,h,skin) {
 	if( x === $_ ) return;
+	this.init_ = false;
 	this.moving_ = false;
 	this.minValue_ = 0.0;
 	this.maxValue_ = 100.0;
 	this.value_ = 0.0;
+	this.direction_ = w > h?_RCSlider.Direction.HORIZONTAL:_RCSlider.Direction.VERTICAL;
+	if(skin == null) skin = new haxe.SKSlider();
 	this.skin = skin;
 	RCControl.call(this,x,y,w,h);
 	this.viewDidAppear.add($closure(this,"viewDidAppear_"));
@@ -2874,6 +2875,7 @@ RCSlider = function(x,y,w,h,skin) {
 RCSlider.__name__ = ["RCSlider"];
 RCSlider.__super__ = RCControl;
 for(var k in RCControl.prototype ) RCSlider.prototype[k] = RCControl.prototype[k];
+RCSlider.prototype.init_ = null;
 RCSlider.prototype.value_ = null;
 RCSlider.prototype.minValue_ = null;
 RCSlider.prototype.maxValue_ = null;
@@ -2904,22 +2906,22 @@ RCSlider.prototype.viewDidAppear_ = function() {
 	this.addChild(this.sliderNormal);
 	this.addChild(this.sliderHighlighted);
 	this.addChild(this.scrubber);
-	this.direction_ = this.size.width > this.size.height?_RCSlider.Direction.HORIZONTAL:_RCSlider.Direction.VERTICAL;
 	this.press.add($closure(this,"mouseDownHandler"));
 	this.over.add($closure(this,"rollOverHandler"));
 	this.out.add($closure(this,"rollOutHandler"));
+	this.init_ = true;
+	this.setValue(this.value_);
 }
 RCSlider.prototype.configureDispatchers = function() {
 	RCControl.prototype.configureDispatchers.call(this);
 	this.valueChanged = new RCSignal();
-	this.mouseUpOverStage_ = new EVMouse("mouseup",RCWindow.stage,{ fileName : "RCSlider.hx", lineNumber : 77, className : "RCSlider", methodName : "configureDispatchers"});
-	this.mouseMoveOverStage_ = new EVMouse("mousemove",RCWindow.stage,{ fileName : "RCSlider.hx", lineNumber : 78, className : "RCSlider", methodName : "configureDispatchers"});
+	this.mouseUpOverStage_ = new EVMouse("mouseup",RCWindow.stage,{ fileName : "RCSlider.hx", lineNumber : 93, className : "RCSlider", methodName : "configureDispatchers"});
+	this.mouseMoveOverStage_ = new EVMouse("mousemove",RCWindow.stage,{ fileName : "RCSlider.hx", lineNumber : 94, className : "RCSlider", methodName : "configureDispatchers"});
 }
 RCSlider.prototype.setEnabled = function(c) {
 	return this.enabled_ = false;
 }
 RCSlider.prototype.mouseDownHandler = function(e) {
-	haxe.Log.trace("mouseDownHandler",{ fileName : "RCSlider.hx", lineNumber : 89, className : "RCSlider", methodName : "mouseDownHandler"});
 	this.moving_ = true;
 	this.mouseUpOverStage_.add($closure(this,"mouseUpHandler"));
 	this.mouseMoveOverStage_.add($closure(this,"mouseMoveHandler"));
@@ -2948,12 +2950,14 @@ RCSlider.prototype.getValue = function() {
 	return this.value_;
 }
 RCSlider.prototype.setValue = function(v) {
-	var x1 = 0.0, x2 = 0.0;
 	this.value_ = v;
+	if(!this.init_) return v;
+	var x1 = 0.0, x2 = 0.0;
 	switch( (this.direction_)[1] ) {
 	case 0:
 		x2 = this.size.width - this.scrubber.getWidth();
 		this.scrubber.setX(Zeta.lineEquationInt(x1,x2,v,this.minValue_,this.maxValue_));
+		this.scrubber.setY(Math.round((this.size.height - this.scrubber.getHeight()) / 2));
 		this.sliderHighlighted.setWidth(this.scrubber.x + this.scrubber.getWidth() / 2);
 		break;
 	case 1:
@@ -2962,7 +2966,7 @@ RCSlider.prototype.setValue = function(v) {
 		this.sliderHighlighted.setHeight(this.scrubber.y + this.scrubber.getHeight() / 2);
 		break;
 	}
-	this.valueChanged.dispatch(this,null,null,null,{ fileName : "RCSlider.hx", lineNumber : 150, className : "RCSlider", methodName : "setValue"});
+	this.valueChanged.dispatch(this,null,null,null,{ fileName : "RCSlider.hx", lineNumber : 171, className : "RCSlider", methodName : "setValue"});
 	return this.value_;
 }
 RCSlider.prototype.setMinValue = function(v) {
@@ -3843,7 +3847,7 @@ RCWindow.setTarget = function(id) {
 	RCWindow.target = js.Lib.document.getElementById(id);
 }
 RCWindow.addChild = function(child) {
-	haxe.Log.trace("add child " + child,{ fileName : "RCWindow.hx", lineNumber : 146, className : "RCWindow", methodName : "addChild"});
+	haxe.Log.trace("add child " + child,{ fileName : "RCWindow.hx", lineNumber : 147, className : "RCWindow", methodName : "addChild"});
 	RCWindow.init();
 	if(child != null) {
 		child.viewWillAppearHandler();
@@ -3863,17 +3867,17 @@ RCWindow.removeChild = function(child) {
 RCWindow.addModalViewController = function(view) {
 	RCWindow.modalView = view;
 	RCWindow.modalView.setX(0);
-	CoreAnimation.add(new CATween(RCWindow.modalView,{ y : { fromValue : RCWindow.height, toValue : 0}},0.5,0,caequations.Cubic.IN_OUT,{ fileName : "RCWindow.hx", lineNumber : 184, className : "RCWindow", methodName : "addModalViewController"}));
+	CoreAnimation.add(new CATween(RCWindow.modalView,{ y : { fromValue : RCWindow.height, toValue : 0}},0.5,0,caequations.Cubic.IN_OUT,{ fileName : "RCWindow.hx", lineNumber : 185, className : "RCWindow", methodName : "addModalViewController"}));
 	RCWindow.addChild(RCWindow.modalView);
 }
 RCWindow.dismissModalViewController = function() {
 	if(RCWindow.modalView == null) return;
-	var anim = new CATween(RCWindow.modalView,{ y : RCWindow.height},0.3,0,caequations.Cubic.IN,{ fileName : "RCWindow.hx", lineNumber : 189, className : "RCWindow", methodName : "dismissModalViewController"});
+	var anim = new CATween(RCWindow.modalView,{ y : RCWindow.height},0.3,0,caequations.Cubic.IN,{ fileName : "RCWindow.hx", lineNumber : 190, className : "RCWindow", methodName : "dismissModalViewController"});
 	anim.delegate.animationDidStop = RCWindow.destroyModalViewController;
 	CoreAnimation.add(anim);
 }
 RCWindow.destroyModalViewController = function() {
-	Fugu.safeDestroy(RCWindow.modalView,null,{ fileName : "RCWindow.hx", lineNumber : 194, className : "RCWindow", methodName : "destroyModalViewController"});
+	Fugu.safeDestroy(RCWindow.modalView,null,{ fileName : "RCWindow.hx", lineNumber : 195, className : "RCWindow", methodName : "destroyModalViewController"});
 	RCWindow.modalView = null;
 }
 RCWindow.prototype.__class__ = RCWindow;
@@ -3989,8 +3993,8 @@ RCSegmentedControl = function(x,y,w,h,skin) {
 	this.click = new RCSignal();
 	this.itemAdded = new RCSignal();
 	this.itemRemoved = new RCSignal();
-	this.skin = skin;
 	if(skin == null) skin = ios.SKSegment;
+	this.skin = skin;
 }
 RCSegmentedControl.__name__ = ["RCSegmentedControl"];
 RCSegmentedControl.__super__ = JSView;
@@ -4048,7 +4052,7 @@ RCSegmentedControl.prototype.initWithLabels = function(labels,equalSizes) {
 		})($closure(this,"clickHandler"),label);
 		this.addChild(b);
 		this.items.set(label,b);
-		this.itemAdded.dispatch(this,null,null,null,{ fileName : "RCSegmentedControl.hx", lineNumber : 81, className : "RCSegmentedControl", methodName : "initWithLabels"});
+		this.itemAdded.dispatch(this,null,null,null,{ fileName : "RCSegmentedControl.hx", lineNumber : 82, className : "RCSegmentedControl", methodName : "initWithLabels"});
 		i++;
 	}
 	this.keepButtonsArranged();
@@ -4076,18 +4080,18 @@ RCSegmentedControl.prototype.constructButton = function(i) {
 	return b;
 }
 RCSegmentedControl.prototype.setIndex = function(i) {
-	haxe.Log.trace("setIndex " + i,{ fileName : "RCSegmentedControl.hx", lineNumber : 112, className : "RCSegmentedControl", methodName : "setIndex"});
+	haxe.Log.trace("setIndex " + i,{ fileName : "RCSegmentedControl.hx", lineNumber : 113, className : "RCSegmentedControl", methodName : "setIndex"});
 	if(this.selectedIndex_ == i) return i;
 	this.select(this.labels[i]);
 	return this.selectedIndex_ = i;
 }
 RCSegmentedControl.prototype.remove = function(label) {
 	if(this.items.exists(label)) {
-		Fugu.safeDestroy(this.items.get(label),null,{ fileName : "RCSegmentedControl.hx", lineNumber : 124, className : "RCSegmentedControl", methodName : "remove"});
+		Fugu.safeDestroy(this.items.get(label),null,{ fileName : "RCSegmentedControl.hx", lineNumber : 125, className : "RCSegmentedControl", methodName : "remove"});
 		this.items.remove(label);
 	}
 	this.keepButtonsArranged();
-	this.itemRemoved.dispatch(this,null,null,null,{ fileName : "RCSegmentedControl.hx", lineNumber : 132, className : "RCSegmentedControl", methodName : "remove"});
+	this.itemRemoved.dispatch(this,null,null,null,{ fileName : "RCSegmentedControl.hx", lineNumber : 133, className : "RCSegmentedControl", methodName : "remove"});
 }
 RCSegmentedControl.prototype.keepButtonsArranged = function() {
 	return;
@@ -4100,7 +4104,7 @@ RCSegmentedControl.prototype.keepButtonsArranged = function() {
 }
 RCSegmentedControl.prototype.select = function(label,can_unselect) {
 	if(can_unselect == null) can_unselect = true;
-	haxe.Log.trace("select " + label + ", " + can_unselect,{ fileName : "RCSegmentedControl.hx", lineNumber : 155, className : "RCSegmentedControl", methodName : "select"});
+	haxe.Log.trace("select " + label + ", " + can_unselect,{ fileName : "RCSegmentedControl.hx", lineNumber : 156, className : "RCSegmentedControl", methodName : "select"});
 	if(this.items.exists(label)) {
 		this.items.get(label).toggle();
 		if(can_unselect) this.items.get(label).setEnabled(false); else this.items.get(label).setEnabled(true);
@@ -4136,14 +4140,14 @@ RCSegmentedControl.prototype.disable = function(label) {
 }
 RCSegmentedControl.prototype.clickHandler = function(label) {
 	this.setIndex(this.items.indexForKey(label));
-	this.click.dispatch(this,null,null,null,{ fileName : "RCSegmentedControl.hx", lineNumber : 216, className : "RCSegmentedControl", methodName : "clickHandler"});
+	this.click.dispatch(this,null,null,null,{ fileName : "RCSegmentedControl.hx", lineNumber : 217, className : "RCSegmentedControl", methodName : "clickHandler"});
 }
 RCSegmentedControl.prototype.destroy = function() {
 	if(this.items != null) {
 		var $it0 = this.items.keys();
 		while( $it0.hasNext() ) {
 			var key = $it0.next();
-			Fugu.safeDestroy(this.items.get(key),null,{ fileName : "RCSegmentedControl.hx", lineNumber : 222, className : "RCSegmentedControl", methodName : "destroy"});
+			Fugu.safeDestroy(this.items.get(key),null,{ fileName : "RCSegmentedControl.hx", lineNumber : 223, className : "RCSegmentedControl", methodName : "destroy"});
 		}
 	}
 	this.items = null;
@@ -4517,19 +4521,19 @@ ios.SKSegment = function(label,w,h,pos,colors) {
 	var segmentRight;
 	switch(pos) {
 	case "left":
-		segmentLeft = "L";
+		segmentLeft = "LL";
 		segmentMiddle = "M";
-		segmentRight = "MR";
+		segmentRight = "M";
 		break;
 	case "right":
-		segmentLeft = "ML";
+		segmentLeft = "M";
 		segmentMiddle = "M";
-		segmentRight = "R";
+		segmentRight = "RR";
 		break;
 	default:
-		segmentLeft = "ML";
+		segmentLeft = "M";
 		segmentMiddle = "M";
-		segmentRight = "MR";
+		segmentRight = "M";
 	}
 	var segLeft = new RCAttach(0,0,"Segment" + segmentLeft);
 	var segMiddle = new RCAttach(0,0,"Segment" + segmentMiddle);
@@ -4545,10 +4549,9 @@ ios.SKSegment = function(label,w,h,pos,colors) {
 	segMiddleSelected.setX(segLeftSelected.getWidth());
 	segMiddleSelected.setWidth(w - segLeftSelected.getWidth() - segRightSelected.getWidth());
 	segRightSelected.setX(w - segRightSelected.getWidth());
-	var font = RCFont.boldSystemFontOfSize(25);
+	var font = RCFont.boldSystemFontOfSize(13);
 	font.align = "center";
 	this.normal.background = new JSView(0,0,w,h);
-	this.normal.background = new RCRectangle(0,0,w,h,0);
 	this.normal.background.addChild(segLeft);
 	this.normal.background.addChild(segMiddle);
 	this.normal.background.addChild(segRight);
@@ -4601,6 +4604,9 @@ RCFont = function(p) {
 	this.selectable = false;
 	this.color = 14540253;
 	this.size = 12;
+	this.leading = 4;
+	this.leftMargin = 0;
+	this.rightMargin = 0;
 	this.format = { };
 	this.style = { };
 }
@@ -4690,11 +4696,11 @@ RCFont.prototype.getFormat = function() {
 	this.format.italic = this.italic;
 	this.format.indent = this.indent;
 	this.format.kerning = this.kerning;
-	this.format.leading = this.leading;
-	this.format.leftMargin = this.leftMargin;
+	this.format.leading = this.leading * RCWindow.scaleFactor;
+	this.format.leftMargin = this.leftMargin * RCWindow.scaleFactor;
 	this.format.letterSpacing = this.letterSpacing;
-	this.format.rightMargin = this.rightMargin;
-	this.format.size = this.size;
+	this.format.rightMargin = this.rightMargin * RCWindow.scaleFactor;
+	this.format.size = this.size * RCWindow.scaleFactor;
 	this.format.tabStops = this.tabStops;
 	this.format.target = this.target;
 	this.format.underline = this.underline;
@@ -4754,6 +4760,11 @@ RCAssets.prototype.set = function(key,URL,newDomain) {
 	if(newDomain == null) newDomain = true;
 	haxe.Log.trace("set " + key + ", " + URL,{ fileName : "RCAssets.hx", lineNumber : 82, className : "RCAssets", methodName : "set"});
 	this.max++;
+	if(RCWindow.scaleFactor == 2) {
+		var u = URL.split(".");
+		var ext = u.pop();
+		URL = u.join(".") + "@2x." + ext;
+	}
 	if(key == null) key = Std.string(Math.random());
 	if(URL.toLowerCase().indexOf(".swf") != -1) this.loadSwf(key,URL,newDomain); else if(URL.toLowerCase().indexOf(".xml") != -1 || URL.toLowerCase().indexOf(".txt") != -1 || URL.toLowerCase().indexOf(".css") != -1) this.loadText(key,URL); else if(URL.toLowerCase().indexOf(".ttf") != -1 || URL.toLowerCase().indexOf(".otf") != -1) this.loadFont(key,URL); else this.loadPhoto(key,URL);
 	return true;
@@ -4847,7 +4858,7 @@ RCAssets.prototype.completeHandler = function(key,obj) {
 		this.swfList.set(key,obj);
 		break;
 	default:
-		haxe.Log.trace("This asset is not added to any list. key=" + key,{ fileName : "RCAssets.hx", lineNumber : 184, className : "RCAssets", methodName : "completeHandler"});
+		haxe.Log.trace("This asset is not added to any list. key=" + key,{ fileName : "RCAssets.hx", lineNumber : 191, className : "RCAssets", methodName : "completeHandler"});
 	}
 	this.onCompleteHandler();
 }
@@ -4871,7 +4882,7 @@ RCAssets.prototype.get = function(key,returnAsBitmap) {
 	if(returnAsBitmap == null) returnAsBitmap = true;
 	RCAssets.init();
 	if(this.photoList.exists(key)) return this.photoList.get(key).copy(); else if(this.dataList.exists(key)) return this.dataList.get(key); else if(this.swfList.exists(key)) return this.swfList.get(key);
-	haxe.Log.trace("Asset with key: " + key + "  was not found.",{ fileName : "RCAssets.hx", lineNumber : 250, className : "RCAssets", methodName : "get"});
+	haxe.Log.trace("Asset with key: " + key + "  was not found.",{ fileName : "RCAssets.hx", lineNumber : 257, className : "RCAssets", methodName : "get"});
 	return null;
 }
 RCAssets.prototype.__class__ = RCAssets;

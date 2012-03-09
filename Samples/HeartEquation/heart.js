@@ -886,16 +886,18 @@ RCStats.prototype.destroy = function() {
 RCStats.prototype.__class__ = RCStats;
 RCSignal = function(p) {
 	if( p === $_ ) return;
+	this.enabled = true;
 	this.removeAll();
 }
 RCSignal.__name__ = ["RCSignal"];
 RCSignal.prototype.listeners = null;
 RCSignal.prototype.exposableListener = null;
+RCSignal.prototype.enabled = null;
 RCSignal.prototype.add = function(listener) {
 	this.listeners.add(listener);
 }
 RCSignal.prototype.addOnce = function(listener,pos) {
-	if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once as you expect. " + pos,{ fileName : "RCSignal.hx", lineNumber : 20, className : "RCSignal", methodName : "addOnce"});
+	if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once as you expect. " + pos,{ fileName : "RCSignal.hx", lineNumber : 22, className : "RCSignal", methodName : "addOnce"});
 	this.exposableListener = listener;
 }
 RCSignal.prototype.addFirst = function(listener,pos) {
@@ -917,6 +919,7 @@ RCSignal.prototype.removeAll = function() {
 	this.exposableListener = null;
 }
 RCSignal.prototype.dispatch = function(p1,p2,p3,p4,pos) {
+	if(!this.enabled) return;
 	var args = new Array();
 	var _g = 0, _g1 = [p1,p2,p3,p4];
 	while(_g < _g1.length) {
@@ -938,7 +941,7 @@ RCSignal.prototype.callMethod = function(listener,args,pos) {
 	try {
 		listener.apply(null,args);
 	} catch( e ) {
-		haxe.Log.trace("[RCSignal error: " + e + ", called from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 64, className : "RCSignal", methodName : "callMethod"});
+		haxe.Log.trace("[RCSignal error: " + e + ", called from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 67, className : "RCSignal", methodName : "callMethod"});
 		Fugu.stack();
 	}
 }
@@ -2258,7 +2261,7 @@ RCWindow.setTarget = function(id) {
 	RCWindow.target = js.Lib.document.getElementById(id);
 }
 RCWindow.addChild = function(child) {
-	haxe.Log.trace("add child " + child,{ fileName : "RCWindow.hx", lineNumber : 146, className : "RCWindow", methodName : "addChild"});
+	haxe.Log.trace("add child " + child,{ fileName : "RCWindow.hx", lineNumber : 147, className : "RCWindow", methodName : "addChild"});
 	RCWindow.init();
 	if(child != null) {
 		child.viewWillAppearHandler();
@@ -2278,17 +2281,17 @@ RCWindow.removeChild = function(child) {
 RCWindow.addModalViewController = function(view) {
 	RCWindow.modalView = view;
 	RCWindow.modalView.setX(0);
-	CoreAnimation.add(new CATween(RCWindow.modalView,{ y : { fromValue : RCWindow.height, toValue : 0}},0.5,0,caequations.Cubic.IN_OUT,{ fileName : "RCWindow.hx", lineNumber : 184, className : "RCWindow", methodName : "addModalViewController"}));
+	CoreAnimation.add(new CATween(RCWindow.modalView,{ y : { fromValue : RCWindow.height, toValue : 0}},0.5,0,caequations.Cubic.IN_OUT,{ fileName : "RCWindow.hx", lineNumber : 185, className : "RCWindow", methodName : "addModalViewController"}));
 	RCWindow.addChild(RCWindow.modalView);
 }
 RCWindow.dismissModalViewController = function() {
 	if(RCWindow.modalView == null) return;
-	var anim = new CATween(RCWindow.modalView,{ y : RCWindow.height},0.3,0,caequations.Cubic.IN,{ fileName : "RCWindow.hx", lineNumber : 189, className : "RCWindow", methodName : "dismissModalViewController"});
+	var anim = new CATween(RCWindow.modalView,{ y : RCWindow.height},0.3,0,caequations.Cubic.IN,{ fileName : "RCWindow.hx", lineNumber : 190, className : "RCWindow", methodName : "dismissModalViewController"});
 	anim.delegate.animationDidStop = RCWindow.destroyModalViewController;
 	CoreAnimation.add(anim);
 }
 RCWindow.destroyModalViewController = function() {
-	Fugu.safeDestroy(RCWindow.modalView,null,{ fileName : "RCWindow.hx", lineNumber : 194, className : "RCWindow", methodName : "destroyModalViewController"});
+	Fugu.safeDestroy(RCWindow.modalView,null,{ fileName : "RCWindow.hx", lineNumber : 195, className : "RCWindow", methodName : "destroyModalViewController"});
 	RCWindow.modalView = null;
 }
 RCWindow.prototype.__class__ = RCWindow;
@@ -2467,6 +2470,9 @@ RCFont = function(p) {
 	this.selectable = false;
 	this.color = 14540253;
 	this.size = 12;
+	this.leading = 4;
+	this.leftMargin = 0;
+	this.rightMargin = 0;
 	this.format = { };
 	this.style = { };
 }
@@ -2556,11 +2562,11 @@ RCFont.prototype.getFormat = function() {
 	this.format.italic = this.italic;
 	this.format.indent = this.indent;
 	this.format.kerning = this.kerning;
-	this.format.leading = this.leading;
-	this.format.leftMargin = this.leftMargin;
+	this.format.leading = this.leading * RCWindow.scaleFactor;
+	this.format.leftMargin = this.leftMargin * RCWindow.scaleFactor;
 	this.format.letterSpacing = this.letterSpacing;
-	this.format.rightMargin = this.rightMargin;
-	this.format.size = this.size;
+	this.format.rightMargin = this.rightMargin * RCWindow.scaleFactor;
+	this.format.size = this.size * RCWindow.scaleFactor;
 	this.format.tabStops = this.tabStops;
 	this.format.target = this.target;
 	this.format.underline = this.underline;

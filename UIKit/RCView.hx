@@ -111,6 +111,14 @@ class RCView extends RCDisplayObject {
 		return super.setAlpha ( a );
 	}
 	
+	override function getMouseX () :Float {
+		return layer.mouseX;
+	}
+	override function getMouseY () :Float {
+		return layer.mouseY;
+	}
+	
+	
 	/**
 	 *  This method is usually overriten by the super class.
 	 */

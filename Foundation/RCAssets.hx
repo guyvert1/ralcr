@@ -101,6 +101,13 @@ class RCAssets {
 			loadFont (key, URL);
 		}
 		else {
+			// Resolve url for retina image assets
+			if (RCWindow.scaleFactor == 2) {
+				var u = URL.split(".");
+				var ext = u.pop();
+				URL = u.join(".") + "@2x." + ext;
+			}
+			
 			loadPhoto (key, URL);
 		}
 		return true;

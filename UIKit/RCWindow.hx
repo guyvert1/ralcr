@@ -59,7 +59,8 @@ class RCWindow {
 			height = stage.stageHeight;
 			SCREEN_W = flash.system.Capabilities.screenResolutionX;
 			SCREEN_H = flash.system.Capabilities.screenResolutionY;
-			#if (cpp || neko) trace("dpiScale "+stage.dpiScale); #end
+			#if (cpp || neko) scaleFactor = stage.dpiScale; #end
+			trace("dpiScale "+scaleFactor);
 		#elseif js
 			target.style.position = "absolute";
 			target.style.margin = "0px 0px 0px 0px";

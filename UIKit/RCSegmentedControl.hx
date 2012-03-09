@@ -29,9 +29,10 @@ class RCSegmentedControl extends RCView {
 		click = new RCSignal<RCSegmentedControl->Void>();
 		itemAdded = new RCSignal<RCSegmentedControl->Void>();
 		itemRemoved = new RCSignal<RCSegmentedControl->Void>();
-		this.skin = skin;
+		
 		if (skin == null)
 			skin = ios.SKSegment;// If not otherwise specified use by default this Skin Class
+		this.skin = skin;
 	}
 	public function initWithLabels (labels:Array<String>, ?equalSizes:Bool=true) :Void {
 		this.labels = labels;
