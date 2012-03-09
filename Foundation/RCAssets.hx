@@ -1,4 +1,6 @@
 //
+//	RCAssets.hx
+//	Foundation
 //  Lib to load external swfList, photoList, fonts...
 //	
 //
@@ -15,8 +17,6 @@
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.PixelSnapping;
-#elseif js
-	import js.Dom;
 #end
 
 
@@ -253,14 +253,18 @@ class RCAssets {
 	
 #if (flash || nme)
 	/**
-	 *  Create an instance of a class from an external swf
+	 *  Create an instance from an asset found in an external swf
+	 *  For NME the swf was converted to classes already by the compiler
+	 *  For flash search into each loaded swf
+	 *  @param className = the name of the asset
+	 *  @param args = Pass some params if you need them
 	 */
 	public function createInstance (className:String, ?args:Array<Dynamic>) :Dynamic {
 		
 		if (args == null)
 			args = [];
 		
-		#if nme
+		#if (cpp || neko)
 			// Search for the asset in NME swf library assets
 			return Type.createInstance ( Type.resolveClass ( className), args);
 		#else

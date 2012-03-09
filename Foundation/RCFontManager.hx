@@ -34,6 +34,7 @@
 	private typedef ApplicationDomain = Dynamic;
 #end
 
+
 class RCFontManager {
 	
 	static var INSTANCE :RCFontManager;

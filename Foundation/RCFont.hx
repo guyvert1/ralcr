@@ -1,5 +1,5 @@
 //
-//  RCFont
+//  RCFont.hx
 //
 //  Created by Cristi Baluta on 2010-10-15.
 //  Copyright (c) 2010-2012 ralcr.com. All rights reserved.
@@ -84,6 +84,12 @@ class RCFont {
 	
 	
 	// Some convenience methods to create fast a rcfont
+	
+	/**
+	 *  This will create an embedded font.
+	 *  @param fontName - the name of the font
+	 *  @param size - the size of the font
+	 **/
 	public static function fontWithName (fontName:String, size:Int) :RCFont {
 		var fnt = new RCFont();
 			fnt.font = fontName;
@@ -102,24 +108,52 @@ class RCFont {
 		#end
 	}
 	
+	
 	// Some convenience methods to create system fonts
+	
+	/**
+	 *  This will create an Arial font, non embedded.
+	 *  @param size - the size of the font
+	 **/
 	public static function systemFontOfSize (size:Int) :RCFont {
 		var fnt = new RCFont();
 			fnt.size = size;
 			fnt.embedFonts = false;
 		return fnt;
 	}
+	
+	/**
+	 *  This will create an Arial font, non embedded, and bold.
+	 *  @param size - the size of the font
+	 **/
 	public static function boldSystemFontOfSize (size:Int) :RCFont {
 		var fnt = systemFontOfSize(size);
 			fnt.bold = true;
 		return fnt;
 	}
+	
+	/**
+	 *  This will create an Arial font, non embedded, and italic.
+	 *  @param size - the size of the font
+	 **/
 	public static function italicSystemFontOfSize (size:Int) :RCFont {
 		var fnt = systemFontOfSize(size);
 			fnt.italic = true;
 		return fnt;
 	}
 	
+	
+	
+	/**
+	 *  This will create a RCFont with the following settings
+	 *  @param font = Arial
+	 *  @param html = true
+	 *  @param embedFonts = true
+	 *  @param autoSize = true
+	 *  @param selectable = true
+	 *  @param color = 0xDDDDDD
+	 *  @param size = 12
+	 **/
 	
 	public function new () {
 		font = "Arial";
@@ -129,6 +163,9 @@ class RCFont {
 		selectable = false;
 		color = 0xDDDDDD;
 		size = 12;
+		leading = 4;
+		leftMargin = 0;
+		rightMargin = 0;
 #if (flash || nme)
 	#if flash
 		antiAliasType = AntiAliasType.ADVANCED;// ADVANCED-normal fonts(<40px), NORMAL-pixel fonts
@@ -142,6 +179,9 @@ class RCFont {
 #end
 	}
 	
+	/**
+	 *  Make a copy of the RCFont
+	 **/
 	public function copy (?exceptions:Dynamic) :RCFont {
 		
 		var rcfont = new RCFont();
@@ -153,11 +193,12 @@ class RCFont {
 			if (field == "copy" || field == "getFormat" || field == "getStyleSheet") continue;
 			Reflect.setField (rcfont, field, Reflect.field (this, field));
 		}
-		// Apply some exceptions
+		
+		// Apply exceptions to the valid properties of an RCFont
 		if (exceptions != null) {
 			for (excp in Reflect.fields ( exceptions )) {
 				#if cpp
-					// Temporary, i hope, cpp fix where hasField is not working on class members. Issue 148 on hxcpp
+					// cpp fix where hasField is not working on class members. Issue 148 on hxcpp
 					Reflect.setField (rcfont, excp, Reflect.field (exceptions, excp));
 				#else
 				if (Reflect.hasField (rcfont, excp)) {
@@ -166,8 +207,14 @@ class RCFont {
 				#end
 			}
 		}
+		
 		return rcfont;
 	}
+	
+	
+	/**
+	 *  Create a TextFormat from the properties of the RCFont
+	 **/
 	public function getFormat () :TextFormat {
 		// Copy the right properties from rcfont to the format
 		format.align = null;// This property is replaced in the textfield
@@ -180,11 +227,11 @@ class RCFont {
 		format.italic = italic;
 		format.indent = indent;
 		format.kerning = kerning;
-		format.leading = leading;
-		format.leftMargin = leftMargin;
+		format.leading = leading * RCWindow.scaleFactor;
+		format.leftMargin = leftMargin * RCWindow.scaleFactor;
 		format.letterSpacing = letterSpacing;
-		format.rightMargin = rightMargin;
-		format.size = size;
+		format.rightMargin = rightMargin * RCWindow.scaleFactor;
+		format.size = size * RCWindow.scaleFactor;
 		format.tabStops = tabStops;
 		format.target = target;
 		format.underline = underline;
