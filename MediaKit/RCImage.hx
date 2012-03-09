@@ -92,7 +92,7 @@ class RCImage extends RCView {
 	/**
 	*  @param URL - For NME it tries to load the image from the assets with nme.Assets.getBitmapData.
 	*  For flash it tries to load it from external file with URLRequest.
-	*  For JS it loads it from external and from cache
+	*  For JS it loads it from external or from cache
 	**/
 	public function new (x, y, URL:String) {
 		super (x, y);
@@ -109,7 +109,10 @@ class RCImage extends RCView {
 	
 	/**
 	 *  The image created through the constructor. This method is asyncronous for all platforms
-	 *  @param URL
+	 *  @param URL = The path to the image
+	 *  For NME it tries to load it from the bundle resources
+	 *  For flash is trying to load from external file
+	 *  For JS is trying to load from external file
 	 **/
 	public function initWithContentsOfFile (URL:String) {
 		isLoaded = false;
@@ -131,6 +134,7 @@ class RCImage extends RCView {
 	 *	Bitmapize and add the image to the displaylist.
 	 */
 	public function completeHandler (e:Event) :Void {
+		
 		#if (flash || nme)
 			if (bitmapData != null) {
 				// We already have the bitmapData at this point
@@ -153,6 +157,7 @@ class RCImage extends RCView {
 				}
 				
 				#if neko
+					// Neko uses a typedef for the color: {rgb:Int, a:Float}
 					bitmapData = new BitmapData (w, h, true, {rgb:0x000000, a:0});
 				#else
 					bitmapData = new BitmapData (w, h, true, 0x000000ff);
@@ -168,9 +173,12 @@ class RCImage extends RCView {
 			size.height = lastH_ = loader.height;
 			layer.appendChild ( loader );
 		#end
+			
 		this.isLoaded = true;
 		onComplete();
 	}
+	
+	
 #if (flash || nme)
 	function progressHandler (e:ProgressEvent) :Void {
 		percentLoaded = Math.round (e.target.bytesLoaded * 100 / e.target.bytesTotal);
@@ -188,8 +196,8 @@ class RCImage extends RCView {
 
 	/**
 	 *	Get a copy of the RCImage.
-	 *  In flash and NME it creates in image based on the BitmapData.
-	 *  In JS it loads again the image from cache.
+	 *  In flash and NME it creates in RCImage based on the existing BitmapData.
+	 *  In JS it loads again the image, hopefully from cache.
 	 */
 	public function copy () :RCImage {
 		#if (flash || nme)
@@ -224,6 +232,7 @@ class RCImage extends RCView {
 	}
 	
 	
+	// Clan mess
 	override public function destroy() :Void {
 		removeListeners();
 		#if (flash || nme)

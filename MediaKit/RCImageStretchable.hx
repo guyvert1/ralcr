@@ -1,10 +1,8 @@
-
-#if (flash || nme)
-	import flash.display.DisplayObjectContainer;
-#elseif js
-	import js.Dom;
-	private typedef DisplayObjectContainer = JSView;
-#end
+//
+//	RCImageStretchable.hx
+//	MediaKit
+//
+//	This will create a RCView from 3 images and will permit to resize it in a non destructible way
 
 class RCImageStretchable extends RCView {
 	
@@ -12,36 +10,78 @@ class RCImageStretchable extends RCView {
 	var m :RCImage;
 	var r :RCImage;
 	
+	dynamic public function onComplete () :Void {}
+	
+	/**
+	 *  Create a new Image from 3 parts
+	 *  @param x = the x position on stage
+	 *  @param y = the y position on stage
+	 *  @param imageLeft = The path to the image used in the left
+	 *  @param imageMiddle = The path to the image used in the middle (this is stretchable)
+	 *  @param imageRight = The path to the image used in the right
+	 **/
 	public function new (x, y, imageLeft:String, imageMiddle:String, imageRight:String) {
 		super (x, y);
-		l = new RCImage (0,0,imageLeft);
+		trace("new image with parts: "+imageLeft+", "+imageMiddle+", "+imageRight);
+		
+		l = new RCImage (0, 0, imageLeft);
 		l.onComplete = onCompleteHandler;
-		m = new RCImage (0,0,imageMiddle);
+		m = new RCImage (0, 0, imageMiddle);
 		m.onComplete = onCompleteHandler;
-		r = new RCImage (0,0,imageRight);
+		r = new RCImage (0, 0, imageRight);
 		r.onComplete = onCompleteHandler;
+		
 		addChild ( l );
 		addChild ( m );
 		addChild ( r );
 	}
-	function onCompleteHandler () {trace("onComplete");
-		if (l.isLoaded && m.isLoaded && r.isLoaded && this.size.width != null) {
-			setWidth(this.size.width);
+	
+	function onCompleteHandler () {
+		if (l.isLoaded && m.isLoaded && r.isLoaded && size.width != null) {
+			setWidth ( size.width );
 		}
+		onComplete();
 	}
+	
+	
+	/**
+	 *  Change the width of the image by stretching the element from the middle an reposition the last one
+	 *  @param w = the new width of the Image
+	 **/
 	override public function setWidth (w:Float) :Float {
-		this.size.width = w;
+		
+		size.width = w;
+		
+		// If the images are not loaded yet, call this function again automatically after they are loaded
+		if (!l.isLoaded || !m.isLoaded || !r.isLoaded) return w;
+		
+		// Left element
 		l.x = 0;
-		r.x = w - r.width;
-		m.x = l.width;trace(m.x);trace(l.width);trace(r.width);
-		m.width = w - l.width - r.width;trace(m.width);
+		
+		// Middle element
+		m.x = Math.round(l.width);
+		var mw = Math.round(w - l.width - r.width);
+		if (mw < 0)
+			mw = 0;
+		m.width = mw;
+		
+		// Right element
+		var rx = Math.round(w - r.width);
+		if (rx < m.x + mw)
+			rx = Math.round(m.x + mw);
+		r.x = rx;
+		
 		//m.setWidth (Math.round(w-l.width-r.width));trace(m.width);
 		return w;
 	}
+	
+	// Clean mess
 	override public function destroy () :Void {
-		untyped l.destroy();
-		untyped m.destroy();
-		untyped r.destroy();
+		
+		l.destroy();
+		m.destroy();
+		r.destroy();
+		
 		super.destroy();
 	}
 }
