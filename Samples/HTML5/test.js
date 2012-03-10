@@ -1493,6 +1493,133 @@ RCScrollBar.prototype.destroy = function() {
 	RCControl.prototype.destroy.call(this);
 }
 RCScrollBar.prototype.__class__ = RCScrollBar;
+RCSignal = function(p) {
+	if( p === $_ ) return;
+	this.enabled = true;
+	this.removeAll();
+}
+RCSignal.__name__ = ["RCSignal"];
+RCSignal.prototype.listeners = null;
+RCSignal.prototype.exposableListener = null;
+RCSignal.prototype.enabled = null;
+RCSignal.prototype.add = function(listener) {
+	this.listeners.add(listener);
+}
+RCSignal.prototype.addOnce = function(listener,pos) {
+	if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once as you expect. " + pos,{ fileName : "RCSignal.hx", lineNumber : 22, className : "RCSignal", methodName : "addOnce"});
+	this.exposableListener = listener;
+}
+RCSignal.prototype.addFirst = function(listener,pos) {
+	this.listeners.push(listener);
+}
+RCSignal.prototype.remove = function(listener) {
+	var $it0 = this.listeners.iterator();
+	while( $it0.hasNext() ) {
+		var l = $it0.next();
+		if(Reflect.compareMethods(l,listener)) {
+			this.listeners.remove(listener);
+			break;
+		}
+	}
+	if(Reflect.compareMethods(this.exposableListener,listener)) this.exposableListener = null;
+}
+RCSignal.prototype.removeAll = function() {
+	this.listeners = new List();
+	this.exposableListener = null;
+}
+RCSignal.prototype.dispatch = function(p1,p2,p3,p4,pos) {
+	if(!this.enabled) return;
+	var args = new Array();
+	var _g = 0, _g1 = [p1,p2,p3,p4];
+	while(_g < _g1.length) {
+		var p = _g1[_g];
+		++_g;
+		if(p != null) args.push(p); else break;
+	}
+	var $it0 = this.listeners.iterator();
+	while( $it0.hasNext() ) {
+		var listener = $it0.next();
+		this.callMethod(listener,args,pos);
+	}
+	if(this.exposableListener != null) {
+		this.callMethod(this.exposableListener,args,pos);
+		this.exposableListener = null;
+	}
+}
+RCSignal.prototype.callMethod = function(listener,args,pos) {
+	try {
+		listener.apply(null,args);
+	} catch( e ) {
+		haxe.Log.trace("[RCSignal error: " + e + ", called from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 67, className : "RCSignal", methodName : "callMethod"});
+		Fugu.stack();
+	}
+}
+RCSignal.prototype.exists = function(listener) {
+	var $it0 = this.listeners.iterator();
+	while( $it0.hasNext() ) {
+		var l = $it0.next();
+		if(l == listener) return true;
+	}
+	return false;
+}
+RCSignal.prototype.destroy = function() {
+	this.listeners = null;
+	this.exposableListener = null;
+}
+RCSignal.prototype.__class__ = RCSignal;
+EVFullScreen = function(p) {
+	if( p === $_ ) return;
+	RCSignal.call(this);
+}
+EVFullScreen.__name__ = ["EVFullScreen"];
+EVFullScreen.__super__ = RCSignal;
+for(var k in RCSignal.prototype ) EVFullScreen.prototype[k] = RCSignal.prototype[k];
+EVFullScreen.prototype.__class__ = EVFullScreen;
+RCImageStretchable = function(x,y,imageLeft,imageMiddle,imageRight) {
+	if( x === $_ ) return;
+	JSView.call(this,x,y);
+	this.l = new RCImage(0,0,imageLeft);
+	this.l.onComplete = $closure(this,"onCompleteHandler");
+	this.m = new RCImage(0,0,imageMiddle);
+	this.m.onComplete = $closure(this,"onCompleteHandler");
+	this.r = new RCImage(0,0,imageRight);
+	this.r.onComplete = $closure(this,"onCompleteHandler");
+	this.addChild(this.l);
+	this.addChild(this.m);
+	this.addChild(this.r);
+}
+RCImageStretchable.__name__ = ["RCImageStretchable"];
+RCImageStretchable.__super__ = JSView;
+for(var k in JSView.prototype ) RCImageStretchable.prototype[k] = JSView.prototype[k];
+RCImageStretchable.prototype.l = null;
+RCImageStretchable.prototype.m = null;
+RCImageStretchable.prototype.r = null;
+RCImageStretchable.prototype.onComplete = function() {
+}
+RCImageStretchable.prototype.onCompleteHandler = function() {
+	if(this.l.isLoaded && this.m.isLoaded && this.r.isLoaded && this.size.width != null) this.setWidth(this.size.width);
+	this.onComplete();
+}
+RCImageStretchable.prototype.setWidth = function(w) {
+	this.size.width = w;
+	if(!this.l.isLoaded || !this.m.isLoaded || !this.r.isLoaded) return w;
+	this.l.setX(0);
+	this.m.setX(Math.round(this.l.getWidth()));
+	var mw = Math.round(w - this.l.getWidth() - this.r.getWidth());
+	if(mw < 0) mw = 0;
+	this.m.setWidth(mw);
+	var rx = Math.round(w - this.r.getWidth());
+	if(rx < this.m.x + mw) rx = Math.round(this.m.x + mw);
+	this.r.setX(rx);
+	return w;
+}
+RCImageStretchable.prototype.destroy = function() {
+	this.l.destroy();
+	this.m.destroy();
+	this.r.destroy();
+	JSView.prototype.destroy.call(this);
+}
+RCImageStretchable.prototype.__class__ = RCImageStretchable;
 RCTextView = function(x,y,w,h,str,rcfont) {
 	if( x === $_ ) return;
 	JSView.call(this,Math.round(x),Math.round(y),w,h);
@@ -2109,6 +2236,90 @@ haxe.SKScrollBar.__name__ = ["haxe","SKScrollBar"];
 haxe.SKScrollBar.__super__ = RCSkin;
 for(var k in RCSkin.prototype ) haxe.SKScrollBar.prototype[k] = RCSkin.prototype[k];
 haxe.SKScrollBar.prototype.__class__ = haxe.SKScrollBar;
+RCDraw = function(x,y,w,h,color,alpha) {
+	if( x === $_ ) return;
+	if(alpha == null) alpha = 1.0;
+	JSView.call(this,x,y,w,h);
+	this.setAlpha(alpha);
+	this.borderThickness = 1;
+	try {
+		this.graphics = this.layer;
+	} catch( e ) {
+		haxe.Log.trace(e,{ fileName : "RCDraw.hx", lineNumber : 35, className : "RCDraw", methodName : "new"});
+	}
+	if(Std["is"](color,RCColor) || Std["is"](color,RCGradient)) this.color = color; else if(Std["is"](color,Int) || Std["is"](color,Int)) this.color = new RCColor(color); else if(Std["is"](color,Array)) this.color = new RCColor(color[0],color[1]); else this.color = new RCColor(0);
+}
+RCDraw.__name__ = ["RCDraw"];
+RCDraw.__super__ = JSView;
+for(var k in JSView.prototype ) RCDraw.prototype[k] = JSView.prototype[k];
+RCDraw.prototype.color = null;
+RCDraw.prototype.borderThickness = null;
+RCDraw.prototype.configure = function() {
+	if(Std["is"](this.color,RCColor)) {
+		if(this.color.fillColor != null) this.graphics.beginFill(this.color.fillColor,this.color.alpha);
+		if(this.color.strokeColor != null) {
+			var pixelHinting = true;
+			var scaleMode = _RCDraw.LineScaleMode.NONE;
+			var caps = null;
+			var joints = null;
+			var miterLimit = 3;
+			this.graphics.lineStyle(this.borderThickness,this.color.strokeColor,this.color.alpha,pixelHinting,scaleMode,caps,joints,miterLimit);
+		}
+	}
+}
+RCDraw.prototype.frame = function() {
+	return new RCRect(this.x,this.y,this.size.width,this.size.height);
+}
+RCDraw.prototype.__class__ = RCDraw;
+RCRectangle = function(x,y,w,h,color,alpha,r) {
+	if( x === $_ ) return;
+	if(alpha == null) alpha = 1.0;
+	RCDraw.call(this,x,y,w,h,color,alpha);
+	this.roundness = r;
+	this.redraw();
+}
+RCRectangle.__name__ = ["RCRectangle"];
+RCRectangle.__super__ = RCDraw;
+for(var k in RCDraw.prototype ) RCRectangle.prototype[k] = RCDraw.prototype[k];
+RCRectangle.prototype.roundness = null;
+RCRectangle.prototype.redraw = function() {
+	var fillColorStyle = ((function($this) {
+		var $r;
+		var $t = $this.color;
+		if(Std["is"]($t,RCColor)) $t; else throw "Class cast error";
+		$r = $t;
+		return $r;
+	}(this))).fillColorStyle;
+	var strokeColorStyle = ((function($this) {
+		var $r;
+		var $t = $this.color;
+		if(Std["is"]($t,RCColor)) $t; else throw "Class cast error";
+		$r = $t;
+		return $r;
+	}(this))).strokeColorStyle;
+	var html = "<div style=\"position:absolute; overflow:hidden;";
+	html += "left:0px; top:0px;";
+	html += "margin:0px 0px 0px 0px;";
+	html += "width:" + this.size.width + "px;";
+	html += "height:" + this.size.height + "px;";
+	html += "background-color:" + fillColorStyle + ";";
+	if(strokeColorStyle != null) html += "border-style:solid; border-width:" + this.borderThickness + "px; border-color:" + strokeColorStyle + ";";
+	if(this.roundness != null) html += "-moz-border-radius:" + this.roundness / 2 + "px; border-radius:" + this.roundness / 2 + "px;";
+	html += "\"></div>";
+	this.layer.innerHTML = html;
+}
+RCRectangle.prototype.setWidth = function(w) {
+	this.size.width = w;
+	this.redraw();
+	return w;
+}
+RCRectangle.prototype.setHeight = function(h) {
+	this.size.height = h;
+	this.redraw();
+	return h;
+}
+RCRectangle.prototype.__class__ = RCRectangle;
+RCRectangle.__interfaces__ = [RCDrawInterface];
 RCRect = function(x,y,w,h) {
 	if( x === $_ ) return;
 	this.origin = new RCPoint(x,y);
@@ -2281,90 +2492,6 @@ Type.enumIndex = function(e) {
 	return e[1];
 }
 Type.prototype.__class__ = Type;
-RCDraw = function(x,y,w,h,color,alpha) {
-	if( x === $_ ) return;
-	if(alpha == null) alpha = 1.0;
-	JSView.call(this,x,y,w,h);
-	this.setAlpha(alpha);
-	this.borderThickness = 1;
-	try {
-		this.graphics = this.layer;
-	} catch( e ) {
-		haxe.Log.trace(e,{ fileName : "RCDraw.hx", lineNumber : 35, className : "RCDraw", methodName : "new"});
-	}
-	if(Std["is"](color,RCColor) || Std["is"](color,RCGradient)) this.color = color; else if(Std["is"](color,Int) || Std["is"](color,Int)) this.color = new RCColor(color); else if(Std["is"](color,Array)) this.color = new RCColor(color[0],color[1]); else this.color = new RCColor(0);
-}
-RCDraw.__name__ = ["RCDraw"];
-RCDraw.__super__ = JSView;
-for(var k in JSView.prototype ) RCDraw.prototype[k] = JSView.prototype[k];
-RCDraw.prototype.color = null;
-RCDraw.prototype.borderThickness = null;
-RCDraw.prototype.configure = function() {
-	if(Std["is"](this.color,RCColor)) {
-		if(this.color.fillColor != null) this.graphics.beginFill(this.color.fillColor,this.color.alpha);
-		if(this.color.strokeColor != null) {
-			var pixelHinting = true;
-			var scaleMode = _RCDraw.LineScaleMode.NONE;
-			var caps = null;
-			var joints = null;
-			var miterLimit = 3;
-			this.graphics.lineStyle(this.borderThickness,this.color.strokeColor,this.color.alpha,pixelHinting,scaleMode,caps,joints,miterLimit);
-		}
-	}
-}
-RCDraw.prototype.frame = function() {
-	return new RCRect(this.x,this.y,this.size.width,this.size.height);
-}
-RCDraw.prototype.__class__ = RCDraw;
-RCRectangle = function(x,y,w,h,color,alpha,r) {
-	if( x === $_ ) return;
-	if(alpha == null) alpha = 1.0;
-	RCDraw.call(this,x,y,w,h,color,alpha);
-	this.roundness = r;
-	this.redraw();
-}
-RCRectangle.__name__ = ["RCRectangle"];
-RCRectangle.__super__ = RCDraw;
-for(var k in RCDraw.prototype ) RCRectangle.prototype[k] = RCDraw.prototype[k];
-RCRectangle.prototype.roundness = null;
-RCRectangle.prototype.redraw = function() {
-	var fillColorStyle = ((function($this) {
-		var $r;
-		var $t = $this.color;
-		if(Std["is"]($t,RCColor)) $t; else throw "Class cast error";
-		$r = $t;
-		return $r;
-	}(this))).fillColorStyle;
-	var strokeColorStyle = ((function($this) {
-		var $r;
-		var $t = $this.color;
-		if(Std["is"]($t,RCColor)) $t; else throw "Class cast error";
-		$r = $t;
-		return $r;
-	}(this))).strokeColorStyle;
-	var html = "<div style=\"position:absolute; overflow:hidden;";
-	html += "left:0px; top:0px;";
-	html += "margin:0px 0px 0px 0px;";
-	html += "width:" + this.size.width + "px;";
-	html += "height:" + this.size.height + "px;";
-	html += "background-color:" + fillColorStyle + ";";
-	if(strokeColorStyle != null) html += "border-style:solid; border-width:" + this.borderThickness + "px; border-color:" + strokeColorStyle + ";";
-	if(this.roundness != null) html += "-moz-border-radius:" + this.roundness / 2 + "px; border-radius:" + this.roundness / 2 + "px;";
-	html += "\"></div>";
-	this.layer.innerHTML = html;
-}
-RCRectangle.prototype.setWidth = function(w) {
-	this.size.width = w;
-	this.redraw();
-	return w;
-}
-RCRectangle.prototype.setHeight = function(h) {
-	this.size.height = h;
-	this.redraw();
-	return h;
-}
-RCRectangle.prototype.__class__ = RCRectangle;
-RCRectangle.__interfaces__ = [RCDrawInterface];
 if(typeof js=='undefined') js = {}
 js.Boot = function() { }
 js.Boot.__name__ = ["js","Boot"];
@@ -2580,80 +2707,48 @@ haxe.Firebug.prototype.__class__ = haxe.Firebug;
 JSCanvas = function() { }
 JSCanvas.__name__ = ["JSCanvas"];
 JSCanvas.prototype.__class__ = JSCanvas;
-RCSignal = function(p) {
-	if( p === $_ ) return;
-	this.enabled = true;
-	this.removeAll();
+haxe.Timer = function(time_ms) {
+	if( time_ms === $_ ) return;
+	var arr = haxe_timers;
+	this.id = arr.length;
+	arr[this.id] = this;
+	this.timerId = window.setInterval("haxe_timers[" + this.id + "].run();",time_ms);
 }
-RCSignal.__name__ = ["RCSignal"];
-RCSignal.prototype.listeners = null;
-RCSignal.prototype.exposableListener = null;
-RCSignal.prototype.enabled = null;
-RCSignal.prototype.add = function(listener) {
-	this.listeners.add(listener);
+haxe.Timer.__name__ = ["haxe","Timer"];
+haxe.Timer.delay = function(f,time_ms) {
+	var t = new haxe.Timer(time_ms);
+	t.run = function() {
+		t.stop();
+		f();
+	};
+	return t;
 }
-RCSignal.prototype.addOnce = function(listener,pos) {
-	if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once as you expect. " + pos,{ fileName : "RCSignal.hx", lineNumber : 22, className : "RCSignal", methodName : "addOnce"});
-	this.exposableListener = listener;
+haxe.Timer.measure = function(f,pos) {
+	var t0 = haxe.Timer.stamp();
+	var r = f();
+	haxe.Log.trace(haxe.Timer.stamp() - t0 + "s",pos);
+	return r;
 }
-RCSignal.prototype.addFirst = function(listener,pos) {
-	this.listeners.push(listener);
+haxe.Timer.stamp = function() {
+	return Date.now().getTime() / 1000;
 }
-RCSignal.prototype.remove = function(listener) {
-	var $it0 = this.listeners.iterator();
-	while( $it0.hasNext() ) {
-		var l = $it0.next();
-		if(Reflect.compareMethods(l,listener)) {
-			this.listeners.remove(listener);
-			break;
-		}
+haxe.Timer.prototype.id = null;
+haxe.Timer.prototype.timerId = null;
+haxe.Timer.prototype.stop = function() {
+	if(this.id == null) return;
+	window.clearInterval(this.timerId);
+	var arr = haxe_timers;
+	arr[this.id] = null;
+	if(this.id > 100 && this.id == arr.length - 1) {
+		var p = this.id - 1;
+		while(p >= 0 && arr[p] == null) p--;
+		arr = arr.slice(0,p + 1);
 	}
-	if(Reflect.compareMethods(this.exposableListener,listener)) this.exposableListener = null;
+	this.id = null;
 }
-RCSignal.prototype.removeAll = function() {
-	this.listeners = new List();
-	this.exposableListener = null;
+haxe.Timer.prototype.run = function() {
 }
-RCSignal.prototype.dispatch = function(p1,p2,p3,p4,pos) {
-	if(!this.enabled) return;
-	var args = new Array();
-	var _g = 0, _g1 = [p1,p2,p3,p4];
-	while(_g < _g1.length) {
-		var p = _g1[_g];
-		++_g;
-		if(p != null) args.push(p); else break;
-	}
-	var $it0 = this.listeners.iterator();
-	while( $it0.hasNext() ) {
-		var listener = $it0.next();
-		this.callMethod(listener,args,pos);
-	}
-	if(this.exposableListener != null) {
-		this.callMethod(this.exposableListener,args,pos);
-		this.exposableListener = null;
-	}
-}
-RCSignal.prototype.callMethod = function(listener,args,pos) {
-	try {
-		listener.apply(null,args);
-	} catch( e ) {
-		haxe.Log.trace("[RCSignal error: " + e + ", called from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 67, className : "RCSignal", methodName : "callMethod"});
-		Fugu.stack();
-	}
-}
-RCSignal.prototype.exists = function(listener) {
-	var $it0 = this.listeners.iterator();
-	while( $it0.hasNext() ) {
-		var l = $it0.next();
-		if(l == listener) return true;
-	}
-	return false;
-}
-RCSignal.prototype.destroy = function() {
-	this.listeners = null;
-	this.exposableListener = null;
-}
-RCSignal.prototype.__class__ = RCSignal;
+haxe.Timer.prototype.__class__ = haxe.Timer;
 EVMouse = function(type,target,pos) {
 	if( type === $_ ) return;
 	if(target == null) throw "Can't use a null target. " + pos;
@@ -2757,48 +2852,6 @@ EVMouse.prototype.destroy = function() {
 	RCSignal.prototype.destroy.call(this);
 }
 EVMouse.prototype.__class__ = EVMouse;
-haxe.Timer = function(time_ms) {
-	if( time_ms === $_ ) return;
-	var arr = haxe_timers;
-	this.id = arr.length;
-	arr[this.id] = this;
-	this.timerId = window.setInterval("haxe_timers[" + this.id + "].run();",time_ms);
-}
-haxe.Timer.__name__ = ["haxe","Timer"];
-haxe.Timer.delay = function(f,time_ms) {
-	var t = new haxe.Timer(time_ms);
-	t.run = function() {
-		t.stop();
-		f();
-	};
-	return t;
-}
-haxe.Timer.measure = function(f,pos) {
-	var t0 = haxe.Timer.stamp();
-	var r = f();
-	haxe.Log.trace(haxe.Timer.stamp() - t0 + "s",pos);
-	return r;
-}
-haxe.Timer.stamp = function() {
-	return Date.now().getTime() / 1000;
-}
-haxe.Timer.prototype.id = null;
-haxe.Timer.prototype.timerId = null;
-haxe.Timer.prototype.stop = function() {
-	if(this.id == null) return;
-	window.clearInterval(this.timerId);
-	var arr = haxe_timers;
-	arr[this.id] = null;
-	if(this.id > 100 && this.id == arr.length - 1) {
-		var p = this.id - 1;
-		while(p >= 0 && arr[p] == null) p--;
-		arr = arr.slice(0,p + 1);
-	}
-	this.id = null;
-}
-haxe.Timer.prototype.run = function() {
-}
-haxe.Timer.prototype.__class__ = haxe.Timer;
 IntHash = function(p) {
 	if( p === $_ ) return;
 	this.h = {}
@@ -3287,25 +3340,59 @@ RCEllipse.prototype.fillEllipse = function(xc,yc,width,height) {
 }
 RCEllipse.prototype.__class__ = RCEllipse;
 RCEllipse.__interfaces__ = [RCDrawInterface];
-RCAttach = function(x,y,id) {
-	if( x === $_ ) return;
-	JSView.call(this,x,y);
-	this.id = id;
-	try {
-		this.target = RCAssets.getFileWithKey(id);
-	} catch( e ) {
-		haxe.Log.trace(e + " : id=" + id,{ fileName : "RCAttach.hx", lineNumber : 32, className : "RCAttach", methodName : "new"});
+RCNotificationCenter = function() { }
+RCNotificationCenter.__name__ = ["RCNotificationCenter"];
+RCNotificationCenter.notificationsList = null;
+RCNotificationCenter.init = function() {
+	if(RCNotificationCenter.notificationsList == null) {
+		RCNotificationCenter.notificationsList = new List();
+		var fs = new EVFullScreen();
+		fs.add(RCNotificationCenter.fullScreenHandler);
+		var rs = new EVResize();
+		rs.add(RCNotificationCenter.resizeHandler);
 	}
 }
-RCAttach.__name__ = ["RCAttach"];
-RCAttach.__super__ = JSView;
-for(var k in JSView.prototype ) RCAttach.prototype[k] = JSView.prototype[k];
-RCAttach.prototype.target = null;
-RCAttach.prototype.id = null;
-RCAttach.prototype.copy = function() {
-	return new RCAttach(this.x,this.y,this.id);
+RCNotificationCenter.resizeHandler = function(w,h) {
+	RCNotificationCenter.postNotification("resize",[w,h],{ fileName : "RCNotificationCenter.hx", lineNumber : 25, className : "RCNotificationCenter", methodName : "resizeHandler"});
 }
-RCAttach.prototype.__class__ = RCAttach;
+RCNotificationCenter.fullScreenHandler = function(b) {
+	RCNotificationCenter.postNotification("fullscreen",[b],{ fileName : "RCNotificationCenter.hx", lineNumber : 28, className : "RCNotificationCenter", methodName : "fullScreenHandler"});
+}
+RCNotificationCenter.addObserver = function(name,func) {
+	RCNotificationCenter.init();
+	RCNotificationCenter.notificationsList.add(new RCNotification(name,func));
+}
+RCNotificationCenter.removeObserver = function(name,func) {
+	RCNotificationCenter.init();
+	var $it0 = RCNotificationCenter.notificationsList.iterator();
+	while( $it0.hasNext() ) {
+		var notification = $it0.next();
+		if(notification.name == name && Reflect.compareMethods(notification.functionToCall,func)) RCNotificationCenter.notificationsList.remove(notification);
+	}
+}
+RCNotificationCenter.postNotification = function(name,args,pos) {
+	RCNotificationCenter.init();
+	var notificationFound = false;
+	var $it0 = RCNotificationCenter.notificationsList.iterator();
+	while( $it0.hasNext() ) {
+		var notification = $it0.next();
+		if(notification.name == name) try {
+			notificationFound = true;
+			notification.functionToCall.apply(null,args);
+		} catch( e ) {
+			haxe.Log.trace("[RCNotificationCenter error calling function: " + notification.functionToCall + " from: " + Std.string(pos) + "]",{ fileName : "RCNotificationCenter.hx", lineNumber : 70, className : "RCNotificationCenter", methodName : "postNotification"});
+		}
+	}
+	return notificationFound;
+}
+RCNotificationCenter.list = function() {
+	var $it0 = RCNotificationCenter.notificationsList.iterator();
+	while( $it0.hasNext() ) {
+		var notification = $it0.next();
+		haxe.Log.trace(notification,{ fileName : "RCNotificationCenter.hx", lineNumber : 81, className : "RCNotificationCenter", methodName : "list"});
+	}
+}
+RCNotificationCenter.prototype.__class__ = RCNotificationCenter;
 JSExternalInterface = function() { }
 JSExternalInterface.__name__ = ["JSExternalInterface"];
 JSExternalInterface.addCallback = function(functionName,closure) {
@@ -3758,6 +3845,20 @@ RCTextRoll.prototype.destroy = function() {
 	JSView.prototype.destroy.call(this);
 }
 RCTextRoll.prototype.__class__ = RCTextRoll;
+EVResize = function(p) {
+	if( p === $_ ) return;
+	RCSignal.call(this);
+	js.Lib.window.onresize = $closure(this,"resizeHandler");
+}
+EVResize.__name__ = ["EVResize"];
+EVResize.__super__ = RCSignal;
+for(var k in RCSignal.prototype ) EVResize.prototype[k] = RCSignal.prototype[k];
+EVResize.prototype.resizeHandler = function(e) {
+	var w = js.Lib.window.innerWidth;
+	var h = js.Lib.window.innerHeight;
+	this.dispatch(w,h,null,null,{ fileName : "EVResize.hx", lineNumber : 30, className : "EVResize", methodName : "resizeHandler"});
+}
+EVResize.prototype.__class__ = EVResize;
 haxe.remoting.Context = function(p) {
 	if( p === $_ ) return;
 	this.objects = new Hash();
@@ -3821,6 +3922,7 @@ RCWindow.init = function() {
 	RCWindow.target.style.overflow = "hidden";
 	RCWindow.width = RCWindow.target.scrollWidth;
 	RCWindow.height = RCWindow.target.scrollHeight;
+	RCNotificationCenter.addObserver("resize",RCWindow.resizeHandler);
 }
 RCWindow.resizeHandler = function(w,h) {
 	RCWindow.width = w;
@@ -4058,17 +4160,20 @@ RCSegmentedControl.prototype.initWithLabels = function(labels,equalSizes) {
 	this.keepButtonsArranged();
 }
 RCSegmentedControl.prototype.constructButton = function(i) {
-	var position = "left";
-	switch(i) {
-	case 0:
-		position = "left";
-		break;
-	case this.items.array.length - 1:
-		position = "right";
-		break;
-	default:
-		position = "middle";
-	}
+	var position = (function($this) {
+		var $r;
+		switch(i) {
+		case 0:
+			$r = "left";
+			break;
+		case $this.labels.length - 1:
+			$r = "right";
+			break;
+		default:
+			$r = "middle";
+		}
+		return $r;
+	}(this));
 	var segmentX = 0;
 	var _g = 0;
 	while(_g < i) {
@@ -4079,19 +4184,23 @@ RCSegmentedControl.prototype.constructButton = function(i) {
 	var b = new RCButtonRadio(segmentX,0,s);
 	return b;
 }
-RCSegmentedControl.prototype.setIndex = function(i) {
-	haxe.Log.trace("setIndex " + i,{ fileName : "RCSegmentedControl.hx", lineNumber : 113, className : "RCSegmentedControl", methodName : "setIndex"});
+RCSegmentedControl.prototype.getSelectedIndex = function() {
+	return this.selectedIndex_;
+}
+RCSegmentedControl.prototype.setSelectedIndex = function(i) {
+	haxe.Log.trace("setIndex " + i,{ fileName : "RCSegmentedControl.hx", lineNumber : 117, className : "RCSegmentedControl", methodName : "setSelectedIndex"});
 	if(this.selectedIndex_ == i) return i;
+	this.selectedIndex_ = i;
 	this.select(this.labels[i]);
-	return this.selectedIndex_ = i;
+	return this.selectedIndex_;
 }
 RCSegmentedControl.prototype.remove = function(label) {
 	if(this.items.exists(label)) {
-		Fugu.safeDestroy(this.items.get(label),null,{ fileName : "RCSegmentedControl.hx", lineNumber : 125, className : "RCSegmentedControl", methodName : "remove"});
+		Fugu.safeDestroy(this.items.get(label),null,{ fileName : "RCSegmentedControl.hx", lineNumber : 132, className : "RCSegmentedControl", methodName : "remove"});
 		this.items.remove(label);
 	}
 	this.keepButtonsArranged();
-	this.itemRemoved.dispatch(this,null,null,null,{ fileName : "RCSegmentedControl.hx", lineNumber : 133, className : "RCSegmentedControl", methodName : "remove"});
+	this.itemRemoved.dispatch(this,null,null,null,{ fileName : "RCSegmentedControl.hx", lineNumber : 140, className : "RCSegmentedControl", methodName : "remove"});
 }
 RCSegmentedControl.prototype.keepButtonsArranged = function() {
 	return;
@@ -4104,7 +4213,7 @@ RCSegmentedControl.prototype.keepButtonsArranged = function() {
 }
 RCSegmentedControl.prototype.select = function(label,can_unselect) {
 	if(can_unselect == null) can_unselect = true;
-	haxe.Log.trace("select " + label + ", " + can_unselect,{ fileName : "RCSegmentedControl.hx", lineNumber : 156, className : "RCSegmentedControl", methodName : "select"});
+	haxe.Log.trace("select " + label + ", " + can_unselect,{ fileName : "RCSegmentedControl.hx", lineNumber : 163, className : "RCSegmentedControl", methodName : "select"});
 	if(this.items.exists(label)) {
 		this.items.get(label).toggle();
 		if(can_unselect) this.items.get(label).setEnabled(false); else this.items.get(label).setEnabled(true);
@@ -4139,15 +4248,15 @@ RCSegmentedControl.prototype.disable = function(label) {
 	this.items.get(label).setAlpha(0.4);
 }
 RCSegmentedControl.prototype.clickHandler = function(label) {
-	this.setIndex(this.items.indexForKey(label));
-	this.click.dispatch(this,null,null,null,{ fileName : "RCSegmentedControl.hx", lineNumber : 217, className : "RCSegmentedControl", methodName : "clickHandler"});
+	this.setSelectedIndex(this.items.indexForKey(label));
+	this.click.dispatch(this,null,null,null,{ fileName : "RCSegmentedControl.hx", lineNumber : 224, className : "RCSegmentedControl", methodName : "clickHandler"});
 }
 RCSegmentedControl.prototype.destroy = function() {
 	if(this.items != null) {
 		var $it0 = this.items.keys();
 		while( $it0.hasNext() ) {
 			var key = $it0.next();
-			Fugu.safeDestroy(this.items.get(key),null,{ fileName : "RCSegmentedControl.hx", lineNumber : 223, className : "RCSegmentedControl", methodName : "destroy"});
+			Fugu.safeDestroy(this.items.get(key),null,{ fileName : "RCSegmentedControl.hx", lineNumber : 230, className : "RCSegmentedControl", methodName : "destroy"});
 		}
 	}
 	this.items = null;
@@ -4454,6 +4563,18 @@ EVLoop.prototype.destroy = function() {
 	this.stop();
 }
 EVLoop.prototype.__class__ = EVLoop;
+RCNotification = function(name,functionToCall) {
+	if( name === $_ ) return;
+	this.name = name;
+	this.functionToCall = functionToCall;
+}
+RCNotification.__name__ = ["RCNotification"];
+RCNotification.prototype.name = null;
+RCNotification.prototype.functionToCall = null;
+RCNotification.prototype.toString = function() {
+	return "[RCNotification with name: '" + this.name + "', functionToCall: " + this.functionToCall + "]";
+}
+RCNotification.prototype.__class__ = RCNotification;
 HashArray = function(p) {
 	if( p === $_ ) return;
 	Hash.call(this);
@@ -4513,58 +4634,59 @@ RCIndexPath.prototype.toString = function() {
 }
 RCIndexPath.prototype.__class__ = RCIndexPath;
 if(typeof ios=='undefined') ios = {}
-ios.SKSegment = function(label,w,h,pos,colors) {
+ios.SKSegment = function(label,w,h,buttonPosition,colors) {
 	if( label === $_ ) return;
 	RCSkin.call(this,colors);
 	var segmentLeft;
 	var segmentMiddle;
 	var segmentRight;
-	switch(pos) {
+	var segmentLeftSelected;
+	var segmentMiddleSelected;
+	var segmentRightSelected;
+	switch(buttonPosition) {
 	case "left":
 		segmentLeft = "LL";
 		segmentMiddle = "M";
 		segmentRight = "M";
+		segmentLeftSelected = "LL";
+		segmentMiddleSelected = "M";
+		segmentRightSelected = "LR";
 		break;
 	case "right":
 		segmentLeft = "M";
 		segmentMiddle = "M";
 		segmentRight = "RR";
+		segmentLeftSelected = "RL";
+		segmentMiddleSelected = "M";
+		segmentRightSelected = "RR";
 		break;
 	default:
 		segmentLeft = "M";
 		segmentMiddle = "M";
 		segmentRight = "M";
+		segmentLeftSelected = "RL";
+		segmentMiddleSelected = "M";
+		segmentRightSelected = "LR";
 	}
-	var segLeft = new RCAttach(0,0,"Segment" + segmentLeft);
-	var segMiddle = new RCAttach(0,0,"Segment" + segmentMiddle);
-	var segRight = new RCAttach(0,0,"Segment" + segmentRight);
-	var segLeftSelected = new RCAttach(0,0,"Segment" + segmentLeft + "Selected");
-	var segMiddleSelected = new RCAttach(0,0,"Segment" + segmentMiddle + "Selected");
-	var segRightSelected = new RCAttach(0,0,"Segment" + segmentRight + "Selected");
-	segLeft.setX(0);
-	segMiddle.setX(segLeft.getWidth());
-	segMiddle.setWidth(w - segLeft.getWidth() - segRight.getWidth());
-	segRight.setX(w - segRight.getWidth());
-	segLeftSelected.setX(0);
-	segMiddleSelected.setX(segLeftSelected.getWidth());
-	segMiddleSelected.setWidth(w - segLeftSelected.getWidth() - segRightSelected.getWidth());
-	segRightSelected.setX(w - segRightSelected.getWidth());
+	var sl = "Resources/ios/RCSegmentedControl/" + segmentLeft + ".png";
+	var sm = "Resources/ios/RCSegmentedControl/" + segmentMiddle + ".png";
+	var sr = "Resources/ios/RCSegmentedControl/" + segmentRight + ".png";
+	this.normal.background = new RCImageStretchable(0,0,sl,sm,sr);
+	this.normal.background.setWidth(w);
+	var slh = "Resources/ios/RCSegmentedControl/" + segmentLeftSelected + "Selected.png";
+	var smh = "Resources/ios/RCSegmentedControl/" + segmentMiddleSelected + "Selected.png";
+	var srh = "Resources/ios/RCSegmentedControl/" + segmentRightSelected + "Selected.png";
+	this.highlighted.background = new RCImageStretchable(0,0,slh,smh,srh);
+	this.highlighted.background.setWidth(w);
 	var font = RCFont.boldSystemFontOfSize(13);
 	font.align = "center";
-	this.normal.background = new JSView(0,0,w,h);
-	this.normal.background.addChild(segLeft);
-	this.normal.background.addChild(segMiddle);
-	this.normal.background.addChild(segRight);
+	font.color = 3355443;
 	this.normal.label = new RCTextView(0,0,w,null,label,font);
-	this.normal.label.setY(Math.round((h - 25) / 2));
-	this.highlighted.background = new JSView(0,0,w,h);
-	this.highlighted.background = new RCRectangle(0,0,w,h,RCColor.orangeColor());
-	this.highlighted.background.addChild(segLeftSelected);
-	this.highlighted.background.addChild(segMiddleSelected);
-	this.highlighted.background.addChild(segRightSelected);
+	this.normal.label.setY(Math.round((h - 20) / 2));
+	font.color = 16777215;
 	this.highlighted.label = new RCTextView(0,0,w,null,label,font);
-	this.highlighted.label.setY(Math.round((h - 25) / 2));
-	this.hit = new RCRectangle(0,0,w,h,0,0);
+	this.highlighted.label.setY(Math.round((h - 20) / 2));
+	this.hit = new RCRectangle(0,0,w,h,0);
 }
 ios.SKSegment.__name__ = ["ios","SKSegment"];
 ios.SKSegment.__super__ = RCSkin;
@@ -4760,13 +4882,15 @@ RCAssets.prototype.set = function(key,URL,newDomain) {
 	if(newDomain == null) newDomain = true;
 	haxe.Log.trace("set " + key + ", " + URL,{ fileName : "RCAssets.hx", lineNumber : 82, className : "RCAssets", methodName : "set"});
 	this.max++;
-	if(RCWindow.scaleFactor == 2) {
-		var u = URL.split(".");
-		var ext = u.pop();
-		URL = u.join(".") + "@2x." + ext;
-	}
 	if(key == null) key = Std.string(Math.random());
-	if(URL.toLowerCase().indexOf(".swf") != -1) this.loadSwf(key,URL,newDomain); else if(URL.toLowerCase().indexOf(".xml") != -1 || URL.toLowerCase().indexOf(".txt") != -1 || URL.toLowerCase().indexOf(".css") != -1) this.loadText(key,URL); else if(URL.toLowerCase().indexOf(".ttf") != -1 || URL.toLowerCase().indexOf(".otf") != -1) this.loadFont(key,URL); else this.loadPhoto(key,URL);
+	if(URL.toLowerCase().indexOf(".swf") != -1) this.loadSwf(key,URL,newDomain); else if(URL.toLowerCase().indexOf(".xml") != -1 || URL.toLowerCase().indexOf(".txt") != -1 || URL.toLowerCase().indexOf(".css") != -1) this.loadText(key,URL); else if(URL.toLowerCase().indexOf(".ttf") != -1 || URL.toLowerCase().indexOf(".otf") != -1) this.loadFont(key,URL); else {
+		if(RCWindow.scaleFactor == 2) {
+			var u = URL.split(".");
+			var ext = u.pop();
+			URL = u.join(".") + "@2x." + ext;
+		}
+		this.loadPhoto(key,URL);
+	}
 	return true;
 }
 RCAssets.prototype.loadPhoto = function(key,URL) {
@@ -5197,7 +5321,7 @@ Main.createRadioButton = function(indexPath) {
 	return b;
 }
 Main.segClick = function(s) {
-	haxe.Log.trace(s.selectedIndex,{ fileName : "Main.hx", lineNumber : 218, className : "Main", methodName : "segClick"});
+	haxe.Log.trace(s.getSelectedIndex(),{ fileName : "Main.hx", lineNumber : 218, className : "Main", methodName : "segClick"});
 }
 Main.testTexts = function() {
 	try {

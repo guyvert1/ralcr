@@ -18,7 +18,7 @@ class RCSegmentedControl extends RCView {
 	public var click :RCSignal<RCSegmentedControl->Void>;
 	public var itemAdded :RCSignal<RCSegmentedControl->Void>;
 	public var itemRemoved :RCSignal<RCSegmentedControl->Void>;
-	public var selectedIndex (default, setIndex) :Int;
+	public var selectedIndex (getSelectedIndex, setSelectedIndex) :Int;
 	
 	
 	public function new (x, y, w:Int, h:Int, ?skin:Class<RCSkin>) {
@@ -94,11 +94,10 @@ class RCSegmentedControl extends RCView {
 	}
 	function constructButton (i:Int) :RCButtonRadio {
 		
-		var position = "left";
-		switch (i) {
-			case 0: position = "left"; // First
-			case items.array.length-1: position = "right"; // Last
-			default: position = "middle"; // Middle
+		var position = switch (i) {
+			case 0:					"left"; // First
+			case labels.length-1:	"right"; // Last
+			default:				"middle"; // Middle
 		}
 		var segmentX = 0;
 		for (j in 0...i) {
@@ -106,14 +105,22 @@ class RCSegmentedControl extends RCView {
 		}
 		var s = Type.createInstance (skin, [labels[i], segmentsWidth[i], size.height, position, null]);
 		var b = new RCButtonRadio (segmentX, 0, s);
+
 		return b;
 	}
 	
 	// Setter for selectedIndex
-	public function setIndex (i:Int) :Int {trace("setIndex "+i);
+	public function getSelectedIndex () :Int {
+		return selectedIndex_;
+	}
+	public function setSelectedIndex (i:Int) :Int {
+		trace("setIndex "+i);
 		if (selectedIndex_ == i) return i;
-		select ( labels[i] );
-		return selectedIndex_ = i;
+			selectedIndex_ = i;
+			
+		select ( labels[i] );// Select the label at index i
+		
+		return selectedIndex_;
 	}
 
 	/**
@@ -213,7 +220,7 @@ class RCSegmentedControl extends RCView {
 	
 	// Dispatch events
 	function clickHandler (label:String) :Void {
-		setIndex ( items.indexForKey( label ));
+		setSelectedIndex ( items.indexForKey( label ));
 		click.dispatch ( this );
 	}
 	

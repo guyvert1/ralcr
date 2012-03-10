@@ -2235,6 +2235,7 @@ RCWindow.init = function() {
 	RCWindow.target.style.overflow = "hidden";
 	RCWindow.width = RCWindow.target.scrollWidth;
 	RCWindow.height = RCWindow.target.scrollHeight;
+	RCNotificationCenter.addObserver("resize",RCWindow.resizeHandler);
 }
 RCWindow.resizeHandler = function(w,h) {
 	RCWindow.width = w;

@@ -113,6 +113,8 @@ import RCCircularProgressIndicator;
 import RCColor;
 import RCControl;
 import RCCustomCursor;
+import RCDevice;
+import RCDisplayObject;
 import RCDropDown;
 import RCGestureRecognizer;
 import RCGroup;
@@ -139,6 +141,7 @@ import RCTextInput;
 import RCTextRoll;
 import RCToolTip;
 import RCView;
+import RCViewController;
 import RCWindow;
 
 // Utils
@@ -167,6 +170,11 @@ import GKHealth;
 import GKScore;
 import GKSound;
 import GKSprite;
+
+// Skins
+import ios.SKSegment;
+import ios.SKSlider;
+import ios.SKTabBarItem;
 
 
 class Main { static function main () {} }

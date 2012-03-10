@@ -77,7 +77,7 @@ class RCWindow {
 			URL = url.join("/") + "/";// URL without swf name
 		#end
 		// RCNotificationCenter.addObserver ("fullscreen", fullScreenHandler);
-		//RCNotificationCenter.addObserver ("resize", resizeHandler);
+		RCNotificationCenter.addObserver ("resize", resizeHandler);
 	}
 	
 	static function resizeHandler (w, h) {

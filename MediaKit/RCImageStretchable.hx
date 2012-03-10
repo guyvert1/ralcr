@@ -22,7 +22,7 @@ class RCImageStretchable extends RCView {
 	 **/
 	public function new (x, y, imageLeft:String, imageMiddle:String, imageRight:String) {
 		super (x, y);
-		trace("new image with parts: "+imageLeft+", "+imageMiddle+", "+imageRight);
+		//trace("new image with parts: "+imageLeft+", "+imageMiddle+", "+imageRight);
 		
 		l = new RCImage (0, 0, imageLeft);
 		l.onComplete = onCompleteHandler;
