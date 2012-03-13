@@ -4,7 +4,8 @@
 //	A group of RCTabBarItem's aligned horiz
 //
 //  Created by Baluta Cristian on 2012-02-02.
-//  Copyright (c) 2012 ralcr.com. All rights reserved.
+//  Copyright (c) 2012 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 class RCTabBar extends RCGroup<RCTabBarItem> {
@@ -73,7 +74,7 @@ class RCTabBar extends RCGroup<RCTabBarItem> {
 		// iterate over items
 		for (i in 0...items.length) {
 			items[i].x = i*gapX;
-			items[i].y = 3;
+			items[i].y = 2;
 		}
 		update.dispatch();
 	}

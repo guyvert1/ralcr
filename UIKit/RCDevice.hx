@@ -2,20 +2,21 @@
 //  RCDevice.hx
 //  UIKit
 //
-//  Copyright (c) 2012, ralcr.com. All rights reserved.
+//  Updated 2012, ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
-enum UIInterfaceOrientation {
+enum RCDeviceOrientation {
     UIDeviceOrientationUnknown;
     UIDeviceOrientationPortrait;            // Device oriented vertically, home button on the bottom
     UIDeviceOrientationPortraitUpsideDown;  // Device oriented vertically, home button on the top
     UIDeviceOrientationLandscapeLeft;       // Device oriented horizontally, home button on the right
     UIDeviceOrientationLandscapeRight;      // Device oriented horizontally, home button on the left
     UIDeviceOrientationFaceUp;              // Device oriented flat, face up
-    UIDeviceOrientationFaceDown;             // Device oriented flat, face down
+    UIDeviceOrientationFaceDown;            // Device oriented flat, face down
 }
 
-enum UIUserInterfaceIdiom {
+enum RCDeviceType {
     IPhone;
     IPad;
 	Android;
@@ -34,31 +35,16 @@ class RCDevice {
 		return _currentDevice;
 	}
 	
+	
+	public var name :String;// e.g. "My iPhone"
+	public var model :String;// e.g. @"iPhone", @"iPod touch"
+	public var systemName :String;// e.g. @"iOS"
+	public var systemVersion :String;// e.g. @"5.0"
+	public var orientation :RCDeviceOrientation;
+	public var userInterfaceIdiom :RCDeviceType;
+	public var uniqueIdentifier :String;// a string unique to each device based on various hardware info.
+	
 	public function new () {
 		
 	}
 }
-
-
-/*
-#define UI_USER_INTERFACE_IDIOM() ([[UIDevice currentDevice] respondsToSelector:@selector(userInterfaceIdiom)] ? [[UIDevice currentDevice] userInterfaceIdiom] : UIUserInterfaceIdiomPhone)
-
-#define UIDeviceOrientationIsPortrait(orientation)  ((orientation) == UIDeviceOrientationPortrait || (orientation) == UIDeviceOrientationPortraitUpsideDown)
-#define UIDeviceOrientationIsLandscape(orientation) ((orientation) == UIDeviceOrientationLandscapeLeft || (orientation) == UIDeviceOrientationLandscapeRight)
-
-
-@property(nonatomic,readonly,retain) NSString    *name;              // e.g. "My iPhone"
-@property(nonatomic,readonly,retain) NSString    *model;             // e.g. @"iPhone", @"iPod touch"
-@property(nonatomic,readonly,retain) NSString    *localizedModel;    // localized version of model
-@property(nonatomic,readonly,retain) NSString    *systemName;        // e.g. @"iOS"
-@property(nonatomic,readonly,retain) NSString    *systemVersion;     // e.g. @"4.0"
-@property(nonatomic,readonly) UIDeviceOrientation orientation;       // return current device orientation.  this will return UIDeviceOrientationUnknown unless device orientation notifications are being generated.
-@property(nonatomic,readonly,retain) NSString    *uniqueIdentifier  __OSX_AVAILABLE_BUT_DEPRECATED(__MAC_NA,__MAC_NA,__IPHONE_2_0,__IPHONE_5_0);  // a string unique to each device based on various hardware info.
-
-@property(nonatomic,readonly,getter=isGeneratingDeviceOrientationNotifications) BOOL generatesDeviceOrientationNotifications;
-- (void)beginGeneratingDeviceOrientationNotifications;      // nestable
-- (void)endGeneratingDeviceOrientationNotifications;
-
-@property(nonatomic,readonly) UIUserInterfaceIdiom userInterfaceIdiom __OSX_AVAILABLE_STARTING(__MAC_NA,__IPHONE_3_2);
-
-UIKIT_EXTERN NSString *const UIDeviceOrientationDidChangeNotification;*/

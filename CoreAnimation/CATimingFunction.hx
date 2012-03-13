@@ -2,7 +2,8 @@
 //  CATimingFunction its a shortcut to the Robert Penner equations
 //
 //  Created by Baluta Cristian on 2009-03-22.
-//  Copyright (c) 2009 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2009 http://ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 typedef Eq = Float -> Float -> Float -> Float -> Dynamic -> Float;

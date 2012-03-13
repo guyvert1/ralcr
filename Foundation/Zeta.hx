@@ -3,7 +3,8 @@
 //	Foundation
 //
 //  Created by Baluta Cristian on 2007-12-27.
-//  Copyright (c) 2007-2012 ralcr.com. All rights reserved.
+//  Copyright (c) 2007-2012 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 //	A colection of useful functions
 

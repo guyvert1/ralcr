@@ -2,7 +2,8 @@
 //  RCTextView
 //
 //  Created by Cristi Baluta on 2011-02-01.
-//  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
+//  Updated 2011-2012 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 #if (flash || nme)
@@ -83,8 +84,8 @@ class RCTextView extends RCView {
 		target.selectable = rcfont.selectable;
 		target.border = false;
 		
-		if (size.width != null)							target.width = size.width;
-		if (size.height != null && size.height != 0)	target.height = size.height;
+		if (size.width != null)							target.width = size.width * RCWindow.dpiScale;
+		if (size.height != null && size.height != 0)	target.height = size.height * RCWindow.dpiScale;
 		
 		var format = rcfont.getFormat();
 		format.align = switch (rcfont.align) {

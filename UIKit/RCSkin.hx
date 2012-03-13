@@ -2,7 +2,8 @@
 //  RCSkin - A collection of organized views that will get displayed in a RCControl
 //
 //  Created by Baluta Cristian on 2008-07-03.
-//  Copyright (c) 2008-2012 ralcr.com. All rights reserved.
+//  Copyright (c) 2008-2012 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 typedef RCSkinElements = {

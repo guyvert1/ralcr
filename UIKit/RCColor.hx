@@ -2,7 +2,8 @@
 //  RCColor
 //
 //  Created by Cristi Baluta on 2010-10-08.
-//  Copyright (c) 2010-2012 ralcr.com. All rights reserved.
+//  Copyright (c) 2010-2012 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 #if (js || cpp || neko)

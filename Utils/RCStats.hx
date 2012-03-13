@@ -2,7 +2,8 @@
 //  Display stats bout frames per second and memory ocupied by all flash applications in that time
 //
 //  Created by Baluta Cristian on 2010-04-18.
-//  Copyright (c) 2010-2012 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2010-2012 http://ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 class RCStats extends RCRectangle {

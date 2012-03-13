@@ -2,7 +2,8 @@
 //  IVideo
 //
 //  Created by Cristi Baluta on 2009-11-02.
-//  Copyright (c) 2009 ralcr.com. All rights reserved.
+//  Copyright (c) 2009 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 interface RCVideoInterface {
 	

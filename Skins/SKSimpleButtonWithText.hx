@@ -2,7 +2,8 @@
 //  Skins
 //
 //  Created by Baluta Cristian on 2009-01-28.
-//  Copyright (c) 2009 milc.ro. All rights reserved.
+//  Copyright (c) 2009 milc.ro. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 class SKSimpleButtonWithText extends RCSkin {
 	

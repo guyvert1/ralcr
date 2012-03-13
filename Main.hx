@@ -1,5 +1,6 @@
 //  Created by Cristi Baluta on 2010-02-19.
-//  Copyright (c) 2011 ralcr.com. All rights reserved.
+//  Copyright (c) 2011 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 
 // Foundation
 import RCFiles;

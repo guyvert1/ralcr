@@ -3,7 +3,8 @@
 //	UIKit
 //
 //  Created by Baluta Cristian on 2011-11-12.
-//  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
+//  Copyright (c) 2011-2012 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 import js.Lib;
@@ -17,6 +18,7 @@ class JSView extends RCDisplayObject {
 	public var layer :HtmlDom;
 	public var layerScrollable :HtmlDom;// Clips to bounds will move all the subviews in this layer
 	public var graphics :CanvasContext;
+	var alpha_ :Float;
 	
 	
 	public function new (x, y, ?w, ?h) {
@@ -38,8 +40,8 @@ class JSView extends RCDisplayObject {
 		layer.style.position = "absolute";
 		layer.style.margin = "0px 0px 0px 0px";
 		
-		setX(x);
-		setY(y);
+		setX ( x );
+		setY ( y );
 	}
 	
 	
@@ -140,11 +142,11 @@ class JSView extends RCDisplayObject {
 		return super.setAlpha ( a );
 	}
 	override public function setX (x:Float) :Float {
-		layer.style.left = Std.string(x) + "px";
+		layer.style.left = Std.string (x * RCWindow.dpiScale) + "px";
 		return super.setX ( x );
 	}
 	override public function setY (y:Float) :Float {
-		layer.style.top = Std.string(y) + "px";
+		layer.style.top = Std.string (y * RCWindow.dpiScale) + "px";
 		return super.setY ( y );
 	}
 	override public function getWidth () :Float {
@@ -153,7 +155,7 @@ class JSView extends RCDisplayObject {
 		return layer.scrollWidth;
 		return layer.clientWidth;
 	}
-	override public function setWidth (w:Float) :Float {trace("setW "+w);
+	override public function setWidth (w:Float) :Float {
 		layer.style.width = w + "px";
 		return super.setWidth ( w );
 	}
@@ -163,20 +165,20 @@ class JSView extends RCDisplayObject {
 		return layer.scrollHeight;
 		return layer.clientHeight;
 	}
-	override public function setHeight (h:Float) :Float {trace("setH "+h);
+	override public function setHeight (h:Float) :Float {
 		layer.style.height = h + "px";
 		return super.setHeight ( h );
 	}
-	override public function setScaleX (sx:Float) :Float {
-		scaleX_ = scaleX = sx;
+/*	override public function setScaleX (sx:Float) :Float {
+		scaleX_ = sx;
 		scale (scaleX_, scaleY_);
 		return scaleX_;
 	}
 	override public function setScaleY (sy:Float) :Float {
-		scaleY_ = scaleY = sy;
+		scaleY_ = sy;
 		scale (scaleX_, scaleY_);
 		return scaleY_;
-	}
+	}*/
 	override public function scale (sx:Float, sy:Float) :Void {
 		untyped layer.style.WebkitTransformOrigin = "top left";
 		untyped layer.style.WebkitTransform = "scale(" + sx + "," + sy + ")";

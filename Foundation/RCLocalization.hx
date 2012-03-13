@@ -2,7 +2,8 @@
 //  Handle localization
 //
 //  Created by Baluta Cristian on 2010-04-16.
-//  Copyright (c) 2010 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2010 http://ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 class RCLocalization {
 	

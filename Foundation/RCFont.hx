@@ -2,7 +2,8 @@
 //  RCFont.hx
 //
 //  Created by Cristi Baluta on 2010-10-15.
-//  Copyright (c) 2010-2012 ralcr.com. All rights reserved.
+//  Copyright (c) 2010-2012 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 #if (flash || nme)
@@ -227,11 +228,11 @@ class RCFont {
 		format.italic = italic;
 		format.indent = indent;
 		format.kerning = kerning;
-		format.leading = leading * RCWindow.scaleFactor;
-		format.leftMargin = leftMargin * RCWindow.scaleFactor;
+		format.leading = leading * RCWindow.dpiScale;
+		format.leftMargin = leftMargin * RCWindow.dpiScale;
 		format.letterSpacing = letterSpacing;
-		format.rightMargin = rightMargin * RCWindow.scaleFactor;
-		format.size = size * RCWindow.scaleFactor;
+		format.rightMargin = rightMargin * RCWindow.dpiScale;
+		format.size = size * RCWindow.dpiScale;
 		format.tabStops = tabStops;
 		format.target = target;
 		format.underline = underline;

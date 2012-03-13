@@ -2,7 +2,8 @@
 //  FlickrLink
 //
 //  Created by Baluta Cristian on 2008-10-22.
-//  Copyright (c) 2008 http://imagin.ro. All rights reserved.
+//  Copyright (c) 2008 http://imagin.ro. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 class FlickrURL {
 	

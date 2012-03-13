@@ -3,7 +3,8 @@
 //	A static class that operates on RCView
 //
 //  Created by Baluta Cristian on 2008-10-13.
-//  Copyright (c) 2008 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2008 http://ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 class Fugu {

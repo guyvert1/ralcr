@@ -2,7 +2,8 @@
 //  RCProgressIndicator
 //
 //  Created by Baluta Cristian on 2009-01-18.
-//  Copyright (c) 2009-2012 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2009-2012 http://ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 class RCProgressIndicator extends RCView {

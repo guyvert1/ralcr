@@ -2,7 +2,8 @@
 //  RCTableViewCell
 //
 //  Created by Baluta Cristian on 2011-06-30.
-//  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
+//  Copyright (c) 2011-2012 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 class RCTableViewCell extends RCControl {

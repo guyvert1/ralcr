@@ -2,7 +2,8 @@
 //  RCPattern
 //
 //  Created by Cristi Baluta on 2011-03-15.
-//  Copyright (c) 2011 ralcr.com. All rights reserved.
+//  Copyright (c) 2011 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 import flash.display.DisplayObjectContainer;
 import flash.display.BitmapData;

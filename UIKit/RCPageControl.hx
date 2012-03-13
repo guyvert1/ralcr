@@ -2,7 +2,8 @@
 //  RCPageControl.hx
 //  UIKit
 //
-//  Copyright (c) 2012, ralcr.com. All rights reserved.
+//  Copyright (c) 2012, ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 class RCPageControl extends RCControl {

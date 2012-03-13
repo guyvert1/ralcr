@@ -2,7 +2,8 @@
 //  CATCallFunc
 //
 //  Created by Baluta Cristian on 2009-03-26.
-//  Copyright (c) 2009-2012 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2009-2012 http://ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 class CATCallFunc extends CAObject, implements CATransitionInterface {

@@ -22,7 +22,7 @@ class RCViewController extends RCView {
 	}
 	
 	// Override to allow rotation. Default returns YES only for UIInterfaceOrientationPortrait
-	public function shouldAutorotateToInterfaceOrientation (toOrientation :UIInterfaceOrientation) :Bool {
+	public function shouldAutorotateToInterfaceOrientation (toOrientation :RCDeviceOrientation) :Bool {
 		return true;
 	}
 	

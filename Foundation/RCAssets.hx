@@ -5,7 +5,8 @@
 //	
 //
 //  Created by Baluta Cristian on 2009-01-09.
-//  Copyright (c) 2009-2012 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2009-2012 http://ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 #if (flash && nme)
@@ -102,7 +103,7 @@ class RCAssets {
 		}
 		else {
 			// Resolve url for retina image assets
-			if (RCWindow.scaleFactor == 2) {
+			if (RCWindow.dpiScale == 2) {
 				var u = URL.split(".");
 				var ext = u.pop();
 				URL = u.join(".") + "@2x." + ext;

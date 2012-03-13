@@ -7,3 +7,6 @@
 all.hxml
 
 Samples/build_tests.hxml
+
+	-cmd cd /Users/Cristi/Documents/NME/ZeroLaMie
+	-cmd haxe compile.hxml

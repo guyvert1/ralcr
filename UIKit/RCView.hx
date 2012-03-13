@@ -4,10 +4,11 @@
 //	Flash implementation of the RCDisplayObject
 //
 //  Created by Baluta Cristian on 2009-02-14.
-//  Copyright (c) 2009-2012 http://ralcr.com. All rights reserved.
+//  Updated 2009-2012 http://ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
-#if (flash || nme)
+#if (flash || nme || cpp || neko || objc)
 
 import flash.display.Sprite;
 import flash.display.Graphics;
@@ -50,7 +51,7 @@ class RCView extends RCDisplayObject {
 		if (color != null) {
 			layer.graphics.clear();
 			layer.graphics.beginFill (color, 1);
-			layer.graphics.drawRect (0, 0, size.width, size.height);
+			layer.graphics.drawRect (0, 0, size.width * RCWindow.dpiScale, size.height * RCWindow.dpiScale);
 /*		layer.transform.colorTransform = new flash.geom.ColorTransform ( mpl,mpl,mpl,mpl,
 																		red,green,blue,layer.alpha*255);*/
 		} else {
@@ -66,7 +67,7 @@ class RCView extends RCDisplayObject {
 		layer.cacheAsBitmap = clip;
 		
 		if (clip)
-			layer.scrollRect = new flash.geom.Rectangle (0, 0, size.width, size.height);
+			layer.scrollRect = new flash.geom.Rectangle (0, 0, size.width * RCWindow.dpiScale, size.height * RCWindow.dpiScale);
 		else
 			layer.scrollRect = null;
 		
@@ -75,25 +76,25 @@ class RCView extends RCDisplayObject {
 	
 	// Position and size
 	override public function setX (x:Float) :Float {
-		layer.x = x;
+		layer.x = x * RCWindow.dpiScale;
 		return super.setX ( x );
 	}
 	override public function setY (y:Float) :Float {
-		layer.y = y;
+		layer.y = y * RCWindow.dpiScale;
 		return super.setY ( y );
 	}
 	override public function getWidth () :Float {
 		return layer.width;
 	}
 	override public function setWidth (w:Float) :Float {
-		layer.width = w;
+		layer.width = w * RCWindow.dpiScale;
 		return super.setWidth ( w );
 	}
 	override public function getHeight () :Float {
 		return layer.height;
 	}
 	override public function setHeight (h:Float) :Float {
-		layer.height = h;
+		layer.height = h * RCWindow.dpiScale;
 		return super.setHeight ( h );
 	}
 	override public function setRotation (r:Float) :Float {
@@ -112,10 +113,10 @@ class RCView extends RCDisplayObject {
 	}
 	
 	override function getMouseX () :Float {
-		return layer.mouseX;
+		return layer.mouseX / RCWindow.dpiScale;
 	}
 	override function getMouseY () :Float {
-		return layer.mouseY;
+		return layer.mouseY / RCWindow.dpiScale;
 	}
 	
 	

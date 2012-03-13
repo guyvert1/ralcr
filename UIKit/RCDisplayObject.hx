@@ -18,23 +18,26 @@ class RCDisplayObject {
 	public var center (default, setCenter) :RCPoint; // Position this view with the center
 	public var clipsToBounds (default, setClipsToBounds) :Bool;
 	public var backgroundColor (default, setBackgroundColor) :Null<Int>;
-	public var x (default, setX) :Float; // Animatable property
-	public var y (default, setY) :Float; // Animatable property
+	public var x (getX, setX) :Float; // Animatable property
+	public var y (getY, setY) :Float; // Animatable property
 	public var width (getWidth, setWidth) :Float; // Real size of the layer, can be different than the bounds
 	public var height (getHeight, setHeight) :Float; // Animatable property
-	public var scaleX (default, setScaleX) :Float; // Animatable property
-	public var scaleY (default, setScaleY) :Float; // Animatable property
+	public var scaleX (getScaleX, setScaleX) :Float; // Animatable property
+	public var scaleY (getScaleY, setScaleY) :Float; // Animatable property
 	public var alpha (default, setAlpha) :Float; // Animatable property
 	public var rotation (default, setRotation) :Float; // Animatable property
 	public var visible (default, setVisible) :Bool;
 	public var mouseX (getMouseX, null) :Float;
 	public var mouseY (getMouseY, null) :Float;
 	
+	var x_ :Float;// Getters and setters
+	var y_ :Float;
+	var width_ :Float;
+	var height_ :Float;
 	var lastW_ :Float;
 	var lastH_ :Float;
 	var scaleX_ :Float;
 	var scaleY_ :Float;
-	var alpha_ :Float;
 	var caobj :CAObject;
 	
 	
@@ -55,23 +58,29 @@ class RCDisplayObject {
 	public function setAlpha (a:Float) :Float {
 		return alpha = a;// Override it
 	}
+	public function getX () :Float {
+		return x_;
+	}
 	public function setX (x:Float) :Float {
-		return this.x = x*RCWindow.scaleFactor;// Override it
+		return x_ = x;// Override it
+	}
+	public function getY () :Float {
+		return y_;
 	}
 	public function setY (y:Float) :Float {
-		return this.y = y*RCWindow.scaleFactor;// Override it
+		return y_ = y;// Override it
 	}
 	public function getWidth () :Float {
-		return width/RCWindow.scaleFactor;// Override it
+		return width_;// Override it
 	}
 	public function setWidth (w:Float) :Float {
-		return width = w*RCWindow.scaleFactor;// Override it
+		return width_ = w;// Override it
 	}
 	public function getHeight () :Float {
-		return height/RCWindow.scaleFactor;// Override it
+		return height_;// Override it
 	}
 	public function setHeight (h:Float) :Float {
-		return height = h*RCWindow.scaleFactor;// Override it
+		return height_ = h;// Override it
 	}
 	public function setRotation (r:Float) :Float {
 		return rotation = r;// Override it
@@ -86,13 +95,19 @@ class RCDisplayObject {
 		setHeight ( b.size.height );
 		return b;
 	}
+	public function getScaleX () :Float {
+		return scaleX_;
+	}
 	public function setScaleX (sx:Float) :Float {
-		scaleX_ = scaleX = sx;
+		scaleX_ = sx;
 		scale (scaleX_, scaleY_);
 		return scaleX_;
 	}
+	public function getScaleY () :Float {
+		return scaleY_;
+	}
 	public function setScaleY (sy:Float) :Float {
-		scaleY_ = scaleY = sy;
+		scaleY_ = sy;
 		scale (scaleX_, scaleY_);
 		return scaleY_;
 	}
@@ -135,8 +150,8 @@ class RCDisplayObject {
 			resetScale();
 		}
 		
-		lastW_ = this.width;
-		lastH_ = this.height;
+		lastW_ = width_;
+		lastH_ = height_;
 	}
 	
 	public function scaleToFill (w:Int, h:Int) :Void {

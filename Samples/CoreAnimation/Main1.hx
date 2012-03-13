@@ -2,7 +2,8 @@
 //  TestTweeners
 //
 //  Created by Baluta Cristian on 2009-03-20.
-//  Copyright (c) 2009 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2009 http://ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 import caurina.transitions.Tweener;
 import com.gskinner.motion.GTween;

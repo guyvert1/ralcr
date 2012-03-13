@@ -2,7 +2,8 @@
 //  DashedLine
 //
 //  Created by Baluta Cristian on 2008-10-11.
-//  Copyright (c) 2008 milc.ro. All rights reserved.
+//  Copyright (c) 2008 milc.ro. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 class RCDashedLine extends RCDraw, implements RCDrawInterface {
 	

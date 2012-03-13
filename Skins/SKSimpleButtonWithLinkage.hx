@@ -2,7 +2,8 @@
 //  SKSimpleButtonWithObject
 //
 //  Created by Cristi Baluta on 2010-05-14.
-//  Copyright (c) 2010 ralcr.com. All rights reserved.
+//  Copyright (c) 2010 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 class SKSimpleButtonWithLinkage extends RCSkin {

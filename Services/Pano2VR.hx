@@ -2,7 +2,8 @@
 //  Pano2VR
 //
 //  Created by Baluta Cristian on 2009-07-23.
-//  Copyright (c) 2009 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2009 http://ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 /* API:
 	vr.pano.cleanup();

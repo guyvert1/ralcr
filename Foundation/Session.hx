@@ -3,7 +3,8 @@
 //	You can get and set them from anywhere in the application
 //
 //  Created by Baluta Cristian on 2009-01-09.
-//  Copyright (c) 2009 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2009 http://ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 class Session {
 

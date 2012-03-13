@@ -2,7 +2,8 @@
 //  SKSegment
 //
 //  Created by Cristi Baluta on 2010-09-07.
-//  Copyright (c) 2012 ralcr.com. All rights reserved.
+//  Updated 2012 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 package ios;
@@ -47,15 +48,16 @@ class SKSegment extends RCSkin {
 		}
 		
 		// Add background image
-		var sl = "Resources/ios/RCSegmentedControl/"+segmentLeft+".png";
-		var sm = "Resources/ios/RCSegmentedControl/"+segmentMiddle+".png";
-		var sr = "Resources/ios/RCSegmentedControl/"+segmentRight+".png";
+		var hd = RCWindow.dpiScale == 2 ? "@2x" : "";
+		var sl = "Resources/ios/RCSegmentedControl/"+segmentLeft+hd+".png";
+		var sm = "Resources/ios/RCSegmentedControl/"+segmentMiddle+hd+".png";
+		var sr = "Resources/ios/RCSegmentedControl/"+segmentRight+hd+".png";
 		normal.background = new RCImageStretchable (0, 0, sl, sm, sr);
 		normal.background.setWidth ( w );
 		
-		var slh = "Resources/ios/RCSegmentedControl/"+segmentLeftSelected+"Selected.png";
-		var smh = "Resources/ios/RCSegmentedControl/"+segmentMiddleSelected+"Selected.png";
-		var srh = "Resources/ios/RCSegmentedControl/"+segmentRightSelected+"Selected.png";
+		var slh = "Resources/ios/RCSegmentedControl/"+segmentLeftSelected+"Selected"+hd+".png";
+		var smh = "Resources/ios/RCSegmentedControl/"+segmentMiddleSelected+"Selected"+hd+".png";
+		var srh = "Resources/ios/RCSegmentedControl/"+segmentRightSelected+"Selected"+hd+".png";
 		highlighted.background = new RCImageStretchable (0, 0, slh, smh, srh);
 		highlighted.background.setWidth ( w );
 		

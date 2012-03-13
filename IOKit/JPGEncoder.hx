@@ -1,6 +1,7 @@
 ﻿/*
 	Adobe Systems Incorporated(r) Source Code License Agreement
-	Copyright(c) 2005 Adobe Systems Incorporated. All rights reserved.
+	Copyright(c) 2005 Adobe Systems Incorporated. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 	
 	Please read this Source Code License Agreement carefully before using
 	the source code.

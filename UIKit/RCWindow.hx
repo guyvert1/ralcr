@@ -2,7 +2,8 @@
 //  RCWindow
 //
 //  Created by Baluta Cristian on 2008-03-21.
-//  Copyright (c) 2008-2012 http://ralcr.com. All rights reserved.
+//  Updated 2008-2012 http://ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 #if (flash || nme)
@@ -41,7 +42,7 @@ class RCWindow {
 	public static var width :Int;
 	public static var height :Int;
 	public static var backgroundColor (null, setBackgroundColor) :Int;
-	public static var scaleFactor :Float = 1;
+	public static var dpiScale :Float = 1;
 	static var init_ :Bool = false;
 	static var modalView :RCView;// Only one at a time
 	
@@ -59,8 +60,8 @@ class RCWindow {
 			height = stage.stageHeight;
 			SCREEN_W = flash.system.Capabilities.screenResolutionX;
 			SCREEN_H = flash.system.Capabilities.screenResolutionY;
-			#if (cpp || neko) scaleFactor = stage.dpiScale; #end
-			trace("dpiScale "+scaleFactor);
+			#if (cpp || neko) dpiScale = stage.dpiScale; #end
+			trace("dpiScale "+dpiScale);
 		#elseif js
 			target.style.position = "absolute";
 			target.style.margin = "0px 0px 0px 0px";
@@ -90,10 +91,11 @@ class RCWindow {
 	 * Utilities
 	 */
 	public static function getCenterX (w:Float) :Int {
-		return Math.round (width/2 - w/2);
+		trace("getCenterX width="+width+", w="+w);
+		return Math.round (width/2 - w/dpiScale/2);
 	}
 	public static function getCenterY (h:Float) :Int {
-		return Math.round (height/2 - h/2);
+		return Math.round (height/2 - h/dpiScale/2);
 	}
 	
 	

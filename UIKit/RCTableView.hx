@@ -3,7 +3,8 @@
 //	A table is a list of items arranged verticaly, 
 //
 //  Created by Baluta Cristian on 2011-06-15.
-//  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
+//  Copyright (c) 2011-2012 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 class RCTableView extends RCView {

@@ -2,7 +2,8 @@
 //  Wedge
 //
 //  Created by Cristi Baluta on 2010-02-09.
-//  Copyright (c) 2010 ralcr.com. All rights reserved.
+//  Copyright (c) 2010 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 // // x, y = center point of the wedge.
 // startAngle = starting angle in degrees.

@@ -4,7 +4,8 @@
 //	They are available anytime you open the application from the same computer
 //
 //  Created by Baluta Cristian on 2009-01-09.
-//  Copyright (c) 2009-2012 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2009-2012 http://ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 #if (flash || nme)

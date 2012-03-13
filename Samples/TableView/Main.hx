@@ -2,7 +2,8 @@
 //  Main
 //
 //  Created by Baluta Cristian on 2011-08-18
-//  Copyright (c) 2011 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2011 http://ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 import flash.events.Event;
 import flash.net.URLLoader;

@@ -3,7 +3,8 @@
 //	UIKit
 //
 //  Created by Baluta Cristian on 2008-06-25.
-//  Copyright (c) 2008-2012 milc.ro. All rights reserved.
+//  Copyright (c) 2008-2012 milc.ro. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 private enum Direction {

@@ -4,7 +4,8 @@
 //	The buttons cannot have the same label
 //
 //  Created by Baluta Cristian
-//  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
+//  Copyright (c) 2011-2012 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 class RCSegmentedControl extends RCView {

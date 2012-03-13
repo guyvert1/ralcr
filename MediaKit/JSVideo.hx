@@ -2,7 +2,8 @@
 //  Javascript VideoPlayer
 //
 //  Created by Baluta Cristian on 2012-01-21.
-//  Copyright (c) 2012 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2012 http://ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 import js.Lib;

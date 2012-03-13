@@ -2,7 +2,8 @@
 //  VideoPlayer
 //
 //  Created by Baluta Cristian on 2007-10-18.
-//  Copyright (c) 2007 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2007 http://ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 #if flash

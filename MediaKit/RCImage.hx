@@ -3,7 +3,8 @@
 //	MediaKit
 //
 //  Created by Baluta Cristian on 2008-04-01.
-//  Copyright (c) 2008-2012 http://ralcr.com. All rights reserved.
+//  Copyright (c) 2008-2012 http://ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 #if (flash || nme)
@@ -173,7 +174,7 @@ class RCImage extends RCView {
 			size.height = lastH_ = loader.height;
 			layer.appendChild ( loader );
 		#end
-			
+		
 		this.isLoaded = true;
 		onComplete();
 	}

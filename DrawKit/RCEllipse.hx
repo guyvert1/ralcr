@@ -2,7 +2,8 @@
 //  RCEllipse.hx
 //
 //  Created by Baluta Cristian on 2008-10-11.
-//  Copyright (c) 2008 ralcr.com. All rights reserved.
+//  Updated 2008 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 class RCEllipse extends RCDraw, implements RCDrawInterface {
 		

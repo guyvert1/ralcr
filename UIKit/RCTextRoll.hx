@@ -2,7 +2,8 @@
 //  RCTextRoll
 //
 //  Created by Baluta Cristian on 2007-10-02.
-//  Copyright (c) 2007-2012 http://imagin.ro. All rights reserved.
+//  Copyright (c) 2007-2012 http://imagin.ro. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 import RCView;

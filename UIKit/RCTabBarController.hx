@@ -2,7 +2,8 @@
 //  RCTabBarController
 //
 //  Created by Baluta Cristian on 2011-06-09.
-//  Copyright (c) 2011-2012 ralcr.com. All rights reserved.
+//  Copyright (c) 2011-2012 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 
 class RCTabBarController extends RCView {
@@ -33,7 +34,10 @@ class RCTabBarController extends RCView {
 	}
 	
 	/**
-	 *  
+	 *  Init the RCTabBarController. all arrays must have the same lengths
+	 *  @param labels - Labels used for the images
+	 *  @param symbols - Images used for the buttons
+	 *  @param controllers - The class names of the controllers that will be instantiated when needed
 	 **/
 	public function initWithLabels (labels:Array<String>, symbols:Array<String>, controllers:Array<Class<Dynamic>>) {
 		

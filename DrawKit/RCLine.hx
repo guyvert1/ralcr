@@ -2,7 +2,8 @@
 //  Draws a line from x1,y1, to x2,y2
 //
 //  Created by Baluta Cristian on 2008-10-11.
-//  Copyright (c) 2008-2011 ralcr.com. All rights reserved.
+//  Copyright (c) 2008-2011 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 class RCLine extends RCDraw, implements RCDrawInterface {
 	

@@ -2,7 +2,8 @@
 //  SKSimpleButtonWithSprite
 //
 //  Created by Baluta Cristian on 2011-03-07.
-//  Copyright (c) 2011 ralcr.com. All rights reserved.
+//  Copyright (c) 2011 ralcr.com. 
+//	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
 import flash.display.Sprite;
 
