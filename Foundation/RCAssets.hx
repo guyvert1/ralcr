@@ -146,7 +146,7 @@ class RCAssets {
 		}
 	}
 	function loadFont (key:String, URL:String) :Void {
-		#if js
+#if js
 		// http://www.css3.info/preview/web-fonts-with-font-face/
 		//@font-face { font-family: Delicious; src: url('Delicious-Roman.otf'); } 
 		//@font-face { font-family: Delicious; font-weight: bold; src: url('Delicious-Bold.otf'); }\
@@ -163,7 +163,7 @@ class RCAssets {
 		js.Lib.document.getElementsByTagName("head")[0].appendChild(st);
 		// Make the load async by calling onComplete a little later
 		haxe.Timer.delay (onCompleteHandler, 16);
-		#end
+#end
 	}
 	
 	

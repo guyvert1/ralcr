@@ -435,16 +435,16 @@ RCControl.prototype.onOver = function() {
 RCControl.prototype.onOut = function() {
 }
 RCControl.prototype.configureDispatchers = function() {
-	this.click = new EVMouse("mouseclick",this,{ fileName : "RCControl.hx", lineNumber : 74, className : "RCControl", methodName : "configureDispatchers"});
-	this.press = new EVMouse("mousedown",this,{ fileName : "RCControl.hx", lineNumber : 75, className : "RCControl", methodName : "configureDispatchers"});
-	this.release = new EVMouse("mouseup",this,{ fileName : "RCControl.hx", lineNumber : 76, className : "RCControl", methodName : "configureDispatchers"});
-	this.over = new EVMouse("mouseover",this,{ fileName : "RCControl.hx", lineNumber : 77, className : "RCControl", methodName : "configureDispatchers"});
-	this.out = new EVMouse("mouseout",this,{ fileName : "RCControl.hx", lineNumber : 78, className : "RCControl", methodName : "configureDispatchers"});
-	this.click.addFirst($closure(this,"clickHandler"),{ fileName : "RCControl.hx", lineNumber : 80, className : "RCControl", methodName : "configureDispatchers"});
-	this.press.addFirst($closure(this,"mouseDownHandler"),{ fileName : "RCControl.hx", lineNumber : 81, className : "RCControl", methodName : "configureDispatchers"});
-	this.release.addFirst($closure(this,"mouseUpHandler"),{ fileName : "RCControl.hx", lineNumber : 82, className : "RCControl", methodName : "configureDispatchers"});
-	this.over.addFirst($closure(this,"rollOverHandler"),{ fileName : "RCControl.hx", lineNumber : 83, className : "RCControl", methodName : "configureDispatchers"});
-	this.out.addFirst($closure(this,"rollOutHandler"),{ fileName : "RCControl.hx", lineNumber : 84, className : "RCControl", methodName : "configureDispatchers"});
+	this.click = new EVMouse("mouseclick",this,{ fileName : "RCControl.hx", lineNumber : 75, className : "RCControl", methodName : "configureDispatchers"});
+	this.press = new EVMouse("mousedown",this,{ fileName : "RCControl.hx", lineNumber : 77, className : "RCControl", methodName : "configureDispatchers"});
+	this.release = new EVMouse("mouseup",this,{ fileName : "RCControl.hx", lineNumber : 78, className : "RCControl", methodName : "configureDispatchers"});
+	this.over = new EVMouse("mouseover",this,{ fileName : "RCControl.hx", lineNumber : 79, className : "RCControl", methodName : "configureDispatchers"});
+	this.out = new EVMouse("mouseout",this,{ fileName : "RCControl.hx", lineNumber : 80, className : "RCControl", methodName : "configureDispatchers"});
+	this.click.addFirst($closure(this,"clickHandler"),{ fileName : "RCControl.hx", lineNumber : 82, className : "RCControl", methodName : "configureDispatchers"});
+	this.press.addFirst($closure(this,"mouseDownHandler"),{ fileName : "RCControl.hx", lineNumber : 83, className : "RCControl", methodName : "configureDispatchers"});
+	this.release.addFirst($closure(this,"mouseUpHandler"),{ fileName : "RCControl.hx", lineNumber : 84, className : "RCControl", methodName : "configureDispatchers"});
+	this.over.addFirst($closure(this,"rollOverHandler"),{ fileName : "RCControl.hx", lineNumber : 85, className : "RCControl", methodName : "configureDispatchers"});
+	this.out.addFirst($closure(this,"rollOutHandler"),{ fileName : "RCControl.hx", lineNumber : 86, className : "RCControl", methodName : "configureDispatchers"});
 }
 RCControl.prototype.mouseDownHandler = function(e) {
 	this.setState(RCControlState.SELECTED);

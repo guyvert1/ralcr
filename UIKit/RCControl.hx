@@ -28,6 +28,7 @@ class RCControl extends RCView {
 	public var touchUpOutside :RCSignal<RCControl->Void>;
 	public var touchCancel :RCSignal<RCControl->Void>;
 #end
+	//public var click :EVMouse;// RCSignal that dispatches EVMouse: RCSignal<EVMouse->Void>
 	public var click :EVMouse;// RCSignal that dispatches EVMouse: RCSignal<EVMouse->Void>
 	public var press :EVMouse;
 	public var release :EVMouse;
@@ -72,6 +73,7 @@ class RCControl extends RCView {
 	function configureDispatchers () {
 		
 		click = new EVMouse (EVMouse.CLICK, this);
+		//click = new EVTouch (EVTouch.DOWN, this);
 		press = new EVMouse (EVMouse.DOWN, this);
 		release = new EVMouse (EVMouse.UP, this);
 		over = new EVMouse (EVMouse.OVER, this);
