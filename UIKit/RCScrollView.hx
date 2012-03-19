@@ -17,7 +17,6 @@ class RCScrollView extends RCView {
 	var horizScrollBarSync :RCSliderSync;
 	
 	public var contentView :RCView;
-	public var contentSize :RCSize;
 	public var dragging :Bool;
 	public var autohideSliders :Bool;
 	public var enableMarginsFade (null, setMarginsFade) :Bool;

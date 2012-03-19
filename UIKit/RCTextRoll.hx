@@ -37,9 +37,9 @@ class RCTextRoll extends RCView {
 	function viewDidAppear_ () :Void {
 		trace("RCTextRoll viewdidappear");
 		this.size.height = txt1.height;
-		if (txt1.width > size.width) {
+		if (txt1.contentSize.width > size.width) {
 			if (txt2 != null) return;
-			txt2 = new RCTextView (Math.round (txt1.width + GAP), 0, null, size.height, text, txt1.rcfont);
+			txt2 = new RCTextView (Math.round (txt1.contentSize.width + GAP), 0, null, size.height, text, txt1.rcfont);
 			this.addChild ( txt2 );
 			this.clipsToBounds = true;
 		}
@@ -92,8 +92,8 @@ class RCTextRoll extends RCView {
 			stop();
 			timer = haxe.Timer.delay (startRolling, 3000);
 		}
-		if (txt1.x < -txt1.width) txt1.x = Math.round (txt2.x + txt2.width + GAP);
-		if (txt2.x < -txt2.width) txt2.x = Math.round (txt1.x + txt1.width + GAP);
+		if (txt1.x < -txt1.contentSize.width) txt1.x = Math.round (txt2.x + txt2.contentSize.width + GAP);
+		if (txt2.x < -txt2.contentSize.width) txt2.x = Math.round (txt1.x + txt1.contentSize.width + GAP);
 	}
 	
 	function reset () :Void {

@@ -18,7 +18,6 @@ import flash.events.Event;
 class RCView extends RCDisplayObject {
 
 	public var layer :Sprite; // In flash the layer is a Sprite
-	public var parent :Sprite;
 	public var graphics :Graphics;
 	
 	
@@ -28,8 +27,10 @@ class RCView extends RCDisplayObject {
 		layer = new Sprite();
 		graphics = layer.graphics;
 		size = new RCSize (w, h);
-		setX(x);
-		setY(y);
+		contentSize_ = size.copy();
+		
+		setX ( x );
+		setY ( y );
 		
 		layer.addEventListener (Event.ADDED_TO_STAGE, viewDidAppearHandler_);
 		layer.addEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappearHandler_);
@@ -83,19 +84,16 @@ class RCView extends RCDisplayObject {
 		layer.y = y * RCWindow.dpiScale;
 		return super.setY ( y );
 	}
-	override public function getWidth () :Float {
-		return layer.width;
-	}
 	override public function setWidth (w:Float) :Float {
 		layer.width = w * RCWindow.dpiScale;
 		return super.setWidth ( w );
 	}
-	override public function getHeight () :Float {
-		return layer.height;
-	}
 	override public function setHeight (h:Float) :Float {
 		layer.height = h * RCWindow.dpiScale;
 		return super.setHeight ( h );
+	}
+	override public function getContentSize () :RCSize {
+		return new RCSize (layer.width, layer.height);
 	}
 	override public function setRotation (r:Float) :Float {
 		layer.rotation = r;
@@ -133,7 +131,7 @@ class RCView extends RCDisplayObject {
 	override public function addChild (child:RCView) :Void {
 		if (child == null) return;
 		child.viewWillAppearHandler();
-		child.parent = layer;
+		child.parent = this;
 		layer.addChild ( child.layer );
 		//child.viewDidAppearHandler();
 	}

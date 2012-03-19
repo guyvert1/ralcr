@@ -14,7 +14,6 @@ import JSCanvas;
 
 class JSView extends RCDisplayObject {
 	
-	public var parent :HtmlDom;
 	public var layer :HtmlDom;
 	public var layerScrollable :HtmlDom;// Clips to bounds will move all the subviews in this layer
 	public var graphics :CanvasContext;
@@ -24,6 +23,7 @@ class JSView extends RCDisplayObject {
 	public function new (x, y, ?w, ?h) {
 		super();
 		size = new RCSize (w, h);
+		contentSize_ = size.copy();
 		scaleX_ = 1;
 		scaleY_ = 1;
 		alpha_ = 1;
@@ -49,7 +49,7 @@ class JSView extends RCDisplayObject {
 	override public function addChild (child:JSView) :Void {
 		if (child == null) return;
 		child.viewWillAppearHandler();
-		child.parent = layer;
+		child.parent = this;
 		layer.appendChild ( child.layer );
 		child.viewDidAppearHandler();
 	}
@@ -70,7 +70,7 @@ class JSView extends RCDisplayObject {
 	}
 	public function removeFromSuperView () :Void {
 		if (parent != null)
-			parent.removeChild ( layer );
+			parent.removeChild ( this );
 	}
 	
 	
@@ -79,6 +79,7 @@ class JSView extends RCDisplayObject {
 	 *  Change the color of the background
 	 */
 	override public function setBackgroundColor (color:Null<Int>) :Null<Int> {
+		
 		if (color == null) {
 			layer.style.background = null;
 			return color;
@@ -149,26 +150,23 @@ class JSView extends RCDisplayObject {
 		layer.style.top = Std.string (y * RCWindow.dpiScale) + "px";
 		return super.setY ( y );
 	}
-	override public function getWidth () :Float {
-		//if (parent == null) trace("This view doesn't have a parent, the width will be 0");
-		return layer.offsetWidth;
-		return layer.scrollWidth;
-		return layer.clientWidth;
-	}
 	override public function setWidth (w:Float) :Float {
 		layer.style.width = w + "px";
 		return super.setWidth ( w );
-	}
-	override public function getHeight () :Float {
-		//if (parent == null) trace("This view doesn't have a parent, the height will be 0");
-		return layer.offsetHeight;
-		return layer.scrollHeight;
-		return layer.clientHeight;
 	}
 	override public function setHeight (h:Float) :Float {
 		layer.style.height = h + "px";
 		return super.setHeight ( h );
 	}
+	override public function getContentSize () :RCSize {
+/*		trace("offset "+new RCSize (layer.offsetWidth, layer.offsetHeight));
+		trace("scroll "+new RCSize (layer.scrollWidth, layer.scrollHeight));
+		trace("client "+new RCSize (layer.clientWidth, layer.clientHeight));*/
+		contentSize_.width = layer.scrollWidth;
+		contentSize_.height = layer.scrollHeight;
+		return contentSize_;
+	}
+	
 /*	override public function setScaleX (sx:Float) :Float {
 		scaleX_ = sx;
 		scale (scaleX_, scaleY_);

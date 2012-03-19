@@ -170,7 +170,7 @@ class RCTextView extends RCView {
 				content = content.split("~~~TAB~~~").join("<span style='letter-spacing:1.3em'>&nbsp;</span>");*/
 				layer.innerHTML = str;
 			}
-			size.width = getWidth();
+			size.width = contentSize.width;
 			//setWidth ( size.width );
 		#end
 		
@@ -187,18 +187,8 @@ class RCTextView extends RCView {
 		
 		return str;
 	}
-	function wheelHandler (e:MouseEvent) :Void {
-		#if (flash || nme)
-			//trace(target.maxScrollV +", "+target.scrollV);
-			if (target.maxScrollV == 2)
-				target.scrollV = 0;
-		#end
-	}
 	
 	override public function destroy () :Void {
-		#if (flash || nme)
-			target.removeEventListener (MouseEvent.MOUSE_WHEEL, wheelHandler);
-		#end
 		target = null;
 		super.destroy();
 	}

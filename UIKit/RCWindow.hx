@@ -63,12 +63,11 @@ class RCWindow {
 			#if (cpp || neko) dpiScale = stage.dpiScale; #end
 			trace("dpiScale "+dpiScale);
 		#elseif js
-			target.style.position = "absolute";
+			//target.style.position = "absolute";
 			target.style.margin = "0px 0px 0px 0px";
 			target.style.overflow = "hidden";
 			width = target.scrollWidth;
 			height = target.scrollHeight;
-			//backgroundColor = 0xFFFFFF;
 		#end
 		#if flash
 			URL = flash.Lib.current.loaderInfo.url;
@@ -150,7 +149,7 @@ class RCWindow {
 		init();
 		if (child != null) {
 			child.viewWillAppearHandler();
-			child.parent = target;
+			//child.parent = target;
 			#if (flash || nme)
 				target.addChild ( child.layer );
 			#elseif js

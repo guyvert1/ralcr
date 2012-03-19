@@ -14,13 +14,14 @@ class RCDisplayObject {
 	
 	// Properties of a View
 	public var bounds (getBounds, setBounds) :RCRect; // Real size of the view
-	public var size :RCSize; // Visible size of the layer. 
+	public var size :RCSize; // Visible area of the layer. Read only
+	public var contentSize (getContentSize, setContentSize) :RCSize; // Real size of the layer. Used in rcscrollview mostly
 	public var center (default, setCenter) :RCPoint; // Position this view with the center
 	public var clipsToBounds (default, setClipsToBounds) :Bool;
 	public var backgroundColor (default, setBackgroundColor) :Null<Int>;
 	public var x (getX, setX) :Float; // Animatable property
 	public var y (getY, setY) :Float; // Animatable property
-	public var width (getWidth, setWidth) :Float; // Real size of the layer, can be different than the bounds
+	public var width (getWidth, setWidth) :Float; // Methods to get and set the size
 	public var height (getHeight, setHeight) :Float; // Animatable property
 	public var scaleX (getScaleX, setScaleX) :Float; // Animatable property
 	public var scaleY (getScaleY, setScaleY) :Float; // Animatable property
@@ -29,15 +30,14 @@ class RCDisplayObject {
 	public var visible (default, setVisible) :Bool;
 	public var mouseX (getMouseX, null) :Float;
 	public var mouseY (getMouseY, null) :Float;
+	public var parent :RCView;
 	
 	var x_ :Float;// Getters and setters
 	var y_ :Float;
-	var width_ :Float;
-	var height_ :Float;
-	var lastW_ :Float;
-	var lastH_ :Float;
 	var scaleX_ :Float;
 	var scaleY_ :Float;
+	var contentSize_ :RCSize;
+	var originalSize :RCSize; // Used in scale methods
 	var caobj :CAObject;
 	
 	
@@ -71,22 +71,28 @@ class RCDisplayObject {
 		return y_ = y;// Override it
 	}
 	public function getWidth () :Float {
-		return width_;// Override it
+		return size.width;
 	}
 	public function setWidth (w:Float) :Float {
-		return width_ = w;// Override it
+		return size.width = w;// Override it
 	}
 	public function getHeight () :Float {
-		return height_;// Override it
+		return size.height;
 	}
 	public function setHeight (h:Float) :Float {
-		return height_ = h;// Override it
+		return size.height = h;// Override it
+	}
+	public function getContentSize () :RCSize {
+		return size;// Override it to return the real size of the layer
+	}
+	public function setContentSize (s:RCSize) :RCSize {
+		return contentSize = s;// Override it to return the real size of the layer
 	}
 	public function setRotation (r:Float) :Float {
 		return rotation = r;// Override it
 	}
 	public function getBounds () :RCRect {
-		return new RCRect (x, y, size.width, size.height);
+		return new RCRect (x_, y_, size.width, size.height);
 	}
 	public function setBounds (b:RCRect) :RCRect {
 		setX ( b.origin.x );
@@ -132,45 +138,42 @@ class RCDisplayObject {
 	 *  ScaleToFit - will fit the largest axis into the new bounds entirely.
 	 *  ScaleToFill - will fill the new bounds entirely.
 	 */
-	public function scaleToFit (w:Int, h:Int) :Void {
+	public function scaleToFit (w:Float, h:Float) :Void {
 		
 		if (size.width/w > size.height/h && size.width > w) {
 			setWidth ( w );
-			setHeight ( this.width * size.height / size.width );
+			setHeight ( w * originalSize.height / originalSize.width );
 		}
 		else if (size.height > h) {
 			setHeight ( h );
-			setWidth ( this.height * size.width / size.height );
+			setWidth ( h * originalSize.width / originalSize.height );
 		}
-		else if (size.width > lastW_ && size.height > lastH_) {
+		else if (size.width > originalSize.width && size.height > originalSize.height) {
 			setWidth ( size.width );
 			setHeight ( size.height );
 		}
 		else {
 			resetScale();
 		}
-		
-		lastW_ = width_;
-		lastH_ = height_;
 	}
 	
-	public function scaleToFill (w:Int, h:Int) :Void {
+	public function scaleToFill (w:Float, h:Float) :Void {
 		
-		if (w/size.width > h/size.height) {
+		if (w/originalSize.width > h/originalSize.height) {
 			setWidth ( w );
-			setHeight ( this.width * size.height / size.width );
+			setHeight ( w * originalSize.height / originalSize.width );
 		}
 		else {
 			setHeight ( h );
-			setWidth ( this.height * size.width / size.height );
+			setWidth ( h * originalSize.width / originalSize.height );
 		}
 	}
 
 	public function scale (sx:Float, sy:Float) {}
 	
 	public function resetScale () :Void {
-		setWidth ( lastW_ );
-		setHeight ( lastH_ );
+		setWidth ( originalSize.width );
+		setHeight ( originalSize.height );
 	}
 	
 	// Get mouse position
