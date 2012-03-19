@@ -140,16 +140,16 @@ class RCImage extends RCView {
 			if (bitmapData != null) {
 				// We already have the bitmapData at this point
 				var bitmap = new Bitmap (bitmapData, PixelSnapping.AUTO, true);
-				size.width = lastW_ = bitmapData.width;
-				size.height = lastH_ = bitmapData.height;
+				size.width = bitmapData.width;
+				size.height = bitmapData.height;
 				layer.addChild ( bitmap );
 			}
 			else {
 				var w = Math.round (loader.content.width);
 				var h = Math.round (loader.content.height);
 				// Add the image to the view
-				size.width = lastW_ = w;
-				size.height = lastH_ = h;
+				size.width = w;
+				size.height = h;
 				layer.addChild ( loader );
 				// Get the BitmapData of the image
 				
@@ -170,11 +170,12 @@ class RCImage extends RCView {
 				layer.addChild ( bitmap );
 			}
 		#elseif js
-			size.width = lastW_ = loader.width;
-			size.height = lastH_ = loader.height;
+			size.width = loader.width;
+			size.height = loader.height;
 			layer.appendChild ( loader );
 		#end
 		
+		originalSize = size.copy();
 		this.isLoaded = true;
 		onComplete();
 	}
@@ -246,12 +247,13 @@ class RCImage extends RCView {
 	}
 
 #if js
-	override public function scaleToFit (w:Int, h:Int) :Void {
+	// In js we need to resize the loader(image) and not only the layer
+	override public function scaleToFit (w:Float, h:Float) :Void {
 		super.scaleToFit (w, h);
 		loader.style.width = size.width + "px";
 		loader.style.height = size.height + "px";
 	}
-	override public function scaleToFill (w:Int, h:Int) :Void {
+	override public function scaleToFill (w:Float, h:Float) :Void {
 		super.scaleToFill (w, h);
 		loader.style.width = size.width + "px";
 		loader.style.height = size.height + "px";
