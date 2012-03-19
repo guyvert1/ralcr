@@ -8,7 +8,9 @@
 /**
  *  
  **/
-
+	 #if js
+		 import js.Dom;
+#end
 class RCScrollView extends RCView {
 	
 	var vertScrollBar :RCScrollBar;
@@ -42,6 +44,7 @@ class RCScrollView extends RCView {
 		layer.style.overflow = "auto";
 		scrollHappening = new EVMouse (EVMouse.WHEEL, this);
 		scrollHappening.add ( scrollViewDidScrollHandler_ );
+		layer.onscroll = function (e:Event) { trace(e);scrollViewDidScroll(); }
 		#end
 		setContentView ( new RCView (0, 0) );
 	}
