@@ -5,6 +5,29 @@
 //  Copyright (c) 2010 ralcr.com. 
 //	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
+#if (jsk || flashk)
+class Main {
+	static var ph :RCImage;
+	static function main() {
+		haxe.Firebug.redirectTraces();
+		var rect = new RCRectangle(50,50, 300, 150, RCColor.greenColor());
+	 	RCWindow.addChild ( rect );
+		//rect.height = 53;
+		trace(rect.size);
+		trace(rect.contentSize);
+		
+		ph = new RCImage(1, 1, "../assets/900x600.jpg");
+		ph.onComplete = resizePhoto;
+		rect.addChild ( ph );
+	}
+	static function resizePhoto(){
+		trace(ph.contentSize);
+		//ph.scaleToFill (300-2, 150-2);
+		ph.scaleToFit (300-2, 150-2);
+	}
+}
+#end
+//#if js2
 import RCView;
 import RCWindow;
 
@@ -40,7 +63,7 @@ class Main {
 		trace("step2 - RCRectangle");
 		
 		// Draw a colored rectangle
-		var rect = new RCRectangle(0,0, 300, 150, RCColor.greenColor());
+		var rect = new RCRectangle(0,0, 300, 150, RCColor.redColor());
 	 	RCWindow.addChild ( rect );
 		rect.clipsToBounds = true;
 		rect.center = new RCPoint (RCWindow.width/2, RCWindow.height/2);
@@ -137,11 +160,18 @@ class Main {
 		lin.redraw();
 	}*/
 	static function resizePhoto(){
-		trace("onComplete image");
-		trace(ph.width+", "+ph.height);
-		trace(ph.size.width+", "+ph.size.height);
-		ph.scaleToFill (300-2, 150-2);
-		//ph.scaleToFit (300-2, 150-2);
+		//ph.scaleToFill (300-2, 150-2);
+		ph.scaleToFit (300-2, 150-2);
+		trace("startResizing");
+		//ph.height = 50;
+		#if js
+/*			ph.layer.style.height = "50px";
+			ph.layer.style.margin = "50px 50px 50px 50px";
+			
+			var r = js.Lib.document.getElementById("flash");
+			r.style.height = 20+"px";*/
+		#end
+		
 		trace(ph.width+", "+ph.height);
 		trace(ph.size.width+", "+ph.size.height);
 		
@@ -202,11 +232,11 @@ class Main {
 		RCWindow.addChild ( group );
 		group.add([1,2,3,4,5,5]);
 		
-		var seg = new RCSegmentedControl (100,400, 640,50, ios.SKSegment);
+/*		var seg = new RCSegmentedControl (100,400, 640,50, ios.SKSegment);
 		RCWindow.addChild ( seg );
 		seg.initWithLabels (["Masculin","Feminin","123","Label 12345"], false);
 		//seg.backgroundColor = 0x000000;
-		seg.click.add(segClick);
+		seg.click.add(segClick);*/
 		
 		}catch(e:Dynamic){Fugu.stack();}
 	}
@@ -239,3 +269,4 @@ class Main {
 		}catch(e:Dynamic){Fugu.stack();}
 	}
 }
+//#end
