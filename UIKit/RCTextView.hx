@@ -40,14 +40,13 @@ class RCTextView extends RCView {
 #if js
 		setWidth ( w );
 		setHeight ( h );
+		viewDidAppear.add ( viewDidAppear_ );
 #end
 		init();
 		setText ( str );
 	}
 	function init () :Void {
 		redraw();
-		// trick for flash bug when a textfield is scrolling with the wheel one row
-		//target.addEventListener (MouseEvent.MOUSE_WHEEL, wheelHandler);
 	}
 	
 #if (flash || nme)
@@ -141,6 +140,9 @@ class RCTextView extends RCView {
 		if (size.width != null) setWidth ( size.width );
 		//layer.style.textAlign = rcfont.align;
 	}
+	function viewDidAppear_ () :Void {
+		size.width = contentSize.width;
+	}
 	
 #end
 	
@@ -179,10 +181,10 @@ class RCTextView extends RCView {
 			// because align is not supported in combination with autoSize
 			if (size.width != null)
 				target.x = switch (rcfont.align) {
-						case "center": Math.round ((size.width - target.width)/2);
-						case "right": Math.round (size.width - target.width);
-						default: 0;
-					}; 
+					case "center": Math.round ((size.width - target.width)/2);
+					case "right": Math.round (size.width - target.width);
+					default: 0;
+				}; 
 		#end
 		
 		return str;

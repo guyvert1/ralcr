@@ -166,6 +166,7 @@ import ReversedIntIter;
 import RGBColor;
 import TEA;
 import XXTea;
+import RCLog;
 
 // IOKit
 import JPGEncoder;
