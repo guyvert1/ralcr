@@ -239,8 +239,7 @@ class HXAddress {
      */
 	public static function popup (url:String, ?name:String="popup", ?options:String='""', ?handler:String="") :Void {
 		var js_target = #if js true #else false #end;
-		if (_availability &&
-			(isActiveX() || js_target || ExternalInterface.call ('asual.util.Browser.isSafari')))
+		if (_availability && (isActiveX() || js_target || ExternalInterface.call ('asual.util.Browser.isSafari')))
 		{
 			ExternalInterface.call ('SWFAddress.popup', url, name, options, handler);
 			return;
