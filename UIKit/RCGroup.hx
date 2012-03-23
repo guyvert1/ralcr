@@ -49,12 +49,12 @@ class RCGroup<T:RCView> extends RCView {
 		var i = 0;
 		for (param in params) {
 			// Create a new sprite with the passed function
-			var s :T = this.constructor_ ( new RCIndexPath(0,i) );
+			var s :T = this.constructor_ ( new RCIndexPath (0, i) );
 			this.addChild ( s );
 			items.push ( s );
 			
 			// dispatch an event that the buttons structure has changed
-			itemPush.dispatch ( new RCIndexPath(0,i) );
+			itemPush.dispatch ( new RCIndexPath (0, i) );
 			i++;
 		}
 		
@@ -69,7 +69,7 @@ class RCGroup<T:RCView> extends RCView {
 		keepItemsArranged();
 		
 		// dispatch an event that the buttons structure has changed
-		itemRemove.dispatch ( new RCIndexPath(0,i) );
+		itemRemove.dispatch ( new RCIndexPath (0, i) );
 	}
 	
 	
@@ -85,14 +85,16 @@ class RCGroup<T:RCView> extends RCView {
 			var old_s = items[i-1];
 			
 			if (i != 0) {
-				if (gapX != null) newX = old_s.x + old_s.size.width + gapX;
-				if (gapY != null) newY = old_s.y + old_s.size.height + gapY;
+				if (gapX != null) newX = old_s.x + old_s.contentSize.width + gapX;
+				if (gapY != null) newY = old_s.y + old_s.contentSize.height + gapY;
 			}
 			
 			new_s.x = newX;
 			new_s.y = newY;
+			size.width = newX + new_s.size.width;
+			size.height = newY + new_s.size.height;
 		}
-		update.dispatch();
+		update.dispatch( this );
 	}
 	
 	
@@ -119,7 +121,8 @@ class RCGroup<T:RCView> extends RCView {
 	}*/
 	
 	
-	override public function destroy() :Void {
+	override public function destroy() :Void
+	{
 		Fugu.safeDestroy ( items );
 		items = null;
 		super.destroy();

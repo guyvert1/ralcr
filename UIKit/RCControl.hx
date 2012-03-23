@@ -89,15 +89,15 @@ class RCControl extends RCView {
 	/**
 	* Mouse Handlers
 	*/
-	function mouseDownHandler (e:EVMouse) :Void {
+	function mouseDownHandler (e:EVMouse) :Void {trace("down");
 		setState ( SELECTED );
 		onPress();
 	}
-	function mouseUpHandler (e:EVMouse) :Void {
+	function mouseUpHandler (e:EVMouse) :Void {trace("up");
 		setState ( HIGHLIGHTED );
 		onRelease();
 	}
-	function rollOverHandler (e:EVMouse) :Void {
+	function rollOverHandler (e:EVMouse) :Void {trace("over");
 		setState ( HIGHLIGHTED );
 		onOver();
 	}
@@ -105,12 +105,20 @@ class RCControl extends RCView {
 		setState ( NORMAL );
 		onOut();
 	}
-	function clickHandler (e:EVMouse) :Void {
+	function clickHandler (e:EVMouse) :Void {trace("click");
 		setState ( SELECTED );
 		onClick();
 	}
 	public function setState (state:RCControlState) {
 		state_ = state;//trace("current state is "+state_);
+		#if js
+		switch (state_) {
+			case NORMAL: js.Lib.document.body.style.cursor = "auto";
+			case HIGHLIGHTED: js.Lib.document.body.style.cursor = "pointer";
+			case DISABLED: js.Lib.document.body.style.cursor = "auto";
+			case SELECTED: js.Lib.document.body.style.cursor = "auto";
+		}
+		#end
 	}
 	
 	
@@ -131,6 +139,7 @@ class RCControl extends RCView {
 		return enabled_;
 	}
 	function setEnabled (c:Bool) :Bool {
+		
 		enabled_ = c;
 		
 		click.enabled = enabled_;
