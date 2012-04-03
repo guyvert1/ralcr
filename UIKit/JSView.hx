@@ -94,8 +94,8 @@ class JSView extends RCDisplayObject {
 		var red   = (color & 0xff0000) >> 16;
 		var green = (color & 0xff00) >> 8;
 		var blue  = color & 0xFF;
-		var alpha = 1;
-		layer.style.background = "rgba("+red+","+green+","+blue+","+alpha+")";
+		// rgba is not available in IE
+		layer.style.backgroundColor = "rgb("+red+","+green+","+blue+")";
 		
 		return color;
 	}
@@ -141,8 +141,9 @@ class JSView extends RCDisplayObject {
 	override public function setAlpha (a:Float) :Float {
 		
 		if (js.Lib.isIE) {
-			//untyped layer.style.filter = "alpha(opacity="+Std.string(a*100)+")";
-			layer.style.background = "url(pixel.png) repeat";
+			untyped layer.style.msFilter = "progid:DXImageTransform.Microsoft.Alpha(Opacity="+Std.string(a*100)+")";
+			untyped layer.style.filter = "alpha(opacity="+Std.string(a*100)+")";
+			//if(a==0)layer.style.background = "url(pixel.png) repeat";
 		}
 		else {
 			untyped layer.style.opacity = Std.string(a);

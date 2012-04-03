@@ -325,8 +325,7 @@ JSView.prototype.setBackgroundColor = function(color) {
 	var red = (color & 16711680) >> 16;
 	var green = (color & 65280) >> 8;
 	var blue = color & 255;
-	var alpha = 1;
-	this.layer.style.background = "rgba(" + red + "," + green + "," + blue + "," + alpha + ")";
+	this.layer.style.backgroundColor = "rgb(" + red + "," + green + "," + blue + ")";
 	return color;
 }
 JSView.prototype.setClipsToBounds = function(clip) {
@@ -350,7 +349,10 @@ JSView.prototype.setVisible = function(v) {
 	return RCDisplayObject.prototype.setVisible.call(this,v);
 }
 JSView.prototype.setAlpha = function(a) {
-	if(js.Lib.isIE) this.layer.style.background = "url(pixel.png) repeat"; else this.layer.style.opacity = Std.string(a);
+	if(js.Lib.isIE) {
+		this.layer.style.msFilter = "progid:DXImageTransform.Microsoft.Alpha(Opacity=" + Std.string(a * 100) + ")";
+		this.layer.style.filter = "alpha(opacity=" + Std.string(a * 100) + ")";
+	} else this.layer.style.opacity = Std.string(a);
 	return RCDisplayObject.prototype.setAlpha.call(this,a);
 }
 JSView.prototype.setX = function(x) {
@@ -881,6 +883,11 @@ RCSliderSync.prototype.resume = function() {
 	this.slider.valueChanged.add($closure(this,"sliderChangedHandler"));
 }
 RCSliderSync.prototype.wheelHandler = function(e) {
+	var _g = this;
+	_g.setFinalValue(_g.valueFinal + e.delta);
+	this.startLoop();
+	this.slider.setValue(Zeta.lineEquationInt(0,100,this.valueFinal,this.valueStart,this.valueStart + this.valueMax - this.getContentSize()));
+	if(e.delta < 0) this.onScrollRight(); else this.onScrollLeft();
 }
 RCSliderSync.prototype.sliderChangedHandler = function(e) {
 	this.setFinalValue(Zeta.lineEquationInt(this.valueStart,this.valueStart + this.valueMax - this.getContentSize(),e.getValue(),0,100));
@@ -897,7 +904,7 @@ RCSliderSync.prototype.loop = function() {
 		this.ticker.setFuncToCall(null);
 		this.moveContentTo(this.valueFinal);
 	} else this.moveContentTo(this.getContentPosition() + next_value);
-	this.valueChanged.dispatch(this,null,null,null,{ fileName : "RCSliderSync.hx", lineNumber : 138, className : "RCSliderSync", methodName : "loop"});
+	this.valueChanged.dispatch(this,null,null,null,{ fileName : "RCSliderSync.hx", lineNumber : 132, className : "RCSliderSync", methodName : "loop"});
 }
 RCSliderSync.prototype.moveContentTo = function(next_value) {
 	if(this.direction == _RCSliderSync.Direction.HORIZONTAL) this.contentView.setX(Math.round(next_value)); else this.contentView.setY(Math.round(next_value));
@@ -920,6 +927,8 @@ RCSliderSync.prototype.setStartValue = function(value) {
 RCSliderSync.prototype.destroy = function() {
 	this.hold();
 	this.valueChanged.destroy();
+	this.ticker.destroy();
+	this.mouseWheel.destroy();
 }
 RCSliderSync.prototype.__class__ = RCSliderSync;
 RCGradient = function(colors,alphas,linear) {
@@ -1036,15 +1045,8 @@ RCColor.prototype.alpha = null;
 RCColor.prototype.__class__ = RCColor;
 RCScrollView = function(x,y,w,h) {
 	if( x === $_ ) return;
-	var me = this;
 	JSView.call(this,x,y,w,h);
 	this.setClipsToBounds(true);
-	this.scrollHappening = new EVMouse("mousewheel",this,{ fileName : "RCScrollView.hx", lineNumber : 47, className : "RCScrollView", methodName : "new"});
-	this.scrollHappening.add($closure(this,"scrollViewDidScrollHandler_"));
-	this.layer.onscroll = function(e) {
-		haxe.Log.trace(e,{ fileName : "RCScrollView.hx", lineNumber : 49, className : "RCScrollView", methodName : "new"});
-		me.scrollViewDidScroll();
-	};
 	this.setContentView(new JSView(0,0));
 }
 RCScrollView.__name__ = ["RCScrollView"];
@@ -1063,7 +1065,6 @@ RCScrollView.prototype.decelerationRate = null;
 RCScrollView.prototype.pagingEnabled = null;
 RCScrollView.prototype.scrollEnabled = null;
 RCScrollView.prototype.scrollIndicatorInsets = null;
-RCScrollView.prototype.scrollHappening = null;
 RCScrollView.prototype.scrollViewDidScroll = function() {
 }
 RCScrollView.prototype.scrollViewWillBeginDragging = function() {
@@ -1074,21 +1075,20 @@ RCScrollView.prototype.scrollViewDidScrollToTop = function() {
 }
 RCScrollView.prototype.scrollViewDidEndScrollingAnimation = function() {
 }
-RCScrollView.prototype.scrollViewDidScrollHandler_ = function(e) {
-	this.scrollViewDidScroll();
-}
 RCScrollView.prototype.setContentView = function(content) {
 	Fugu.safeRemove(this.contentView);
 	this.contentView = content;
 	this.addChild(this.contentView);
-	this.setContentSize(this.contentView.size);
+	this.setContentSize(this.contentView.getContentSize());
 	this.setScrollEnabled(true);
 }
 RCScrollView.prototype.setScrollEnabled = function(b) {
+	haxe.Log.trace("setScrollEnabled " + b,{ fileName : "RCScrollView.hx", lineNumber : 59, className : "RCScrollView", methodName : "setScrollEnabled"});
 	var colors = [null,null,14540253,16777215];
-	haxe.Log.trace("contentSize " + this.getContentSize(),{ fileName : "RCScrollView.hx", lineNumber : 71, className : "RCScrollView", methodName : "setScrollEnabled"});
-	if(this.contentView.getWidth() > this.size.width && this.horizScrollBarSync == null && b) {
-		haxe.Log.trace("add horiz",{ fileName : "RCScrollView.hx", lineNumber : 75, className : "RCScrollView", methodName : "setScrollEnabled"});
+	haxe.Log.trace("contentSize " + this.contentView.getContentSize(),{ fileName : "RCScrollView.hx", lineNumber : 61, className : "RCScrollView", methodName : "setScrollEnabled"});
+	haxe.Log.trace(this.size,{ fileName : "RCScrollView.hx", lineNumber : 62, className : "RCScrollView", methodName : "setScrollEnabled"});
+	if(this.getContentSize().width > this.size.width && this.horizScrollBarSync == null && b && false) {
+		haxe.Log.trace("add horiz",{ fileName : "RCScrollView.hx", lineNumber : 66, className : "RCScrollView", methodName : "setScrollEnabled"});
 		var scroller_w = Zeta.lineEquationInt(this.size.width / 2,this.size.width,this.getContentSize().width,this.size.width * 2,this.size.width);
 		var skinH = new haxe.SKScrollBar(colors);
 		this.horizScrollBar = new RCScrollBar(0,this.size.height - 10,this.size.width,8,scroller_w,skinH);
@@ -1096,13 +1096,13 @@ RCScrollView.prototype.setScrollEnabled = function(b) {
 		this.horizScrollBarSync.valueChanged.add($closure(this,"scrollViewDidScrollHandler"));
 		this.addChild(this.horizScrollBar);
 	} else {
-		Fugu.safeDestroy([this.horizScrollBar,this.horizScrollBarSync],null,{ fileName : "RCScrollView.hx", lineNumber : 84, className : "RCScrollView", methodName : "setScrollEnabled"});
+		Fugu.safeDestroy([this.horizScrollBar,this.horizScrollBarSync],null,{ fileName : "RCScrollView.hx", lineNumber : 75, className : "RCScrollView", methodName : "setScrollEnabled"});
 		this.horizScrollBar = null;
 		this.horizScrollBarSync = null;
 	}
-	haxe.Log.trace("contentView.height " + this.contentView.getHeight(),{ fileName : "RCScrollView.hx", lineNumber : 88, className : "RCScrollView", methodName : "setScrollEnabled"});
+	haxe.Log.trace("contentView.height " + this.contentView.getHeight(),{ fileName : "RCScrollView.hx", lineNumber : 79, className : "RCScrollView", methodName : "setScrollEnabled"});
 	if(this.contentView.getHeight() > this.size.height && this.vertScrollBarSync == null && b) {
-		haxe.Log.trace("add vert",{ fileName : "RCScrollView.hx", lineNumber : 92, className : "RCScrollView", methodName : "setScrollEnabled"});
+		haxe.Log.trace("add vert",{ fileName : "RCScrollView.hx", lineNumber : 84, className : "RCScrollView", methodName : "setScrollEnabled"});
 		var scroller_h = Zeta.lineEquationInt(this.size.height / 2,this.size.height,this.getContentSize().height,this.size.height * 2,this.size.height);
 		var skinV = new haxe.SKScrollBar(colors);
 		this.vertScrollBar = new RCScrollBar(this.size.width - 10,0,8,this.size.height,scroller_h,skinV);
@@ -1110,7 +1110,7 @@ RCScrollView.prototype.setScrollEnabled = function(b) {
 		this.vertScrollBarSync.valueChanged.add($closure(this,"scrollViewDidScrollHandler"));
 		this.addChild(this.vertScrollBar);
 	} else {
-		Fugu.safeDestroy([this.vertScrollBar,this.vertScrollBarSync],null,{ fileName : "RCScrollView.hx", lineNumber : 101, className : "RCScrollView", methodName : "setScrollEnabled"});
+		Fugu.safeDestroy([this.vertScrollBar,this.vertScrollBarSync],null,{ fileName : "RCScrollView.hx", lineNumber : 93, className : "RCScrollView", methodName : "setScrollEnabled"});
 		this.vertScrollBar = null;
 		this.vertScrollBarSync = null;
 	}
@@ -1139,7 +1139,7 @@ RCScrollView.prototype.hold = function() {
 	if(this.horizScrollBarSync != null) this.horizScrollBarSync.hold();
 }
 RCScrollView.prototype.destroy = function() {
-	Fugu.safeDestroy([this.vertScrollBarSync,this.horizScrollBarSync,this.vertScrollBar,this.horizScrollBar],null,{ fileName : "RCScrollView.hx", lineNumber : 147, className : "RCScrollView", methodName : "destroy"});
+	Fugu.safeDestroy([this.vertScrollBarSync,this.horizScrollBarSync,this.vertScrollBar,this.horizScrollBar],null,{ fileName : "RCScrollView.hx", lineNumber : 139, className : "RCScrollView", methodName : "destroy"});
 	this.vertScrollBarSync = null;
 	this.horizScrollBarSync = null;
 	JSView.prototype.destroy.call(this);
@@ -2073,16 +2073,19 @@ RCRectangle.prototype.redraw = function() {
 		$r = $t;
 		return $r;
 	}(this))).strokeColorStyle;
-	var html = "<div style=\"position:absolute; overflow:hidden;";
-	html += "left:0px; top:0px;";
-	html += "margin:0px 0px 0px 0px;";
-	html += "width:" + this.size.width * RCDevice.currentDevice().dpiScale + "px;";
-	html += "height:" + this.size.height * RCDevice.currentDevice().dpiScale + "px;";
-	html += "background-color:" + fillColorStyle + ";";
-	if(strokeColorStyle != null) html += "border-style:solid; border-width:" + this.borderThickness + "px; border-color:" + strokeColorStyle + ";";
-	if(this.roundness != null) html += "-moz-border-radius:" + this.roundness * RCDevice.currentDevice().dpiScale / 2 + "px; border-radius:" + this.roundness * RCDevice.currentDevice().dpiScale / 2 + "px;";
-	html += "\"></div>";
-	this.layer.innerHTML = html;
+	this.layer.style.margin = "0px 0px 0px 0px";
+	this.layer.style.width = this.size.width * RCDevice.currentDevice().dpiScale + "px";
+	this.layer.style.height = this.size.height * RCDevice.currentDevice().dpiScale + "px";
+	this.layer.style.backgroundColor = fillColorStyle;
+	if(strokeColorStyle != null) {
+		this.layer.style.borderStyle = "solid";
+		this.layer.style.borderWidth = this.borderThickness + "px";
+		this.layer.style.borderColor = strokeColorStyle;
+	}
+	if(this.roundness != null) {
+		this.layer.style.MozBorderRadius = this.roundness * RCDevice.currentDevice().dpiScale / 2 + "px";
+		this.layer.style.borderRadius = this.roundness * RCDevice.currentDevice().dpiScale / 2 + "px";
+	}
 }
 RCRectangle.prototype.setWidth = function(w) {
 	this.size.width = w;
@@ -2489,6 +2492,7 @@ EVMouse = function(type,target,pos) {
 	RCSignal.call(this);
 	this.type = type;
 	this.target = target;
+	this.delta = 0;
 	this.targets = new List();
 	if(Std["is"](target,JSView)) this.layer = ((function($this) {
 		var $r;
@@ -2506,6 +2510,7 @@ for(var k in RCSignal.prototype ) EVMouse.prototype[k] = RCSignal.prototype[k];
 EVMouse.prototype.target = null;
 EVMouse.prototype.type = null;
 EVMouse.prototype.e = null;
+EVMouse.prototype.delta = null;
 EVMouse.prototype.layer = null;
 EVMouse.prototype.targets = null;
 EVMouse.prototype.addEventListener = function(pos) {
@@ -2513,7 +2518,7 @@ EVMouse.prototype.addEventListener = function(pos) {
 	while( $it0.hasNext() ) {
 		var t = $it0.next();
 		if(t.target == this.target && t.type == this.type) {
-			haxe.Log.trace("Target already in use by this event type. Called from " + pos,{ fileName : "EVMouse.hx", lineNumber : 79, className : "EVMouse", methodName : "addEventListener"});
+			haxe.Log.trace("Target already in use by this event type. Called from " + pos,{ fileName : "EVMouse.hx", lineNumber : 81, className : "EVMouse", methodName : "addEventListener"});
 			return;
 		}
 	}
@@ -2541,10 +2546,10 @@ EVMouse.prototype.addEventListener = function(pos) {
 		this.layer.ondblclick = $closure(this,"mouseHandler");
 		break;
 	case "mousewheel":
-		this.layer.onscroll = $closure(this,"mouseHandler");
+		this.addWheelListener();
 		break;
 	default:
-		haxe.Log.trace("The mouse event you're trying to add does not exist. " + pos,{ fileName : "EVMouse.hx", lineNumber : 94, className : "EVMouse", methodName : "addEventListener"});
+		haxe.Log.trace("The mouse event you're trying to add does not exist. " + pos,{ fileName : "EVMouse.hx", lineNumber : 96, className : "EVMouse", methodName : "addEventListener"});
 	}
 }
 EVMouse.prototype.removeEventListener = function() {
@@ -2571,15 +2576,26 @@ EVMouse.prototype.removeEventListener = function() {
 		this.layer.ondblclick = null;
 		break;
 	case "mousewheel":
-		this.layer.onscroll = null;
+		null;
 		break;
 	}
 }
 EVMouse.prototype.mouseHandler = function(e) {
 	this.e = e;
-	this.dispatch(this,null,null,null,{ fileName : "EVMouse.hx", lineNumber : 131, className : "EVMouse", methodName : "mouseHandler"});
+	this.dispatch(this,null,null,null,{ fileName : "EVMouse.hx", lineNumber : 133, className : "EVMouse", methodName : "mouseHandler"});
 }
 EVMouse.prototype.updateAfterEvent = function() {
+}
+EVMouse.prototype.addWheelListener = function() {
+	if(this.layer.addEventListener) {
+		this.layer.addEventListener("mousewheel",$closure(this,"MouseScroll"),false);
+		this.layer.addEventListener("DOMMouseScroll",$closure(this,"MouseScroll"),false);
+	} else if(this.layer.attachEvent) this.layer.attachEvent("onmousewheel",$closure(this,"MouseScroll"));
+}
+EVMouse.prototype.MouseScroll = function(e) {
+	if(Reflect.field(e,"wheelDelta") != null) this.delta = e.wheelDelta; else if(Reflect.field(e,"detail") != null) this.delta = -Math.round(e.detail);
+	this.e = e;
+	this.dispatch(this,null,null,null,{ fileName : "EVMouse.hx", lineNumber : 171, className : "EVMouse", methodName : "MouseScroll"});
 }
 EVMouse.prototype.destroy = function() {
 	this.removeEventListener();
@@ -4979,15 +4995,13 @@ Main.testJsFont = function() {
 	RCWindow.sharedWindow().addChild(t);
 }
 Main.resizePhoto = function() {
-	Main.ph.scaleToFit(298,148);
 	haxe.Log.trace("startResizing",{ fileName : "Main.hx", lineNumber : 160, className : "Main", methodName : "resizePhoto"});
-	haxe.Log.trace(Main.ph.getWidth() + ", " + Main.ph.getHeight(),{ fileName : "Main.hx", lineNumber : 170, className : "Main", methodName : "resizePhoto"});
-	haxe.Log.trace(Main.ph.size.width + ", " + Main.ph.size.height,{ fileName : "Main.hx", lineNumber : 171, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace(Main.ph.getContentSize(),{ fileName : "Main.hx", lineNumber : 175, className : "Main", methodName : "resizePhoto"});
 	var scrollview = new RCScrollView(780,10,300,300);
 	RCWindow.sharedWindow().addChild(scrollview);
-	scrollview.setContentView(Main.ph.copy());
+	scrollview.setContentView(Main.ph);
 	return;
-	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 178, className : "Main", methodName : "resizePhoto"});
+	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 183, className : "Main", methodName : "resizePhoto"});
 	anim.repeatCount = 5;
 	anim.autoreverses = true;
 	CoreAnimation.add(anim);
@@ -5004,20 +5018,20 @@ Main.signal = null;
 Main.testSignals = function() {
 	Main.signal = new RCSignal();
 	Main.signal.add(Main.printNr);
-	Main.signal.addOnce(Main.printNr2,{ fileName : "Main.hx", lineNumber : 197, className : "Main", methodName : "testSignals"});
+	Main.signal.addOnce(Main.printNr2,{ fileName : "Main.hx", lineNumber : 202, className : "Main", methodName : "testSignals"});
 	Main.signal.remove(Main.printNr);
 	Main.signal.removeAll();
 	var _g = 0;
 	while(_g < 5) {
 		var i = _g++;
-		Main.signal.dispatch(Math.random(),null,null,null,{ fileName : "Main.hx", lineNumber : 201, className : "Main", methodName : "testSignals"});
+		Main.signal.dispatch(Math.random(),null,null,null,{ fileName : "Main.hx", lineNumber : 206, className : "Main", methodName : "testSignals"});
 	}
 }
 Main.printNr = function(nr) {
-	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 204, className : "Main", methodName : "printNr"});
+	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 209, className : "Main", methodName : "printNr"});
 }
 Main.printNr2 = function(nr) {
-	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 207, className : "Main", methodName : "printNr2"});
+	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 212, className : "Main", methodName : "printNr2"});
 }
 Main.testButtons = function() {
 	try {
@@ -5027,13 +5041,13 @@ Main.testButtons = function() {
 			HXAddress.href("flash.html");
 		};
 		b.onOver = function() {
-			haxe.Log.trace("over",{ fileName : "Main.hx", lineNumber : 217, className : "Main", methodName : "testButtons"});
+			haxe.Log.trace("over",{ fileName : "Main.hx", lineNumber : 222, className : "Main", methodName : "testButtons"});
 		};
 		b.onOut = function() {
-			haxe.Log.trace("out",{ fileName : "Main.hx", lineNumber : 218, className : "Main", methodName : "testButtons"});
+			haxe.Log.trace("out",{ fileName : "Main.hx", lineNumber : 223, className : "Main", methodName : "testButtons"});
 		};
 		b.onPress = function() {
-			haxe.Log.trace("press",{ fileName : "Main.hx", lineNumber : 219, className : "Main", methodName : "testButtons"});
+			haxe.Log.trace("press",{ fileName : "Main.hx", lineNumber : 224, className : "Main", methodName : "testButtons"});
 		};
 		RCWindow.sharedWindow().addChild(b);
 		var s1 = new haxe.SKButtonRadio();
@@ -5052,7 +5066,7 @@ Main.createRadioButton = function(indexPath) {
 	return b;
 }
 Main.segClick = function(s) {
-	haxe.Log.trace(s.getSelectedIndex(),{ fileName : "Main.hx", lineNumber : 244, className : "Main", methodName : "segClick"});
+	haxe.Log.trace(s.getSelectedIndex(),{ fileName : "Main.hx", lineNumber : 249, className : "Main", methodName : "segClick"});
 }
 Main.testTexts = function() {
 	try {

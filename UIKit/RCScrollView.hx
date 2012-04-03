@@ -29,7 +29,6 @@ class RCScrollView extends RCView {
 	public var pagingEnabled :Bool;
 	public var scrollEnabled (null, setScrollEnabled) :Bool;
 	public var scrollIndicatorInsets :RCPoint;
-	var scrollHappening :EVMouse;
 	
 	dynamic public function scrollViewDidScroll():Void{}
 	dynamic public function scrollViewWillBeginDragging():Void{}
@@ -39,20 +38,10 @@ class RCScrollView extends RCView {
 	
 	
 	public function new (x, y, w, h) {
+		
 		super (x, y, w, h);
 		clipsToBounds = true;
-		#if js
-			// http://help.dottoro.com/ljrmdnar.php
-			//layer.style.overflow = "auto";
-			scrollHappening = new EVMouse (EVMouse.WHEEL, this);
-			scrollHappening.add ( scrollViewDidScrollHandler_ );
-			layer.onscroll = function (e:Event) { trace(e);scrollViewDidScroll(); }
-		#end
 		setContentView ( new RCView (0, 0) );
-	}
-	function scrollViewDidScrollHandler_ (e:EVMouse) {
-		//trace("scroll");
-		scrollViewDidScroll();
 	}
 	
 	/**
@@ -62,16 +51,18 @@ class RCScrollView extends RCView {
 		Fugu.safeRemove ( contentView );
 		contentView = content;
 		addChild ( contentView );
-		contentSize = contentView.size;
+		contentSize = contentView.contentSize;
 		setScrollEnabled ( true );
 	}
+	
 	function setScrollEnabled (b:Bool) :Bool {
-		//trace("setScrollEnabled "+b);
+		trace("setScrollEnabled "+b);
 		var colors = [null, null, 0xDDDDDD, 0xFFFFFF];
-		trace("contentSize "+contentSize);
+		trace("contentSize "+contentView.contentSize);
+		trace(size);
 		
 		// Add or remove the horizontal scrollbar
-		if (contentView.width > size.width && horizScrollBarSync == null && b) {
+		if (contentSize.width > size.width && horizScrollBarSync == null && b && false) {
 			trace("add horiz");
 			var scroller_w = Zeta.lineEquationInt (size.width/2, size.width, contentSize.width, size.width*2, size.width);
 			var skinH = new haxe.SKScrollBar ( colors );
@@ -86,6 +77,7 @@ class RCScrollView extends RCView {
 			horizScrollBarSync = null;
 		}
 		trace("contentView.height "+contentView.height);
+		
 		
 		// Add or remove the vertical scrollbar
 		if (contentView.height > size.height && vertScrollBarSync == null && b) {

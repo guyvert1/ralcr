@@ -116,9 +116,11 @@ class RCImage extends RCView {
 	 *  For JS is trying to load from external file
 	 **/
 	public function initWithContentsOfFile (URL:String) {
+		
 		isLoaded = false;
 		percentLoaded = 0;
 		if (URL == null) return;
+		
 		#if nme
 			bitmapData = nme.Assets.getBitmapData ( URL );
 			haxe.Timer.delay (function() { (bitmapData != null) ? completeHandler(null) : errorHandler(null); }, 10);
@@ -182,11 +184,13 @@ class RCImage extends RCView {
 	
 	
 #if (flash || nme)
+	
 	function progressHandler (e:ProgressEvent) :Void {
 		percentLoaded = Math.round (e.target.bytesLoaded * 100 / e.target.bytesTotal);
 		onProgress ();
 	}
 #end
+	
 	function errorHandler (e:ErrorEvent) :Void {
 		errorMessage = Std.string(e);
 		onError();

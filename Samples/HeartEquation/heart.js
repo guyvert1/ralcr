@@ -218,8 +218,7 @@ JSView.prototype.setBackgroundColor = function(color) {
 	var red = (color & 16711680) >> 16;
 	var green = (color & 65280) >> 8;
 	var blue = color & 255;
-	var alpha = 1;
-	this.layer.style.background = "rgba(" + red + "," + green + "," + blue + "," + alpha + ")";
+	this.layer.style.backgroundColor = "rgb(" + red + "," + green + "," + blue + ")";
 	return color;
 }
 JSView.prototype.setClipsToBounds = function(clip) {
@@ -243,7 +242,10 @@ JSView.prototype.setVisible = function(v) {
 	return RCDisplayObject.prototype.setVisible.call(this,v);
 }
 JSView.prototype.setAlpha = function(a) {
-	if(js.Lib.isIE) this.layer.style.background = "url(pixel.png) repeat"; else this.layer.style.opacity = Std.string(a);
+	if(js.Lib.isIE) {
+		this.layer.style.msFilter = "progid:DXImageTransform.Microsoft.Alpha(Opacity=" + Std.string(a * 100) + ")";
+		this.layer.style.filter = "alpha(opacity=" + Std.string(a * 100) + ")";
+	} else this.layer.style.opacity = Std.string(a);
 	return RCDisplayObject.prototype.setAlpha.call(this,a);
 }
 JSView.prototype.setX = function(x) {
@@ -1383,16 +1385,19 @@ RCRectangle.prototype.redraw = function() {
 		$r = $t;
 		return $r;
 	}(this))).strokeColorStyle;
-	var html = "<div style=\"position:absolute; overflow:hidden;";
-	html += "left:0px; top:0px;";
-	html += "margin:0px 0px 0px 0px;";
-	html += "width:" + this.size.width * RCDevice.currentDevice().dpiScale + "px;";
-	html += "height:" + this.size.height * RCDevice.currentDevice().dpiScale + "px;";
-	html += "background-color:" + fillColorStyle + ";";
-	if(strokeColorStyle != null) html += "border-style:solid; border-width:" + this.borderThickness + "px; border-color:" + strokeColorStyle + ";";
-	if(this.roundness != null) html += "-moz-border-radius:" + this.roundness * RCDevice.currentDevice().dpiScale / 2 + "px; border-radius:" + this.roundness * RCDevice.currentDevice().dpiScale / 2 + "px;";
-	html += "\"></div>";
-	this.layer.innerHTML = html;
+	this.layer.style.margin = "0px 0px 0px 0px";
+	this.layer.style.width = this.size.width * RCDevice.currentDevice().dpiScale + "px";
+	this.layer.style.height = this.size.height * RCDevice.currentDevice().dpiScale + "px";
+	this.layer.style.backgroundColor = fillColorStyle;
+	if(strokeColorStyle != null) {
+		this.layer.style.borderStyle = "solid";
+		this.layer.style.borderWidth = this.borderThickness + "px";
+		this.layer.style.borderColor = strokeColorStyle;
+	}
+	if(this.roundness != null) {
+		this.layer.style.MozBorderRadius = this.roundness * RCDevice.currentDevice().dpiScale / 2 + "px";
+		this.layer.style.borderRadius = this.roundness * RCDevice.currentDevice().dpiScale / 2 + "px";
+	}
 }
 RCRectangle.prototype.setWidth = function(w) {
 	this.size.width = w;

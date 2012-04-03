@@ -156,7 +156,7 @@ class Main {
 	}*/
 	static function resizePhoto(){
 		//ph.scaleToFill (300-2, 150-2);
-		ph.scaleToFit (300-2, 150-2);
+		//ph.scaleToFit (300-2, 150-2);
 		trace("startResizing");
 		//ph.height = 50;
 		#if js
@@ -167,12 +167,17 @@ class Main {
 			r.style.height = 20+"px";*/
 		#end
 		
-		trace(ph.width+", "+ph.height);
-		trace(ph.size.width+", "+ph.size.height);
+/*		trace(ph.width+", "+ph.height);
+		trace(ph.size.width+", "+ph.size.height);*/
+		
+		//var ph2 = ph.copy();
+		//RCWindow.sharedWindow().addChild ( ph2 );
+		trace(ph.contentSize);
+		//trace(ph2.contentSize);
 		
 		var scrollview = new RCScrollView (780, 10, 300, 300);
-		RCWindow.sharedWindow().addChild(scrollview);
-		scrollview.setContentView ( ph.copy() );
+		RCWindow.sharedWindow().addChild( scrollview );
+		scrollview.setContentView ( ph );
 		
 		return;
 		var anim = new CATween (ph, {x:{fromValue:-ph.width, toValue:ph.width}}, 2, 0, caequations.Cubic.IN_OUT);

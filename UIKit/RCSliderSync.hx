@@ -81,26 +81,19 @@ class RCSliderSync {
 	 *	When wheel is scrolled move the content rather the scrollbar
 	 */
 	function wheelHandler (e:EVMouse) :Void {
-		//trace(e);
-		// Calculate different values for mac and pc
-/*		(flash.system.Capabilities.os.toLowerCase().indexOf("mac") != -1)
-		? valueFinal += e.delta*50
-		: valueFinal += e.delta*50;*/
-	//	var delta = e.delta;
-#if flash
-		valueFinal += e.e.delta * 2;
 		
+		valueFinal += e.delta;
 		startLoop();
 		
 		// Determine the correct position for the slider
 		slider.value = Zeta.lineEquationInt (0, 100, valueFinal, valueStart, valueStart + valueMax - getContentSize());
 		
 		// dispatch an event with the direction the scroll is moving
-		(e.e.delta < 0) ? onScrollRight() : onScrollLeft();
-#end
+		(e.delta < 0) ? onScrollRight() : onScrollLeft();
 	}
 	
 	function sliderChangedHandler (e:RCScrollBar) :Void {
+		
 		valueFinal = Zeta.lineEquationInt (valueStart, valueStart + valueMax - getContentSize(), e.value, 0, 100);
 		startLoop();
 	}
@@ -125,6 +118,7 @@ class RCSliderSync {
 	 *	This moves the content with an easing equation
 	 */
 	function loop () {
+		
 		// Calculate the next position for target object
 		var next_value = ( valueFinal - getContentPosition() ) / 3;
 		
@@ -139,6 +133,7 @@ class RCSliderSync {
 	}
 	
 	function moveContentTo (next_value:Float) :Void {
+		
 		(direction == HORIZONTAL)
 		? contentView.x = Math.round ( next_value )
 		: contentView.y = Math.round ( next_value );
@@ -168,8 +163,10 @@ class RCSliderSync {
 	
 	// Clean mess
 	public function destroy () :Void {
-		//contentView.removeEventListener (Event.ENTER_FRAME, loop);
+		
 		hold();
 		valueChanged.destroy();
+		ticker.destroy();
+		mouseWheel.destroy();
 	}
 }

@@ -22,6 +22,7 @@ class RCRectangle extends RCDraw, implements RCDrawInterface {
 	public function redraw() :Void {
 		
 #if (flash || nme)
+	
 		layer.graphics.clear();
 		configure();
 		
@@ -30,23 +31,30 @@ class RCRectangle extends RCDraw, implements RCDrawInterface {
 		: layer.graphics.drawRect (0, 0, size.width*RCDevice.currentDevice().dpiScale, size.height*RCDevice.currentDevice().dpiScale);
 		
 		layer.graphics.endFill();
+		
 #elseif js
+	
 		var fillColorStyle = cast (color, RCColor).fillColorStyle;
 		var strokeColorStyle = cast (color, RCColor).strokeColorStyle;
-		var html = "<div style=\"position:absolute; overflow:hidden;";
-			html += "left:0px; top:0px;";
-			html += "margin:0px 0px 0px 0px;";
-			html += "width:" + size.width*RCDevice.currentDevice().dpiScale + "px;";
-			html += "height:" + size.height*RCDevice.currentDevice().dpiScale + "px;";
-			html += "background-color:" + fillColorStyle + ";";
-			if (strokeColorStyle != null)
-			html += "border-style:solid; border-width:" + borderThickness + "px; border-color:" + strokeColorStyle + ";";
-			if (roundness != null)
-			html += "-moz-border-radius:" + roundness*RCDevice.currentDevice().dpiScale/2 + "px; border-radius:" + roundness*RCDevice.currentDevice().dpiScale/2 + "px;";
-			html += "\"></div>";
-		layer.innerHTML = html;
+		
+		layer.style.margin = "0px 0px 0px 0px";
+		layer.style.width = size.width * RCDevice.currentDevice().dpiScale + "px";
+		layer.style.height = size.height * RCDevice.currentDevice().dpiScale + "px";
+		layer.style.backgroundColor = fillColorStyle;
+		
+		if (strokeColorStyle != null) {
+			layer.style.borderStyle = "solid";
+			layer.style.borderWidth = borderThickness + "px";
+			layer.style.borderColor = strokeColorStyle;
+		}
+		if (roundness != null) {
+			untyped layer.style.MozBorderRadius = roundness * RCDevice.currentDevice().dpiScale/2 + "px";
+			untyped layer.style.borderRadius = roundness * RCDevice.currentDevice().dpiScale/2 + "px";
+		}
+		
 #end
 	}
+	
 	override public function setWidth (w:Float) :Float {
 		size.width = w;
 		redraw();

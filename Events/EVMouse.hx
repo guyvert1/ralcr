@@ -24,6 +24,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 	public var target :Dynamic;// The original object
 	public var type :String;
 	public var e :MouseEvent;
+	public var delta :Int;
 	var layer :DisplayObjectContainer;// Object that gets the events
 	
 	#if js
@@ -44,6 +45,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 		
 		this.type = type;
 		this.target = target;
+		this.delta = 0;
 		
 		#if js
 			targets = new List<EVMouseRelationship>();
@@ -90,7 +92,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 				case MOVE:			layer.onmousemove = mouseHandler;
 				case CLICK:			layer.onclick = mouseHandler;
 				case DOUBLE_CLICK:	layer.ondblclick = mouseHandler;
-				case WHEEL:			layer.onscroll = mouseHandler;
+				case WHEEL:			addWheelListener();
 				default: trace("The mouse event you're trying to add does not exist. "+pos);
 			}
 		#end
@@ -116,7 +118,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 				case MOVE:			layer.onmousemove = null;
 				case CLICK:			layer.onclick = null;
 				case DOUBLE_CLICK:	layer.ondblclick = null;
-				case WHEEL:			layer.onscroll = null;
+				case WHEEL:			null;
 			}
 		#end
 	}
@@ -135,6 +137,43 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 			e.updateAfterEvent();
 		#end
 	}
+	
+	
+	
+	// Wheel support
+#if js
+	
+	function addWheelListener () {
+        // For mouse scrolling in Firefox
+        if (untyped layer.addEventListener) {
+			// Internet Explorer 9, Opera, Google Chrome and Safari
+			untyped layer.addEventListener ("mousewheel", MouseScroll, false);
+			// Firefox
+			untyped layer.addEventListener ("DOMMouseScroll", MouseScroll, false);
+		}
+		// IE < 9
+		else if (untyped layer.attachEvent) {
+			untyped layer.attachEvent ("onmousewheel", MouseScroll);
+		}
+	}
+    function MouseScroll (e) {
+				
+		if (Reflect.field(e, 'wheelDelta') != null) {
+			delta = e.wheelDelta;
+		}
+		else if (Reflect.field(e, 'detail') != null) {
+			/** Mozilla case. MouseScrollEvent */
+			/** In Mozilla, sign of delta is different than in IE.
+			* Also, delta is multiple of 3. */
+			delta = - Math.round ( e.detail );
+		}
+		this.e = e;
+		dispatch ( this );
+    }
+	
+#end
+	
+	
 	override public function destroy () :Void {
 		removeEventListener();
 		super.destroy();
