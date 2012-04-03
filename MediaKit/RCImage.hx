@@ -242,8 +242,11 @@ class RCImage extends RCView {
 			loader.unload();
 			if (bitmapData != null)
 				bitmapData.dispose();
+		#elseif js
+			//untyped loader.unload();
 		#end
 		loader = null;
+		super.destroy();
 	}
 
 #if js

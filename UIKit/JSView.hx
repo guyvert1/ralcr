@@ -21,7 +21,9 @@ class JSView extends RCDisplayObject {
 	
 	
 	public function new (x, y, ?w, ?h) {
+		
 		super();
+		
 		size = new RCSize (w, h);
 		contentSize_ = size.copy();
 		scaleX_ = 1;
@@ -46,14 +48,16 @@ class JSView extends RCDisplayObject {
 	
 	
 	
-	override public function addChild (child:JSView) :Void {
+	override public function addChild (child:JSView) :Void
+	{
 		if (child == null) return;
-		child.viewWillAppearHandler();
+		child.viewWillAppear.dispatch();
 		child.parent = this;
 		layer.appendChild ( child.layer );
-		child.viewDidAppearHandler();
+		child.viewDidAppear.dispatch();
 	}
-	override public function addChildAt (child:JSView, index:Int) :Void {
+	override public function addChildAt (child:JSView, index:Int) :Void
+	{
 		if (layer.childNodes[index] != null) {
 			layer.insertBefore (child.layer, layer.childNodes[index]);
 		}
@@ -61,14 +65,16 @@ class JSView extends RCDisplayObject {
 			layer.appendChild ( child.layer );
 		}
 	}
-	override public function removeChild (child:JSView) :Void {
+	override public function removeChild (child:JSView) :Void
+	{
 		if (child == null) return;
-		child.viewWillDisappearHandler();
+		child.viewWillDisappear.dispatch();
 		child.parent = null;
 		layer.removeChild ( child.layer );
-		child.viewDidDisappearHandler();
+		child.viewDidDisappear.dispatch();
 	}
-	public function removeFromSuperView () :Void {
+	public function removeFromSuperView () :Void
+	{
 		if (parent != null)
 			parent.removeChild ( this );
 	}
@@ -89,8 +95,7 @@ class JSView extends RCDisplayObject {
 		var green = (color & 0xff00) >> 8;
 		var blue  = color & 0xFF;
 		var alpha = 1;
-		var color_ = "rgba("+red+","+green+","+blue+","+alpha+")";
-		layer.style.background = color_;
+		layer.style.background = "rgba("+red+","+green+","+blue+","+alpha+")";
 		
 		return color;
 	}
@@ -134,20 +139,22 @@ class JSView extends RCDisplayObject {
 		return super.setVisible ( v );
 	}
 	override public function setAlpha (a:Float) :Float {
-/*		if (BrowserUtil.browserName == MSIE) {
-			untyped layer.style.filter = "alpha(opacity="+Std.string(alpha*100)+")";
+		
+		if (js.Lib.isIE) {
+			//untyped layer.style.filter = "alpha(opacity="+Std.string(a*100)+")";
+			layer.style.background = "url(pixel.png) repeat";
 		}
-		else {*/
+		else {
 			untyped layer.style.opacity = Std.string(a);
-//		}
+		}
 		return super.setAlpha ( a );
 	}
 	override public function setX (x:Float) :Float {
-		layer.style.left = Std.string (x * RCWindow.dpiScale) + "px";
+		layer.style.left = Std.string (x * RCDevice.currentDevice().dpiScale) + "px";
 		return super.setX ( x );
 	}
 	override public function setY (y:Float) :Float {
-		layer.style.top = Std.string (y * RCWindow.dpiScale) + "px";
+		layer.style.top = Std.string (y * RCDevice.currentDevice().dpiScale) + "px";
 		return super.setY ( y );
 	}
 	override public function setWidth (w:Float) :Float {

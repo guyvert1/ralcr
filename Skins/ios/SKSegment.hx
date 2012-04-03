@@ -48,7 +48,7 @@ class SKSegment extends RCSkin {
 		}
 		
 		// Add background image
-		var hd = RCWindow.dpiScale == 2 ? "@2x" : "";
+		var hd = RCDevice.currentDevice().dpiScale == 2 ? "@2x" : "";
 		var sl = "Resources/ios/RCSegmentedControl/"+segmentLeft+hd+".png";
 		var sm = "Resources/ios/RCSegmentedControl/"+segmentMiddle+hd+".png";
 		var sr = "Resources/ios/RCSegmentedControl/"+segmentRight+hd+".png";

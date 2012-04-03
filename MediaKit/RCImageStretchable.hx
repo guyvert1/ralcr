@@ -37,7 +37,7 @@ class RCImageStretchable extends RCView {
 	}
 	
 	function onCompleteHandler () {
-		if (l.isLoaded && m.isLoaded && r.isLoaded && size.width != null) {
+		if (l.isLoaded && m.isLoaded && r.isLoaded && size.width != 0) {
 			setWidth ( size.width );
 		}
 		onComplete();

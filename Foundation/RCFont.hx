@@ -157,6 +157,7 @@ class RCFont {
 	 **/
 	
 	public function new () {
+		
 		font = "Arial";
 		html = true;
 		embedFonts = true;
@@ -167,6 +168,8 @@ class RCFont {
 		leading = 4;
 		leftMargin = 0;
 		rightMargin = 0;
+		letterSpacing = 0;
+		
 #if (flash || nme)
 	#if flash
 		antiAliasType = AntiAliasType.ADVANCED;// ADVANCED-normal fonts(<40px), NORMAL-pixel fonts
@@ -228,15 +231,16 @@ class RCFont {
 		format.italic = italic;
 		format.indent = indent;
 		format.kerning = kerning;
-		format.leading = leading * RCWindow.dpiScale;
-		format.leftMargin = leftMargin * RCWindow.dpiScale;
+		format.leading = leading * RCDevice.currentDevice().dpiScale;
+		format.leftMargin = leftMargin * RCDevice.currentDevice().dpiScale;
 		format.letterSpacing = letterSpacing;
-		format.rightMargin = rightMargin * RCWindow.dpiScale;
-		format.size = size * RCWindow.dpiScale;
+		format.rightMargin = rightMargin * RCDevice.currentDevice().dpiScale;
+		format.size = size * RCDevice.currentDevice().dpiScale;
 		format.tabStops = tabStops;
 		format.target = target;
 		format.underline = underline;
 		format.url = url;
+		
 		return format;
 	}
 	public function getStyleSheet () :StyleSheet {

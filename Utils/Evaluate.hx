@@ -32,7 +32,8 @@ class Evaluate {
 		return makeOperation (result, word, lastOperator, rect);
 	}
 	
-	static function makeOperation (result:Int, word:String, operator:String, rect:RCRect) :Int {
+	static function makeOperation (result:Int, word:String, operator:String, rect:RCRect) :Int
+	{
 		return switch ( operator ) {
 			case "+": result + parseInt ( word, rect );
 			case "-": result - parseInt ( word, rect );
@@ -43,10 +44,11 @@ class Evaluate {
 	
 	
 	
-	public static function parseInt (str:String, ?rect:RCRect) :Int {
+	public static function parseInt (str:String, ?rect:RCRect) :Int
+	{
 		return Math.round ( switch ( str ) {
-			case "stagewidth":	RCWindow.width;
-			case "stageheight":	RCWindow.height;
+			case "stagewidth":	RCWindow.sharedWindow().width;
+			case "stageheight":	RCWindow.sharedWindow().height;
 			case "photowidth":	rect == null ? 0.0 : rect.size.width;
 			case "photoheight":	rect == null ? 0.0 : rect.size.height;
 			default :			Std.parseInt ( str );

@@ -1,16 +1,18 @@
 //
-//  RCScrollView
+//  RCScrollView.hx
 //
 //  Created by Cristi Baluta on 2011-02-08.
 //  Copyright (c) 2011-2012 ralcr.com. 
 //	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
+
 /**
  *  
  **/
-	 #if js
-		 import js.Dom;
+#if js
+	 import js.Dom;
 #end
+
 class RCScrollView extends RCView {
 	
 	var vertScrollBar :RCScrollBar;
@@ -41,10 +43,10 @@ class RCScrollView extends RCView {
 		clipsToBounds = true;
 		#if js
 			// http://help.dottoro.com/ljrmdnar.php
-		layer.style.overflow = "auto";
-		scrollHappening = new EVMouse (EVMouse.WHEEL, this);
-		scrollHappening.add ( scrollViewDidScrollHandler_ );
-		layer.onscroll = function (e:Event) { trace(e);scrollViewDidScroll(); }
+			//layer.style.overflow = "auto";
+			scrollHappening = new EVMouse (EVMouse.WHEEL, this);
+			scrollHappening.add ( scrollViewDidScrollHandler_ );
+			layer.onscroll = function (e:Event) { trace(e);scrollViewDidScroll(); }
 		#end
 		setContentView ( new RCView (0, 0) );
 	}
@@ -74,7 +76,7 @@ class RCScrollView extends RCView {
 			var scroller_w = Zeta.lineEquationInt (size.width/2, size.width, contentSize.width, size.width*2, size.width);
 			var skinH = new haxe.SKScrollBar ( colors );
 			horizScrollBar = new RCScrollBar (0, size.height - 10, size.width, 8, scroller_w, skinH);
-			horizScrollBarSync = new RCSliderSync (RCWindow.target, contentView, horizScrollBar, size.width, "horizontal");
+			horizScrollBarSync = new RCSliderSync (RCWindow.sharedWindow().target, contentView, horizScrollBar, size.width, "horizontal");
 			horizScrollBarSync.valueChanged.add ( scrollViewDidScrollHandler );
 			addChild ( horizScrollBar );
 		}
@@ -91,7 +93,7 @@ class RCScrollView extends RCView {
 			var scroller_h = Zeta.lineEquationInt (size.height/2, size.height, contentSize.height, size.height*2, size.height);
 			var skinV = new haxe.SKScrollBar ( colors );
 			vertScrollBar = new RCScrollBar (size.width - 10, 0, 8, size.height, scroller_h, skinV);
-			vertScrollBarSync = new RCSliderSync (RCWindow.target, contentView, vertScrollBar, size.height, "vertical");
+			vertScrollBarSync = new RCSliderSync (RCWindow.sharedWindow().target, contentView, vertScrollBar, size.height, "vertical");
 			vertScrollBarSync.valueChanged.add ( scrollViewDidScrollHandler );
 			addChild ( vertScrollBar );
 		}

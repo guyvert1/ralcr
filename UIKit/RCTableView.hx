@@ -57,7 +57,7 @@ class RCTableView extends RCView {
 		
 		mousePress_ = new EVMouse (EVMouse.DOWN, contentView);
 		mouseMove_ = new EVMouse (EVMouse.MOVE, this);
-		mouseUp_ = new EVMouse (EVMouse.UP, RCWindow.stage);
+		mouseUp_ = new EVMouse (EVMouse.UP, RCWindow.sharedWindow().stage);
 	}
 	
 	public function init () :Void {

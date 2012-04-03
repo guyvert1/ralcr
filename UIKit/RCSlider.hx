@@ -91,8 +91,8 @@ class RCSlider extends RCControl {
 	override function configureDispatchers () {
 		super.configureDispatchers();
 		valueChanged = new RCSignal<RCSlider->Void>();
-		mouseUpOverStage_ = new EVMouse (EVMouse.UP, RCWindow.stage);
-		mouseMoveOverStage_ = new EVMouse (EVMouse.MOVE, RCWindow.stage);
+		mouseUpOverStage_ = new EVMouse (EVMouse.UP, RCWindow.sharedWindow().stage);
+		mouseMoveOverStage_ = new EVMouse (EVMouse.MOVE, RCWindow.sharedWindow().stage);
 	}
 	override function setEnabled (c:Bool) :Bool {
 		return enabled_ = false;// The slider does not listen for the events on the entire object, but for the scrubber

@@ -23,7 +23,7 @@ class RCRtmp extends RCVideo, implements RCVideoInterface {
 	var file :String;
 	
 	
-	public function new (x, y, URL:String, ?w:Null<Int>, ?h:Null<Int>) {
+	public function new (x, y, URL:String, ?w:Null<Float>, ?h:Null<Float>) {
 		super (x, y, URL, w, h);
 	}
 	

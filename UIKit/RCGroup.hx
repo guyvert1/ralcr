@@ -1,5 +1,5 @@
 //
-//  RCGroup
+//  RCGroup.hx
 //	UIKit
 //	This component will align a collection of views horizontally or vertically or in a matrix
 //	Matrix is not suported yet

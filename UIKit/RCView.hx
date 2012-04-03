@@ -22,6 +22,7 @@ class RCView extends RCDisplayObject {
 	
 	
 	public function new (x, y, ?w, ?h) {
+		
 		super();
 		
 		layer = new Sprite();
@@ -31,13 +32,7 @@ class RCView extends RCDisplayObject {
 		
 		setX ( x );
 		setY ( y );
-		
-		layer.addEventListener (Event.ADDED_TO_STAGE, viewDidAppearHandler_);
-		layer.addEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappearHandler_);
 	}
-	public function viewDidAppearHandler_ (e:Event) :Void { viewDidAppear.dispatch(); }
-	public function viewDidDisappearHandler_ (e:Event) :Void { viewDidDisappear.dispatch(); }
-	
 	
 	/**
 	 *  Change the color of the Sprite
@@ -52,7 +47,7 @@ class RCView extends RCDisplayObject {
 		if (color != null) {
 			layer.graphics.clear();
 			layer.graphics.beginFill (color, 1);
-			layer.graphics.drawRect (0, 0, size.width * RCWindow.dpiScale, size.height * RCWindow.dpiScale);
+			layer.graphics.drawRect (0, 0, size.width * RCDevice.currentDevice().dpiScale, size.height * RCDevice.currentDevice().dpiScale);
 /*		layer.transform.colorTransform = new flash.geom.ColorTransform ( mpl,mpl,mpl,mpl,
 																		red,green,blue,layer.alpha*255);*/
 		} else {
@@ -65,10 +60,11 @@ class RCView extends RCDisplayObject {
 	
 	
 	override public function setClipsToBounds (clip:Bool) :Bool {
+		
 		layer.cacheAsBitmap = clip;
 		
 		if (clip)
-			layer.scrollRect = new flash.geom.Rectangle (0, 0, size.width * RCWindow.dpiScale, size.height * RCWindow.dpiScale);
+			layer.scrollRect = new flash.geom.Rectangle (0, 0, size.width * RCDevice.currentDevice().dpiScale, size.height * RCDevice.currentDevice().dpiScale);
 		else
 			layer.scrollRect = null;
 		
@@ -77,19 +73,19 @@ class RCView extends RCDisplayObject {
 	
 	// Position and size
 	override public function setX (x:Float) :Float {
-		layer.x = x * RCWindow.dpiScale;
+		layer.x = x * RCDevice.currentDevice().dpiScale;
 		return super.setX ( x );
 	}
 	override public function setY (y:Float) :Float {
-		layer.y = y * RCWindow.dpiScale;
+		layer.y = y * RCDevice.currentDevice().dpiScale;
 		return super.setY ( y );
 	}
 	override public function setWidth (w:Float) :Float {
-		layer.width = w * RCWindow.dpiScale;
+		layer.width = w * RCDevice.currentDevice().dpiScale;
 		return super.setWidth ( w );
 	}
 	override public function setHeight (h:Float) :Float {
-		layer.height = h * RCWindow.dpiScale;
+		layer.height = h * RCDevice.currentDevice().dpiScale;
 		return super.setHeight ( h );
 	}
 	override public function getContentSize () :RCSize {
@@ -111,10 +107,10 @@ class RCView extends RCDisplayObject {
 	}
 	
 	override function getMouseX () :Float {
-		return layer.mouseX / RCWindow.dpiScale;
+		return layer.mouseX / RCDevice.currentDevice().dpiScale;
 	}
 	override function getMouseY () :Float {
-		return layer.mouseY / RCWindow.dpiScale;
+		return layer.mouseY / RCDevice.currentDevice().dpiScale;
 	}
 	
 	
@@ -122,28 +118,26 @@ class RCView extends RCDisplayObject {
 	 *  This method is usually overriten by the super class.
 	 */
 	override public function destroy () :Void {
-		layer.removeEventListener (Event.ADDED_TO_STAGE, viewDidAppearHandler_);
-		layer.removeEventListener (Event.REMOVED_FROM_STAGE, viewDidDisappearHandler_);
 		super.destroy();
 	}
 	
 	
 	override public function addChild (child:RCView) :Void {
 		if (child == null) return;
-		child.viewWillAppearHandler();
+		child.viewWillAppear.dispatch();
 		child.parent = this;
 		layer.addChild ( child.layer );
-		//child.viewDidAppearHandler();
+		child.viewDidAppear.dispatch();
 	}
 	override public function addChildAt (child:RCView, index:Int) :Void {
 		layer.addChildAt (child.layer, index);
 	}
 	override public function removeChild (child:RCView) :Void {
 		if (child == null) return;
-		child.viewWillDisappearHandler();
+		child.viewWillDisappear.dispatch();
 		layer.removeChild ( child.layer );
 		child.parent = null;
-		//child.viewDidDisappearHandler();
+		child.viewDidDisappear.dispatch();
 	}
 	public function removeFromSuperView () :Void {
 		var parent = null;

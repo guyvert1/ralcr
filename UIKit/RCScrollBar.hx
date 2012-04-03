@@ -66,8 +66,8 @@ class RCScrollBar extends RCControl {
 	override function configureDispatchers () {
 		super.configureDispatchers();
 		valueChanged = new RCSignal<RCScrollBar->Void>();
-		mouseUpOverStage_ = new EVMouse (EVMouse.UP, RCWindow.stage);
-		mouseMoveOverStage_ = new EVMouse (EVMouse.MOVE, RCWindow.stage);
+		mouseUpOverStage_ = new EVMouse (EVMouse.UP, RCWindow.sharedWindow().stage);
+		mouseMoveOverStage_ = new EVMouse (EVMouse.MOVE, RCWindow.sharedWindow().stage);
 	}
 	override function mouseDownHandler (e:EVMouse) :Void {
 		trace("mouseDownHandler");

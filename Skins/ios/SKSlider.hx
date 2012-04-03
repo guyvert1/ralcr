@@ -17,7 +17,7 @@ class SKSlider extends RCSkin {
 	public function new () {
 		super ( null );
 		
-		var hd = RCWindow.dpiScale == 2 ? "@2x" : "";
+		var hd = RCDevice.currentDevice().dpiScale == 2 ? "@2x" : "";
 		
 		// Create elements without size and position because it's managed by the RCSlider component
 		var sl = "Resources/ios/RCSlider/L"+hd+".png";

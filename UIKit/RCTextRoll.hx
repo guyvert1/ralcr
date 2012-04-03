@@ -1,5 +1,5 @@
 //
-//  RCTextRoll
+//  RCTextRoll.hx
 //
 //  Created by Baluta Cristian on 2007-10-02.
 //  Copyright (c) 2007-2012 http://imagin.ro. 
@@ -23,6 +23,7 @@ class RCTextRoll extends RCView {
 	
 	
 	public function new (x, y, w:Float, h:Null<Float>, str:String, properties:RCFont) {
+		
 		super(x, y, w, h);
 		this.continuous = true;
 		
@@ -34,12 +35,14 @@ class RCTextRoll extends RCView {
 	
 	// JS target is not able to get elements dimensions if they are not on the display list.
 	// So we decide if we need a second textfield only after the component is added to stage
+	
 	function viewDidAppear_ () :Void {
-		trace("RCTextRoll viewdidappear");
-		this.size.height = txt1.height;
+		
+		this.size.height = txt1.contentSize.height;
+		
 		if (txt1.contentSize.width > size.width) {
 			if (txt2 != null) return;
-			txt2 = new RCTextView (Math.round (txt1.contentSize.width + GAP), 0, null, size.height, text, txt1.rcfont);
+			txt2 = new RCTextView (Math.round (txt1.contentSize.width + GAP), 0, null, null, text, txt1.rcfont);
 			this.addChild ( txt2 );
 			this.clipsToBounds = true;
 		}
@@ -92,11 +95,14 @@ class RCTextRoll extends RCView {
 			stop();
 			timer = haxe.Timer.delay (startRolling, 3000);
 		}
-		if (txt1.x < -txt1.contentSize.width) txt1.x = Math.round (txt2.x + txt2.contentSize.width + GAP);
-		if (txt2.x < -txt2.contentSize.width) txt2.x = Math.round (txt1.x + txt1.contentSize.width + GAP);
+		if (txt1.x < -txt1.contentSize.width)
+			txt1.x = Math.round (txt2.x + txt2.contentSize.width + GAP);
+		if (txt2.x < -txt2.contentSize.width)
+			txt2.x = Math.round (txt1.x + txt1.contentSize.width + GAP);
 	}
 	
 	function reset () :Void {
+		
 		if (timer != null) {
 			timer.stop();
 			timer = null;

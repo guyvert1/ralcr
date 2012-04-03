@@ -10,16 +10,19 @@
 class RCAppDelegate extends RCView {
 	
 	public function new () {
+		
+		// The RCWindow should be initialized before everything else
+		RCWindow.sharedWindow();
+		
 		super (0, 0);
 		
-		// The RCWindow should be initialized before anything
-		RCWindow.init();
 		RCNotificationCenter.addObserver ("resize", resize);
 		RCNotificationCenter.addObserver ("fullscreen", fullscreen);
 		
 		applicationDidFinishLaunching();
+		
 		#if (nme && (cpp || neko))
-			RCWindow.stage.onQuit = applicationWillTerminate;
+			RCWindow.sharedWindow().stage.onQuit = applicationWillTerminate;
 		#end
 	}
 	
@@ -33,6 +36,6 @@ class RCAppDelegate extends RCView {
 			nme.Lib.close();
 		#end
 	}
-	public function resize (w:Int, h:Int) :Void {}
+	public function resize (w:Float, h:Float) :Void {}
 	public function fullscreen (b:Bool) :Void {}
 }

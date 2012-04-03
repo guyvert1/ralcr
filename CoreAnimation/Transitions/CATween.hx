@@ -14,7 +14,11 @@ class CATween extends CAObject, implements CATransitionInterface {
 			if (Std.is (Reflect.field (properties, p), Int) || Std.is (Reflect.field (properties, p), Float)) {
 				
 				// We have simple properties: x=10, y=40, ...
+				var getter = "get"+p.substr(0,1).toUpperCase()+p.substr(1);
+				if (getter == null)
 				Reflect.setField (fromValues, p, Reflect.field (target, p));
+				else
+				Reflect.setField (fromValues, p, Reflect.callMethod (target, Reflect.field(target,getter), []));
 				Reflect.setField (toValues, p, Reflect.field (properties, p));
 			}
 			else try {

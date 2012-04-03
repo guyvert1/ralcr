@@ -38,8 +38,8 @@ class RCTextView extends RCView {
 		// This step is very important, otherwise the TextFormat will not be created
 		this.rcfont = rcfont.copy();
 #if js
-		setWidth ( w );
-		setHeight ( h );
+		setWidth ( size.width );
+		setHeight ( size.height );
 		viewDidAppear.add ( viewDidAppear_ );
 #end
 		init();
@@ -78,13 +78,13 @@ class RCTextView extends RCView {
 			// If NME, autoSize the textfield to left, will align it later
 			target.autoSize = flash.text.TextFieldAutoSize.LEFT;
 		#end
-		target.wordWrap = (size.width == null) ? false : true;
+		target.wordWrap = (size.width == 0) ? false : true;
 		target.multiline = (size.height == 0) ? false : true;
 		target.selectable = rcfont.selectable;
 		target.border = false;
 		
-		if (size.width != null)							target.width = size.width * RCWindow.dpiScale;
-		if (size.height != null && size.height != 0)	target.height = size.height * RCWindow.dpiScale;
+		if (size.width != 0)	target.width = size.width * RCDevice.currentDevice().dpiScale;
+		if (size.height != 0)	target.height = size.height * RCDevice.currentDevice().dpiScale;
 		
 		var format = rcfont.getFormat();
 		format.align = switch (rcfont.align) {
@@ -102,7 +102,7 @@ class RCTextView extends RCView {
 	
 	public function redraw () :Void {
 		
-		var wrap = size.width != null;
+		var wrap = size.width != 0;
 		var multiline = size.height != 0;
 		
 		layer.style.whiteSpace = (wrap ? "normal" : "nowrap");
@@ -119,6 +119,7 @@ class RCTextView extends RCView {
 		layer.style.fontStyle = (rcfont.italic ? "italic" : "normal");
 		layer.style.letterSpacing = rcfont.letterSpacing + "px";
 		layer.style.textAlign = rcfont.align;// "center", "left", "right"
+		layer.style.color = RCColor.HEXtoString ( rcfont.color );
 		
 		if (rcfont.autoSize) {
 			layer.style.width = multiline ? size.width + "px" : "auto";
@@ -129,15 +130,14 @@ class RCTextView extends RCView {
 			layer.style.height = size.height + "px";
 		}
 		
-		layer.innerHTML = "";
-		layer.style.color = RCColor.HEXtoString ( rcfont.color );
+/*		layer.innerHTML = "";
 		layer.style.fontFamily = rcfont.font;
 		layer.style.fontWeight = rcfont.bold;
     	layer.style.fontSize = rcfont.size;
-    	layer.style.fontStyle = rcfont.style;
+    	layer.style.fontStyle = rcfont.style;*/
     	//layer.style.fontVariant = rcfont.variant;
 
-		if (size.width != null) setWidth ( size.width );
+		if (size.width != 0) setWidth ( size.width );
 		//layer.style.textAlign = rcfont.align;
 	}
 	function viewDidAppear_ () :Void {

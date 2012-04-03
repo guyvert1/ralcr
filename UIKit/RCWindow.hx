@@ -1,10 +1,13 @@
 //
-//  RCWindow
+//  RCWindow.hx
+//	UIKit
 //
 //  Created by Baluta Cristian on 2008-03-21.
 //  Updated 2008-2012 http://ralcr.com. 
 //	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
+// RCWindow is the main RCView of the application. It has some suplimentar properties
+// NME crashes if you're trying to init some static variables.
 
 #if (flash || nme)
 	import flash.display.MovieClip;
@@ -12,189 +15,243 @@
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
 	import flash.display.StageDisplayState;
-	import flash.display.DisplayObjectContainer;
-	import flash.external.ExternalInterface;
 #elseif js
 	import js.Dom;
-	private typedef DisplayObjectContainer = JSView;
-	private typedef ExternalInterface = haxe.remoting.ExternalConnection;
 #end
 
 
-class RCWindow {
-
+class RCWindow extends RCView {
+	
+	static var sharedWindow_ :RCWindow;
+	public static function sharedWindow (?id:String) :RCWindow {
+		if (sharedWindow_ == null)
+			sharedWindow_ = new RCWindow ( id );
+		return sharedWindow_;
+	}
+	
+	
 #if (flash || nme)
-	// NME goes blank if you're trying to init static variables right now,
-	// Not all of them on all targets but is safer to not init them here.
-	public static var target :MovieClip;
-	public static var stage :Stage;
-	public static var SCREEN_W :Float;
-	public static var SCREEN_H :Float;
+	public var target :MovieClip;
+	public var stage :Stage;
 #elseif js
-	public static var target :HtmlDom = js.Lib.document.body;
-	public static var stage :HtmlDom = js.Lib.document;
-	public static var SCREEN_W :Float = js.Lib.window.screen.width;
-	public static var SCREEN_H :Float = js.Lib.window.screen.height;
+	public var target :HtmlDom;
+	public var stage :HtmlDom;
 #end
 
-	public static var URL :String = "";
-	public static var ID :String = "";
-	public static var width :Int;
-	public static var height :Int;
-	public static var backgroundColor (null, setBackgroundColor) :Int;
-	public static var dpiScale :Float = 1;
-	static var init_ :Bool = false;
-	static var modalView :RCView;// Only one at a time
+	public var SCREEN_W :Float;
+	public var SCREEN_H :Float;
+	public var modalView :RCView;// Modal views are added to the window. Can be only one at a time
 	
 	
-	public static function init () {
-		//trace("init");
-		if (init_) return;
-			init_ = true;
+	public function new (id:String) {
+		
+		super (0.0, 0.0, 0.0, 0.0);
+		
 		#if (flash || nme)
+			
 			target = flash.Lib.current;
 			stage = flash.Lib.current.stage;
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.align = StageAlign.TOP_LEFT;
-			width = stage.stageWidth;
-			height = stage.stageHeight;
+			size.width = stage.stageWidth;
+			size.height = stage.stageHeight;
 			SCREEN_W = flash.system.Capabilities.screenResolutionX;
 			SCREEN_H = flash.system.Capabilities.screenResolutionY;
-			#if (cpp || neko) dpiScale = stage.dpiScale; #end
-			trace("dpiScale "+dpiScale);
+			
+			target.addChild ( layer );
+			
 		#elseif js
-			//target.style.position = "absolute";
-			target.style.margin = "0px 0px 0px 0px";
-			target.style.overflow = "hidden";
-			width = target.scrollWidth;
-			height = target.scrollHeight;
+			
+			stage = js.Lib.document;
+			setTarget ( id );
+			
+			SCREEN_W = js.Lib.window.screen.width;
+			SCREEN_H = js.Lib.window.screen.height;
+			
 		#end
-		#if flash
-			URL = flash.Lib.current.loaderInfo.url;
-			ID = flash.Lib.current.loaderInfo.parameters.id;
-			var url = URL.split("/");
-				url.pop();
-			URL = url.join("/") + "/";// URL without swf name
-		#end
+		
 		// RCNotificationCenter.addObserver ("fullscreen", fullScreenHandler);
 		RCNotificationCenter.addObserver ("resize", resizeHandler);
 	}
 	
-	static function resizeHandler (w, h) {
-		width = w;
-		height = h;
+	function resizeHandler (w, h) {
+		size.width = w;
+		size.height = h;
 	}
 	
 	
-	/**
-	 * Utilities
-	 */
-	public static function getCenterX (w:Float) :Int {
-		trace("getCenterX width="+width+", w="+w);
-		return Math.round (width/2 - w/dpiScale/2);
-	}
-	public static function getCenterY (h:Float) :Int {
-		return Math.round (height/2 - h/dpiScale/2);
-	}
+	// JS can permit to change the container of the RCWindow, which is the main view of the app
 	
-	
-	public static function fullscreen () {
-		#if (flash || nme) stage.displayState = StageDisplayState.FULL_SCREEN; #end
-	}
-	public static function normal () {
-		#if (flash || nme) stage.displayState = StageDisplayState.NORMAL; #end
-	}
-	public static function isFullScreen () :Bool {
-		#if (flash || nme)
-			return stage.displayState == StageDisplayState.FULL_SCREEN;
-		#end
-		return false;
-	}
-	
-	
-	
-	/**
-	 *	Set the new size for the swf
-	 */
-/*	public static function setWidth (w:Int) {
-		if (ExternalInterface.available)
-			ExternalInterface.call ("swffit.configure", {target:ID, maxWid:w});
-	}
-	public static function setHeight (h:Int) {
-		//trace("SetH "+h);
-		if (ExternalInterface.available)
-			//ExternalInterface.call ("k0.resizeDivTo", "controller", h);
-			ExternalInterface.call ("swffit.configure", {target:ID, maxHei:h, maxWid:width, hCenter:false});
-	}
-*/
-	public static function setBackgroundColor (color:Int) :Int {
+	public function setTarget (id:String) :Void {
 		#if js
-			target.style.backgroundColor = RCColor.HEXtoString(color);
+			
+			if (id != null) {
+				target = js.Lib.document.getElementById( id );
+			}
+			else {
+				target = js.Lib.document.body;
+				target.style.margin = "0px 0px 0px 0px";
+				target.style.overflow = "hidden";
+				
+				if (js.Lib.isIE) {
+					target.style.width = untyped js.Lib.document.documentElement.clientWidth + "px";
+					target.style.height = untyped js.Lib.document.documentElement.clientHeight + "px";
+				}
+				else {
+					target.style.width = js.Lib.window.innerWidth + "px";
+					target.style.height = js.Lib.window.innerHeight + "px";
+				}
+			}
+			
+			size.width = target.scrollWidth;
+			size.height = target.scrollHeight;
+			
+			target.appendChild ( layer );
+			
 		#end
+	}
+	
+	override public function setBackgroundColor (color:Null<Int>) :Null<Int> {
+		#if js
+			
+			if (color == null) {
+				target.style.background = null;
+				return color;
+			}
+			
+			var red   = (color & 0xff0000) >> 16;
+			var green = (color & 0xff00) >> 8;
+			var blue  = color & 0xFF;
+			var alpha = 1;
+			target.style.background = "rgba("+red+","+green+","+blue+","+alpha+")";
+			
+		#end
+		
 		return color;
 	}
-	// JS can permit to change the container of the RCWindow
-	public static function setTarget (id:String) :Void {
-		#if js
-			target = js.Lib.document.getElementById( id );
+	
+	
+	
+	
+	// FullScreen support
+	
+	var fsprefix :String;
+	public function fullscreen () {
+		
+		#if (flash || cpp || neko)
+			
+			stage.displayState = StageDisplayState.FULL_SCREEN;
+		
+		#elseif js
+			
+			if ( supportsFullScreen() ) {
+				if (fsprefix == null)
+					Reflect.callMethod (target, 'requestFullScreen', []);
+				else
+					Reflect.callMethod (target, Reflect.field(target, fsprefix + 'RequestFullScreen'), []);
+			}
 		#end
 	}
+	public function normal () {
+		
+		#if (flash || cpp || neko)
+			stage.displayState = StageDisplayState.NORMAL;
+		#elseif js
+			
+			if ( supportsFullScreen() ) {
+				if (fsprefix == "")
+					Reflect.callMethod (target, 'cancelFullScreen', []);
+				else
+					Reflect.callMethod (target, Reflect.field(target, fsprefix + 'CancelFullScreen'), []);
+			}
+		#end
+	}
+	public function isFullScreen () :Bool {
+		
+		#if (flash || cpp || neko)
+			return stage.displayState == StageDisplayState.FULL_SCREEN;
+		#elseif js
+			if (supportsFullScreen())
+			switch (fsprefix) {
+				case '': return untyped target.fullScreen;
+				case 'webkit': return untyped target.webkitIsFullScreen;
+				default: return Reflect.field (target, fsprefix + 'FullScreen');
+			}
+			return false;
+		#end
+	}
+	public function supportsFullScreen () :Bool {
+		
+		#if flash
+			
+			return true;
+		
+		#elseif js
+			
+		    // Check for native support
+		    if (Reflect.field (target, "cancelFullScreen") != null) {
+		        return true;
+		    }
+			// Check for fullscreen support by vendor prefix
+			else for (prefix in ['webkit', 'moz', 'o', 'ms', 'khtml']) {
+				if (Reflect.field (js.Lib.document, prefix + 'CancelFullScreen') != null) {
+					fsprefix = prefix;
+					return true;
+				}
+			}
+			return false;
+			
+		#end
+	}
+	
 	
 	
 	/**
 	 *	Add and remove views
 	 */
-	public static function addChild (child:RCView) :Void {
-		trace("add child "+child);
-		init();
-		if (child != null) {
-			child.viewWillAppearHandler();
-			//child.parent = target;
-			#if (flash || nme)
-				target.addChild ( child.layer );
-			#elseif js
-				target.appendChild ( child.layer );
-			#end
-			child.viewDidAppearHandler();
-		}
+/*	override public function addChild (child:RCView) :Void {
+		
 	}
-	public static function removeChild (child:RCView) :Void {
-		if (child != null) {
-			#if (flash || nme)
-				if (Std.is (child, RCView))
-					cast(child).viewWillDisappearHandler(null);
-				if (target.contains ( child.layer ))
-					target.removeChild ( child.layer );
-			#elseif js
-				child.viewWillDisappearHandler();
-				child.parent = null;
-				target.removeChild ( child.layer );
-				child.viewDidDisappearHandler();
-			#end
-		}
-	}
+	override public function removeChild (child:RCView) :Void {
+		
+	}*/
 	
 	
 	/**
 	 *  Add or remove a modal view controller
 	 *  Only one can exist at a given time
 	 **/
-	public static function addModalViewController (view:RCView) :Void {
+	public function addModalViewController (view:RCView) :Void {
 		modalView = view;
 		modalView.x = 0;//RCWindow.getCenterX ( view.width );
 		
 		CoreAnimation.add ( new CATween (modalView, {y:{fromValue:height, toValue:0}}, 0.5, 0, caequations.Cubic.IN_OUT) );
-		RCWindow.addChild ( modalView );
+		addChild ( modalView );
 	}
-	public static function dismissModalViewController () :Void {
+	public function dismissModalViewController () :Void {
 		if (modalView == null) return;
-		var anim = new CATween (modalView, {y:RCWindow.height}, 0.3, 0, caequations.Cubic.IN);
+		var anim = new CATween (modalView, {y:height}, 0.3, 0, caequations.Cubic.IN);
 			anim.delegate.animationDidStop = destroyModalViewController;
 		CoreAnimation.add ( anim );
 	}
-	public static function destroyModalViewController () :Void {
-		Fugu.safeDestroy ( modalView );
+	public function destroyModalViewController () :Void {
+		modalView.destroy();
 		modalView = null;
 	}
 	
+	
+	
+	/**
+	 * Utilities
+	 */
+	public function getCenterX (w:Float) :Int {
+		return Math.round (width/2 - w/RCDevice.currentDevice().dpiScale/2);
+	}
+	public function getCenterY (h:Float) :Int {
+		return Math.round (height/2 - h/RCDevice.currentDevice().dpiScale/2);
+	}
+	
+	override public function toString():String {
+		return "[RCWindow target="+target+"]";
+	}
 }

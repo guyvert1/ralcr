@@ -27,6 +27,7 @@ class RCDraw extends RCView {
 	
 	
 	public function new (x:Float, y:Float, w:Float, h:Float, color:Dynamic, alpha:Float=1.0) {
+		
 		super (x, y, w, h);
 		
 		setAlpha ( alpha );
@@ -75,7 +76,9 @@ class RCDraw extends RCView {
 										miterLimit);
 			}
 		}
+		
 #if (flash || nme)
+	
 		else if (Std.is (color, RCGradient)) {
 			
 			var m = new Matrix();

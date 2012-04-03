@@ -28,7 +28,6 @@ class RCControl extends RCView {
 	public var touchUpOutside :RCSignal<RCControl->Void>;
 	public var touchCancel :RCSignal<RCControl->Void>;
 #end
-	//public var click :EVMouse;// RCSignal that dispatches EVMouse: RCSignal<EVMouse->Void>
 	public var click :EVMouse;// RCSignal that dispatches EVMouse: RCSignal<EVMouse->Void>
 	public var press :EVMouse;
 	public var release :EVMouse;
@@ -61,7 +60,9 @@ class RCControl extends RCView {
 	
 	
 	public function new (x, y, w, h) {
+		
 		super (x, y, w, h);
+		
 		#if flash
 			this.layer.mouseChildren = false;
 		#end
@@ -89,15 +90,15 @@ class RCControl extends RCView {
 	/**
 	* Mouse Handlers
 	*/
-	function mouseDownHandler (e:EVMouse) :Void {trace("down");
+	function mouseDownHandler (e:EVMouse) :Void {
 		setState ( SELECTED );
 		onPress();
 	}
-	function mouseUpHandler (e:EVMouse) :Void {trace("up");
+	function mouseUpHandler (e:EVMouse) :Void {
 		setState ( HIGHLIGHTED );
 		onRelease();
 	}
-	function rollOverHandler (e:EVMouse) :Void {trace("over");
+	function rollOverHandler (e:EVMouse) :Void {
 		setState ( HIGHLIGHTED );
 		onOver();
 	}
@@ -105,7 +106,7 @@ class RCControl extends RCView {
 		setState ( NORMAL );
 		onOut();
 	}
-	function clickHandler (e:EVMouse) :Void {trace("click");
+	function clickHandler (e:EVMouse) :Void {
 		setState ( SELECTED );
 		onClick();
 	}
@@ -128,7 +129,7 @@ class RCControl extends RCView {
 	function getSelected () :Bool {
 		return state_ == SELECTED;
 	}
-	//
+	
 	/**
 	 * enabled = false - If the button is not enabled, you are no longer able to click it,
 	 * onClick, onPress, onRelease will not by dispactched.

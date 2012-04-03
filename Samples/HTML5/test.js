@@ -118,18 +118,6 @@ RCDisplayObject.prototype.viewWillAppear = null;
 RCDisplayObject.prototype.viewWillDisappear = null;
 RCDisplayObject.prototype.viewDidAppear = null;
 RCDisplayObject.prototype.viewDidDisappear = null;
-RCDisplayObject.prototype.viewWillAppearHandler = function() {
-	this.viewWillAppear.dispatch(null,null,null,null,{ fileName : "RCDisplayObject.hx", lineNumber : 9, className : "RCDisplayObject", methodName : "viewWillAppearHandler"});
-}
-RCDisplayObject.prototype.viewWillDisappearHandler = function() {
-	this.viewWillDisappear.dispatch(null,null,null,null,{ fileName : "RCDisplayObject.hx", lineNumber : 10, className : "RCDisplayObject", methodName : "viewWillDisappearHandler"});
-}
-RCDisplayObject.prototype.viewDidAppearHandler = function() {
-	this.viewDidAppear.dispatch(null,null,null,null,{ fileName : "RCDisplayObject.hx", lineNumber : 11, className : "RCDisplayObject", methodName : "viewDidAppearHandler"});
-}
-RCDisplayObject.prototype.viewDidDisappearHandler = function() {
-	this.viewDidDisappear.dispatch(null,null,null,null,{ fileName : "RCDisplayObject.hx", lineNumber : 12, className : "RCDisplayObject", methodName : "viewDidDisappearHandler"});
-}
 RCDisplayObject.prototype.bounds = null;
 RCDisplayObject.prototype.size = null;
 RCDisplayObject.prototype.contentSize = null;
@@ -157,6 +145,9 @@ RCDisplayObject.prototype.originalSize = null;
 RCDisplayObject.prototype.caobj = null;
 RCDisplayObject.prototype.setVisible = function(v) {
 	return this.visible = v;
+}
+RCDisplayObject.prototype.getAlpha = function() {
+	return this.alpha;
 }
 RCDisplayObject.prototype.setAlpha = function(a) {
 	return this.alpha = a;
@@ -193,6 +184,9 @@ RCDisplayObject.prototype.setContentSize = function(s) {
 }
 RCDisplayObject.prototype.setRotation = function(r) {
 	return this.rotation = r;
+}
+RCDisplayObject.prototype.getRotation = function() {
+	return this.rotation;
 }
 RCDisplayObject.prototype.getBounds = function() {
 	return new RCRect(this.x_,this.y_,this.size.width,this.size.height);
@@ -279,7 +273,7 @@ RCDisplayObject.prototype.destroy = function() {
 	this.size = null;
 }
 RCDisplayObject.prototype.toString = function() {
-	return "[RCView bounds:" + this.getBounds() + "]";
+	return "[RCView bounds:" + this.getBounds().origin.x + "x" + this.getBounds().origin.x + "," + this.getBounds().size.width + "x" + this.getBounds().size.height + "]";
 }
 RCDisplayObject.prototype.__class__ = RCDisplayObject;
 JSView = function(x,y,w,h) {
@@ -305,20 +299,20 @@ JSView.prototype.graphics = null;
 JSView.prototype.alpha_ = null;
 JSView.prototype.addChild = function(child) {
 	if(child == null) return;
-	child.viewWillAppearHandler();
+	child.viewWillAppear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 54, className : "JSView", methodName : "addChild"});
 	child.parent = this;
 	this.layer.appendChild(child.layer);
-	child.viewDidAppearHandler();
+	child.viewDidAppear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 57, className : "JSView", methodName : "addChild"});
 }
 JSView.prototype.addChildAt = function(child,index) {
 	if(this.layer.childNodes[index] != null) this.layer.insertBefore(child.layer,this.layer.childNodes[index]); else this.layer.appendChild(child.layer);
 }
 JSView.prototype.removeChild = function(child) {
 	if(child == null) return;
-	child.viewWillDisappearHandler();
+	child.viewWillDisappear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 71, className : "JSView", methodName : "removeChild"});
 	child.parent = null;
 	this.layer.removeChild(child.layer);
-	child.viewDidDisappearHandler();
+	child.viewDidDisappear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 74, className : "JSView", methodName : "removeChild"});
 }
 JSView.prototype.removeFromSuperView = function() {
 	if(this.parent != null) this.parent.removeChild(this);
@@ -332,8 +326,7 @@ JSView.prototype.setBackgroundColor = function(color) {
 	var green = (color & 65280) >> 8;
 	var blue = color & 255;
 	var alpha = 1;
-	var color_ = "rgba(" + red + "," + green + "," + blue + "," + alpha + ")";
-	this.layer.style.background = color_;
+	this.layer.style.background = "rgba(" + red + "," + green + "," + blue + "," + alpha + ")";
 	return color;
 }
 JSView.prototype.setClipsToBounds = function(clip) {
@@ -357,15 +350,15 @@ JSView.prototype.setVisible = function(v) {
 	return RCDisplayObject.prototype.setVisible.call(this,v);
 }
 JSView.prototype.setAlpha = function(a) {
-	this.layer.style.opacity = Std.string(a);
+	if(js.Lib.isIE) this.layer.style.background = "url(pixel.png) repeat"; else this.layer.style.opacity = Std.string(a);
 	return RCDisplayObject.prototype.setAlpha.call(this,a);
 }
 JSView.prototype.setX = function(x) {
-	this.layer.style.left = Std.string(x * RCWindow.dpiScale) + "px";
+	this.layer.style.left = Std.string(x * RCDevice.currentDevice().dpiScale) + "px";
 	return RCDisplayObject.prototype.setX.call(this,x);
 }
 JSView.prototype.setY = function(y) {
-	this.layer.style.top = Std.string(y * RCWindow.dpiScale) + "px";
+	this.layer.style.top = Std.string(y * RCDevice.currentDevice().dpiScale) + "px";
 	return RCDisplayObject.prototype.setY.call(this,y);
 }
 JSView.prototype.setWidth = function(w) {
@@ -434,16 +427,16 @@ RCControl.prototype.onOver = function() {
 RCControl.prototype.onOut = function() {
 }
 RCControl.prototype.configureDispatchers = function() {
-	this.click = new EVMouse("mouseclick",this,{ fileName : "RCControl.hx", lineNumber : 75, className : "RCControl", methodName : "configureDispatchers"});
-	this.press = new EVMouse("mousedown",this,{ fileName : "RCControl.hx", lineNumber : 77, className : "RCControl", methodName : "configureDispatchers"});
-	this.release = new EVMouse("mouseup",this,{ fileName : "RCControl.hx", lineNumber : 78, className : "RCControl", methodName : "configureDispatchers"});
-	this.over = new EVMouse("mouseover",this,{ fileName : "RCControl.hx", lineNumber : 79, className : "RCControl", methodName : "configureDispatchers"});
-	this.out = new EVMouse("mouseout",this,{ fileName : "RCControl.hx", lineNumber : 80, className : "RCControl", methodName : "configureDispatchers"});
-	this.click.addFirst($closure(this,"clickHandler"),{ fileName : "RCControl.hx", lineNumber : 82, className : "RCControl", methodName : "configureDispatchers"});
-	this.press.addFirst($closure(this,"mouseDownHandler"),{ fileName : "RCControl.hx", lineNumber : 83, className : "RCControl", methodName : "configureDispatchers"});
-	this.release.addFirst($closure(this,"mouseUpHandler"),{ fileName : "RCControl.hx", lineNumber : 84, className : "RCControl", methodName : "configureDispatchers"});
-	this.over.addFirst($closure(this,"rollOverHandler"),{ fileName : "RCControl.hx", lineNumber : 85, className : "RCControl", methodName : "configureDispatchers"});
-	this.out.addFirst($closure(this,"rollOutHandler"),{ fileName : "RCControl.hx", lineNumber : 86, className : "RCControl", methodName : "configureDispatchers"});
+	this.click = new EVMouse("mouseclick",this,{ fileName : "RCControl.hx", lineNumber : 76, className : "RCControl", methodName : "configureDispatchers"});
+	this.press = new EVMouse("mousedown",this,{ fileName : "RCControl.hx", lineNumber : 78, className : "RCControl", methodName : "configureDispatchers"});
+	this.release = new EVMouse("mouseup",this,{ fileName : "RCControl.hx", lineNumber : 79, className : "RCControl", methodName : "configureDispatchers"});
+	this.over = new EVMouse("mouseover",this,{ fileName : "RCControl.hx", lineNumber : 80, className : "RCControl", methodName : "configureDispatchers"});
+	this.out = new EVMouse("mouseout",this,{ fileName : "RCControl.hx", lineNumber : 81, className : "RCControl", methodName : "configureDispatchers"});
+	this.click.addFirst($closure(this,"clickHandler"),{ fileName : "RCControl.hx", lineNumber : 83, className : "RCControl", methodName : "configureDispatchers"});
+	this.press.addFirst($closure(this,"mouseDownHandler"),{ fileName : "RCControl.hx", lineNumber : 84, className : "RCControl", methodName : "configureDispatchers"});
+	this.release.addFirst($closure(this,"mouseUpHandler"),{ fileName : "RCControl.hx", lineNumber : 85, className : "RCControl", methodName : "configureDispatchers"});
+	this.over.addFirst($closure(this,"rollOverHandler"),{ fileName : "RCControl.hx", lineNumber : 86, className : "RCControl", methodName : "configureDispatchers"});
+	this.out.addFirst($closure(this,"rollOutHandler"),{ fileName : "RCControl.hx", lineNumber : 87, className : "RCControl", methodName : "configureDispatchers"});
 }
 RCControl.prototype.mouseDownHandler = function(e) {
 	this.setState(RCControlState.SELECTED);
@@ -467,6 +460,20 @@ RCControl.prototype.clickHandler = function(e) {
 }
 RCControl.prototype.setState = function(state) {
 	this.state_ = state;
+	switch( (this.state_)[1] ) {
+	case 0:
+		js.Lib.document.body.style.cursor = "auto";
+		break;
+	case 1:
+		js.Lib.document.body.style.cursor = "pointer";
+		break;
+	case 2:
+		js.Lib.document.body.style.cursor = "auto";
+		break;
+	case 3:
+		js.Lib.document.body.style.cursor = "auto";
+		break;
+	}
 }
 RCControl.prototype.getSelected = function() {
 	return this.state_ == RCControlState.SELECTED;
@@ -712,242 +719,6 @@ List.prototype.map = function(f) {
 	return b;
 }
 List.prototype.__class__ = List;
-haxe.Serializer = function(p) {
-	if( p === $_ ) return;
-	this.buf = new StringBuf();
-	this.cache = new Array();
-	this.useCache = haxe.Serializer.USE_CACHE;
-	this.useEnumIndex = haxe.Serializer.USE_ENUM_INDEX;
-	this.shash = new Hash();
-	this.scount = 0;
-}
-haxe.Serializer.__name__ = ["haxe","Serializer"];
-haxe.Serializer.run = function(v) {
-	var s = new haxe.Serializer();
-	s.serialize(v);
-	return s.toString();
-}
-haxe.Serializer.prototype.buf = null;
-haxe.Serializer.prototype.cache = null;
-haxe.Serializer.prototype.shash = null;
-haxe.Serializer.prototype.scount = null;
-haxe.Serializer.prototype.useCache = null;
-haxe.Serializer.prototype.useEnumIndex = null;
-haxe.Serializer.prototype.toString = function() {
-	return this.buf.b.join("");
-}
-haxe.Serializer.prototype.serializeString = function(s) {
-	var x = this.shash.get(s);
-	if(x != null) {
-		this.buf.add("R");
-		this.buf.add(x);
-		return;
-	}
-	this.shash.set(s,this.scount++);
-	this.buf.add("y");
-	s = StringTools.urlEncode(s);
-	this.buf.add(s.length);
-	this.buf.add(":");
-	this.buf.add(s);
-}
-haxe.Serializer.prototype.serializeRef = function(v) {
-	var vt = typeof(v);
-	var _g1 = 0, _g = this.cache.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var ci = this.cache[i];
-		if(typeof(ci) == vt && ci == v) {
-			this.buf.add("r");
-			this.buf.add(i);
-			return true;
-		}
-	}
-	this.cache.push(v);
-	return false;
-}
-haxe.Serializer.prototype.serializeFields = function(v) {
-	var _g = 0, _g1 = Reflect.fields(v);
-	while(_g < _g1.length) {
-		var f = _g1[_g];
-		++_g;
-		this.serializeString(f);
-		this.serialize(Reflect.field(v,f));
-	}
-	this.buf.add("g");
-}
-haxe.Serializer.prototype.serialize = function(v) {
-	var $e = (Type["typeof"](v));
-	switch( $e[1] ) {
-	case 0:
-		this.buf.add("n");
-		break;
-	case 1:
-		if(v == 0) {
-			this.buf.add("z");
-			return;
-		}
-		this.buf.add("i");
-		this.buf.add(v);
-		break;
-	case 2:
-		if(Math.isNaN(v)) this.buf.add("k"); else if(!Math.isFinite(v)) this.buf.add(v < 0?"m":"p"); else {
-			this.buf.add("d");
-			this.buf.add(v);
-		}
-		break;
-	case 3:
-		this.buf.add(v?"t":"f");
-		break;
-	case 6:
-		var c = $e[2];
-		if(c == String) {
-			this.serializeString(v);
-			return;
-		}
-		if(this.useCache && this.serializeRef(v)) return;
-		switch(c) {
-		case Array:
-			var ucount = 0;
-			this.buf.add("a");
-			var l = v["length"];
-			var _g = 0;
-			while(_g < l) {
-				var i = _g++;
-				if(v[i] == null) ucount++; else {
-					if(ucount > 0) {
-						if(ucount == 1) this.buf.add("n"); else {
-							this.buf.add("u");
-							this.buf.add(ucount);
-						}
-						ucount = 0;
-					}
-					this.serialize(v[i]);
-				}
-			}
-			if(ucount > 0) {
-				if(ucount == 1) this.buf.add("n"); else {
-					this.buf.add("u");
-					this.buf.add(ucount);
-				}
-			}
-			this.buf.add("h");
-			break;
-		case List:
-			this.buf.add("l");
-			var v1 = v;
-			var $it0 = v1.iterator();
-			while( $it0.hasNext() ) {
-				var i = $it0.next();
-				this.serialize(i);
-			}
-			this.buf.add("h");
-			break;
-		case Date:
-			var d = v;
-			this.buf.add("v");
-			this.buf.add(d.toString());
-			break;
-		case Hash:
-			this.buf.add("b");
-			var v1 = v;
-			var $it1 = v1.keys();
-			while( $it1.hasNext() ) {
-				var k = $it1.next();
-				this.serializeString(k);
-				this.serialize(v1.get(k));
-			}
-			this.buf.add("h");
-			break;
-		case IntHash:
-			this.buf.add("q");
-			var v1 = v;
-			var $it2 = v1.keys();
-			while( $it2.hasNext() ) {
-				var k = $it2.next();
-				this.buf.add(":");
-				this.buf.add(k);
-				this.serialize(v1.get(k));
-			}
-			this.buf.add("h");
-			break;
-		case haxe.io.Bytes:
-			var v1 = v;
-			var i = 0;
-			var max = v1.length - 2;
-			var chars = "";
-			var b64 = haxe.Serializer.BASE64;
-			while(i < max) {
-				var b1 = v1.b[i++];
-				var b2 = v1.b[i++];
-				var b3 = v1.b[i++];
-				chars += b64.charAt(b1 >> 2) + b64.charAt((b1 << 4 | b2 >> 4) & 63) + b64.charAt((b2 << 2 | b3 >> 6) & 63) + b64.charAt(b3 & 63);
-			}
-			if(i == max) {
-				var b1 = v1.b[i++];
-				var b2 = v1.b[i++];
-				chars += b64.charAt(b1 >> 2) + b64.charAt((b1 << 4 | b2 >> 4) & 63) + b64.charAt(b2 << 2 & 63);
-			} else if(i == max + 1) {
-				var b1 = v1.b[i++];
-				chars += b64.charAt(b1 >> 2) + b64.charAt(b1 << 4 & 63);
-			}
-			this.buf.add("s");
-			this.buf.add(chars.length);
-			this.buf.add(":");
-			this.buf.add(chars);
-			break;
-		default:
-			this.cache.pop();
-			if(v.hxSerialize != null) {
-				this.buf.add("C");
-				this.serializeString(Type.getClassName(c));
-				this.cache.push(v);
-				v.hxSerialize(this);
-				this.buf.add("g");
-			} else {
-				this.buf.add("c");
-				this.serializeString(Type.getClassName(c));
-				this.cache.push(v);
-				this.serializeFields(v);
-			}
-		}
-		break;
-	case 4:
-		if(this.useCache && this.serializeRef(v)) return;
-		this.buf.add("o");
-		this.serializeFields(v);
-		break;
-	case 7:
-		var e = $e[2];
-		if(this.useCache && this.serializeRef(v)) return;
-		this.cache.pop();
-		this.buf.add(this.useEnumIndex?"j":"w");
-		this.serializeString(Type.getEnumName(e));
-		if(this.useEnumIndex) {
-			this.buf.add(":");
-			this.buf.add(v[1]);
-		} else this.serializeString(v[0]);
-		this.buf.add(":");
-		var l = v["length"];
-		this.buf.add(l - 2);
-		var _g = 2;
-		while(_g < l) {
-			var i = _g++;
-			this.serialize(v[i]);
-		}
-		this.cache.push(v);
-		break;
-	case 5:
-		throw "Cannot serialize function";
-		break;
-	default:
-		throw "Cannot serialize " + Std.string(v);
-	}
-}
-haxe.Serializer.prototype.serializeException = function(e) {
-	this.buf.add("x");
-	this.serialize(e);
-}
-haxe.Serializer.prototype.__class__ = haxe.Serializer;
 if(typeof _HTTPRequest=='undefined') _HTTPRequest = {}
 _HTTPRequest.URLVariables = function(p) {
 }
@@ -1268,11 +1039,10 @@ RCScrollView = function(x,y,w,h) {
 	var me = this;
 	JSView.call(this,x,y,w,h);
 	this.setClipsToBounds(true);
-	this.layer.style.overflow = "auto";
-	this.scrollHappening = new EVMouse("mousewheel",this,{ fileName : "RCScrollView.hx", lineNumber : 45, className : "RCScrollView", methodName : "new"});
+	this.scrollHappening = new EVMouse("mousewheel",this,{ fileName : "RCScrollView.hx", lineNumber : 47, className : "RCScrollView", methodName : "new"});
 	this.scrollHappening.add($closure(this,"scrollViewDidScrollHandler_"));
 	this.layer.onscroll = function(e) {
-		haxe.Log.trace(e,{ fileName : "RCScrollView.hx", lineNumber : 47, className : "RCScrollView", methodName : "new"});
+		haxe.Log.trace(e,{ fileName : "RCScrollView.hx", lineNumber : 49, className : "RCScrollView", methodName : "new"});
 		me.scrollViewDidScroll();
 	};
 	this.setContentView(new JSView(0,0));
@@ -1316,31 +1086,31 @@ RCScrollView.prototype.setContentView = function(content) {
 }
 RCScrollView.prototype.setScrollEnabled = function(b) {
 	var colors = [null,null,14540253,16777215];
-	haxe.Log.trace("contentSize " + this.getContentSize(),{ fileName : "RCScrollView.hx", lineNumber : 69, className : "RCScrollView", methodName : "setScrollEnabled"});
+	haxe.Log.trace("contentSize " + this.getContentSize(),{ fileName : "RCScrollView.hx", lineNumber : 71, className : "RCScrollView", methodName : "setScrollEnabled"});
 	if(this.contentView.getWidth() > this.size.width && this.horizScrollBarSync == null && b) {
-		haxe.Log.trace("add horiz",{ fileName : "RCScrollView.hx", lineNumber : 73, className : "RCScrollView", methodName : "setScrollEnabled"});
+		haxe.Log.trace("add horiz",{ fileName : "RCScrollView.hx", lineNumber : 75, className : "RCScrollView", methodName : "setScrollEnabled"});
 		var scroller_w = Zeta.lineEquationInt(this.size.width / 2,this.size.width,this.getContentSize().width,this.size.width * 2,this.size.width);
 		var skinH = new haxe.SKScrollBar(colors);
 		this.horizScrollBar = new RCScrollBar(0,this.size.height - 10,this.size.width,8,scroller_w,skinH);
-		this.horizScrollBarSync = new RCSliderSync(RCWindow.target,this.contentView,this.horizScrollBar,this.size.width,"horizontal");
+		this.horizScrollBarSync = new RCSliderSync(RCWindow.sharedWindow().target,this.contentView,this.horizScrollBar,this.size.width,"horizontal");
 		this.horizScrollBarSync.valueChanged.add($closure(this,"scrollViewDidScrollHandler"));
 		this.addChild(this.horizScrollBar);
 	} else {
-		Fugu.safeDestroy([this.horizScrollBar,this.horizScrollBarSync],null,{ fileName : "RCScrollView.hx", lineNumber : 82, className : "RCScrollView", methodName : "setScrollEnabled"});
+		Fugu.safeDestroy([this.horizScrollBar,this.horizScrollBarSync],null,{ fileName : "RCScrollView.hx", lineNumber : 84, className : "RCScrollView", methodName : "setScrollEnabled"});
 		this.horizScrollBar = null;
 		this.horizScrollBarSync = null;
 	}
-	haxe.Log.trace("contentView.height " + this.contentView.getHeight(),{ fileName : "RCScrollView.hx", lineNumber : 86, className : "RCScrollView", methodName : "setScrollEnabled"});
+	haxe.Log.trace("contentView.height " + this.contentView.getHeight(),{ fileName : "RCScrollView.hx", lineNumber : 88, className : "RCScrollView", methodName : "setScrollEnabled"});
 	if(this.contentView.getHeight() > this.size.height && this.vertScrollBarSync == null && b) {
-		haxe.Log.trace("add vert",{ fileName : "RCScrollView.hx", lineNumber : 90, className : "RCScrollView", methodName : "setScrollEnabled"});
+		haxe.Log.trace("add vert",{ fileName : "RCScrollView.hx", lineNumber : 92, className : "RCScrollView", methodName : "setScrollEnabled"});
 		var scroller_h = Zeta.lineEquationInt(this.size.height / 2,this.size.height,this.getContentSize().height,this.size.height * 2,this.size.height);
 		var skinV = new haxe.SKScrollBar(colors);
 		this.vertScrollBar = new RCScrollBar(this.size.width - 10,0,8,this.size.height,scroller_h,skinV);
-		this.vertScrollBarSync = new RCSliderSync(RCWindow.target,this.contentView,this.vertScrollBar,this.size.height,"vertical");
+		this.vertScrollBarSync = new RCSliderSync(RCWindow.sharedWindow().target,this.contentView,this.vertScrollBar,this.size.height,"vertical");
 		this.vertScrollBarSync.valueChanged.add($closure(this,"scrollViewDidScrollHandler"));
 		this.addChild(this.vertScrollBar);
 	} else {
-		Fugu.safeDestroy([this.vertScrollBar,this.vertScrollBarSync],null,{ fileName : "RCScrollView.hx", lineNumber : 99, className : "RCScrollView", methodName : "setScrollEnabled"});
+		Fugu.safeDestroy([this.vertScrollBar,this.vertScrollBarSync],null,{ fileName : "RCScrollView.hx", lineNumber : 101, className : "RCScrollView", methodName : "setScrollEnabled"});
 		this.vertScrollBar = null;
 		this.vertScrollBarSync = null;
 	}
@@ -1369,7 +1139,7 @@ RCScrollView.prototype.hold = function() {
 	if(this.horizScrollBarSync != null) this.horizScrollBarSync.hold();
 }
 RCScrollView.prototype.destroy = function() {
-	Fugu.safeDestroy([this.vertScrollBarSync,this.horizScrollBarSync,this.vertScrollBar,this.horizScrollBar],null,{ fileName : "RCScrollView.hx", lineNumber : 145, className : "RCScrollView", methodName : "destroy"});
+	Fugu.safeDestroy([this.vertScrollBarSync,this.horizScrollBarSync,this.vertScrollBar,this.horizScrollBar],null,{ fileName : "RCScrollView.hx", lineNumber : 147, className : "RCScrollView", methodName : "destroy"});
 	this.vertScrollBarSync = null;
 	this.horizScrollBarSync = null;
 	JSView.prototype.destroy.call(this);
@@ -1425,8 +1195,8 @@ RCScrollBar.prototype.init = function() {
 RCScrollBar.prototype.configureDispatchers = function() {
 	RCControl.prototype.configureDispatchers.call(this);
 	this.valueChanged = new RCSignal();
-	this.mouseUpOverStage_ = new EVMouse("mouseup",RCWindow.stage,{ fileName : "RCScrollBar.hx", lineNumber : 69, className : "RCScrollBar", methodName : "configureDispatchers"});
-	this.mouseMoveOverStage_ = new EVMouse("mousemove",RCWindow.stage,{ fileName : "RCScrollBar.hx", lineNumber : 70, className : "RCScrollBar", methodName : "configureDispatchers"});
+	this.mouseUpOverStage_ = new EVMouse("mouseup",RCWindow.sharedWindow().stage,{ fileName : "RCScrollBar.hx", lineNumber : 69, className : "RCScrollBar", methodName : "configureDispatchers"});
+	this.mouseMoveOverStage_ = new EVMouse("mousemove",RCWindow.sharedWindow().stage,{ fileName : "RCScrollBar.hx", lineNumber : 70, className : "RCScrollBar", methodName : "configureDispatchers"});
 }
 RCScrollBar.prototype.mouseDownHandler = function(e) {
 	haxe.Log.trace("mouseDownHandler",{ fileName : "RCScrollBar.hx", lineNumber : 73, className : "RCScrollBar", methodName : "mouseDownHandler"});
@@ -1604,7 +1374,7 @@ RCImageStretchable.prototype.r = null;
 RCImageStretchable.prototype.onComplete = function() {
 }
 RCImageStretchable.prototype.onCompleteHandler = function() {
-	if(this.l.isLoaded && this.m.isLoaded && this.r.isLoaded && this.size.width != null) this.setWidth(this.size.width);
+	if(this.l.isLoaded && this.m.isLoaded && this.r.isLoaded && this.size.width != 0) this.setWidth(this.size.width);
 	this.onComplete();
 }
 RCImageStretchable.prototype.setWidth = function(w) {
@@ -1631,8 +1401,9 @@ RCTextView = function(x,y,w,h,str,rcfont) {
 	if( x === $_ ) return;
 	JSView.call(this,Math.round(x),Math.round(y),w,h);
 	this.rcfont = rcfont.copy();
-	this.setWidth(w);
-	this.setHeight(h);
+	this.setWidth(this.size.width);
+	this.setHeight(this.size.height);
+	this.viewDidAppear.add($closure(this,"viewDidAppear_"));
 	this.init();
 	this.setText(str);
 }
@@ -1646,7 +1417,7 @@ RCTextView.prototype.init = function() {
 	this.redraw();
 }
 RCTextView.prototype.redraw = function() {
-	var wrap = this.size.width != null;
+	var wrap = this.size.width != 0;
 	var multiline = this.size.height != 0;
 	this.layer.style.whiteSpace = wrap?"normal":"nowrap";
 	this.layer.style.wordWrap = wrap?"break-word":"normal";
@@ -1660,6 +1431,7 @@ RCTextView.prototype.redraw = function() {
 	this.layer.style.fontStyle = this.rcfont.italic?"italic":"normal";
 	this.layer.style.letterSpacing = this.rcfont.letterSpacing + "px";
 	this.layer.style.textAlign = this.rcfont.align;
+	this.layer.style.color = RCColor.HEXtoString(this.rcfont.color);
 	if(this.rcfont.autoSize) {
 		this.layer.style.width = multiline?this.size.width + "px":"auto";
 		this.layer.style.height = "auto";
@@ -1667,13 +1439,10 @@ RCTextView.prototype.redraw = function() {
 		this.layer.style.width = this.size.width + "px";
 		this.layer.style.height = this.size.height + "px";
 	}
-	this.layer.innerHTML = "";
-	this.layer.style.color = RCColor.HEXtoString(this.rcfont.color);
-	this.layer.style.fontFamily = this.rcfont.font;
-	this.layer.style.fontWeight = this.rcfont.bold;
-	this.layer.style.fontSize = this.rcfont.size;
-	this.layer.style.fontStyle = this.rcfont.getStyleSheet();
-	if(this.size.width != null) this.setWidth(this.size.width);
+	if(this.size.width != 0) this.setWidth(this.size.width);
+}
+RCTextView.prototype.viewDidAppear_ = function() {
+	this.size.width = this.getContentSize().width;
 }
 RCTextView.prototype.getText = function() {
 	return this.layer.innerHTML;
@@ -1690,8 +1459,8 @@ RCTextView.prototype.destroy = function() {
 RCTextView.prototype.__class__ = RCTextView;
 RCSize = function(w,h) {
 	if( w === $_ ) return;
-	this.width = w;
-	this.height = h;
+	this.width = w == null?0:w;
+	this.height = h == null?0:h;
 }
 RCSize.__name__ = ["RCSize"];
 RCSize.prototype.width = null;
@@ -1819,8 +1588,8 @@ Reflect.makeVarArgs = function(f) {
 Reflect.prototype.__class__ = Reflect;
 RCPoint = function(x,y) {
 	if( x === $_ ) return;
-	this.x = x;
-	this.y = y;
+	this.x = x == null?0:x;
+	this.y = y == null?0:y;
 }
 RCPoint.__name__ = ["RCPoint"];
 RCPoint.prototype.x = null;
@@ -2083,6 +1852,7 @@ RCImage.prototype.removeListeners = function() {
 RCImage.prototype.destroy = function() {
 	this.removeListeners();
 	this.loader = null;
+	JSView.prototype.destroy.call(this);
 }
 RCImage.prototype.scaleToFit = function(w,h) {
 	JSView.prototype.scaleToFit.call(this,w,h);
@@ -2113,7 +1883,7 @@ RCSwf.prototype.initWithContentsOfFile = function(URL) {
 	this.isLoaded = false;
 	this.percentLoaded = 0;
 	this.layer.id = this.id_;
-	RCWindow.target.appendChild(this.layer);
+	this.layer.appendChild(this.layer);
 	this.target = new js.SWFObject(URL,this.id_,500,400,"9","#cecece");
 	this.target.addParam("AllowScriptAccess","always");
 	this.target.addParam("AllowNetworking","all");
@@ -2251,7 +2021,7 @@ RCDraw = function(x,y,w,h,color,alpha) {
 	try {
 		this.graphics = this.layer;
 	} catch( e ) {
-		haxe.Log.trace(e,{ fileName : "RCDraw.hx", lineNumber : 36, className : "RCDraw", methodName : "new"});
+		haxe.Log.trace(e,{ fileName : "RCDraw.hx", lineNumber : 37, className : "RCDraw", methodName : "new"});
 	}
 	if(Std["is"](color,RCColor) || Std["is"](color,RCGradient)) this.color = color; else if(Std["is"](color,Int) || Std["is"](color,Int)) this.color = new RCColor(color); else if(Std["is"](color,Array)) this.color = new RCColor(color[0],color[1]); else this.color = new RCColor(0);
 }
@@ -2306,11 +2076,11 @@ RCRectangle.prototype.redraw = function() {
 	var html = "<div style=\"position:absolute; overflow:hidden;";
 	html += "left:0px; top:0px;";
 	html += "margin:0px 0px 0px 0px;";
-	html += "width:" + this.size.width * RCWindow.dpiScale + "px;";
-	html += "height:" + this.size.height * RCWindow.dpiScale + "px;";
+	html += "width:" + this.size.width * RCDevice.currentDevice().dpiScale + "px;";
+	html += "height:" + this.size.height * RCDevice.currentDevice().dpiScale + "px;";
 	html += "background-color:" + fillColorStyle + ";";
 	if(strokeColorStyle != null) html += "border-style:solid; border-width:" + this.borderThickness + "px; border-color:" + strokeColorStyle + ";";
-	if(this.roundness != null) html += "-moz-border-radius:" + this.roundness * RCWindow.dpiScale / 2 + "px; border-radius:" + this.roundness * RCWindow.dpiScale / 2 + "px;";
+	if(this.roundness != null) html += "-moz-border-radius:" + this.roundness * RCDevice.currentDevice().dpiScale / 2 + "px; border-radius:" + this.roundness * RCDevice.currentDevice().dpiScale / 2 + "px;";
 	html += "\"></div>";
 	this.layer.innerHTML = html;
 }
@@ -2713,48 +2483,6 @@ haxe.Firebug.prototype.__class__ = haxe.Firebug;
 JSCanvas = function() { }
 JSCanvas.__name__ = ["JSCanvas"];
 JSCanvas.prototype.__class__ = JSCanvas;
-haxe.Timer = function(time_ms) {
-	if( time_ms === $_ ) return;
-	var arr = haxe_timers;
-	this.id = arr.length;
-	arr[this.id] = this;
-	this.timerId = window.setInterval("haxe_timers[" + this.id + "].run();",time_ms);
-}
-haxe.Timer.__name__ = ["haxe","Timer"];
-haxe.Timer.delay = function(f,time_ms) {
-	var t = new haxe.Timer(time_ms);
-	t.run = function() {
-		t.stop();
-		f();
-	};
-	return t;
-}
-haxe.Timer.measure = function(f,pos) {
-	var t0 = haxe.Timer.stamp();
-	var r = f();
-	haxe.Log.trace(haxe.Timer.stamp() - t0 + "s",pos);
-	return r;
-}
-haxe.Timer.stamp = function() {
-	return Date.now().getTime() / 1000;
-}
-haxe.Timer.prototype.id = null;
-haxe.Timer.prototype.timerId = null;
-haxe.Timer.prototype.stop = function() {
-	if(this.id == null) return;
-	window.clearInterval(this.timerId);
-	var arr = haxe_timers;
-	arr[this.id] = null;
-	if(this.id > 100 && this.id == arr.length - 1) {
-		var p = this.id - 1;
-		while(p >= 0 && arr[p] == null) p--;
-		arr = arr.slice(0,p + 1);
-	}
-	this.id = null;
-}
-haxe.Timer.prototype.run = function() {
-}
-haxe.Timer.prototype.__class__ = haxe.Timer;
 EVMouse = function(type,target,pos) {
 	if( type === $_ ) return;
 	if(target == null) throw "Can't use a null target. " + pos;
@@ -2849,7 +2577,7 @@ EVMouse.prototype.removeEventListener = function() {
 }
 EVMouse.prototype.mouseHandler = function(e) {
 	this.e = e;
-	this.dispatch(this,null,null,null,{ fileName : "EVMouse.hx", lineNumber : 125, className : "EVMouse", methodName : "mouseHandler"});
+	this.dispatch(this,null,null,null,{ fileName : "EVMouse.hx", lineNumber : 131, className : "EVMouse", methodName : "mouseHandler"});
 }
 EVMouse.prototype.updateAfterEvent = function() {
 }
@@ -2858,58 +2586,48 @@ EVMouse.prototype.destroy = function() {
 	RCSignal.prototype.destroy.call(this);
 }
 EVMouse.prototype.__class__ = EVMouse;
-IntHash = function(p) {
-	if( p === $_ ) return;
-	this.h = {}
-	if(this.h.__proto__ != null) {
-		this.h.__proto__ = null;
-		delete(this.h.__proto__);
+haxe.Timer = function(time_ms) {
+	if( time_ms === $_ ) return;
+	var arr = haxe_timers;
+	this.id = arr.length;
+	arr[this.id] = this;
+	this.timerId = window.setInterval("haxe_timers[" + this.id + "].run();",time_ms);
+}
+haxe.Timer.__name__ = ["haxe","Timer"];
+haxe.Timer.delay = function(f,time_ms) {
+	var t = new haxe.Timer(time_ms);
+	t.run = function() {
+		t.stop();
+		f();
+	};
+	return t;
+}
+haxe.Timer.measure = function(f,pos) {
+	var t0 = haxe.Timer.stamp();
+	var r = f();
+	haxe.Log.trace(haxe.Timer.stamp() - t0 + "s",pos);
+	return r;
+}
+haxe.Timer.stamp = function() {
+	return Date.now().getTime() / 1000;
+}
+haxe.Timer.prototype.id = null;
+haxe.Timer.prototype.timerId = null;
+haxe.Timer.prototype.stop = function() {
+	if(this.id == null) return;
+	window.clearInterval(this.timerId);
+	var arr = haxe_timers;
+	arr[this.id] = null;
+	if(this.id > 100 && this.id == arr.length - 1) {
+		var p = this.id - 1;
+		while(p >= 0 && arr[p] == null) p--;
+		arr = arr.slice(0,p + 1);
 	}
+	this.id = null;
 }
-IntHash.__name__ = ["IntHash"];
-IntHash.prototype.h = null;
-IntHash.prototype.set = function(key,value) {
-	this.h[key] = value;
+haxe.Timer.prototype.run = function() {
 }
-IntHash.prototype.get = function(key) {
-	return this.h[key];
-}
-IntHash.prototype.exists = function(key) {
-	return this.h[key] != null;
-}
-IntHash.prototype.remove = function(key) {
-	if(this.h[key] == null) return false;
-	delete(this.h[key]);
-	return true;
-}
-IntHash.prototype.keys = function() {
-	var a = new Array();
-	for( x in this.h ) a.push(x);
-	return a.iterator();
-}
-IntHash.prototype.iterator = function() {
-	return { ref : this.h, it : this.keys(), hasNext : function() {
-		return this.it.hasNext();
-	}, next : function() {
-		var i = this.it.next();
-		return this.ref[i];
-	}};
-}
-IntHash.prototype.toString = function() {
-	var s = new StringBuf();
-	s.b[s.b.length] = "{" == null?"null":"{";
-	var it = this.keys();
-	while( it.hasNext() ) {
-		var i = it.next();
-		s.b[s.b.length] = i == null?"null":i;
-		s.b[s.b.length] = " => " == null?"null":" => ";
-		s.add(Std.string(this.get(i)));
-		if(it.hasNext()) s.b[s.b.length] = ", " == null?"null":", ";
-	}
-	s.b[s.b.length] = "}" == null?"null":"}";
-	return s.b.join("");
-}
-IntHash.prototype.__class__ = IntHash;
+haxe.Timer.prototype.__class__ = haxe.Timer;
 if(typeof _RCSlider=='undefined') _RCSlider = {}
 _RCSlider.Direction = { __ename__ : ["_RCSlider","Direction"], __constructs__ : ["HORIZONTAL","VERTICAL"] }
 _RCSlider.Direction.HORIZONTAL = ["HORIZONTAL",0];
@@ -2974,8 +2692,8 @@ RCSlider.prototype.viewDidAppear_ = function() {
 RCSlider.prototype.configureDispatchers = function() {
 	RCControl.prototype.configureDispatchers.call(this);
 	this.valueChanged = new RCSignal();
-	this.mouseUpOverStage_ = new EVMouse("mouseup",RCWindow.stage,{ fileName : "RCSlider.hx", lineNumber : 94, className : "RCSlider", methodName : "configureDispatchers"});
-	this.mouseMoveOverStage_ = new EVMouse("mousemove",RCWindow.stage,{ fileName : "RCSlider.hx", lineNumber : 95, className : "RCSlider", methodName : "configureDispatchers"});
+	this.mouseUpOverStage_ = new EVMouse("mouseup",RCWindow.sharedWindow().stage,{ fileName : "RCSlider.hx", lineNumber : 94, className : "RCSlider", methodName : "configureDispatchers"});
+	this.mouseMoveOverStage_ = new EVMouse("mousemove",RCWindow.sharedWindow().stage,{ fileName : "RCSlider.hx", lineNumber : 95, className : "RCSlider", methodName : "configureDispatchers"});
 }
 RCSlider.prototype.setEnabled = function(c) {
 	return this.enabled_ = false;
@@ -3084,6 +2802,88 @@ caequations.Cubic.OUT_IN = function(t,b,c,d,p_params) {
 	return caequations.Cubic.IN(t * 2 - d,b + c / 2,c / 2,d,null);
 }
 caequations.Cubic.prototype.__class__ = caequations.Cubic;
+RCDeviceOrientation = { __ename__ : ["RCDeviceOrientation"], __constructs__ : ["UIDeviceOrientationUnknown","UIDeviceOrientationPortrait","UIDeviceOrientationPortraitUpsideDown","UIDeviceOrientationLandscapeLeft","UIDeviceOrientationLandscapeRight","UIDeviceOrientationFaceUp","UIDeviceOrientationFaceDown"] }
+RCDeviceOrientation.UIDeviceOrientationUnknown = ["UIDeviceOrientationUnknown",0];
+RCDeviceOrientation.UIDeviceOrientationUnknown.toString = $estr;
+RCDeviceOrientation.UIDeviceOrientationUnknown.__enum__ = RCDeviceOrientation;
+RCDeviceOrientation.UIDeviceOrientationPortrait = ["UIDeviceOrientationPortrait",1];
+RCDeviceOrientation.UIDeviceOrientationPortrait.toString = $estr;
+RCDeviceOrientation.UIDeviceOrientationPortrait.__enum__ = RCDeviceOrientation;
+RCDeviceOrientation.UIDeviceOrientationPortraitUpsideDown = ["UIDeviceOrientationPortraitUpsideDown",2];
+RCDeviceOrientation.UIDeviceOrientationPortraitUpsideDown.toString = $estr;
+RCDeviceOrientation.UIDeviceOrientationPortraitUpsideDown.__enum__ = RCDeviceOrientation;
+RCDeviceOrientation.UIDeviceOrientationLandscapeLeft = ["UIDeviceOrientationLandscapeLeft",3];
+RCDeviceOrientation.UIDeviceOrientationLandscapeLeft.toString = $estr;
+RCDeviceOrientation.UIDeviceOrientationLandscapeLeft.__enum__ = RCDeviceOrientation;
+RCDeviceOrientation.UIDeviceOrientationLandscapeRight = ["UIDeviceOrientationLandscapeRight",4];
+RCDeviceOrientation.UIDeviceOrientationLandscapeRight.toString = $estr;
+RCDeviceOrientation.UIDeviceOrientationLandscapeRight.__enum__ = RCDeviceOrientation;
+RCDeviceOrientation.UIDeviceOrientationFaceUp = ["UIDeviceOrientationFaceUp",5];
+RCDeviceOrientation.UIDeviceOrientationFaceUp.toString = $estr;
+RCDeviceOrientation.UIDeviceOrientationFaceUp.__enum__ = RCDeviceOrientation;
+RCDeviceOrientation.UIDeviceOrientationFaceDown = ["UIDeviceOrientationFaceDown",6];
+RCDeviceOrientation.UIDeviceOrientationFaceDown.toString = $estr;
+RCDeviceOrientation.UIDeviceOrientationFaceDown.__enum__ = RCDeviceOrientation;
+RCDeviceType = { __ename__ : ["RCDeviceType"], __constructs__ : ["IPhone","IPad","Android","WebOS","Mac","Flash"] }
+RCDeviceType.IPhone = ["IPhone",0];
+RCDeviceType.IPhone.toString = $estr;
+RCDeviceType.IPhone.__enum__ = RCDeviceType;
+RCDeviceType.IPad = ["IPad",1];
+RCDeviceType.IPad.toString = $estr;
+RCDeviceType.IPad.__enum__ = RCDeviceType;
+RCDeviceType.Android = ["Android",2];
+RCDeviceType.Android.toString = $estr;
+RCDeviceType.Android.__enum__ = RCDeviceType;
+RCDeviceType.WebOS = ["WebOS",3];
+RCDeviceType.WebOS.toString = $estr;
+RCDeviceType.WebOS.__enum__ = RCDeviceType;
+RCDeviceType.Mac = ["Mac",4];
+RCDeviceType.Mac.toString = $estr;
+RCDeviceType.Mac.__enum__ = RCDeviceType;
+RCDeviceType.Flash = ["Flash",5];
+RCDeviceType.Flash.toString = $estr;
+RCDeviceType.Flash.__enum__ = RCDeviceType;
+RCUserAgent = { __ename__ : ["RCUserAgent"], __constructs__ : ["MSIE","GECKO","WEBKIT","OTHER"] }
+RCUserAgent.MSIE = ["MSIE",0];
+RCUserAgent.MSIE.toString = $estr;
+RCUserAgent.MSIE.__enum__ = RCUserAgent;
+RCUserAgent.GECKO = ["GECKO",1];
+RCUserAgent.GECKO.toString = $estr;
+RCUserAgent.GECKO.__enum__ = RCUserAgent;
+RCUserAgent.WEBKIT = ["WEBKIT",2];
+RCUserAgent.WEBKIT.toString = $estr;
+RCUserAgent.WEBKIT.__enum__ = RCUserAgent;
+RCUserAgent.OTHER = ["OTHER",3];
+RCUserAgent.OTHER.toString = $estr;
+RCUserAgent.OTHER.__enum__ = RCUserAgent;
+RCDevice = function(p) {
+	if( p === $_ ) return;
+	this.dpiScale = 1;
+	this.userAgent = this.detectUserAgent();
+}
+RCDevice.__name__ = ["RCDevice"];
+RCDevice._currentDevice = null;
+RCDevice.currentDevice = function() {
+	if(RCDevice._currentDevice == null) RCDevice._currentDevice = new RCDevice();
+	return RCDevice._currentDevice;
+}
+RCDevice.prototype.name = null;
+RCDevice.prototype.model = null;
+RCDevice.prototype.systemName = null;
+RCDevice.prototype.systemVersion = null;
+RCDevice.prototype.orientation = null;
+RCDevice.prototype.userInterfaceIdiom = null;
+RCDevice.prototype.uniqueIdentifier = null;
+RCDevice.prototype.dpiScale = null;
+RCDevice.prototype.userAgent = null;
+RCDevice.prototype.detectUserAgent = function() {
+	var agent = js.Lib.window.navigator.userAgent.toLowerCase();
+	if(agent.indexOf("msie") > -1) return RCUserAgent.MSIE;
+	if(agent.indexOf("webkit") > -1) return RCUserAgent.WEBKIT;
+	if(agent.indexOf("gecko") > -1) return RCUserAgent.GECKO;
+	return RCUserAgent.OTHER;
+}
+RCDevice.prototype.__class__ = RCDevice;
 CAObject = function(target,properties,duration,delay,Eq,pos) {
 	if( target === $_ ) return;
 	this.target = target;
@@ -3142,138 +2942,6 @@ CAObject.prototype.toString = function() {
 	return "[CAObject: target=" + this.target + ", duration=" + this.duration + ", delay=" + this.delay + ", fromTime=" + this.fromTime + ", properties=" + this.properties + ", repeatCount=" + this.repeatCount + "]";
 }
 CAObject.prototype.__class__ = CAObject;
-if(!haxe.remoting) haxe.remoting = {}
-haxe.remoting.Connection = function() { }
-haxe.remoting.Connection.__name__ = ["haxe","remoting","Connection"];
-haxe.remoting.Connection.prototype.resolve = null;
-haxe.remoting.Connection.prototype.call = null;
-haxe.remoting.Connection.prototype.__class__ = haxe.remoting.Connection;
-Hash = function(p) {
-	if( p === $_ ) return;
-	this.h = {}
-	if(this.h.__proto__ != null) {
-		this.h.__proto__ = null;
-		delete(this.h.__proto__);
-	}
-}
-Hash.__name__ = ["Hash"];
-Hash.prototype.h = null;
-Hash.prototype.set = function(key,value) {
-	this.h["$" + key] = value;
-}
-Hash.prototype.get = function(key) {
-	return this.h["$" + key];
-}
-Hash.prototype.exists = function(key) {
-	try {
-		key = "$" + key;
-		return this.hasOwnProperty.call(this.h,key);
-	} catch( e ) {
-		for(var i in this.h) if( i == key ) return true;
-		return false;
-	}
-}
-Hash.prototype.remove = function(key) {
-	if(!this.exists(key)) return false;
-	delete(this.h["$" + key]);
-	return true;
-}
-Hash.prototype.keys = function() {
-	var a = new Array();
-	for(var i in this.h) a.push(i.substr(1));
-	return a.iterator();
-}
-Hash.prototype.iterator = function() {
-	return { ref : this.h, it : this.keys(), hasNext : function() {
-		return this.it.hasNext();
-	}, next : function() {
-		var i = this.it.next();
-		return this.ref["$" + i];
-	}};
-}
-Hash.prototype.toString = function() {
-	var s = new StringBuf();
-	s.b[s.b.length] = "{" == null?"null":"{";
-	var it = this.keys();
-	while( it.hasNext() ) {
-		var i = it.next();
-		s.b[s.b.length] = i == null?"null":i;
-		s.b[s.b.length] = " => " == null?"null":" => ";
-		s.add(Std.string(this.get(i)));
-		if(it.hasNext()) s.b[s.b.length] = ", " == null?"null":", ";
-	}
-	s.b[s.b.length] = "}" == null?"null":"}";
-	return s.b.join("");
-}
-Hash.prototype.__class__ = Hash;
-haxe.remoting.ExternalConnection = function(data,path) {
-	if( data === $_ ) return;
-	this.__data = data;
-	this.__path = path;
-}
-haxe.remoting.ExternalConnection.__name__ = ["haxe","remoting","ExternalConnection"];
-haxe.remoting.ExternalConnection.escapeString = function(s) {
-	return s;
-}
-haxe.remoting.ExternalConnection.doCall = function(name,path,params) {
-	try {
-		var cnx = haxe.remoting.ExternalConnection.connections.get(name);
-		if(cnx == null) throw "Unknown connection : " + name;
-		if(cnx.__data.ctx == null) throw "No context shared for the connection " + name;
-		var params1 = new haxe.Unserializer(params).unserialize();
-		var ret = cnx.__data.ctx.call(path.split("."),params1);
-		var s = new haxe.Serializer();
-		s.serialize(ret);
-		return s.toString() + "#";
-	} catch( e ) {
-		var s = new haxe.Serializer();
-		s.serializeException(e);
-		return s.toString();
-	}
-}
-haxe.remoting.ExternalConnection.flashConnect = function(name,flashObjectID,ctx) {
-	var cnx = new haxe.remoting.ExternalConnection({ ctx : ctx, name : name, flash : flashObjectID},[]);
-	haxe.remoting.ExternalConnection.connections.set(name,cnx);
-	return cnx;
-}
-haxe.remoting.ExternalConnection.prototype.__data = null;
-haxe.remoting.ExternalConnection.prototype.__path = null;
-haxe.remoting.ExternalConnection.prototype.resolve = function(field) {
-	var e = new haxe.remoting.ExternalConnection(this.__data,this.__path.copy());
-	e.__path.push(field);
-	return e;
-}
-haxe.remoting.ExternalConnection.prototype.close = function() {
-	haxe.remoting.ExternalConnection.connections.remove(this.__data.name);
-}
-haxe.remoting.ExternalConnection.prototype.call = function(params) {
-	var s = new haxe.Serializer();
-	s.serialize(params);
-	var params1 = s.toString();
-	var data = null;
-	var fobj = window.document[this.__data.flash];
-	if(fobj == null) fobj = window.document.getElementById(this.__data.flash);
-	if(fobj == null) throw "Could not find flash object '" + this.__data.flash + "'";
-	try {
-		data = fobj.externalRemotingCall(this.__data.name,this.__path.join("."),params1);
-	} catch( e ) {
-	}
-	if(data == null) {
-		var domain, pageDomain;
-		try {
-			domain = fobj.src.split("/")[2];
-			pageDomain = js.Lib.window.location.host;
-		} catch( e ) {
-			domain = null;
-			pageDomain = null;
-		}
-		if(domain != pageDomain) throw "ExternalConnection call failure : SWF need allowDomain('" + pageDomain + "')";
-		throw "Call failure : ExternalConnection is not " + "initialized in Flash";
-	}
-	return new haxe.Unserializer(data).unserialize();
-}
-haxe.remoting.ExternalConnection.prototype.__class__ = haxe.remoting.ExternalConnection;
-haxe.remoting.ExternalConnection.__interfaces__ = [haxe.remoting.Connection];
 RCEllipse = function(x,y,w,h,color,alpha) {
 	if( x === $_ ) return;
 	if(alpha == null) alpha = 1.0;
@@ -3501,7 +3169,7 @@ HXAddressSignal.prototype.dispatch = function(args) {
 		try {
 			listener.apply(null,[args.copy()]);
 		} catch( e ) {
-			haxe.Log.trace("[HXAddressEvent error calling: " + listener + "]",{ fileName : "HXAddress.hx", lineNumber : 522, className : "HXAddressSignal", methodName : "dispatch"});
+			haxe.Log.trace("[HXAddressEvent error calling: " + listener + "]",{ fileName : "HXAddress.hx", lineNumber : 521, className : "HXAddressSignal", methodName : "dispatch"});
 		}
 	}
 }
@@ -3791,11 +3459,10 @@ RCTextRoll.prototype.timerLoop = null;
 RCTextRoll.prototype.continuous = null;
 RCTextRoll.prototype.text = null;
 RCTextRoll.prototype.viewDidAppear_ = function() {
-	haxe.Log.trace("RCTextRoll viewdidappear",{ fileName : "RCTextRoll.hx", lineNumber : 38, className : "RCTextRoll", methodName : "viewDidAppear_"});
-	this.size.height = this.txt1.getHeight();
+	this.size.height = this.txt1.getContentSize().height;
 	if(this.txt1.getContentSize().width > this.size.width) {
 		if(this.txt2 != null) return;
-		this.txt2 = new RCTextView(Math.round(this.txt1.getContentSize().width + 20),0,null,this.size.height,this.getText(),this.txt1.rcfont);
+		this.txt2 = new RCTextView(Math.round(this.txt1.getContentSize().width + 20),0,null,null,this.getText(),this.txt1.rcfont);
 		this.addChild(this.txt2);
 		this.setClipsToBounds(true);
 	}
@@ -3812,7 +3479,7 @@ RCTextRoll.prototype.start = function() {
 }
 RCTextRoll.prototype.stop = function() {
 	if(this.txt2 == null) return;
-	this.stopRolling({ fileName : "RCTextRoll.hx", lineNumber : 68, className : "RCTextRoll", methodName : "stop"});
+	this.stopRolling({ fileName : "RCTextRoll.hx", lineNumber : 71, className : "RCTextRoll", methodName : "stop"});
 	this.reset();
 }
 RCTextRoll.prototype.stopRolling = function(pos) {
@@ -3820,7 +3487,7 @@ RCTextRoll.prototype.stopRolling = function(pos) {
 	this.timerLoop = null;
 }
 RCTextRoll.prototype.startRolling = function() {
-	this.stopRolling({ fileName : "RCTextRoll.hx", lineNumber : 78, className : "RCTextRoll", methodName : "startRolling"});
+	this.stopRolling({ fileName : "RCTextRoll.hx", lineNumber : 81, className : "RCTextRoll", methodName : "startRolling"});
 	this.timerLoop = new haxe.Timer(20);
 	this.timerLoop.run = $closure(this,"loop");
 }
@@ -3865,127 +3532,121 @@ EVResize.prototype.resizeHandler = function(e) {
 	this.dispatch(w,h,null,null,{ fileName : "EVResize.hx", lineNumber : 30, className : "EVResize", methodName : "resizeHandler"});
 }
 EVResize.prototype.__class__ = EVResize;
-haxe.remoting.Context = function(p) {
-	if( p === $_ ) return;
-	this.objects = new Hash();
+RCWindow = function(id) {
+	if( id === $_ ) return;
+	JSView.call(this,0.0,0.0,0.0,0.0);
+	this.stage = js.Lib.document;
+	this.setTarget(id);
+	this.SCREEN_W = js.Lib.window.screen.width;
+	this.SCREEN_H = js.Lib.window.screen.height;
+	RCNotificationCenter.addObserver("resize",$closure(this,"resizeHandler"));
 }
-haxe.remoting.Context.__name__ = ["haxe","remoting","Context"];
-haxe.remoting.Context.share = function(name,obj) {
-	var ctx = new haxe.remoting.Context();
-	ctx.addObject(name,obj);
-	return ctx;
+RCWindow.__name__ = ["RCWindow"];
+RCWindow.__super__ = JSView;
+for(var k in JSView.prototype ) RCWindow.prototype[k] = JSView.prototype[k];
+RCWindow.sharedWindow_ = null;
+RCWindow.sharedWindow = function(id) {
+	if(RCWindow.sharedWindow_ == null) RCWindow.sharedWindow_ = new RCWindow(id);
+	return RCWindow.sharedWindow_;
 }
-haxe.remoting.Context.prototype.objects = null;
-haxe.remoting.Context.prototype.addObject = function(name,obj,recursive) {
-	this.objects.set(name,{ obj : obj, rec : recursive});
+RCWindow.prototype.target = null;
+RCWindow.prototype.stage = null;
+RCWindow.prototype.SCREEN_W = null;
+RCWindow.prototype.SCREEN_H = null;
+RCWindow.prototype.modalView = null;
+RCWindow.prototype.resizeHandler = function(w,h) {
+	this.size.width = w;
+	this.size.height = h;
 }
-haxe.remoting.Context.prototype.call = function(path,params) {
-	if(path.length < 2) throw "Invalid path '" + path.join(".") + "'";
-	var inf = this.objects.get(path[0]);
-	if(inf == null) throw "No such object " + path[0];
-	var o = inf.obj;
-	var m = Reflect.field(o,path[1]);
-	if(path.length > 2) {
-		if(!inf.rec) throw "Can't access " + path.join(".");
-		var _g1 = 2, _g = path.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			o = m;
-			m = Reflect.field(o,path[i]);
+RCWindow.prototype.setTarget = function(id) {
+	if(id != null) this.target = js.Lib.document.getElementById(id); else {
+		this.target = js.Lib.document.body;
+		this.target.style.margin = "0px 0px 0px 0px";
+		this.target.style.overflow = "hidden";
+		if(js.Lib.isIE) {
+			this.target.style.width = js.Lib.document.documentElement.clientWidth + "px";
+			this.target.style.height = js.Lib.document.documentElement.clientHeight + "px";
+		} else {
+			this.target.style.width = js.Lib.window.innerWidth + "px";
+			this.target.style.height = js.Lib.window.innerHeight + "px";
 		}
 	}
-	if(!Reflect.isFunction(m)) throw "No such method " + path.join(".");
-	return m.apply(o,params);
+	this.size.width = this.target.scrollWidth;
+	this.size.height = this.target.scrollHeight;
+	this.target.appendChild(this.layer);
 }
-haxe.remoting.Context.prototype.__class__ = haxe.remoting.Context;
-js.Lib = function() { }
-js.Lib.__name__ = ["js","Lib"];
-js.Lib.isIE = null;
-js.Lib.isOpera = null;
-js.Lib.document = null;
-js.Lib.window = null;
-js.Lib.alert = function(v) {
-	alert(js.Boot.__string_rec(v,""));
-}
-js.Lib.eval = function(code) {
-	return eval(code);
-}
-js.Lib.setErrorHandler = function(f) {
-	js.Lib.onerror = f;
-}
-js.Lib.prototype.__class__ = js.Lib;
-RCWindow = function() { }
-RCWindow.__name__ = ["RCWindow"];
-RCWindow.width = null;
-RCWindow.height = null;
-RCWindow.backgroundColor = null;
-RCWindow.modalView = null;
-RCWindow.init = function() {
-	if(RCWindow.init_) return;
-	RCWindow.init_ = true;
-	RCWindow.target.style.margin = "0px 0px 0px 0px";
-	RCWindow.target.style.overflow = "hidden";
-	RCWindow.width = RCWindow.target.scrollWidth;
-	RCWindow.height = RCWindow.target.scrollHeight;
-	RCNotificationCenter.addObserver("resize",RCWindow.resizeHandler);
-}
-RCWindow.resizeHandler = function(w,h) {
-	RCWindow.width = w;
-	RCWindow.height = h;
-}
-RCWindow.getCenterX = function(w) {
-	haxe.Log.trace("getCenterX width=" + RCWindow.width + ", w=" + w,{ fileName : "RCWindow.hx", lineNumber : 93, className : "RCWindow", methodName : "getCenterX"});
-	return Math.round(RCWindow.width / 2 - w / RCWindow.dpiScale / 2);
-}
-RCWindow.getCenterY = function(h) {
-	return Math.round(RCWindow.height / 2 - h / RCWindow.dpiScale / 2);
-}
-RCWindow.fullscreen = function() {
-}
-RCWindow.normal = function() {
-}
-RCWindow.isFullScreen = function() {
-	return false;
-}
-RCWindow.setBackgroundColor = function(color) {
-	RCWindow.target.style.backgroundColor = RCColor.HEXtoString(color);
+RCWindow.prototype.setBackgroundColor = function(color) {
+	if(color == null) {
+		this.target.style.background = null;
+		return color;
+	}
+	var red = (color & 16711680) >> 16;
+	var green = (color & 65280) >> 8;
+	var blue = color & 255;
+	var alpha = 1;
+	this.target.style.background = "rgba(" + red + "," + green + "," + blue + "," + alpha + ")";
 	return color;
 }
-RCWindow.setTarget = function(id) {
-	RCWindow.target = js.Lib.document.getElementById(id);
-}
-RCWindow.addChild = function(child) {
-	haxe.Log.trace("add child " + child,{ fileName : "RCWindow.hx", lineNumber : 148, className : "RCWindow", methodName : "addChild"});
-	RCWindow.init();
-	if(child != null) {
-		child.viewWillAppearHandler();
-		RCWindow.target.appendChild(child.layer);
-		child.viewDidAppearHandler();
+RCWindow.prototype.fsprefix = null;
+RCWindow.prototype.fullscreen = function() {
+	if(this.supportsFullScreen()) {
+		if(this.fsprefix == null) "requestFullScreen".apply(this.target,[]); else Reflect.field(this.target,this.fsprefix + "RequestFullScreen").apply(this.target,[]);
 	}
 }
-RCWindow.removeChild = function(child) {
-	if(child != null) {
-		child.viewWillDisappearHandler();
-		child.parent = null;
-		RCWindow.target.removeChild(child.layer);
-		child.viewDidDisappearHandler();
+RCWindow.prototype.normal = function() {
+	if(this.supportsFullScreen()) {
+		if(this.fsprefix == "") "cancelFullScreen".apply(this.target,[]); else Reflect.field(this.target,this.fsprefix + "CancelFullScreen").apply(this.target,[]);
 	}
 }
-RCWindow.addModalViewController = function(view) {
-	RCWindow.modalView = view;
-	RCWindow.modalView.setX(0);
-	CoreAnimation.add(new CATween(RCWindow.modalView,{ y : { fromValue : RCWindow.height, toValue : 0}},0.5,0,caequations.Cubic.IN_OUT,{ fileName : "RCWindow.hx", lineNumber : 186, className : "RCWindow", methodName : "addModalViewController"}));
-	RCWindow.addChild(RCWindow.modalView);
+RCWindow.prototype.isFullScreen = function() {
+	if(this.supportsFullScreen()) switch(this.fsprefix) {
+	case "":
+		return this.target.fullScreen;
+	case "webkit":
+		return this.target.webkitIsFullScreen;
+	default:
+		return Reflect.field(this.target,this.fsprefix + "FullScreen");
+	}
+	return false;
 }
-RCWindow.dismissModalViewController = function() {
-	if(RCWindow.modalView == null) return;
-	var anim = new CATween(RCWindow.modalView,{ y : RCWindow.height},0.3,0,caequations.Cubic.IN,{ fileName : "RCWindow.hx", lineNumber : 191, className : "RCWindow", methodName : "dismissModalViewController"});
-	anim.delegate.animationDidStop = RCWindow.destroyModalViewController;
+RCWindow.prototype.supportsFullScreen = function() {
+	if(Reflect.field(this.target,"cancelFullScreen") != null) return true; else {
+		var _g = 0, _g1 = ["webkit","moz","o","ms","khtml"];
+		while(_g < _g1.length) {
+			var prefix = _g1[_g];
+			++_g;
+			if(Reflect.field(js.Lib.document,prefix + "CancelFullScreen") != null) {
+				this.fsprefix = prefix;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+RCWindow.prototype.addModalViewController = function(view) {
+	this.modalView = view;
+	this.modalView.setX(0);
+	CoreAnimation.add(new CATween(this.modalView,{ y : { fromValue : this.getHeight(), toValue : 0}},0.5,0,caequations.Cubic.IN_OUT,{ fileName : "RCWindow.hx", lineNumber : 228, className : "RCWindow", methodName : "addModalViewController"}));
+	this.addChild(this.modalView);
+}
+RCWindow.prototype.dismissModalViewController = function() {
+	if(this.modalView == null) return;
+	var anim = new CATween(this.modalView,{ y : this.getHeight()},0.3,0,caequations.Cubic.IN,{ fileName : "RCWindow.hx", lineNumber : 233, className : "RCWindow", methodName : "dismissModalViewController"});
+	anim.delegate.animationDidStop = $closure(this,"destroyModalViewController");
 	CoreAnimation.add(anim);
 }
-RCWindow.destroyModalViewController = function() {
-	Fugu.safeDestroy(RCWindow.modalView,null,{ fileName : "RCWindow.hx", lineNumber : 196, className : "RCWindow", methodName : "destroyModalViewController"});
-	RCWindow.modalView = null;
+RCWindow.prototype.destroyModalViewController = function() {
+	this.modalView.destroy();
+	this.modalView = null;
+}
+RCWindow.prototype.getCenterX = function(w) {
+	return Math.round(this.getWidth() / 2 - w / RCDevice.currentDevice().dpiScale / 2);
+}
+RCWindow.prototype.getCenterY = function(h) {
+	return Math.round(this.getHeight() / 2 - h / RCDevice.currentDevice().dpiScale / 2);
+}
+RCWindow.prototype.toString = function() {
+	return "[RCWindow target=" + this.target + "]";
 }
 RCWindow.prototype.__class__ = RCWindow;
 StringBuf = function(p) {
@@ -4322,19 +3983,21 @@ RCGroup.prototype.keepItemsArranged = function() {
 		var new_s = this.items[i];
 		var old_s = this.items[i - 1];
 		if(i != 0) {
-			if(this.gapX != null) newX = old_s.getX() + old_s.size.width + this.gapX;
-			if(this.gapY != null) newY = old_s.getY() + old_s.size.height + this.gapY;
+			if(this.gapX != null) newX = old_s.getX() + old_s.getContentSize().width + this.gapX;
+			if(this.gapY != null) newY = old_s.getY() + old_s.getContentSize().height + this.gapY;
 		}
 		new_s.setX(newX);
 		new_s.setY(newY);
+		this.size.width = newX + new_s.size.width;
+		this.size.height = newY + new_s.size.height;
 	}
-	this.update.dispatch(null,null,null,null,{ fileName : "RCGroup.hx", lineNumber : 95, className : "RCGroup", methodName : "keepItemsArranged"});
+	this.update.dispatch(this,null,null,null,{ fileName : "RCGroup.hx", lineNumber : 97, className : "RCGroup", methodName : "keepItemsArranged"});
 }
 RCGroup.prototype.get = function(i) {
 	return this.items[i];
 }
 RCGroup.prototype.destroy = function() {
-	Fugu.safeDestroy(this.items,null,{ fileName : "RCGroup.hx", lineNumber : 123, className : "RCGroup", methodName : "destroy"});
+	Fugu.safeDestroy(this.items,null,{ fileName : "RCGroup.hx", lineNumber : 126, className : "RCGroup", methodName : "destroy"});
 	this.items = null;
 	JSView.prototype.destroy.call(this);
 }
@@ -4518,14 +4181,15 @@ CATween.prototype.init = function() {
 		var p = _g1[_g];
 		++_g;
 		if(Std["is"](Reflect.field(this.properties,p),Int) || Std["is"](Reflect.field(this.properties,p),Float)) {
-			this.fromValues[p] = Reflect.field(this.target,p);
+			var getter = "get" + p.substr(0,1).toUpperCase() + p.substr(1);
+			if(getter == null) this.fromValues[p] = Reflect.field(this.target,p); else this.fromValues[p] = Reflect.field(this.target,getter).apply(this.target,[]);
 			this.toValues[p] = Reflect.field(this.properties,p);
 		} else try {
 			this.fromValues[p] = Reflect.field(Reflect.field(this.properties,p),"fromValue");
 			this.target[p] = Reflect.field(this.fromValues,p);
 			this.toValues[p] = Reflect.field(Reflect.field(this.properties,p),"toValue");
 		} catch( e ) {
-			haxe.Log.trace(e,{ fileName : "CATween.hx", lineNumber : 27, className : "CATween", methodName : "init"});
+			haxe.Log.trace(e,{ fileName : "CATween.hx", lineNumber : 31, className : "CATween", methodName : "init"});
 		}
 	}
 }
@@ -4538,7 +4202,7 @@ CATween.prototype.animate = function(time_diff) {
 			var setter = "set" + prop.substr(0,1).toUpperCase() + prop.substr(1);
 			if(setter != null) Reflect.field(this.target,setter).apply(this.target,[this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null)]);
 		} catch( e ) {
-			haxe.Log.trace(e,{ fileName : "CATween.hx", lineNumber : 46, className : "CATween", methodName : "animate"});
+			haxe.Log.trace(e,{ fileName : "CATween.hx", lineNumber : 50, className : "CATween", methodName : "animate"});
 		}
 	}
 }
@@ -4580,6 +4244,64 @@ RCNotification.prototype.toString = function() {
 	return "[RCNotification with name: '" + this.name + "', functionToCall: " + this.functionToCall + "]";
 }
 RCNotification.prototype.__class__ = RCNotification;
+Hash = function(p) {
+	if( p === $_ ) return;
+	this.h = {}
+	if(this.h.__proto__ != null) {
+		this.h.__proto__ = null;
+		delete(this.h.__proto__);
+	}
+}
+Hash.__name__ = ["Hash"];
+Hash.prototype.h = null;
+Hash.prototype.set = function(key,value) {
+	this.h["$" + key] = value;
+}
+Hash.prototype.get = function(key) {
+	return this.h["$" + key];
+}
+Hash.prototype.exists = function(key) {
+	try {
+		key = "$" + key;
+		return this.hasOwnProperty.call(this.h,key);
+	} catch( e ) {
+		for(var i in this.h) if( i == key ) return true;
+		return false;
+	}
+}
+Hash.prototype.remove = function(key) {
+	if(!this.exists(key)) return false;
+	delete(this.h["$" + key]);
+	return true;
+}
+Hash.prototype.keys = function() {
+	var a = new Array();
+	for(var i in this.h) a.push(i.substr(1));
+	return a.iterator();
+}
+Hash.prototype.iterator = function() {
+	return { ref : this.h, it : this.keys(), hasNext : function() {
+		return this.it.hasNext();
+	}, next : function() {
+		var i = this.it.next();
+		return this.ref["$" + i];
+	}};
+}
+Hash.prototype.toString = function() {
+	var s = new StringBuf();
+	s.b[s.b.length] = "{" == null?"null":"{";
+	var it = this.keys();
+	while( it.hasNext() ) {
+		var i = it.next();
+		s.b[s.b.length] = i == null?"null":i;
+		s.b[s.b.length] = " => " == null?"null":" => ";
+		s.add(Std.string(this.get(i)));
+		if(it.hasNext()) s.b[s.b.length] = ", " == null?"null":", ";
+	}
+	s.b[s.b.length] = "}" == null?"null":"}";
+	return s.b.join("");
+}
+Hash.prototype.__class__ = Hash;
 HashArray = function(p) {
 	if( p === $_ ) return;
 	Hash.call(this);
@@ -4673,7 +4395,7 @@ ios.SKSegment = function(label,w,h,buttonPosition,colors) {
 		segmentMiddleSelected = "M";
 		segmentRightSelected = "LR";
 	}
-	var hd = RCWindow.dpiScale == 2?"@2x":"";
+	var hd = RCDevice.currentDevice().dpiScale == 2?"@2x":"";
 	var sl = "Resources/ios/RCSegmentedControl/" + segmentLeft + hd + ".png";
 	var sm = "Resources/ios/RCSegmentedControl/" + segmentMiddle + hd + ".png";
 	var sr = "Resources/ios/RCSegmentedControl/" + segmentRight + hd + ".png";
@@ -4735,6 +4457,7 @@ RCFont = function(p) {
 	this.leading = 4;
 	this.leftMargin = 0;
 	this.rightMargin = 0;
+	this.letterSpacing = 0;
 	this.format = { };
 	this.style = { };
 }
@@ -4824,11 +4547,11 @@ RCFont.prototype.getFormat = function() {
 	this.format.italic = this.italic;
 	this.format.indent = this.indent;
 	this.format.kerning = this.kerning;
-	this.format.leading = this.leading * RCWindow.dpiScale;
-	this.format.leftMargin = this.leftMargin * RCWindow.dpiScale;
+	this.format.leading = this.leading * RCDevice.currentDevice().dpiScale;
+	this.format.leftMargin = this.leftMargin * RCDevice.currentDevice().dpiScale;
 	this.format.letterSpacing = this.letterSpacing;
-	this.format.rightMargin = this.rightMargin * RCWindow.dpiScale;
-	this.format.size = this.size * RCWindow.dpiScale;
+	this.format.rightMargin = this.rightMargin * RCDevice.currentDevice().dpiScale;
+	this.format.size = this.size * RCDevice.currentDevice().dpiScale;
 	this.format.tabStops = this.tabStops;
 	this.format.target = this.target;
 	this.format.underline = this.underline;
@@ -4886,11 +4609,10 @@ RCAssets.prototype.nr = null;
 RCAssets.prototype.max = null;
 RCAssets.prototype.set = function(key,URL,newDomain) {
 	if(newDomain == null) newDomain = true;
-	haxe.Log.trace("set " + key + ", " + URL,{ fileName : "RCAssets.hx", lineNumber : 83, className : "RCAssets", methodName : "set"});
 	this.max++;
 	if(key == null) key = Std.string(Math.random());
 	if(URL.toLowerCase().indexOf(".swf") != -1) this.loadSwf(key,URL,newDomain); else if(URL.toLowerCase().indexOf(".xml") != -1 || URL.toLowerCase().indexOf(".txt") != -1 || URL.toLowerCase().indexOf(".css") != -1) this.loadText(key,URL); else if(URL.toLowerCase().indexOf(".ttf") != -1 || URL.toLowerCase().indexOf(".otf") != -1) this.loadFont(key,URL); else {
-		if(RCWindow.dpiScale == 2) {
+		if(RCDevice.currentDevice().dpiScale == 2) {
 			var u = URL.split(".");
 			var ext = u.pop();
 			URL = u.join(".") + "@2x." + ext;
@@ -5159,80 +4881,89 @@ Main.lin = null;
 Main.ph = null;
 Main.circ = null;
 Main.req = null;
+Main.win = null;
 Main.main = function() {
 	haxe.Firebug.redirectTraces();
 	try {
-		RCWindow.init();
-		RCWindow.setBackgroundColor(15724527);
-		haxe.Log.trace("step1",{ fileName : "Main.hx", lineNumber : 49, className : "Main", methodName : "main"});
+		Main.win = RCWindow.sharedWindow();
+		Main.win.setBackgroundColor(15724527);
 		RCFontManager.init();
 		RCAssets.loadFileWithKey("photo","../assets/900x600.jpg");
 		RCAssets.loadFileWithKey("some_text","../assets/data.txt");
 		RCAssets.loadFileWithKey("Urban","../assets/FFF Urban.ttf");
 		RCAssets.loadFontWithKey("Futu","../assets/FUTUNEBI.TTF");
 		RCAssets.onComplete = Main.testJsFont;
-		haxe.Log.trace("step2 - RCRectangle",{ fileName : "Main.hx", lineNumber : 63, className : "Main", methodName : "main"});
+		haxe.Log.trace("step2 - RCRectangle",{ fileName : "Main.hx", lineNumber : 49, className : "Main", methodName : "main"});
 		var rect = new RCRectangle(0,0,300,150,RCColor.redColor());
-		RCWindow.addChild(rect);
+		RCWindow.sharedWindow().addChild(rect);
 		rect.setClipsToBounds(true);
-		rect.setCenter(new RCPoint(RCWindow.width / 2,RCWindow.height / 2));
-		haxe.Log.trace("step2 - RCImage",{ fileName : "Main.hx", lineNumber : 71, className : "Main", methodName : "main"});
+		rect.setCenter(new RCPoint(RCWindow.sharedWindow().getWidth() / 2,RCWindow.sharedWindow().getHeight() / 2));
+		haxe.Log.trace("step2 - RCImage",{ fileName : "Main.hx", lineNumber : 57, className : "Main", methodName : "main"});
 		Main.ph = new RCImage(1,1,"../assets/900x600.jpg");
 		Main.ph.onComplete = Main.resizePhoto;
 		rect.addChild(Main.ph);
-		haxe.Log.trace("step3 - ellipse",{ fileName : "Main.hx", lineNumber : 76, className : "Main", methodName : "main"});
+		haxe.Log.trace("step3 - ellipse",{ fileName : "Main.hx", lineNumber : 62, className : "Main", methodName : "main"});
 		Main.circ = new RCEllipse(0,0,100,100,RCColor.darkGrayColor());
-		RCWindow.addChild(Main.circ);
-		haxe.Log.trace("step4 - CASequence",{ fileName : "Main.hx", lineNumber : 81, className : "Main", methodName : "main"});
-		var a1 = new CATween(Main.circ,{ x : RCWindow.width - 100, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 83, className : "Main", methodName : "main"});
-		var a2 = new CATween(Main.circ,{ x : RCWindow.width - 100, y : RCWindow.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 84, className : "Main", methodName : "main"});
-		var a3 = new CATween(Main.circ,{ x : 0, y : RCWindow.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 85, className : "Main", methodName : "main"});
-		var a4 = new CATween(Main.circ,{ x : 0, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 86, className : "Main", methodName : "main"});
+		RCWindow.sharedWindow().addChild(Main.circ);
+		haxe.Log.trace("step4 - CASequence",{ fileName : "Main.hx", lineNumber : 67, className : "Main", methodName : "main"});
+		haxe.Log.trace(RCWindow.sharedWindow().target.scrollWidth,{ fileName : "Main.hx", lineNumber : 68, className : "Main", methodName : "main"});
+		haxe.Log.trace(RCWindow.sharedWindow().target.offsetWidth,{ fileName : "Main.hx", lineNumber : 69, className : "Main", methodName : "main"});
+		haxe.Log.trace(RCWindow.sharedWindow().target.clientWidth,{ fileName : "Main.hx", lineNumber : 70, className : "Main", methodName : "main"});
+		haxe.Log.trace(RCWindow.sharedWindow().target.scrollHeight,{ fileName : "Main.hx", lineNumber : 71, className : "Main", methodName : "main"});
+		haxe.Log.trace(RCWindow.sharedWindow().target.offsetHeight,{ fileName : "Main.hx", lineNumber : 72, className : "Main", methodName : "main"});
+		haxe.Log.trace(RCWindow.sharedWindow().target.clientHeight,{ fileName : "Main.hx", lineNumber : 73, className : "Main", methodName : "main"});
+		var size = RCWindow.sharedWindow().size;
+		haxe.Log.trace(size,{ fileName : "Main.hx", lineNumber : 77, className : "Main", methodName : "main"});
+		var a1 = new CATween(Main.circ,{ x : size.width - 100, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 78, className : "Main", methodName : "main"});
+		var a2 = new CATween(Main.circ,{ x : size.width - 100, y : size.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 79, className : "Main", methodName : "main"});
+		var a3 = new CATween(Main.circ,{ x : 0, y : size.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 80, className : "Main", methodName : "main"});
+		var a4 = new CATween(Main.circ,{ x : 0, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 81, className : "Main", methodName : "main"});
 		var seq = new CASequence([a1,a2,a3,a4]);
-		haxe.Log.trace("step5 - line",{ fileName : "Main.hx", lineNumber : 90, className : "Main", methodName : "main"});
+		seq.start();
+		haxe.Log.trace("step5 - line",{ fileName : "Main.hx", lineNumber : 85, className : "Main", methodName : "main"});
 		Main.lin = new RCLine(30,300,400,600,16724736);
-		RCWindow.addChild(Main.lin);
-		haxe.Log.trace("step6 - Keys",{ fileName : "Main.hx", lineNumber : 95, className : "Main", methodName : "main"});
+		RCWindow.sharedWindow().addChild(Main.lin);
+		haxe.Log.trace("step6 - Keys",{ fileName : "Main.hx", lineNumber : 90, className : "Main", methodName : "main"});
 		var k = new RCKeys();
 		k.onLeft = Main.moveLeft;
 		k.onRight = Main.moveRight;
-		haxe.Log.trace("step7 - Mouse",{ fileName : "Main.hx", lineNumber : 100, className : "Main", methodName : "main"});
-		var m = new EVMouse("mouseover",rect.layer,{ fileName : "Main.hx", lineNumber : 101, className : "Main", methodName : "main"});
+		haxe.Log.trace("step7 - Mouse",{ fileName : "Main.hx", lineNumber : 95, className : "Main", methodName : "main"});
+		var m = new EVMouse("mouseover",rect.layer,{ fileName : "Main.hx", lineNumber : 96, className : "Main", methodName : "main"});
 		m.add(function(_) {
-			haxe.Log.trace("onOver",{ fileName : "Main.hx", lineNumber : 102, className : "Main", methodName : "main"});
+			haxe.Log.trace("onOver",{ fileName : "Main.hx", lineNumber : 97, className : "Main", methodName : "main"});
 		});
-		haxe.Log.trace("step8 - text",{ fileName : "Main.hx", lineNumber : 104, className : "Main", methodName : "main"});
+		haxe.Log.trace("step8 - text",{ fileName : "Main.hx", lineNumber : 99, className : "Main", methodName : "main"});
 		Main.testTexts();
-		haxe.Log.trace("step8 - signals",{ fileName : "Main.hx", lineNumber : 106, className : "Main", methodName : "main"});
+		haxe.Log.trace("step8 - signals",{ fileName : "Main.hx", lineNumber : 101, className : "Main", methodName : "main"});
 		Main.testSignals();
-		haxe.Log.trace("step8 - buttons",{ fileName : "Main.hx", lineNumber : 108, className : "Main", methodName : "main"});
+		haxe.Log.trace("step8 - buttons",{ fileName : "Main.hx", lineNumber : 103, className : "Main", methodName : "main"});
 		Main.testButtons();
-		haxe.Log.trace("step9 - SKSlider",{ fileName : "Main.hx", lineNumber : 118, className : "Main", methodName : "main"});
+		haxe.Log.trace("step9 - SKSlider",{ fileName : "Main.hx", lineNumber : 113, className : "Main", methodName : "main"});
 		var s = new haxe.SKSlider();
-		haxe.Log.trace("step9 - RCSlider",{ fileName : "Main.hx", lineNumber : 120, className : "Main", methodName : "main"});
+		haxe.Log.trace("step9 - RCSlider",{ fileName : "Main.hx", lineNumber : 115, className : "Main", methodName : "main"});
 		var sl = new RCSlider(50,250,160,10,s);
-		haxe.Log.trace("step9 - RCSlider",{ fileName : "Main.hx", lineNumber : 121, className : "Main", methodName : "main"});
-		RCWindow.addChild(sl);
+		haxe.Log.trace("step9 - RCSlider",{ fileName : "Main.hx", lineNumber : 116, className : "Main", methodName : "main"});
+		RCWindow.sharedWindow().addChild(sl);
 		sl.setMaxValue(500);
 		sl.setValue(30);
-		haxe.Log.trace("step10 - Http",{ fileName : "Main.hx", lineNumber : 129, className : "Main", methodName : "main"});
+		haxe.Log.trace("step10 - Http",{ fileName : "Main.hx", lineNumber : 124, className : "Main", methodName : "main"});
 		Main.req = new HTTPRequest();
 		Main.req.onComplete = function() {
-			haxe.Log.trace("http result " + Main.req.result,{ fileName : "Main.hx", lineNumber : 131, className : "Main", methodName : "main"});
+			haxe.Log.trace("http result " + Main.req.result,{ fileName : "Main.hx", lineNumber : 126, className : "Main", methodName : "main"});
 		};
 		Main.req.onError = function() {
-			haxe.Log.trace("http error " + Main.req.result,{ fileName : "Main.hx", lineNumber : 132, className : "Main", methodName : "main"});
+			haxe.Log.trace("http error " + Main.req.result,{ fileName : "Main.hx", lineNumber : 127, className : "Main", methodName : "main"});
 		};
 		Main.req.onStatus = function() {
-			haxe.Log.trace("http status " + Main.req.status,{ fileName : "Main.hx", lineNumber : 133, className : "Main", methodName : "main"});
+			haxe.Log.trace("http status " + Main.req.status,{ fileName : "Main.hx", lineNumber : 128, className : "Main", methodName : "main"});
 		};
 		Main.req.readFile("../assets/data.txt");
-		haxe.Log.trace("step11 - CATCallFunc",{ fileName : "Main.hx", lineNumber : 136, className : "Main", methodName : "main"});
-		var anim = new CATCallFunc(Main.setAlpha_,{ alpha : { fromValue : 0, toValue : 1}},2.8,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 137, className : "Main", methodName : "main"});
+		haxe.Log.trace("step11 - CATCallFunc",{ fileName : "Main.hx", lineNumber : 131, className : "Main", methodName : "main"});
+		var anim = new CATCallFunc(Main.setAlpha_,{ alpha : { fromValue : 0, toValue : 1}},2.8,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 132, className : "Main", methodName : "main"});
 		CoreAnimation.add(anim);
 	} catch( e ) {
 		Fugu.stack();
-		haxe.Log.trace(e,{ fileName : "Main.hx", lineNumber : 141, className : "Main", methodName : "main"});
+		haxe.Log.trace(e,{ fileName : "Main.hx", lineNumber : 136, className : "Main", methodName : "main"});
 	}
 }
 Main.setAlpha_ = function(a) {
@@ -5245,18 +4976,18 @@ Main.testJsFont = function() {
 	f.size = 34;
 	f.embedFonts = false;
 	var t = new RCTextView(50,120,null,null,"blah blah blah",f);
-	RCWindow.addChild(t);
+	RCWindow.sharedWindow().addChild(t);
 }
 Main.resizePhoto = function() {
 	Main.ph.scaleToFit(298,148);
-	haxe.Log.trace("startResizing",{ fileName : "Main.hx", lineNumber : 165, className : "Main", methodName : "resizePhoto"});
-	haxe.Log.trace(Main.ph.getWidth() + ", " + Main.ph.getHeight(),{ fileName : "Main.hx", lineNumber : 175, className : "Main", methodName : "resizePhoto"});
-	haxe.Log.trace(Main.ph.size.width + ", " + Main.ph.size.height,{ fileName : "Main.hx", lineNumber : 176, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace("startResizing",{ fileName : "Main.hx", lineNumber : 160, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace(Main.ph.getWidth() + ", " + Main.ph.getHeight(),{ fileName : "Main.hx", lineNumber : 170, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace(Main.ph.size.width + ", " + Main.ph.size.height,{ fileName : "Main.hx", lineNumber : 171, className : "Main", methodName : "resizePhoto"});
 	var scrollview = new RCScrollView(780,10,300,300);
-	RCWindow.addChild(scrollview);
+	RCWindow.sharedWindow().addChild(scrollview);
 	scrollview.setContentView(Main.ph.copy());
 	return;
-	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 183, className : "Main", methodName : "resizePhoto"});
+	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 178, className : "Main", methodName : "resizePhoto"});
 	anim.repeatCount = 5;
 	anim.autoreverses = true;
 	CoreAnimation.add(anim);
@@ -5273,20 +5004,20 @@ Main.signal = null;
 Main.testSignals = function() {
 	Main.signal = new RCSignal();
 	Main.signal.add(Main.printNr);
-	Main.signal.addOnce(Main.printNr2,{ fileName : "Main.hx", lineNumber : 202, className : "Main", methodName : "testSignals"});
+	Main.signal.addOnce(Main.printNr2,{ fileName : "Main.hx", lineNumber : 197, className : "Main", methodName : "testSignals"});
 	Main.signal.remove(Main.printNr);
 	Main.signal.removeAll();
 	var _g = 0;
 	while(_g < 5) {
 		var i = _g++;
-		Main.signal.dispatch(Math.random(),null,null,null,{ fileName : "Main.hx", lineNumber : 206, className : "Main", methodName : "testSignals"});
+		Main.signal.dispatch(Math.random(),null,null,null,{ fileName : "Main.hx", lineNumber : 201, className : "Main", methodName : "testSignals"});
 	}
 }
 Main.printNr = function(nr) {
-	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 209, className : "Main", methodName : "printNr"});
+	haxe.Log.trace("printNr " + nr,{ fileName : "Main.hx", lineNumber : 204, className : "Main", methodName : "printNr"});
 }
 Main.printNr2 = function(nr) {
-	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 212, className : "Main", methodName : "printNr2"});
+	haxe.Log.trace("printNr2 " + nr,{ fileName : "Main.hx", lineNumber : 207, className : "Main", methodName : "printNr2"});
 }
 Main.testButtons = function() {
 	try {
@@ -5296,20 +5027,20 @@ Main.testButtons = function() {
 			HXAddress.href("flash.html");
 		};
 		b.onOver = function() {
-			haxe.Log.trace("over",{ fileName : "Main.hx", lineNumber : 222, className : "Main", methodName : "testButtons"});
+			haxe.Log.trace("over",{ fileName : "Main.hx", lineNumber : 217, className : "Main", methodName : "testButtons"});
 		};
 		b.onOut = function() {
-			haxe.Log.trace("out",{ fileName : "Main.hx", lineNumber : 223, className : "Main", methodName : "testButtons"});
+			haxe.Log.trace("out",{ fileName : "Main.hx", lineNumber : 218, className : "Main", methodName : "testButtons"});
 		};
 		b.onPress = function() {
-			haxe.Log.trace("press",{ fileName : "Main.hx", lineNumber : 224, className : "Main", methodName : "testButtons"});
+			haxe.Log.trace("press",{ fileName : "Main.hx", lineNumber : 219, className : "Main", methodName : "testButtons"});
 		};
-		RCWindow.addChild(b);
+		RCWindow.sharedWindow().addChild(b);
 		var s1 = new haxe.SKButtonRadio();
 		var b1 = new RCButtonRadio(200,200,s1);
-		RCWindow.addChild(b1);
-		var group = new RCGroup(200,230,10,null,Main.createRadioButton);
-		RCWindow.addChild(group);
+		RCWindow.sharedWindow().addChild(b1);
+		var group = new RCGroup(200,230,0,null,Main.createRadioButton);
+		RCWindow.sharedWindow().addChild(group);
 		group.add([1,2,3,4,5,5]);
 	} catch( e ) {
 		Fugu.stack();
@@ -5321,7 +5052,7 @@ Main.createRadioButton = function(indexPath) {
 	return b;
 }
 Main.segClick = function(s) {
-	haxe.Log.trace(s.getSelectedIndex(),{ fileName : "Main.hx", lineNumber : 249, className : "Main", methodName : "segClick"});
+	haxe.Log.trace(s.getSelectedIndex(),{ fileName : "Main.hx", lineNumber : 244, className : "Main", methodName : "segClick"});
 }
 Main.testTexts = function() {
 	try {
@@ -5331,287 +5062,21 @@ Main.testTexts = function() {
 		f.size = 30;
 		f.embedFonts = false;
 		var t = new RCTextView(50,30,null,null,"HTML5",f);
-		RCWindow.addChild(t);
+		RCWindow.sharedWindow().addChild(t);
 		var f2 = f.copy();
-		f2.color = 3355443;
+		f2.color = 16777215;
 		f2.size = 16;
 		var r = new RCTextRoll(50,60,200,null,"We are working on the HTML5 version of the gallery...",f2);
-		RCWindow.addChild(r);
+		RCWindow.sharedWindow().addChild(r);
 		r.start();
-		r.setBackgroundColor(16777215);
+		r.setBackgroundColor(16724736);
 	} catch( e ) {
 		Fugu.stack();
 	}
 }
+Main.prototype.x__ = function() {
+}
 Main.prototype.__class__ = Main;
-haxe.Unserializer = function(buf) {
-	if( buf === $_ ) return;
-	this.buf = buf;
-	this.length = buf.length;
-	this.pos = 0;
-	this.scache = new Array();
-	this.cache = new Array();
-	var r = haxe.Unserializer.DEFAULT_RESOLVER;
-	if(r == null) {
-		r = Type;
-		haxe.Unserializer.DEFAULT_RESOLVER = r;
-	}
-	this.setResolver(r);
-}
-haxe.Unserializer.__name__ = ["haxe","Unserializer"];
-haxe.Unserializer.initCodes = function() {
-	var codes = new Array();
-	var _g1 = 0, _g = haxe.Unserializer.BASE64.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		codes[haxe.Unserializer.BASE64.cca(i)] = i;
-	}
-	return codes;
-}
-haxe.Unserializer.run = function(v) {
-	return new haxe.Unserializer(v).unserialize();
-}
-haxe.Unserializer.prototype.buf = null;
-haxe.Unserializer.prototype.pos = null;
-haxe.Unserializer.prototype.length = null;
-haxe.Unserializer.prototype.cache = null;
-haxe.Unserializer.prototype.scache = null;
-haxe.Unserializer.prototype.resolver = null;
-haxe.Unserializer.prototype.setResolver = function(r) {
-	if(r == null) this.resolver = { resolveClass : function(_) {
-		return null;
-	}, resolveEnum : function(_) {
-		return null;
-	}}; else this.resolver = r;
-}
-haxe.Unserializer.prototype.getResolver = function() {
-	return this.resolver;
-}
-haxe.Unserializer.prototype.get = function(p) {
-	return this.buf.cca(p);
-}
-haxe.Unserializer.prototype.readDigits = function() {
-	var k = 0;
-	var s = false;
-	var fpos = this.pos;
-	while(true) {
-		var c = this.buf.cca(this.pos);
-		if(c != c) break;
-		if(c == 45) {
-			if(this.pos != fpos) break;
-			s = true;
-			this.pos++;
-			continue;
-		}
-		if(c < 48 || c > 57) break;
-		k = k * 10 + (c - 48);
-		this.pos++;
-	}
-	if(s) k *= -1;
-	return k;
-}
-haxe.Unserializer.prototype.unserializeObject = function(o) {
-	while(true) {
-		if(this.pos >= this.length) throw "Invalid object";
-		if(this.buf.cca(this.pos) == 103) break;
-		var k = this.unserialize();
-		if(!Std["is"](k,String)) throw "Invalid object key";
-		var v = this.unserialize();
-		o[k] = v;
-	}
-	this.pos++;
-}
-haxe.Unserializer.prototype.unserializeEnum = function(edecl,tag) {
-	var constr = Reflect.field(edecl,tag);
-	if(constr == null) throw "Unknown enum tag " + Type.getEnumName(edecl) + "." + tag;
-	if(this.buf.cca(this.pos++) != 58) throw "Invalid enum format";
-	var nargs = this.readDigits();
-	if(nargs == 0) {
-		this.cache.push(constr);
-		return constr;
-	}
-	var args = new Array();
-	while(nargs > 0) {
-		args.push(this.unserialize());
-		nargs -= 1;
-	}
-	var e = constr.apply(edecl,args);
-	this.cache.push(e);
-	return e;
-}
-haxe.Unserializer.prototype.unserialize = function() {
-	switch(this.buf.cca(this.pos++)) {
-	case 110:
-		return null;
-	case 116:
-		return true;
-	case 102:
-		return false;
-	case 122:
-		return 0;
-	case 105:
-		return this.readDigits();
-	case 100:
-		var p1 = this.pos;
-		while(true) {
-			var c = this.buf.cca(this.pos);
-			if(c >= 43 && c < 58 || c == 101 || c == 69) this.pos++; else break;
-		}
-		return Std.parseFloat(this.buf.substr(p1,this.pos - p1));
-	case 121:
-		var len = this.readDigits();
-		if(this.buf.cca(this.pos++) != 58 || this.length - this.pos < len) throw "Invalid string length";
-		var s = this.buf.substr(this.pos,len);
-		this.pos += len;
-		s = StringTools.urlDecode(s);
-		this.scache.push(s);
-		return s;
-	case 107:
-		return Math.NaN;
-	case 109:
-		return Math.NEGATIVE_INFINITY;
-	case 112:
-		return Math.POSITIVE_INFINITY;
-	case 97:
-		var buf = this.buf;
-		var a = new Array();
-		this.cache.push(a);
-		while(true) {
-			var c = this.buf.cca(this.pos);
-			if(c == 104) {
-				this.pos++;
-				break;
-			}
-			if(c == 117) {
-				this.pos++;
-				var n = this.readDigits();
-				a[a.length + n - 1] = null;
-			} else a.push(this.unserialize());
-		}
-		return a;
-	case 111:
-		var o = { };
-		this.cache.push(o);
-		this.unserializeObject(o);
-		return o;
-	case 114:
-		var n = this.readDigits();
-		if(n < 0 || n >= this.cache.length) throw "Invalid reference";
-		return this.cache[n];
-	case 82:
-		var n = this.readDigits();
-		if(n < 0 || n >= this.scache.length) throw "Invalid string reference";
-		return this.scache[n];
-	case 120:
-		throw this.unserialize();
-		break;
-	case 99:
-		var name = this.unserialize();
-		var cl = this.resolver.resolveClass(name);
-		if(cl == null) throw "Class not found " + name;
-		var o = Type.createEmptyInstance(cl);
-		this.cache.push(o);
-		this.unserializeObject(o);
-		return o;
-	case 119:
-		var name = this.unserialize();
-		var edecl = this.resolver.resolveEnum(name);
-		if(edecl == null) throw "Enum not found " + name;
-		return this.unserializeEnum(edecl,this.unserialize());
-	case 106:
-		var name = this.unserialize();
-		var edecl = this.resolver.resolveEnum(name);
-		if(edecl == null) throw "Enum not found " + name;
-		this.pos++;
-		var index = this.readDigits();
-		var tag = Type.getEnumConstructs(edecl)[index];
-		if(tag == null) throw "Unknown enum index " + name + "@" + index;
-		return this.unserializeEnum(edecl,tag);
-	case 108:
-		var l = new List();
-		this.cache.push(l);
-		var buf = this.buf;
-		while(this.buf.cca(this.pos) != 104) l.add(this.unserialize());
-		this.pos++;
-		return l;
-	case 98:
-		var h = new Hash();
-		this.cache.push(h);
-		var buf = this.buf;
-		while(this.buf.cca(this.pos) != 104) {
-			var s = this.unserialize();
-			h.set(s,this.unserialize());
-		}
-		this.pos++;
-		return h;
-	case 113:
-		var h = new IntHash();
-		this.cache.push(h);
-		var buf = this.buf;
-		var c = this.buf.cca(this.pos++);
-		while(c == 58) {
-			var i = this.readDigits();
-			h.set(i,this.unserialize());
-			c = this.buf.cca(this.pos++);
-		}
-		if(c != 104) throw "Invalid IntHash format";
-		return h;
-	case 118:
-		var d = Date.fromString(this.buf.substr(this.pos,19));
-		this.cache.push(d);
-		this.pos += 19;
-		return d;
-	case 115:
-		var len = this.readDigits();
-		var buf = this.buf;
-		if(this.buf.cca(this.pos++) != 58 || this.length - this.pos < len) throw "Invalid bytes length";
-		var codes = haxe.Unserializer.CODES;
-		if(codes == null) {
-			codes = haxe.Unserializer.initCodes();
-			haxe.Unserializer.CODES = codes;
-		}
-		var i = this.pos;
-		var rest = len & 3;
-		var size = (len >> 2) * 3 + (rest >= 2?rest - 1:0);
-		var max = i + (len - rest);
-		var bytes = haxe.io.Bytes.alloc(size);
-		var bpos = 0;
-		while(i < max) {
-			var c1 = codes[buf.cca(i++)];
-			var c2 = codes[buf.cca(i++)];
-			bytes.b[bpos++] = (c1 << 2 | c2 >> 4) & 255;
-			var c3 = codes[buf.cca(i++)];
-			bytes.b[bpos++] = (c2 << 4 | c3 >> 2) & 255;
-			var c4 = codes[buf.cca(i++)];
-			bytes.b[bpos++] = (c3 << 6 | c4) & 255;
-		}
-		if(rest >= 2) {
-			var c1 = codes[buf.cca(i++)];
-			var c2 = codes[buf.cca(i++)];
-			bytes.b[bpos++] = (c1 << 2 | c2 >> 4) & 255;
-			if(rest == 3) {
-				var c3 = codes[buf.cca(i++)];
-				bytes.b[bpos++] = (c2 << 4 | c3 >> 2) & 255;
-			}
-		}
-		this.pos += len;
-		this.cache.push(bytes);
-		return bytes;
-	case 67:
-		var name = this.unserialize();
-		var cl = this.resolver.resolveClass(name);
-		if(cl == null) throw "Class not found " + name;
-		var o = Type.createEmptyInstance(cl);
-		this.cache.push(o);
-		o.hxUnserialize(this);
-		if(this.buf.cca(this.pos++) != 103) throw "Invalid custom data";
-		return o;
-	default:
-	}
-	this.pos--;
-	throw "Invalid char " + this.buf.charAt(this.pos) + " at position " + this.pos;
-}
-haxe.Unserializer.prototype.__class__ = haxe.Unserializer;
 haxe.SKButton = function(label_str,colors) {
 	if( label_str === $_ ) return;
 	RCSkin.call(this,colors);
@@ -5796,147 +5261,6 @@ Fugu.stack = function() {
 	haxe.Log.trace(haxe.Stack.toString(stack),{ fileName : "Fugu.hx", lineNumber : 159, className : "Fugu", methodName : "stack"});
 }
 Fugu.prototype.__class__ = Fugu;
-if(!haxe.io) haxe.io = {}
-haxe.io.Error = { __ename__ : ["haxe","io","Error"], __constructs__ : ["Blocked","Overflow","OutsideBounds","Custom"] }
-haxe.io.Error.Blocked = ["Blocked",0];
-haxe.io.Error.Blocked.toString = $estr;
-haxe.io.Error.Blocked.__enum__ = haxe.io.Error;
-haxe.io.Error.Overflow = ["Overflow",1];
-haxe.io.Error.Overflow.toString = $estr;
-haxe.io.Error.Overflow.__enum__ = haxe.io.Error;
-haxe.io.Error.OutsideBounds = ["OutsideBounds",2];
-haxe.io.Error.OutsideBounds.toString = $estr;
-haxe.io.Error.OutsideBounds.__enum__ = haxe.io.Error;
-haxe.io.Error.Custom = function(e) { var $x = ["Custom",3,e]; $x.__enum__ = haxe.io.Error; $x.toString = $estr; return $x; }
-haxe.io.Bytes = function(length,b) {
-	if( length === $_ ) return;
-	this.length = length;
-	this.b = b;
-}
-haxe.io.Bytes.__name__ = ["haxe","io","Bytes"];
-haxe.io.Bytes.alloc = function(length) {
-	var a = new Array();
-	var _g = 0;
-	while(_g < length) {
-		var i = _g++;
-		a.push(0);
-	}
-	return new haxe.io.Bytes(length,a);
-}
-haxe.io.Bytes.ofString = function(s) {
-	var a = new Array();
-	var _g1 = 0, _g = s.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var c = s.cca(i);
-		if(c <= 127) a.push(c); else if(c <= 2047) {
-			a.push(192 | c >> 6);
-			a.push(128 | c & 63);
-		} else if(c <= 65535) {
-			a.push(224 | c >> 12);
-			a.push(128 | c >> 6 & 63);
-			a.push(128 | c & 63);
-		} else {
-			a.push(240 | c >> 18);
-			a.push(128 | c >> 12 & 63);
-			a.push(128 | c >> 6 & 63);
-			a.push(128 | c & 63);
-		}
-	}
-	return new haxe.io.Bytes(a.length,a);
-}
-haxe.io.Bytes.ofData = function(b) {
-	return new haxe.io.Bytes(b.length,b);
-}
-haxe.io.Bytes.prototype.length = null;
-haxe.io.Bytes.prototype.b = null;
-haxe.io.Bytes.prototype.get = function(pos) {
-	return this.b[pos];
-}
-haxe.io.Bytes.prototype.set = function(pos,v) {
-	this.b[pos] = v & 255;
-}
-haxe.io.Bytes.prototype.blit = function(pos,src,srcpos,len) {
-	if(pos < 0 || srcpos < 0 || len < 0 || pos + len > this.length || srcpos + len > src.length) throw haxe.io.Error.OutsideBounds;
-	var b1 = this.b;
-	var b2 = src.b;
-	if(b1 == b2 && pos > srcpos) {
-		var i = len;
-		while(i > 0) {
-			i--;
-			b1[i + pos] = b2[i + srcpos];
-		}
-		return;
-	}
-	var _g = 0;
-	while(_g < len) {
-		var i = _g++;
-		b1[i + pos] = b2[i + srcpos];
-	}
-}
-haxe.io.Bytes.prototype.sub = function(pos,len) {
-	if(pos < 0 || len < 0 || pos + len > this.length) throw haxe.io.Error.OutsideBounds;
-	return new haxe.io.Bytes(len,this.b.slice(pos,pos + len));
-}
-haxe.io.Bytes.prototype.compare = function(other) {
-	var b1 = this.b;
-	var b2 = other.b;
-	var len = this.length < other.length?this.length:other.length;
-	var _g = 0;
-	while(_g < len) {
-		var i = _g++;
-		if(b1[i] != b2[i]) return b1[i] - b2[i];
-	}
-	return this.length - other.length;
-}
-haxe.io.Bytes.prototype.readString = function(pos,len) {
-	if(pos < 0 || len < 0 || pos + len > this.length) throw haxe.io.Error.OutsideBounds;
-	var s = "";
-	var b = this.b;
-	var fcc = String.fromCharCode;
-	var i = pos;
-	var max = pos + len;
-	while(i < max) {
-		var c = b[i++];
-		if(c < 128) {
-			if(c == 0) break;
-			s += fcc(c);
-		} else if(c < 224) s += fcc((c & 63) << 6 | b[i++] & 127); else if(c < 240) {
-			var c2 = b[i++];
-			s += fcc((c & 31) << 12 | (c2 & 127) << 6 | b[i++] & 127);
-		} else {
-			var c2 = b[i++];
-			var c3 = b[i++];
-			s += fcc((c & 15) << 18 | (c2 & 127) << 12 | c3 << 6 & 127 | b[i++] & 127);
-		}
-	}
-	return s;
-}
-haxe.io.Bytes.prototype.toString = function() {
-	return this.readString(0,this.length);
-}
-haxe.io.Bytes.prototype.toHex = function() {
-	var s = new StringBuf();
-	var chars = [];
-	var str = "0123456789abcdef";
-	var _g1 = 0, _g = str.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		chars.push(str.charCodeAt(i));
-	}
-	var _g1 = 0, _g = this.length;
-	while(_g1 < _g) {
-		var i = _g1++;
-		var c = this.b[i];
-		s.b[s.b.length] = String.fromCharCode(chars[c >> 4]);
-		s.b[s.b.length] = String.fromCharCode(chars[c & 15]);
-	}
-	return s.b.join("");
-}
-haxe.io.Bytes.prototype.getData = function() {
-	return this.b;
-}
-haxe.io.Bytes.prototype.__class__ = haxe.io.Bytes;
 if(typeof _RCDraw=='undefined') _RCDraw = {}
 _RCDraw.LineScaleMode = function() { }
 _RCDraw.LineScaleMode.__name__ = ["_RCDraw","LineScaleMode"];
@@ -5960,6 +5284,22 @@ haxe.SKButtonRadio.__name__ = ["haxe","SKButtonRadio"];
 haxe.SKButtonRadio.__super__ = RCSkin;
 for(var k in RCSkin.prototype ) haxe.SKButtonRadio.prototype[k] = RCSkin.prototype[k];
 haxe.SKButtonRadio.prototype.__class__ = haxe.SKButtonRadio;
+js.Lib = function() { }
+js.Lib.__name__ = ["js","Lib"];
+js.Lib.isIE = null;
+js.Lib.isOpera = null;
+js.Lib.document = null;
+js.Lib.window = null;
+js.Lib.alert = function(v) {
+	alert(js.Boot.__string_rec(v,""));
+}
+js.Lib.eval = function(code) {
+	return eval(code);
+}
+js.Lib.setErrorHandler = function(f) {
+	js.Lib.onerror = f;
+}
+js.Lib.prototype.__class__ = js.Lib;
 StringTools = function() { }
 StringTools.__name__ = ["StringTools"];
 StringTools.urlEncode = function(s) {
@@ -6090,16 +5430,6 @@ if(typeof deconcept=="undefined"){var deconcept=new Object();}if(typeof deconcep
 }
 if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 {
-	js.Lib.document = document;
-	js.Lib.window = window;
-	onerror = function(msg,url,line) {
-		var f = js.Lib.onerror;
-		if( f == null )
-			return false;
-		return f(msg,[url+":"+line]);
-	}
-}
-{
 	String.prototype.__class__ = String;
 	String.__name__ = ["String"];
 	Array.prototype.__class__ = Array;
@@ -6112,6 +5442,16 @@ if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 	Class = { __name__ : ["Class"]};
 	Enum = { };
 	Void = { __ename__ : ["Void"]};
+}
+{
+	js.Lib.document = document;
+	js.Lib.window = window;
+	onerror = function(msg,url,line) {
+		var f = js.Lib.onerror;
+		if( f == null )
+			return false;
+		return f(msg,[url+":"+line]);
+	}
 }
 {
 	var d = Date;
@@ -6157,9 +5497,6 @@ if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 	d.prototype.__class__ = d;
 	d.__name__ = ["Date"];
 }
-haxe.Serializer.USE_CACHE = false;
-haxe.Serializer.USE_ENUM_INDEX = false;
-haxe.Serializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";
 RCColor.BLACK = 0;
 RCColor.WHITE = 16777215;
 RCColor.RED = 16711680;
@@ -6177,7 +5514,6 @@ EVMouse.MOVE = "mousemove";
 EVMouse.CLICK = "mouseclick";
 EVMouse.DOUBLE_CLICK = "mousedoubleclick";
 EVMouse.WHEEL = "mousewheel";
-haxe.remoting.ExternalConnection.connections = new Hash();
 JSExternalInterface.available = true;
 HXAddress._init = false;
 HXAddress._initChange = false;
@@ -6188,15 +5524,6 @@ HXAddress._queue = new Array();
 HXAddress._availability = JSExternalInterface.available;
 HXAddress._initializer = HXAddress._initialize();
 RCTextRoll.GAP = 20;
-js.Lib.onerror = null;
-RCWindow.target = js.Lib.document.body;
-RCWindow.stage = js.Lib.document;
-RCWindow.SCREEN_W = js.Lib.window.screen.width;
-RCWindow.SCREEN_H = js.Lib.window.screen.height;
-RCWindow.URL = "";
-RCWindow.ID = "";
-RCWindow.dpiScale = 1;
-RCWindow.init_ = false;
 Keyboard.LEFT = 37;
 Keyboard.RIGHT = 39;
 Keyboard.UP = 38;
@@ -6209,8 +5536,6 @@ Zeta.FIT = "fit";
 Zeta.END = "end";
 Zeta.ANYWHERE = "anywhere";
 Zeta.LOWERCASE = "lowercase";
-haxe.Unserializer.DEFAULT_RESOLVER = Type;
-haxe.Unserializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";
-haxe.Unserializer.CODES = null;
 _RCDraw.LineScaleMode.NONE = null;
+js.Lib.onerror = null;
 Main.main()

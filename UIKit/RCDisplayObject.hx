@@ -6,11 +6,6 @@ class RCDisplayObject {
 	public var viewWillDisappear :RCSignal<Void->Void>;
 	public var viewDidAppear :RCSignal<Void->Void>;
 	public var viewDidDisappear :RCSignal<Void->Void>;
-	public function viewWillAppearHandler () :Void { viewWillAppear.dispatch(); }
-	public function viewWillDisappearHandler () :Void { viewWillDisappear.dispatch(); }
-	public function viewDidAppearHandler () :Void { viewDidAppear.dispatch(); }
-	public function viewDidDisappearHandler () :Void { viewDidDisappear.dispatch(); }
-	
 	
 	// Properties of a View
 	public var bounds (getBounds, setBounds) :RCRect; // Real size of the view
@@ -25,8 +20,8 @@ class RCDisplayObject {
 	public var height (getHeight, setHeight) :Float; // Animatable property
 	public var scaleX (getScaleX, setScaleX) :Float; // Animatable property
 	public var scaleY (getScaleY, setScaleY) :Float; // Animatable property
-	public var alpha (default, setAlpha) :Float; // Animatable property
-	public var rotation (default, setRotation) :Float; // Animatable property
+	public var alpha (getAlpha, setAlpha) :Float; // Animatable property
+	public var rotation (getRotation, setRotation) :Float; // Animatable property
 	public var visible (default, setVisible) :Bool;
 	public var mouseX (getMouseX, null) :Float;
 	public var mouseY (getMouseY, null) :Float;
@@ -54,6 +49,9 @@ class RCDisplayObject {
 	//
 	public function setVisible (v:Bool) :Bool {
 		return visible = v;// Override it
+	}
+	public function getAlpha () :Float {
+		return alpha;
 	}
 	public function setAlpha (a:Float) :Float {
 		return alpha = a;// Override it
@@ -90,6 +88,9 @@ class RCDisplayObject {
 	}
 	public function setRotation (r:Float) :Float {
 		return rotation = r;// Override it
+	}
+	public function getRotation () :Float {
+		return rotation;
 	}
 	public function getBounds () :RCRect {
 		return new RCRect (x_, y_, size.width, size.height);
@@ -209,6 +210,6 @@ class RCDisplayObject {
 	}
 	
 	public function toString () :String {
-		return "[RCView bounds:"+bounds+"]";
+		return "[RCView bounds:"+bounds.origin.x+"x"+bounds.origin.x+","+bounds.size.width+"x"+bounds.size.height+"]";
 	}
 }

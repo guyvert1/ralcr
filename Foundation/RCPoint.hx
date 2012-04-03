@@ -8,13 +8,13 @@
 
 class RCPoint {
 	
-	public var x :Null<Float>;
-	public var y :Null<Float>;
+	public var x :Float;
+	public var y :Float;
 	
 	
 	public function new (?x:Null<Float>, ?y:Null<Float>) {
-		this.x = x;
-		this.y = y;
+		this.x = x == null ? 0 : x;
+		this.y = y == null ? 0 : y;
 	}
 	public function copy () :RCPoint {
 		return new RCPoint (x, y);

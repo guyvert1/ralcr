@@ -26,7 +26,8 @@ class YouTube extends RCVideo, implements RCVideoInterface, implements RCAudioIn
 	var player:Dynamic;// This will hold the API player instance once it is initialized.
 	public var suggestedQuality :String;
 	
-	public function new (x, y, videoId:String, ?w:Null<Int>, ?h:Null<Int>) {
+	
+	public function new (x, y, videoId:String, ?w:Null<Float>, ?h:Null<Float>) {
 		super(x, y, null, w, h);
 		
 		this.videoId = videoId;

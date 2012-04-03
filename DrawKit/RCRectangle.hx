@@ -26,8 +26,8 @@ class RCRectangle extends RCDraw, implements RCDrawInterface {
 		configure();
 		
 		(roundness != null)
-		? layer.graphics.drawRoundRect (0, 0, size.width*RCWindow.dpiScale, size.height*RCWindow.dpiScale, roundness*RCWindow.dpiScale)
-		: layer.graphics.drawRect (0, 0, size.width*RCWindow.dpiScale, size.height*RCWindow.dpiScale);
+		? layer.graphics.drawRoundRect (0, 0, size.width*RCDevice.currentDevice().dpiScale, size.height*RCDevice.currentDevice().dpiScale, roundness*RCDevice.currentDevice().dpiScale)
+		: layer.graphics.drawRect (0, 0, size.width*RCDevice.currentDevice().dpiScale, size.height*RCDevice.currentDevice().dpiScale);
 		
 		layer.graphics.endFill();
 #elseif js
@@ -36,13 +36,13 @@ class RCRectangle extends RCDraw, implements RCDrawInterface {
 		var html = "<div style=\"position:absolute; overflow:hidden;";
 			html += "left:0px; top:0px;";
 			html += "margin:0px 0px 0px 0px;";
-			html += "width:" + size.width*RCWindow.dpiScale + "px;";
-			html += "height:" + size.height*RCWindow.dpiScale + "px;";
+			html += "width:" + size.width*RCDevice.currentDevice().dpiScale + "px;";
+			html += "height:" + size.height*RCDevice.currentDevice().dpiScale + "px;";
 			html += "background-color:" + fillColorStyle + ";";
 			if (strokeColorStyle != null)
 			html += "border-style:solid; border-width:" + borderThickness + "px; border-color:" + strokeColorStyle + ";";
 			if (roundness != null)
-			html += "-moz-border-radius:" + roundness*RCWindow.dpiScale/2 + "px; border-radius:" + roundness*RCWindow.dpiScale/2 + "px;";
+			html += "-moz-border-radius:" + roundness*RCDevice.currentDevice().dpiScale/2 + "px; border-radius:" + roundness*RCDevice.currentDevice().dpiScale/2 + "px;";
 			html += "\"></div>";
 		layer.innerHTML = html;
 #end

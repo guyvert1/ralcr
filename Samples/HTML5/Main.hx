@@ -5,29 +5,7 @@
 //  Copyright (c) 2010 ralcr.com. 
 //	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
-#if (jsk || flashk)
-class Main {
-	static var ph :RCImage;
-	static function main() {
-		haxe.Firebug.redirectTraces();
-		var rect = new RCRectangle(50,50, 300, 150, RCColor.greenColor());
-	 	RCWindow.addChild ( rect );
-		//rect.height = 53;
-		trace(rect.size);
-		trace(rect.contentSize);
-		
-		ph = new RCImage(1, 1, "../assets/900x600.jpg");
-		ph.onComplete = resizePhoto;
-		rect.addChild ( ph );
-	}
-	static function resizePhoto(){
-		trace(ph.contentSize);
-		//ph.scaleToFill (300-2, 150-2);
-		ph.scaleToFit (300-2, 150-2);
-	}
-}
-#end
-//#if js2
+
 import RCView;
 import RCWindow;
 
@@ -37,22 +15,30 @@ class Main {
 	static var ph :RCImage;
 	static var circ :RCEllipse;
 	static var req :HTTPRequest;
+	static var win :RCWindow;
 	
 	// change the HTML content of a DIV based on its ID
 	static function main() {
 		haxe.Firebug.redirectTraces();
 		
 		try{
-		RCWindow.init();
+		
+		win = RCWindow.sharedWindow();
 		//RCWindow.setTarget ("js");
-		RCWindow.backgroundColor = 0xefefef;
-		trace("step1");
+		win.backgroundColor = 0xefefef;
 		
 /*		var swf = new RCSwf (200,0,"../HeartEquation/heart.swf");
 		RCWindow.addChild(swf);*/
 		
-		
-		
+/*			var f = new RCFont();
+				f.color = 0x000000;
+				f.font = "Arial";
+				f.size = 30;
+				f.embedFonts = false;
+			var t = new RCTextView (50, 30, null, null, #if flash "FLASH" #else "HTML5" #end, f);
+			RCWindow.sharedWindow().addChild ( t );
+			*/
+			
 		RCFontManager.init();
 		RCAssets.loadFileWithKey("photo", "../assets/900x600.jpg");
 		RCAssets.loadFileWithKey("some_text", "../assets/data.txt");
@@ -64,9 +50,9 @@ class Main {
 		
 		// Draw a colored rectangle
 		var rect = new RCRectangle(0,0, 300, 150, RCColor.redColor());
-	 	RCWindow.addChild ( rect );
+	 	RCWindow.sharedWindow().addChild ( rect );
 		rect.clipsToBounds = true;
-		rect.center = new RCPoint (RCWindow.width/2, RCWindow.height/2);
+		rect.center = new RCPoint (RCWindow.sharedWindow().width/2, RCWindow.sharedWindow().height/2);
 		
 		trace("step2 - RCImage");
 		ph = new RCImage(1, 1, "../assets/900x600.jpg");
@@ -75,21 +61,30 @@ class Main {
 		
 		trace("step3 - ellipse");
 		circ = new RCEllipse(0,0, 100, 100, RCColor.darkGrayColor());
-	 	RCWindow.addChild ( circ );
+	 	RCWindow.sharedWindow().addChild ( circ );
 		//circ.center = new RCPoint(120,120);
 		
 		trace("step4 - CASequence");
+		trace(RCWindow.sharedWindow().target.scrollWidth);
+		trace(RCWindow.sharedWindow().target.offsetWidth);
+		trace(RCWindow.sharedWindow().target.clientWidth);
+		trace(RCWindow.sharedWindow().target.scrollHeight);
+		trace(RCWindow.sharedWindow().target.offsetHeight);
+		trace(RCWindow.sharedWindow().target.clientHeight);
+		
+		
 		// Test the animation engine
-		var a1=new CATween (circ, {x:RCWindow.width-100, y:0}, 2, 0, caequations.Cubic.IN_OUT);
-		var a2=new CATween (circ, {x:RCWindow.width-100, y:RCWindow.height-100}, 2, 0, caequations.Cubic.IN_OUT);
-		var a3=new CATween (circ, {x:0, y:RCWindow.height-100}, 2, 0, caequations.Cubic.IN_OUT);
+		var size = RCWindow.sharedWindow().size;trace(size);
+		var a1=new CATween (circ, {x:size.width-100, y:0}, 2, 0, caequations.Cubic.IN_OUT);
+		var a2=new CATween (circ, {x:size.width-100, y:size.height-100}, 2, 0, caequations.Cubic.IN_OUT);
+		var a3=new CATween (circ, {x:0, y:size.height-100}, 2, 0, caequations.Cubic.IN_OUT);
 		var a4=new CATween (circ, {x:0, y:0}, 2, 0, caequations.Cubic.IN_OUT);
 		var seq = new CASequence ([cast a1, cast a2, cast a3, cast a4]);
-		//seq.start();
+		seq.start();
 		
 		trace("step5 - line");
 		lin = new RCLine(30,300, 400, 600, 0xff3300);
-		RCWindow.addChild ( lin );
+		RCWindow.sharedWindow().addChild ( lin );
 		
 		
 		trace("step6 - Keys");
@@ -120,7 +115,7 @@ class Main {
 		trace("step9 - RCSlider");
 		var sl = new RCSlider(50, 250, 160, 10, s);trace("step9 - RCSlider");
 		//sl.valueChanged.add ( function(e:RCSlider){trace(e.value);} );
-		RCWindow.addChild ( sl );
+		RCWindow.sharedWindow().addChild ( sl );
 		sl.maxValue = 500;
 		sl.value = 30;
 		
@@ -149,7 +144,7 @@ class Main {
 			f.size = 34;
 			f.embedFonts = false;
 		var t = new RCTextView (50, 120, null, null, "blah blah blah", f);
-		RCWindow.addChild ( t );
+		RCWindow.sharedWindow().addChild ( t );
 	}
 	
 	
@@ -176,7 +171,7 @@ class Main {
 		trace(ph.size.width+", "+ph.size.height);
 		
 		var scrollview = new RCScrollView (780, 10, 300, 300);
-		RCWindow.addChild(scrollview);
+		RCWindow.sharedWindow().addChild(scrollview);
 		scrollview.setContentView ( ph.copy() );
 		
 		return;
@@ -222,14 +217,14 @@ class Main {
 		b.onOver = function(){trace("over");}
 		b.onOut = function(){trace("out");}
 		b.onPress = function(){trace("press");}
-		RCWindow.addChild ( b );
+		RCWindow.sharedWindow().addChild ( b );
 		
 		var s = new haxe.SKButtonRadio();
 		var b = new RCButtonRadio(200, 200, s);
-		RCWindow.addChild ( b );
+		RCWindow.sharedWindow().addChild ( b );
 		
-		var group = new RCGroup<RCButtonRadio> (200,230,10,null,createRadioButton);
-		RCWindow.addChild ( group );
+		var group = new RCGroup<RCButtonRadio> (200,230,0,null,createRadioButton);
+		RCWindow.sharedWindow().addChild ( group );
 		group.add([1,2,3,4,5,5]);
 		
 /*		var seg = new RCSegmentedControl (100,400, 640,50, ios.SKSegment);
@@ -257,16 +252,20 @@ class Main {
 			f.size = 30;
 			f.embedFonts = false;
 		var t = new RCTextView (50, 30, null, null, #if flash "FLASH" #else "HTML5" #end, f);
-		RCWindow.addChild ( t );
+		RCWindow.sharedWindow().addChild ( t );
 		
 		var f2 = f.copy();
-			f2.color = 0x333333;
+			f2.color = 0xffffff;
 			f2.size = 16;
 		var r = new RCTextRoll (50, 60, 200, null, "We are working on the HTML5 version of the gallery...", f2);
-		RCWindow.addChild ( r );
+		RCWindow.sharedWindow().addChild ( r );
 		r.start();
-		r.backgroundColor = 0xFFFFFF;
+		r.backgroundColor = 0xff3300;
 		}catch(e:Dynamic){Fugu.stack();}
+	}
+	
+	function x__ (){
+		//div.innerHTML = "   <link/><table></table><a href='/a' style='top:1px;float:left;opacity:.55;'>a</a><input type='checkbox'/>";
 	}
 }
 //#end

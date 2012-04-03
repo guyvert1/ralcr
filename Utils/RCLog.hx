@@ -16,6 +16,9 @@ class RCLog {
 	static var lastMethod = "";
 	public static function trace (v : Dynamic, ?inf : haxe.PosInfos) : Void
 	{
+		#if js
+			if (js.Lib.isIE) return;
+		#end
 		if ( ALLOW_TRACES_FROM.length == 0 ) {
 			firebugTrace ( v, inf );
 		}

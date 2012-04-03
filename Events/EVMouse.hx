@@ -122,7 +122,10 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 	}
 	function mouseHandler (e:MouseEvent) {
 		#if js
-			untyped e.preventDefault();
+/*			if (js.Lib.isIE)
+				untyped e.returnValue = false;
+			else
+				untyped e.preventDefault();*/
 		#end
 		this.e = e;
 		dispatch ( this );

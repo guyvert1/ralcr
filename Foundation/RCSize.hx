@@ -8,13 +8,13 @@
 
 class RCSize {
 	
-	public var width :Null<Float>;
-	public var height :Null<Float>;
+	public var width :Float;
+	public var height :Float;
 	
 	
 	public function new (?w:Null<Float>, ?h:Null<Float>) {
-		this.width = w;
-		this.height = h;
+		this.width = w == null ? 0 : w;
+		this.height = h == null ? 0 : h;
 	}
 	public function copy () :RCSize {
 		return new RCSize (width, height);

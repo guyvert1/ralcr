@@ -65,7 +65,7 @@ class RCVideo extends RCView, implements RCVideoInterface {
 	dynamic public function streamWantsSecureToken () :Void {}
 	
 	
-	public function new (x, y, URL:String, ?w:Null<Int>, ?h:Null<Int>) {
+	public function new (x, y, URL:String, ?w:Null<Float>, ?h:Null<Float>) {
 		super (x, y, w, h);
 		
 		this.videoURL = URL;
@@ -215,7 +215,7 @@ class RCVideo extends RCView, implements RCVideoInterface {
 		for (m in Reflect.fields(meta)) trace(m + " -> "+Reflect.field(meta, m));
 		
 		// Check the size specified by the user
-		if (size.width != null && size.height != null) {
+		if (size.width != 0 && size.height != 0) {
 			setSize (size.width, size.height);
 		}
 		// Otherwise set it to the size from metadata

@@ -45,12 +45,12 @@ class RCSwf extends RCImage {
 		#elseif js
 			// For JS target use swfobject
 			layer.id = id_;
-			RCWindow.target.appendChild ( layer );
+			layer.appendChild ( layer );
 			target = new js.SWFObject (URL, id_, 500, 400, "9", "#cecece");
-			//target.addVariable("texto", "hello from...");
 			target.addParam("AllowScriptAccess","always");
 			target.addParam("AllowNetworking","all");
 			target.addParam("wmode", "transparent");
+			//target.addVariable("texto", "hello from...");
 			target.write(id_);
 		#end
 	}

@@ -80,7 +80,7 @@ class RCAssets {
 	}
 	
 	public function set (key:String, URL:String, ?newDomain:Bool=true) :Bool {
-		trace("set "+key+", "+URL);
+		//trace("set "+key+", "+URL);
 		max ++;
 		
 		if (key == null)
@@ -103,7 +103,7 @@ class RCAssets {
 		}
 		else {
 			// Resolve url for retina image assets
-			if (RCWindow.dpiScale == 2) {
+			if (RCDevice.currentDevice().dpiScale == 2) {
 				var u = URL.split(".");
 				var ext = u.pop();
 				URL = u.join(".") + "@2x." + ext;
@@ -154,11 +154,11 @@ class RCAssets {
 		var fontType:String = "";
 /*		if (URL.toLowerCase().indexOf(".ttf") != -1)
 			fontType = " format(\"truetype\")";*/
-
+			
 		// Create a 'style' element	
 		var st = js.Lib.document.createElement("style");
 			st.innerHTML = "@font-face{font-family:"+key+"; src: url('"+URL+"')" +fontType+ ";}";
-
+			
 		// Now add this new element to the head tag
 		js.Lib.document.getElementsByTagName("head")[0].appendChild(st);
 		// Make the load async by calling onComplete a little later

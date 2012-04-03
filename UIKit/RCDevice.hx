@@ -24,6 +24,12 @@ enum RCDeviceType {
 	Mac;
 	Flash;
 }
+enum RCUserAgent {
+	MSIE;
+	GECKO;
+	WEBKIT;
+	OTHER;
+}
 
 
 class RCDevice {
@@ -43,8 +49,33 @@ class RCDevice {
 	public var orientation :RCDeviceOrientation;
 	public var userInterfaceIdiom :RCDeviceType;
 	public var uniqueIdentifier :String;// a string unique to each device based on various hardware info.
+	public var dpiScale :Float;
+	public var userAgent :RCUserAgent;
 	
-	public function new () {
-		
+	
+	public function new ()
+	{
+		#if (cpp || neko)
+			dpiScale = stage.dpiScale;
+		#else
+			dpiScale = 1;
+			#if js
+				userAgent = detectUserAgent();
+			#end
+		#end
 	}
+
+#if js
+	
+	function detectUserAgent() :RCUserAgent {
+		
+		var agent = js.Lib.window.navigator.userAgent.toLowerCase();
+		if (agent.indexOf("msie") > -1) return MSIE;
+		if (agent.indexOf("webkit") > -1) return WEBKIT;
+		if (agent.indexOf("gecko") > -1) return GECKO;
+		return OTHER;
+	}
+	
+#end
+
 }
