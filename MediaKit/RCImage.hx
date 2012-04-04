@@ -179,6 +179,14 @@ class RCImage extends RCView {
 		
 		originalSize = size.copy();
 		this.isLoaded = true;
+		
+		#if js
+			// onload is called too soon in IE if the image is cached
+			if (js.Lib.isIE) {
+				haxe.Timer.delay (function() { onComplete(); }, 1);
+				return;
+			}
+		#end
 		onComplete();
 	}
 	
