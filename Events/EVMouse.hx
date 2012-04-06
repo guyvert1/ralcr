@@ -39,6 +39,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 	 *  @param target: RCView you want to listen for events. Can be also directy a DisplayObjectContainer
 	 **/
 	public function new (type:String, target:Dynamic, ?pos:haxe.PosInfos) {
+		
 		if (target == null) throw "Can't use a null target. " + pos;
 		
 		super();
@@ -61,6 +62,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 		
 		addEventListener( pos );
 	}
+	
 	function addEventListener (?pos:haxe.PosInfos) :Void {
 		#if (flash || nme)
 			switch (type) {
@@ -97,6 +99,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 			}
 		#end
 	}
+	
 	function removeEventListener () {
 		#if (flash || nme)
 			switch (type) {
@@ -122,6 +125,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 			}
 		#end
 	}
+	
 	function mouseHandler (e:MouseEvent) {
 		#if js
 /*			if (js.Lib.isIE)
@@ -132,6 +136,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 		this.e = e;
 		dispatch ( this );
 	}
+	
 	public function updateAfterEvent () :Void {
 		#if flash
 			e.updateAfterEvent();
@@ -157,7 +162,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 		}
 	}
     function MouseScroll (e) {
-				
+		
 		if (Reflect.field(e, 'wheelDelta') != null) {
 			delta = e.wheelDelta;
 		}
@@ -165,7 +170,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 			/** Mozilla case. MouseScrollEvent */
 			/** In Mozilla, sign of delta is different than in IE.
 			* Also, delta is multiple of 3. */
-			delta = - Math.round ( e.detail );
+			delta = - Math.round ( e.detail*5 );
 		}
 		this.e = e;
 		dispatch ( this );
