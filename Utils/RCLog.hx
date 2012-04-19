@@ -30,7 +30,7 @@ class RCLog {
 	}
 	public static function firebugTrace (v : Dynamic, ?inf : haxe.PosInfos) :Void
 	{
-		var newLineIn = (lastMethod == inf.methodName) ? "" : "\n--------------------";
+		var newLineIn = (lastMethod == inf.methodName) ? "" : "\n---> ";
 		var newLineOut = (lastMethod == inf.methodName) ? "" : "\n\n";
 		
 		haxe.Firebug.trace ( inf.methodName + " : " + newLineIn + Std.string(v) + newLineOut, inf );

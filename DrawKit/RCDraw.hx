@@ -36,7 +36,7 @@ class RCDraw extends RCView {
 #if js
 		try{ graphics = untyped layer; }catch(e:Dynamic){trace(e);}//untyped layer.getContext('2d');
 #end
-		
+	
 		// Parse the color
 		if (Std.is (color, RCColor) || Std.is (color, RCGradient)) {
 			this.color = color;

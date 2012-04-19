@@ -33,7 +33,7 @@ class HXAddress {
 	static var _queueTimer :haxe.Timer;
 	static var _initTimer :haxe.Timer;
 	static var _availability = ExternalInterface.available;
-	static var _initializer = _initialize();
+	@:keep static var _initializer = _initialize();
 	
 	// Dispatch events
 	public static var init :HXAddressSignal;

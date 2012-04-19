@@ -20,7 +20,7 @@ class JSView extends RCDisplayObject {
 	var alpha_ :Float;
 	
 	
-	public function new (x, y, ?w, ?h) {
+	@:keep public function new (x, y, ?w, ?h) {
 		
 		super();
 		

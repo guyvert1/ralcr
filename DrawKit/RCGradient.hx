@@ -19,7 +19,8 @@ typedef InterpolationMethod = Dynamic;
 typedef GradientType = Dynamic;
 #end
 
-class RCGradient {
+	// DCE bug at this moment if the RCGradient is not referenced anywhere, and it is not.
+@:keep class RCGradient {
 	
 	public var strokeColor :Null<Int>;
 	public var gradientColors :Array<Int>;// This 3 arrays should have the same number of elements

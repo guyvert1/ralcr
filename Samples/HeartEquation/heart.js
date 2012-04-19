@@ -1,829 +1,394 @@
-$estr = function() { return js.Boot.__string_rec(this,''); }
-RCDisplayObject = function(p) {
-	if( p === $_ ) return;
-	this.viewWillAppear = new RCSignal();
-	this.viewWillDisappear = new RCSignal();
-	this.viewDidAppear = new RCSignal();
-	this.viewDidDisappear = new RCSignal();
+var $_, $hxClasses = $hxClasses || {}, $estr = function() { return js.Boot.__string_rec(this,''); }
+function $extend(from, fields) {
+	function inherit() {}; inherit.prototype = from; var proto = new inherit();
+	for (var name in fields) proto[name] = fields[name];
+	return proto;
 }
-RCDisplayObject.__name__ = ["RCDisplayObject"];
-RCDisplayObject.prototype.viewWillAppear = null;
-RCDisplayObject.prototype.viewWillDisappear = null;
-RCDisplayObject.prototype.viewDidAppear = null;
-RCDisplayObject.prototype.viewDidDisappear = null;
-RCDisplayObject.prototype.bounds = null;
-RCDisplayObject.prototype.size = null;
-RCDisplayObject.prototype.contentSize = null;
-RCDisplayObject.prototype.center = null;
-RCDisplayObject.prototype.clipsToBounds = null;
-RCDisplayObject.prototype.backgroundColor = null;
-RCDisplayObject.prototype.x = null;
-RCDisplayObject.prototype.y = null;
-RCDisplayObject.prototype.width = null;
-RCDisplayObject.prototype.height = null;
-RCDisplayObject.prototype.scaleX = null;
-RCDisplayObject.prototype.scaleY = null;
-RCDisplayObject.prototype.alpha = null;
-RCDisplayObject.prototype.rotation = null;
-RCDisplayObject.prototype.visible = null;
-RCDisplayObject.prototype.mouseX = null;
-RCDisplayObject.prototype.mouseY = null;
-RCDisplayObject.prototype.parent = null;
-RCDisplayObject.prototype.x_ = null;
-RCDisplayObject.prototype.y_ = null;
-RCDisplayObject.prototype.scaleX_ = null;
-RCDisplayObject.prototype.scaleY_ = null;
-RCDisplayObject.prototype.contentSize_ = null;
-RCDisplayObject.prototype.originalSize = null;
-RCDisplayObject.prototype.caobj = null;
-RCDisplayObject.prototype.setVisible = function(v) {
-	return this.visible = v;
-}
-RCDisplayObject.prototype.getAlpha = function() {
-	return this.alpha;
-}
-RCDisplayObject.prototype.setAlpha = function(a) {
-	return this.alpha = a;
-}
-RCDisplayObject.prototype.getX = function() {
-	return this.x_;
-}
-RCDisplayObject.prototype.setX = function(x) {
-	return this.x_ = x;
-}
-RCDisplayObject.prototype.getY = function() {
-	return this.y_;
-}
-RCDisplayObject.prototype.setY = function(y) {
-	return this.y_ = y;
-}
-RCDisplayObject.prototype.getWidth = function() {
-	return this.size.width;
-}
-RCDisplayObject.prototype.setWidth = function(w) {
-	return this.size.width = w;
-}
-RCDisplayObject.prototype.getHeight = function() {
-	return this.size.height;
-}
-RCDisplayObject.prototype.setHeight = function(h) {
-	return this.size.height = h;
-}
-RCDisplayObject.prototype.getContentSize = function() {
-	return this.size;
-}
-RCDisplayObject.prototype.setContentSize = function(s) {
-	return this.contentSize = s;
-}
-RCDisplayObject.prototype.setRotation = function(r) {
-	return this.rotation = r;
-}
-RCDisplayObject.prototype.getRotation = function() {
-	return this.rotation;
-}
-RCDisplayObject.prototype.getBounds = function() {
-	return new RCRect(this.x_,this.y_,this.size.width,this.size.height);
-}
-RCDisplayObject.prototype.setBounds = function(b) {
-	this.setX(b.origin.x);
-	this.setY(b.origin.y);
-	this.setWidth(b.size.width);
-	this.setHeight(b.size.height);
-	return b;
-}
-RCDisplayObject.prototype.getScaleX = function() {
-	return this.scaleX_;
-}
-RCDisplayObject.prototype.setScaleX = function(sx) {
-	this.scaleX_ = sx;
-	this.scale(this.scaleX_,this.scaleY_);
-	return this.scaleX_;
-}
-RCDisplayObject.prototype.getScaleY = function() {
-	return this.scaleY_;
-}
-RCDisplayObject.prototype.setScaleY = function(sy) {
-	this.scaleY_ = sy;
-	this.scale(this.scaleX_,this.scaleY_);
-	return this.scaleY_;
-}
-RCDisplayObject.prototype.setClipsToBounds = function(clip) {
-	return clip;
-}
-RCDisplayObject.prototype.setBackgroundColor = function(color) {
-	return color;
-}
-RCDisplayObject.prototype.setCenter = function(pos) {
-	this.center = pos;
-	this.setX(Std["int"](pos.x - this.size.width / 2));
-	this.setY(Std["int"](pos.y - this.size.height / 2));
-	return this.center;
-}
-RCDisplayObject.prototype.scaleToFit = function(w,h) {
-	if(this.size.width / w > this.size.height / h && this.size.width > w) {
-		this.setWidth(w);
-		this.setHeight(w * this.originalSize.height / this.originalSize.width);
-	} else if(this.size.height > h) {
-		this.setHeight(h);
-		this.setWidth(h * this.originalSize.width / this.originalSize.height);
-	} else if(this.size.width > this.originalSize.width && this.size.height > this.originalSize.height) {
-		this.setWidth(this.size.width);
-		this.setHeight(this.size.height);
-	} else this.resetScale();
-}
-RCDisplayObject.prototype.scaleToFill = function(w,h) {
-	if(w / this.originalSize.width > h / this.originalSize.height) {
-		this.setWidth(w);
-		this.setHeight(w * this.originalSize.height / this.originalSize.width);
-	} else {
-		this.setHeight(h);
-		this.setWidth(h * this.originalSize.width / this.originalSize.height);
-	}
-}
-RCDisplayObject.prototype.scale = function(sx,sy) {
-}
-RCDisplayObject.prototype.resetScale = function() {
-	this.setWidth(this.originalSize.width);
-	this.setHeight(this.originalSize.height);
-}
-RCDisplayObject.prototype.getMouseX = function() {
-	return 0;
-}
-RCDisplayObject.prototype.getMouseY = function() {
-	return 0;
-}
-RCDisplayObject.prototype.addChild = function(child) {
-}
-RCDisplayObject.prototype.addChildAt = function(child,index) {
-}
-RCDisplayObject.prototype.removeChild = function(child) {
-}
-RCDisplayObject.prototype.addAnimation = function(obj) {
-	CoreAnimation.add(this.caobj = obj);
-}
-RCDisplayObject.prototype.destroy = function() {
-	CoreAnimation.remove(this.caobj);
-	this.size = null;
-}
-RCDisplayObject.prototype.toString = function() {
-	return "[RCView bounds:" + this.getBounds().origin.x + "x" + this.getBounds().origin.x + "," + this.getBounds().size.width + "x" + this.getBounds().size.height + "]";
-}
-RCDisplayObject.prototype.__class__ = RCDisplayObject;
-JSView = function(x,y,w,h) {
-	if( x === $_ ) return;
-	RCDisplayObject.call(this);
-	this.size = new RCSize(w,h);
-	this.contentSize_ = this.size.copy();
-	this.scaleX_ = 1;
-	this.scaleY_ = 1;
-	this.alpha_ = 1;
-	this.layer = js.Lib.document.createElement("div");
-	this.layer.style.position = "absolute";
-	this.layer.style.margin = "0px 0px 0px 0px";
-	this.setX(x);
-	this.setY(y);
-}
-JSView.__name__ = ["JSView"];
-JSView.__super__ = RCDisplayObject;
-for(var k in RCDisplayObject.prototype ) JSView.prototype[k] = RCDisplayObject.prototype[k];
-JSView.prototype.layer = null;
-JSView.prototype.layerScrollable = null;
-JSView.prototype.graphics = null;
-JSView.prototype.alpha_ = null;
-JSView.prototype.addChild = function(child) {
-	if(child == null) return;
-	child.viewWillAppear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 54, className : "JSView", methodName : "addChild"});
-	child.parent = this;
-	this.layer.appendChild(child.layer);
-	child.viewDidAppear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 57, className : "JSView", methodName : "addChild"});
-}
-JSView.prototype.addChildAt = function(child,index) {
-	if(this.layer.childNodes[index] != null) this.layer.insertBefore(child.layer,this.layer.childNodes[index]); else this.layer.appendChild(child.layer);
-}
-JSView.prototype.removeChild = function(child) {
-	if(child == null) return;
-	child.viewWillDisappear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 71, className : "JSView", methodName : "removeChild"});
-	child.parent = null;
-	this.layer.removeChild(child.layer);
-	child.viewDidDisappear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 74, className : "JSView", methodName : "removeChild"});
-}
-JSView.prototype.removeFromSuperView = function() {
-	if(this.parent != null) this.parent.removeChild(this);
-}
-JSView.prototype.setBackgroundColor = function(color) {
-	if(color == null) {
-		this.layer.style.background = null;
-		return color;
-	}
-	var red = (color & 16711680) >> 16;
-	var green = (color & 65280) >> 8;
-	var blue = color & 255;
-	this.layer.style.backgroundColor = "rgb(" + red + "," + green + "," + blue + ")";
-	return color;
-}
-JSView.prototype.setClipsToBounds = function(clip) {
-	if(clip) {
-		this.layer.style.overflow = "hidden";
-		this.layerScrollable = js.Lib.document.createElement("div");
-		this.layerScrollable.style.width = this.size.width + "px";
-		this.layerScrollable.style.height = this.size.height + "px";
-		while(this.layer.hasChildNodes()) this.layerScrollable.appendChild(this.layer.removeChild(this.layer.firstChild));
-		this.layer.appendChild(this.layerScrollable);
-	} else {
-		while(this.layerScrollable.hasChildNodes()) this.layer.appendChild(this.layerScrollable.removeChild(this.layerScrollable.firstChild));
-		this.layer.style.overflow = null;
-		this.layer.removeChild(this.layerScrollable);
-		this.layerScrollable = null;
-	}
-	return clip;
-}
-JSView.prototype.setVisible = function(v) {
-	this.layer.style.visibility = v?"visible":"hidden";
-	return RCDisplayObject.prototype.setVisible.call(this,v);
-}
-JSView.prototype.setAlpha = function(a) {
-	if(js.Lib.isIE) {
-		this.layer.style.msFilter = "progid:DXImageTransform.Microsoft.Alpha(Opacity=" + Std.string(a * 100) + ")";
-		this.layer.style.filter = "alpha(opacity=" + Std.string(a * 100) + ")";
-	} else this.layer.style.opacity = Std.string(a);
-	return RCDisplayObject.prototype.setAlpha.call(this,a);
-}
-JSView.prototype.setX = function(x) {
-	this.layer.style.left = Std.string(x * RCDevice.currentDevice().dpiScale) + "px";
-	return RCDisplayObject.prototype.setX.call(this,x);
-}
-JSView.prototype.setY = function(y) {
-	this.layer.style.top = Std.string(y * RCDevice.currentDevice().dpiScale) + "px";
-	return RCDisplayObject.prototype.setY.call(this,y);
-}
-JSView.prototype.setWidth = function(w) {
-	this.layer.style.width = w + "px";
-	return RCDisplayObject.prototype.setWidth.call(this,w);
-}
-JSView.prototype.setHeight = function(h) {
-	this.layer.style.height = h + "px";
-	return RCDisplayObject.prototype.setHeight.call(this,h);
-}
-JSView.prototype.getContentSize = function() {
-	this.contentSize_.width = this.layer.scrollWidth;
-	this.contentSize_.height = this.layer.scrollHeight;
-	return this.contentSize_;
-}
-JSView.prototype.scale = function(sx,sy) {
-	this.layer.style.WebkitTransformOrigin = "top left";
-	this.layer.style.WebkitTransform = "scale(" + sx + "," + sy + ")";
-}
-JSView.prototype.startDrag = function(lockCenter,rect) {
-}
-JSView.prototype.stopDrag = function() {
-}
-JSView.prototype.getMouseX = function() {
-	return this.layer.clientX;
-	if(this.parent == null) return this.mouseX;
-	return this.parent.getMouseX() - this.getX();
-}
-JSView.prototype.getMouseY = function() {
-	if(this.parent == null) return this.mouseY;
-	return this.parent.getMouseY() - this.getY();
-}
-JSView.prototype.__class__ = JSView;
-RCWindow = function(id) {
-	if( id === $_ ) return;
-	JSView.call(this,0.0,0.0,0.0,0.0);
-	this.stage = js.Lib.document;
-	this.setTarget(id);
-	this.SCREEN_W = js.Lib.window.screen.width;
-	this.SCREEN_H = js.Lib.window.screen.height;
-	RCNotificationCenter.addObserver("resize",$closure(this,"resizeHandler"));
-}
-RCWindow.__name__ = ["RCWindow"];
-RCWindow.__super__ = JSView;
-for(var k in JSView.prototype ) RCWindow.prototype[k] = JSView.prototype[k];
-RCWindow.sharedWindow_ = null;
-RCWindow.sharedWindow = function(id) {
-	if(RCWindow.sharedWindow_ == null) RCWindow.sharedWindow_ = new RCWindow(id);
-	return RCWindow.sharedWindow_;
-}
-RCWindow.prototype.target = null;
-RCWindow.prototype.stage = null;
-RCWindow.prototype.SCREEN_W = null;
-RCWindow.prototype.SCREEN_H = null;
-RCWindow.prototype.modalView = null;
-RCWindow.prototype.resizeHandler = function(w,h) {
-	this.size.width = w;
-	this.size.height = h;
-}
-RCWindow.prototype.setTarget = function(id) {
-	if(id != null) this.target = js.Lib.document.getElementById(id); else {
-		this.target = js.Lib.document.body;
-		this.target.style.margin = "0px 0px 0px 0px";
-		this.target.style.overflow = "hidden";
-		if(js.Lib.isIE) {
-			this.target.style.width = js.Lib.document.documentElement.clientWidth + "px";
-			this.target.style.height = js.Lib.document.documentElement.clientHeight + "px";
-		} else {
-			this.target.style.width = js.Lib.window.innerWidth + "px";
-			this.target.style.height = js.Lib.window.innerHeight + "px";
+var CADelegate = $hxClasses["CADelegate"] = function() {
+	this.startPointPassed = false;
+	this.kenBurnsPointInPassed = false;
+	this.kenBurnsPointOutPassed = false;
+};
+CADelegate.__name__ = ["CADelegate"];
+CADelegate.prototype = {
+	animationDidStart: null
+	,animationDidStop: null
+	,animationDidReversed: null
+	,arguments: null
+	,kenBurnsDidFadedIn: null
+	,kenBurnsBeginsFadingOut: null
+	,kenBurnsArgs: null
+	,startPointPassed: null
+	,kenBurnsPointInPassed: null
+	,kenBurnsPointOutPassed: null
+	,kenBurnsPointIn: null
+	,kenBurnsPointOut: null
+	,pos: null
+	,start: function() {
+		this.startPointPassed = true;
+		if(Reflect.isFunction(this.animationDidStart)) try {
+			this.animationDidStart.apply(null,this.arguments);
+		} catch( e ) {
+			haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 37, className : "CADelegate", methodName : "start"});
 		}
 	}
-	this.size.width = this.target.scrollWidth;
-	this.size.height = this.target.scrollHeight;
-	this.target.appendChild(this.layer);
-}
-RCWindow.prototype.setBackgroundColor = function(color) {
-	if(color == null) {
-		this.target.style.background = null;
-		return color;
+	,stop: function() {
+		if(Reflect.isFunction(this.animationDidStop)) try {
+			this.animationDidStop.apply(null,this.arguments);
+		} catch( e ) {
+			haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 43, className : "CADelegate", methodName : "stop"});
+			haxe.Log.trace(this.pos.className + " -> " + this.pos.methodName + " -> " + this.pos.lineNumber,{ fileName : "CADelegate.hx", lineNumber : 44, className : "CADelegate", methodName : "stop"});
+			var stack = haxe.Stack.exceptionStack();
+			haxe.Log.trace(haxe.Stack.toString(stack),{ fileName : "CADelegate.hx", lineNumber : 46, className : "CADelegate", methodName : "stop"});
+		}
 	}
-	var red = (color & 16711680) >> 16;
-	var green = (color & 65280) >> 8;
-	var blue = color & 255;
-	var alpha = 1;
-	this.target.style.background = "rgba(" + red + "," + green + "," + blue + "," + alpha + ")";
-	return color;
-}
-RCWindow.prototype.fsprefix = null;
-RCWindow.prototype.fullscreen = function() {
-	if(this.supportsFullScreen()) {
-		if(this.fsprefix == null) "requestFullScreen".apply(this.target,[]); else Reflect.field(this.target,this.fsprefix + "RequestFullScreen").apply(this.target,[]);
+	,repeat: function() {
+		if(Reflect.isFunction(this.animationDidReversed)) try {
+			this.animationDidReversed.apply(null,this.arguments);
+		} catch( e ) {
+			haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 53, className : "CADelegate", methodName : "repeat"});
+		}
 	}
-}
-RCWindow.prototype.normal = function() {
-	if(this.supportsFullScreen()) {
-		if(this.fsprefix == "") "cancelFullScreen".apply(this.target,[]); else Reflect.field(this.target,this.fsprefix + "CancelFullScreen").apply(this.target,[]);
+	,kbIn: function() {
+		this.kenBurnsPointInPassed = true;
+		if(Reflect.isFunction(this.kenBurnsDidFadedIn)) try {
+			this.kenBurnsDidFadedIn.apply(null,this.kenBurnsArgs);
+		} catch( e ) {
+			haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 59, className : "CADelegate", methodName : "kbIn"});
+		}
 	}
-}
-RCWindow.prototype.isFullScreen = function() {
-	if(this.supportsFullScreen()) switch(this.fsprefix) {
-	case "":
-		return this.target.fullScreen;
-	case "webkit":
-		return this.target.webkitIsFullScreen;
-	default:
-		return Reflect.field(this.target,this.fsprefix + "FullScreen");
+	,kbOut: function() {
+		this.kenBurnsPointOutPassed = true;
+		if(Reflect.isFunction(this.kenBurnsBeginsFadingOut)) try {
+			this.kenBurnsBeginsFadingOut.apply(null,this.kenBurnsArgs);
+		} catch( e ) {
+			haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 65, className : "CADelegate", methodName : "kbOut"});
+		}
 	}
-	return false;
+	,__class__: CADelegate
 }
-RCWindow.prototype.supportsFullScreen = function() {
-	if(Reflect.field(this.target,"cancelFullScreen") != null) return true; else {
-		var _g = 0, _g1 = ["webkit","moz","o","ms","khtml"];
+var CAObject = $hxClasses["CAObject"] = function(target,properties,duration,delay,Eq,pos) {
+	this.target = target;
+	this.properties = properties;
+	this.repeatCount = 0;
+	this.autoreverses = false;
+	this.fromTime = Date.now().getTime();
+	this.duration = duration == null?CoreAnimation.defaultDuration:duration <= 0?0.001:duration;
+	this.delay = delay == null || delay < 0?0:delay;
+	if(Eq == null) this.timingFunction = CoreAnimation.defaultTimingFunction; else this.timingFunction = Eq;
+	this.delegate = new CADelegate();
+	this.delegate.pos = pos;
+	this.fromValues = { };
+	this.toValues = { };
+};
+CAObject.__name__ = ["CAObject"];
+CAObject.prototype = {
+	target: null
+	,prev: null
+	,next: null
+	,properties: null
+	,fromValues: null
+	,toValues: null
+	,fromTime: null
+	,delay: null
+	,duration: null
+	,repeatCount: null
+	,autoreverses: null
+	,timingFunction: null
+	,constraintBounds: null
+	,delegate: null
+	,init: function() {
+		throw "CAObject should be extended (" + this.delegate.pos + ")";
+	}
+	,animate: function(time_diff) {
+		throw "CAObject should be extended (" + this.delegate.pos + ")";
+	}
+	,initTime: function() {
+		this.fromTime = Date.now().getTime();
+		this.duration = this.duration * 1000;
+		this.delay = this.delay * 1000;
+	}
+	,repeat: function() {
+		this.fromTime = Date.now().getTime();
+		this.delay = 0;
+		if(this.autoreverses) {
+			var v = this.fromValues;
+			this.fromValues = this.toValues;
+			this.toValues = v;
+		}
+		this.repeatCount--;
+	}
+	,calculate: function(time_diff,prop) {
+		return this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null);
+	}
+	,toString: function() {
+		return "[CAObject: target=" + this.target + ", duration=" + this.duration + ", delay=" + this.delay + ", fromTime=" + this.fromTime + ", properties=" + this.properties + ", repeatCount=" + this.repeatCount + "]";
+	}
+	,__class__: CAObject
+}
+var CATransitionInterface = $hxClasses["CATransitionInterface"] = function() { }
+CATransitionInterface.__name__ = ["CATransitionInterface"];
+CATransitionInterface.prototype = {
+	init: null
+	,animate: null
+	,__class__: CATransitionInterface
+}
+var CATween = $hxClasses["CATween"] = function(target,properties,duration,delay,Eq,pos) {
+	CAObject.call(this,target,properties,duration,delay,Eq,pos);
+};
+CATween.__name__ = ["CATween"];
+CATween.__interfaces__ = [CATransitionInterface];
+CATween.__super__ = CAObject;
+CATween.prototype = $extend(CAObject.prototype,{
+	init: function() {
+		var _g = 0, _g1 = Reflect.fields(this.properties);
 		while(_g < _g1.length) {
-			var prefix = _g1[_g];
+			var p = _g1[_g];
 			++_g;
-			if(Reflect.field(js.Lib.document,prefix + "CancelFullScreen") != null) {
-				this.fsprefix = prefix;
-				return true;
+			if(Std["is"](Reflect.field(this.properties,p),Int) || Std["is"](Reflect.field(this.properties,p),Float)) {
+				var getter = "get" + p.substr(0,1).toUpperCase() + p.substr(1);
+				if(getter == null) this.fromValues[p] = Reflect.field(this.target,p); else this.fromValues[p] = Reflect.field(this.target,getter).apply(this.target,[]);
+				this.toValues[p] = Reflect.field(this.properties,p);
+			} else try {
+				this.fromValues[p] = Reflect.field(Reflect.field(this.properties,p),"fromValue");
+				this.target[p] = Reflect.field(this.fromValues,p);
+				this.toValues[p] = Reflect.field(Reflect.field(this.properties,p),"toValue");
+			} catch( e ) {
+				haxe.Log.trace(e,{ fileName : "CATween.hx", lineNumber : 31, className : "CATween", methodName : "init"});
 			}
 		}
 	}
-	return false;
-}
-RCWindow.prototype.addModalViewController = function(view) {
-	this.modalView = view;
-	this.modalView.setX(0);
-	CoreAnimation.add(new CATween(this.modalView,{ y : { fromValue : this.getHeight(), toValue : 0}},0.5,0,caequations.Cubic.IN_OUT,{ fileName : "RCWindow.hx", lineNumber : 228, className : "RCWindow", methodName : "addModalViewController"}));
-	this.addChild(this.modalView);
-}
-RCWindow.prototype.dismissModalViewController = function() {
-	if(this.modalView == null) return;
-	var anim = new CATween(this.modalView,{ y : this.getHeight()},0.3,0,caequations.Cubic.IN,{ fileName : "RCWindow.hx", lineNumber : 233, className : "RCWindow", methodName : "dismissModalViewController"});
-	anim.delegate.animationDidStop = $closure(this,"destroyModalViewController");
-	CoreAnimation.add(anim);
-}
-RCWindow.prototype.destroyModalViewController = function() {
-	this.modalView.destroy();
-	this.modalView = null;
-}
-RCWindow.prototype.getCenterX = function(w) {
-	return Math.round(this.getWidth() / 2 - w / RCDevice.currentDevice().dpiScale / 2);
-}
-RCWindow.prototype.getCenterY = function(h) {
-	return Math.round(this.getHeight() / 2 - h / RCDevice.currentDevice().dpiScale / 2);
-}
-RCWindow.prototype.toString = function() {
-	return "[RCWindow target=" + this.target + "]";
-}
-RCWindow.prototype.__class__ = RCWindow;
-if(typeof _RCDraw=='undefined') _RCDraw = {}
-_RCDraw.LineScaleMode = function() { }
-_RCDraw.LineScaleMode.__name__ = ["_RCDraw","LineScaleMode"];
-_RCDraw.LineScaleMode.prototype.__class__ = _RCDraw.LineScaleMode;
-RCDraw = function(x,y,w,h,color,alpha) {
-	if( x === $_ ) return;
-	if(alpha == null) alpha = 1.0;
-	JSView.call(this,x,y,w,h);
-	this.setAlpha(alpha);
-	this.borderThickness = 1;
-	try {
-		this.graphics = this.layer;
-	} catch( e ) {
-		haxe.Log.trace(e,{ fileName : "RCDraw.hx", lineNumber : 37, className : "RCDraw", methodName : "new"});
-	}
-	if(Std["is"](color,RCColor) || Std["is"](color,RCGradient)) this.color = color; else if(Std["is"](color,Int) || Std["is"](color,Int)) this.color = new RCColor(color); else if(Std["is"](color,Array)) this.color = new RCColor(color[0],color[1]); else this.color = new RCColor(0);
-}
-RCDraw.__name__ = ["RCDraw"];
-RCDraw.__super__ = JSView;
-for(var k in JSView.prototype ) RCDraw.prototype[k] = JSView.prototype[k];
-RCDraw.prototype.color = null;
-RCDraw.prototype.borderThickness = null;
-RCDraw.prototype.configure = function() {
-	if(Std["is"](this.color,RCColor)) {
-		if(this.color.fillColor != null) this.graphics.beginFill(this.color.fillColor,this.color.alpha);
-		if(this.color.strokeColor != null) {
-			var pixelHinting = true;
-			var scaleMode = _RCDraw.LineScaleMode.NONE;
-			var caps = null;
-			var joints = null;
-			var miterLimit = 3;
-			this.graphics.lineStyle(this.borderThickness,this.color.strokeColor,this.color.alpha,pixelHinting,scaleMode,caps,joints,miterLimit);
+	,animate: function(time_diff) {
+		var _g = 0, _g1 = Reflect.fields(this.toValues);
+		while(_g < _g1.length) {
+			var prop = _g1[_g];
+			++_g;
+			try {
+				var setter = "set" + prop.substr(0,1).toUpperCase() + prop.substr(1);
+				if(setter != null) Reflect.field(this.target,setter).apply(this.target,[this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null)]);
+			} catch( e ) {
+				haxe.Log.trace(e,{ fileName : "CATween.hx", lineNumber : 50, className : "CATween", methodName : "animate"});
+			}
 		}
 	}
+	,__class__: CATween
+});
+var caequations = caequations || {}
+caequations.Linear = $hxClasses["caequations.Linear"] = function() { }
+caequations.Linear.__name__ = ["caequations","Linear"];
+caequations.Linear.NONE = function(t,b,c,d,p_params) {
+	return c * t / d + b;
 }
-RCDraw.prototype.frame = function() {
-	return new RCRect(this.getX(),this.getY(),this.size.width,this.size.height);
+caequations.Linear.prototype = {
+	__class__: caequations.Linear
 }
-RCDraw.prototype.__class__ = RCDraw;
-if(typeof haxe=='undefined') haxe = {}
-haxe.StackItem = { __ename__ : ["haxe","StackItem"], __constructs__ : ["CFunction","Module","FilePos","Method","Lambda"] }
-haxe.StackItem.CFunction = ["CFunction",0];
-haxe.StackItem.CFunction.toString = $estr;
-haxe.StackItem.CFunction.__enum__ = haxe.StackItem;
-haxe.StackItem.Module = function(m) { var $x = ["Module",1,m]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
-haxe.StackItem.FilePos = function(s,file,line) { var $x = ["FilePos",2,s,file,line]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
-haxe.StackItem.Method = function(classname,method) { var $x = ["Method",3,classname,method]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
-haxe.StackItem.Lambda = function(v) { var $x = ["Lambda",4,v]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
-haxe.Stack = function() { }
-haxe.Stack.__name__ = ["haxe","Stack"];
-haxe.Stack.callStack = function() {
-	return haxe.Stack.makeStack("$s");
-}
-haxe.Stack.exceptionStack = function() {
-	return haxe.Stack.makeStack("$e");
-}
-haxe.Stack.toString = function(stack) {
-	var b = new StringBuf();
-	var _g = 0;
-	while(_g < stack.length) {
-		var s = stack[_g];
-		++_g;
-		b.b[b.b.length] = "\nCalled from " == null?"null":"\nCalled from ";
-		haxe.Stack.itemToString(b,s);
+var CoreAnimation = $hxClasses["CoreAnimation"] = function() { }
+CoreAnimation.__name__ = ["CoreAnimation"];
+CoreAnimation.latest = null;
+CoreAnimation.ticker = null;
+CoreAnimation.add = function(obj) {
+	if(obj == null) return;
+	if(obj.target == null) return;
+	var a = CoreAnimation.latest;
+	var prev = CoreAnimation.latest;
+	if(prev != null) prev.next = obj;
+	obj.prev = prev;
+	CoreAnimation.latest = obj;
+	obj.init();
+	obj.initTime();
+	if(CoreAnimation.ticker == null) {
+		CoreAnimation.ticker = new EVLoop();
+		CoreAnimation.ticker.setFuncToCall(CoreAnimation.updateAnimations);
 	}
-	return b.b.join("");
 }
-haxe.Stack.itemToString = function(b,s) {
-	var $e = (s);
-	switch( $e[1] ) {
-	case 0:
-		b.b[b.b.length] = "a C function" == null?"null":"a C function";
-		break;
-	case 1:
-		var m = $e[2];
-		b.b[b.b.length] = "module " == null?"null":"module ";
-		b.b[b.b.length] = m == null?"null":m;
-		break;
-	case 2:
-		var line = $e[4], file = $e[3], s1 = $e[2];
-		if(s1 != null) {
-			haxe.Stack.itemToString(b,s1);
-			b.b[b.b.length] = " (" == null?"null":" (";
+CoreAnimation.remove = function(obj) {
+	if(obj == null) return;
+	var a = CoreAnimation.latest;
+	while(a != null) {
+		if(a.target == obj) CoreAnimation.removeCAObject(a);
+		a = a.prev;
+	}
+}
+CoreAnimation.removeCAObject = function(a) {
+	if(a.prev != null) a.prev.next = a.next;
+	if(a.next != null) a.next.prev = a.prev;
+	if(CoreAnimation.latest == a) CoreAnimation.latest = a.prev != null?a.prev:null;
+	CoreAnimation.removeTimer();
+	a = null;
+}
+CoreAnimation.removeTimer = function() {
+	if(CoreAnimation.latest == null && CoreAnimation.ticker != null) {
+		CoreAnimation.ticker.destroy();
+		CoreAnimation.ticker = null;
+	}
+}
+CoreAnimation.destroy = function() {
+	CoreAnimation.latest = null;
+	CoreAnimation.removeTimer();
+}
+CoreAnimation.updateAnimations = function() {
+	var current_time = Date.now().getTime();
+	var time_diff = 0.0;
+	var a = CoreAnimation.latest;
+	while(a != null) {
+		if(a.target == null) {
+			a = a.prev;
+			CoreAnimation.removeCAObject(a);
+			break;
 		}
-		b.b[b.b.length] = file == null?"null":file;
-		b.b[b.b.length] = " line " == null?"null":" line ";
-		b.b[b.b.length] = line == null?"null":line;
-		if(s1 != null) b.b[b.b.length] = ")" == null?"null":")";
-		break;
-	case 3:
-		var meth = $e[3], cname = $e[2];
-		b.b[b.b.length] = cname == null?"null":cname;
-		b.b[b.b.length] = "." == null?"null":".";
-		b.b[b.b.length] = meth == null?"null":meth;
-		break;
-	case 4:
-		var n = $e[2];
-		b.b[b.b.length] = "local function #" == null?"null":"local function #";
-		b.b[b.b.length] = n == null?"null":n;
-		break;
+		time_diff = current_time - a.fromTime - a.delay;
+		if(time_diff >= a.duration) time_diff = a.duration;
+		if(time_diff > 0) {
+			a.animate(time_diff);
+			if(time_diff > 0 && !a.delegate.startPointPassed) a.delegate.start();
+			if(time_diff >= a.duration) {
+				if(a.repeatCount > 0) {
+					a.repeat();
+					a.delegate.repeat();
+				} else {
+					CoreAnimation.removeCAObject(a);
+					a.delegate.stop();
+				}
+			}
+			if(a.delegate.kenBurnsPointIn != null) {
+				if(time_diff > a.delegate.kenBurnsPointIn && !a.delegate.kenBurnsPointInPassed) a.delegate.kbIn();
+				if(time_diff > a.delegate.kenBurnsPointOut && !a.delegate.kenBurnsPointOutPassed) a.delegate.kbOut();
+			}
+		}
+		a = a.prev;
 	}
 }
-haxe.Stack.makeStack = function(s) {
-	var a = (function($this) {
-		var $r;
+CoreAnimation.timestamp = function() {
+	return Date.now().getTime();
+}
+CoreAnimation.prototype = {
+	__class__: CoreAnimation
+}
+var RCSignal = $hxClasses["RCSignal"] = function() {
+	this.enabled = true;
+	this.removeAll();
+};
+RCSignal.__name__ = ["RCSignal"];
+RCSignal.prototype = {
+	listeners: null
+	,exposableListener: null
+	,enabled: null
+	,add: function(listener) {
+		this.listeners.add(listener);
+	}
+	,addOnce: function(listener,pos) {
+		if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once as you expect. " + pos,{ fileName : "RCSignal.hx", lineNumber : 22, className : "RCSignal", methodName : "addOnce"});
+		this.exposableListener = listener;
+	}
+	,addFirst: function(listener,pos) {
+		this.listeners.push(listener);
+	}
+	,remove: function(listener) {
+		var $it0 = this.listeners.iterator();
+		while( $it0.hasNext() ) {
+			var l = $it0.next();
+			if(Reflect.compareMethods(l,listener)) {
+				this.listeners.remove(listener);
+				break;
+			}
+		}
+		if(Reflect.compareMethods(this.exposableListener,listener)) this.exposableListener = null;
+	}
+	,removeAll: function() {
+		this.listeners = new List();
+		this.exposableListener = null;
+	}
+	,dispatch: function(p1,p2,p3,p4,pos) {
+		if(!this.enabled) return;
+		var args = new Array();
+		var _g = 0, _g1 = [p1,p2,p3,p4];
+		while(_g < _g1.length) {
+			var p = _g1[_g];
+			++_g;
+			if(p != null) args.push(p); else break;
+		}
+		var $it0 = this.listeners.iterator();
+		while( $it0.hasNext() ) {
+			var listener = $it0.next();
+			this.callMethod(listener,args,pos);
+		}
+		if(this.exposableListener != null) {
+			this.callMethod(this.exposableListener,args,pos);
+			this.exposableListener = null;
+		}
+	}
+	,callMethod: function(listener,args,pos) {
 		try {
-			$r = eval(s);
+			listener.apply(null,args);
 		} catch( e ) {
-			$r = [];
-		}
-		return $r;
-	}(this));
-	var m = new Array();
-	var _g1 = 0, _g = a.length - (s == "$s"?2:0);
-	while(_g1 < _g) {
-		var i = _g1++;
-		var d = a[i].split("::");
-		m.unshift(haxe.StackItem.Method(d[0],d[1]));
-	}
-	return m;
-}
-haxe.Stack.prototype.__class__ = haxe.Stack;
-RCNotificationCenter = function() { }
-RCNotificationCenter.__name__ = ["RCNotificationCenter"];
-RCNotificationCenter.notificationsList = null;
-RCNotificationCenter.init = function() {
-	if(RCNotificationCenter.notificationsList == null) {
-		RCNotificationCenter.notificationsList = new List();
-		var fs = new EVFullScreen();
-		fs.add(RCNotificationCenter.fullScreenHandler);
-		var rs = new EVResize();
-		rs.add(RCNotificationCenter.resizeHandler);
-	}
-}
-RCNotificationCenter.resizeHandler = function(w,h) {
-	RCNotificationCenter.postNotification("resize",[w,h],{ fileName : "RCNotificationCenter.hx", lineNumber : 26, className : "RCNotificationCenter", methodName : "resizeHandler"});
-}
-RCNotificationCenter.fullScreenHandler = function(b) {
-	RCNotificationCenter.postNotification("fullscreen",[b],{ fileName : "RCNotificationCenter.hx", lineNumber : 29, className : "RCNotificationCenter", methodName : "fullScreenHandler"});
-}
-RCNotificationCenter.addObserver = function(name,func) {
-	RCNotificationCenter.init();
-	RCNotificationCenter.notificationsList.add(new RCNotification(name,func));
-}
-RCNotificationCenter.removeObserver = function(name,func) {
-	RCNotificationCenter.init();
-	var $it0 = RCNotificationCenter.notificationsList.iterator();
-	while( $it0.hasNext() ) {
-		var notification = $it0.next();
-		if(notification.name == name && Reflect.compareMethods(notification.functionToCall,func)) RCNotificationCenter.notificationsList.remove(notification);
-	}
-}
-RCNotificationCenter.postNotification = function(name,args,pos) {
-	RCNotificationCenter.init();
-	var notificationFound = false;
-	var $it0 = RCNotificationCenter.notificationsList.iterator();
-	while( $it0.hasNext() ) {
-		var notification = $it0.next();
-		if(notification.name == name) try {
-			notificationFound = true;
-			notification.functionToCall.apply(null,args);
-		} catch( e ) {
-			haxe.Log.trace("[RCNotificationCenter error calling function: " + notification.functionToCall + " from: " + Std.string(pos) + "]",{ fileName : "RCNotificationCenter.hx", lineNumber : 71, className : "RCNotificationCenter", methodName : "postNotification"});
+			haxe.Log.trace("[RCSignal error: " + e + ", called from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 67, className : "RCSignal", methodName : "callMethod"});
+			Fugu.stack();
 		}
 	}
-	return notificationFound;
-}
-RCNotificationCenter.list = function() {
-	var $it0 = RCNotificationCenter.notificationsList.iterator();
-	while( $it0.hasNext() ) {
-		var notification = $it0.next();
-		haxe.Log.trace(notification,{ fileName : "RCNotificationCenter.hx", lineNumber : 82, className : "RCNotificationCenter", methodName : "list"});
+	,exists: function(listener) {
+		var $it0 = this.listeners.iterator();
+		while( $it0.hasNext() ) {
+			var l = $it0.next();
+			if(l == listener) return true;
+		}
+		return false;
 	}
-}
-RCNotificationCenter.prototype.__class__ = RCNotificationCenter;
-StringTools = function() { }
-StringTools.__name__ = ["StringTools"];
-StringTools.urlEncode = function(s) {
-	return encodeURIComponent(s);
-}
-StringTools.urlDecode = function(s) {
-	return decodeURIComponent(s.split("+").join(" "));
-}
-StringTools.htmlEscape = function(s) {
-	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
-}
-StringTools.htmlUnescape = function(s) {
-	return s.split("&gt;").join(">").split("&lt;").join("<").split("&amp;").join("&");
-}
-StringTools.startsWith = function(s,start) {
-	return s.length >= start.length && s.substr(0,start.length) == start;
-}
-StringTools.endsWith = function(s,end) {
-	var elen = end.length;
-	var slen = s.length;
-	return slen >= elen && s.substr(slen - elen,elen) == end;
-}
-StringTools.isSpace = function(s,pos) {
-	var c = s.charCodeAt(pos);
-	return c >= 9 && c <= 13 || c == 32;
-}
-StringTools.ltrim = function(s) {
-	var l = s.length;
-	var r = 0;
-	while(r < l && StringTools.isSpace(s,r)) r++;
-	if(r > 0) return s.substr(r,l - r); else return s;
-}
-StringTools.rtrim = function(s) {
-	var l = s.length;
-	var r = 0;
-	while(r < l && StringTools.isSpace(s,l - r - 1)) r++;
-	if(r > 0) return s.substr(0,l - r); else return s;
-}
-StringTools.trim = function(s) {
-	return StringTools.ltrim(StringTools.rtrim(s));
-}
-StringTools.rpad = function(s,c,l) {
-	var sl = s.length;
-	var cl = c.length;
-	while(sl < l) if(l - sl < cl) {
-		s += c.substr(0,l - sl);
-		sl = l;
-	} else {
-		s += c;
-		sl += cl;
+	,destroy: function() {
+		this.listeners = null;
+		this.exposableListener = null;
 	}
-	return s;
+	,__class__: RCSignal
 }
-StringTools.lpad = function(s,c,l) {
-	var ns = "";
-	var sl = s.length;
-	if(sl >= l) return s;
-	var cl = c.length;
-	while(sl < l) if(l - sl < cl) {
-		ns += c.substr(0,l - sl);
-		sl = l;
-	} else {
-		ns += c;
-		sl += cl;
-	}
-	return ns + s;
-}
-StringTools.replace = function(s,sub,by) {
-	return s.split(sub).join(by);
-}
-StringTools.hex = function(n,digits) {
-	var s = "";
-	var hexChars = "0123456789ABCDEF";
-	do {
-		s = hexChars.charAt(n & 15) + s;
-		n >>>= 4;
-	} while(n > 0);
-	if(digits != null) while(s.length < digits) s = "0" + s;
-	return s;
-}
-StringTools.fastCodeAt = function(s,index) {
-	return s.cca(index);
-}
-StringTools.isEOF = function(c) {
-	return c != c;
-}
-StringTools.prototype.__class__ = StringTools;
-JSCanvas = function() { }
-JSCanvas.__name__ = ["JSCanvas"];
-JSCanvas.prototype.__class__ = JSCanvas;
-EVLoop = function(p) {
-}
+var EVFullScreen = $hxClasses["EVFullScreen"] = function() {
+	RCSignal.call(this);
+};
+EVFullScreen.__name__ = ["EVFullScreen"];
+EVFullScreen.__super__ = RCSignal;
+EVFullScreen.prototype = $extend(RCSignal.prototype,{
+	__class__: EVFullScreen
+});
+var EVLoop = $hxClasses["EVLoop"] = function() {
+};
 EVLoop.__name__ = ["EVLoop"];
-EVLoop.prototype.ticker = null;
-EVLoop.prototype.run = null;
-EVLoop.prototype.setFuncToCall = function(func) {
-	this.stop();
-	this.run = func;
-	this.ticker = new haxe.Timer(Math.round(1 / EVLoop.FPS * 1000));
-	this.ticker.run = $closure(this,"loop");
-	return func;
-}
-EVLoop.prototype.loop = function() {
-	if(this.run != null) this.run();
-}
-EVLoop.prototype.stop = function() {
-	if(this.ticker == null) return;
-	this.ticker.stop();
-	this.ticker = null;
-}
-EVLoop.prototype.destroy = function() {
-	this.stop();
-}
-EVLoop.prototype.__class__ = EVLoop;
-Reflect = function() { }
-Reflect.__name__ = ["Reflect"];
-Reflect.hasField = function(o,field) {
-	if(o.hasOwnProperty != null) return o.hasOwnProperty(field);
-	var arr = Reflect.fields(o);
-	var $it0 = arr.iterator();
-	while( $it0.hasNext() ) {
-		var t = $it0.next();
-		if(t == field) return true;
+EVLoop.prototype = {
+	ticker: null
+	,run: null
+	,setFuncToCall: function(func) {
+		this.stop();
+		this.run = func;
+		this.ticker = new haxe.Timer(Math.round(1 / EVLoop.FPS * 1000));
+		this.ticker.run = this.loop.$bind(this);
+		return func;
 	}
-	return false;
-}
-Reflect.field = function(o,field) {
-	var v = null;
-	try {
-		v = o[field];
-	} catch( e ) {
+	,loop: function() {
+		if(this.run != null) this.run();
 	}
-	return v;
-}
-Reflect.setField = function(o,field,value) {
-	o[field] = value;
-}
-Reflect.callMethod = function(o,func,args) {
-	return func.apply(o,args);
-}
-Reflect.fields = function(o) {
-	if(o == null) return new Array();
-	var a = new Array();
-	if(o.hasOwnProperty) {
-		for(var i in o) if( o.hasOwnProperty(i) ) a.push(i);
-	} else {
-		var t;
-		try {
-			t = o.__proto__;
-		} catch( e ) {
-			t = null;
-		}
-		if(t != null) o.__proto__ = null;
-		for(var i in o) if( i != "__proto__" ) a.push(i);
-		if(t != null) o.__proto__ = t;
+	,stop: function() {
+		if(this.ticker == null) return;
+		this.ticker.stop();
+		this.ticker = null;
 	}
-	return a;
-}
-Reflect.isFunction = function(f) {
-	return typeof(f) == "function" && f.__name__ == null;
-}
-Reflect.compare = function(a,b) {
-	return a == b?0:a > b?1:-1;
-}
-Reflect.compareMethods = function(f1,f2) {
-	if(f1 == f2) return true;
-	if(!Reflect.isFunction(f1) || !Reflect.isFunction(f2)) return false;
-	return f1.scope == f2.scope && f1.method == f2.method && f1.method != null;
-}
-Reflect.isObject = function(v) {
-	if(v == null) return false;
-	var t = typeof(v);
-	return t == "string" || t == "object" && !v.__enum__ || t == "function" && v.__name__ != null;
-}
-Reflect.deleteField = function(o,f) {
-	if(!Reflect.hasField(o,f)) return false;
-	delete(o[f]);
-	return true;
-}
-Reflect.copy = function(o) {
-	var o2 = { };
-	var _g = 0, _g1 = Reflect.fields(o);
-	while(_g < _g1.length) {
-		var f = _g1[_g];
-		++_g;
-		o2[f] = Reflect.field(o,f);
+	,destroy: function() {
+		this.stop();
 	}
-	return o2;
+	,__class__: EVLoop
+	,__properties__: {set_run:"setFuncToCall"}
 }
-Reflect.makeVarArgs = function(f) {
-	return function() {
-		var a = new Array();
-		var _g1 = 0, _g = arguments.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			a.push(arguments[i]);
-		}
-		return f(a);
-	};
-}
-Reflect.prototype.__class__ = Reflect;
-haxe.Log = function() { }
-haxe.Log.__name__ = ["haxe","Log"];
-haxe.Log.trace = function(v,infos) {
-	js.Boot.__trace(v,infos);
-}
-haxe.Log.clear = function() {
-	js.Boot.__clear_trace();
-}
-haxe.Log.prototype.__class__ = haxe.Log;
-RCSize = function(w,h) {
-	if( w === $_ ) return;
-	this.width = w == null?0:w;
-	this.height = h == null?0:h;
-}
-RCSize.__name__ = ["RCSize"];
-RCSize.prototype.width = null;
-RCSize.prototype.height = null;
-RCSize.prototype.copy = function() {
-	return new RCSize(this.width,this.height);
-}
-RCSize.prototype.toString = function() {
-	return "[RCSize width:" + this.width + ", height:" + this.height + "]";
-}
-RCSize.prototype.__class__ = RCSize;
-StringBuf = function(p) {
-	if( p === $_ ) return;
-	this.b = new Array();
-}
-StringBuf.__name__ = ["StringBuf"];
-StringBuf.prototype.add = function(x) {
-	this.b[this.b.length] = x == null?"null":x;
-}
-StringBuf.prototype.addSub = function(s,pos,len) {
-	this.b[this.b.length] = s.substr(pos,len);
-}
-StringBuf.prototype.addChar = function(c) {
-	this.b[this.b.length] = String.fromCharCode(c);
-}
-StringBuf.prototype.toString = function() {
-	return this.b.join("");
-}
-StringBuf.prototype.b = null;
-StringBuf.prototype.__class__ = StringBuf;
-Fugu = function() { }
+var EVResize = $hxClasses["EVResize"] = function() {
+	RCSignal.call(this);
+	js.Lib.window.onresize = this.resizeHandler.$bind(this);
+};
+EVResize.__name__ = ["EVResize"];
+EVResize.__super__ = RCSignal;
+EVResize.prototype = $extend(RCSignal.prototype,{
+	resizeHandler: function(e) {
+		var w = js.Lib.window.innerWidth;
+		var h = js.Lib.window.innerHeight;
+		this.dispatch(w,h,null,null,{ fileName : "EVResize.hx", lineNumber : 30, className : "EVResize", methodName : "resizeHandler"});
+	}
+	,__class__: EVResize
+});
+var Fugu = $hxClasses["Fugu"] = function() { }
 Fugu.__name__ = ["Fugu"];
 Fugu.safeDestroy = function(obj,destroy,pos) {
 	if(destroy == null) destroy = true;
@@ -921,341 +486,574 @@ Fugu.align = function(obj,alignment,constraint_w,constraint_h,obj_w,obj_h,delay_
 }
 Fugu.stack = function() {
 	var stack = haxe.Stack.exceptionStack();
-	haxe.Log.trace(haxe.Stack.toString(stack),{ fileName : "Fugu.hx", lineNumber : 159, className : "Fugu", methodName : "stack"});
+	haxe.Log.trace(haxe.Stack.toString(stack),{ fileName : "Fugu.hx", lineNumber : 161, className : "Fugu", methodName : "stack"});
 }
-Fugu.prototype.__class__ = Fugu;
-RCIterator = function(interval,min,max,step) {
-	if( interval === $_ ) return;
-	this.interval = interval;
+Fugu.prototype = {
+	__class__: Fugu
+}
+var IntIter = $hxClasses["IntIter"] = function(min,max) {
 	this.min = min;
 	this.max = max;
-	this.step = step;
-	this.timer = new haxe.Timer(interval);
-}
-RCIterator.__name__ = ["RCIterator"];
-RCIterator.prototype.min = null;
-RCIterator.prototype.max = null;
-RCIterator.prototype.step = null;
-RCIterator.prototype.percentCompleted = null;
-RCIterator.prototype.timer = null;
-RCIterator.prototype.interval = null;
-RCIterator.prototype.run = function(i) {
-}
-RCIterator.prototype.onComplete = function() {
-}
-RCIterator.prototype.start = function() {
-	this.run(this.min);
-	this.timer.run = $closure(this,"loop");
-}
-RCIterator.prototype.loop = function() {
-	this.min += this.step;
-	this.run(this.min);
-	if(this.min >= this.max) {
-		this.destroy();
-		this.onComplete();
+};
+IntIter.__name__ = ["IntIter"];
+IntIter.prototype = {
+	min: null
+	,max: null
+	,hasNext: function() {
+		return this.min < this.max;
 	}
-}
-RCIterator.prototype.destroy = function() {
-	if(this.timer != null) {
-		this.timer.stop();
-		this.timer = null;
+	,next: function() {
+		return this.min++;
 	}
+	,__class__: IntIter
 }
-RCIterator.prototype.__class__ = RCIterator;
-RCFont = function(p) {
-	if( p === $_ ) return;
-	this.font = "Arial";
-	this.html = true;
-	this.embedFonts = true;
-	this.autoSize = true;
-	this.selectable = false;
-	this.color = 14540253;
-	this.size = 12;
-	this.leading = 4;
-	this.leftMargin = 0;
-	this.rightMargin = 0;
-	this.letterSpacing = 0;
-	this.format = { };
-	this.style = { };
+var JSCanvas = $hxClasses["JSCanvas"] = function() { }
+JSCanvas.__name__ = ["JSCanvas"];
+JSCanvas.prototype = {
+	__class__: JSCanvas
 }
-RCFont.__name__ = ["RCFont"];
-RCFont.fontWithName = function(fontName,size) {
-	var fnt = new RCFont();
-	fnt.font = fontName;
-	fnt.size = size;
-	return fnt;
-}
-RCFont.familyNames = function() {
-	return [];
-}
-RCFont.systemFontOfSize = function(size) {
-	var fnt = new RCFont();
-	fnt.size = size;
-	fnt.embedFonts = false;
-	return fnt;
-}
-RCFont.boldSystemFontOfSize = function(size) {
-	var fnt = RCFont.systemFontOfSize(size);
-	fnt.bold = true;
-	return fnt;
-}
-RCFont.italicSystemFontOfSize = function(size) {
-	var fnt = RCFont.systemFontOfSize(size);
-	fnt.italic = true;
-	return fnt;
-}
-RCFont.prototype.html = null;
-RCFont.prototype.format = null;
-RCFont.prototype.style = null;
-RCFont.prototype.embedFonts = null;
-RCFont.prototype.type = null;
-RCFont.prototype.antiAliasType = null;
-RCFont.prototype.autoSize = null;
-RCFont.prototype.displayAsPassword = null;
-RCFont.prototype.selectable = null;
-RCFont.prototype.sharpness = null;
-RCFont.prototype.thickness = null;
-RCFont.prototype.align = null;
-RCFont.prototype.blockIndent = null;
-RCFont.prototype.bold = null;
-RCFont.prototype.bullet = null;
-RCFont.prototype.color = null;
-RCFont.prototype.display = null;
-RCFont.prototype.font = null;
-RCFont.prototype.indent = null;
-RCFont.prototype.italic = null;
-RCFont.prototype.kerning = null;
-RCFont.prototype.leading = null;
-RCFont.prototype.leftMargin = null;
-RCFont.prototype.letterSpacing = null;
-RCFont.prototype.rightMargin = null;
-RCFont.prototype.size = null;
-RCFont.prototype.tabStops = null;
-RCFont.prototype.target = null;
-RCFont.prototype.underline = null;
-RCFont.prototype.url = null;
-RCFont.prototype.copy = function(exceptions) {
-	var rcfont = new RCFont();
-	var fields = Type.getInstanceFields(RCFont);
-	var _g = 0;
-	while(_g < fields.length) {
-		var field = fields[_g];
-		++_g;
-		if(field == "copy" || field == "getFormat" || field == "getStyleSheet") continue;
-		rcfont[field] = Reflect.field(this,field);
+var RCDisplayObject = $hxClasses["RCDisplayObject"] = function() {
+	this.viewWillAppear = new RCSignal();
+	this.viewWillDisappear = new RCSignal();
+	this.viewDidAppear = new RCSignal();
+	this.viewDidDisappear = new RCSignal();
+};
+RCDisplayObject.__name__ = ["RCDisplayObject"];
+RCDisplayObject.prototype = {
+	viewWillAppear: null
+	,viewWillDisappear: null
+	,viewDidAppear: null
+	,viewDidDisappear: null
+	,bounds: null
+	,size: null
+	,contentSize: null
+	,center: null
+	,clipsToBounds: null
+	,backgroundColor: null
+	,x: null
+	,y: null
+	,width: null
+	,height: null
+	,scaleX: null
+	,scaleY: null
+	,alpha: null
+	,rotation: null
+	,visible: null
+	,mouseX: null
+	,mouseY: null
+	,parent: null
+	,x_: null
+	,y_: null
+	,scaleX_: null
+	,scaleY_: null
+	,contentSize_: null
+	,originalSize: null
+	,caobj: null
+	,setVisible: function(v) {
+		return this.visible = v;
 	}
-	if(exceptions != null) {
-		var _g = 0, _g1 = Reflect.fields(exceptions);
-		while(_g < _g1.length) {
-			var excp = _g1[_g];
-			++_g;
-			if(Reflect.hasField(rcfont,excp)) rcfont[excp] = Reflect.field(exceptions,excp);
+	,getAlpha: function() {
+		return this.alpha;
+	}
+	,setAlpha: function(a) {
+		return this.alpha = a;
+	}
+	,getX: function() {
+		return this.x_;
+	}
+	,setX: function(x) {
+		return this.x_ = x;
+	}
+	,getY: function() {
+		return this.y_;
+	}
+	,setY: function(y) {
+		return this.y_ = y;
+	}
+	,getWidth: function() {
+		return this.size.width;
+	}
+	,setWidth: function(w) {
+		return this.size.width = w;
+	}
+	,getHeight: function() {
+		return this.size.height;
+	}
+	,setHeight: function(h) {
+		return this.size.height = h;
+	}
+	,getContentSize: function() {
+		return this.size;
+	}
+	,setContentSize: function(s) {
+		return this.contentSize = s;
+	}
+	,setRotation: function(r) {
+		return this.rotation = r;
+	}
+	,getRotation: function() {
+		return this.rotation;
+	}
+	,getBounds: function() {
+		return new RCRect(this.x_,this.y_,this.size.width,this.size.height);
+	}
+	,setBounds: function(b) {
+		this.setX(b.origin.x);
+		this.setY(b.origin.y);
+		this.setWidth(b.size.width);
+		this.setHeight(b.size.height);
+		return b;
+	}
+	,getScaleX: function() {
+		return this.scaleX_;
+	}
+	,setScaleX: function(sx) {
+		this.scaleX_ = sx;
+		this.scale(this.scaleX_,this.scaleY_);
+		return this.scaleX_;
+	}
+	,getScaleY: function() {
+		return this.scaleY_;
+	}
+	,setScaleY: function(sy) {
+		this.scaleY_ = sy;
+		this.scale(this.scaleX_,this.scaleY_);
+		return this.scaleY_;
+	}
+	,setClipsToBounds: function(clip) {
+		return clip;
+	}
+	,setBackgroundColor: function(color) {
+		return color;
+	}
+	,setCenter: function(pos) {
+		this.center = pos;
+		this.setX(pos.x - this.size.width / 2 | 0);
+		this.setY(pos.y - this.size.height / 2 | 0);
+		return this.center;
+	}
+	,scaleToFit: function(w,h) {
+		if(this.size.width / w > this.size.height / h && this.size.width > w) {
+			this.setWidth(w);
+			this.setHeight(w * this.originalSize.height / this.originalSize.width);
+		} else if(this.size.height > h) {
+			this.setHeight(h);
+			this.setWidth(h * this.originalSize.width / this.originalSize.height);
+		} else if(this.size.width > this.originalSize.width && this.size.height > this.originalSize.height) {
+			this.setWidth(this.size.width);
+			this.setHeight(this.size.height);
+		} else this.resetScale();
+	}
+	,scaleToFill: function(w,h) {
+		if(w / this.originalSize.width > h / this.originalSize.height) {
+			this.setWidth(w);
+			this.setHeight(w * this.originalSize.height / this.originalSize.width);
+		} else {
+			this.setHeight(h);
+			this.setWidth(h * this.originalSize.width / this.originalSize.height);
 		}
 	}
-	return rcfont;
+	,scale: function(sx,sy) {
+	}
+	,resetScale: function() {
+		this.setWidth(this.originalSize.width);
+		this.setHeight(this.originalSize.height);
+	}
+	,getMouseX: function() {
+		return 0;
+	}
+	,getMouseY: function() {
+		return 0;
+	}
+	,addChild: function(child) {
+	}
+	,addChildAt: function(child,index) {
+	}
+	,removeChild: function(child) {
+	}
+	,addAnimation: function(obj) {
+		CoreAnimation.add(this.caobj = obj);
+	}
+	,destroy: function() {
+		CoreAnimation.remove(this.caobj);
+		this.size = null;
+	}
+	,toString: function() {
+		return "[RCView bounds:" + this.getBounds().origin.x + "x" + this.getBounds().origin.x + "," + this.getBounds().size.width + "x" + this.getBounds().size.height + "]";
+	}
+	,__class__: RCDisplayObject
+	,__properties__: {get_mouseY:"getMouseY",get_mouseX:"getMouseX",set_visible:"setVisible",set_rotation:"setRotation",get_rotation:"getRotation",set_alpha:"setAlpha",get_alpha:"getAlpha",set_scaleY:"setScaleY",get_scaleY:"getScaleY",set_scaleX:"setScaleX",get_scaleX:"getScaleX",set_height:"setHeight",get_height:"getHeight",set_width:"setWidth",get_width:"getWidth",set_y:"setY",get_y:"getY",set_x:"setX",get_x:"getX",set_backgroundColor:"setBackgroundColor",set_clipsToBounds:"setClipsToBounds",set_center:"setCenter",set_contentSize:"setContentSize",get_contentSize:"getContentSize",set_bounds:"setBounds",get_bounds:"getBounds"}
 }
-RCFont.prototype.getFormat = function() {
-	this.format.align = null;
-	this.format.blockIndent = this.blockIndent;
-	this.format.bold = this.bold;
-	this.format.bullet = this.bullet;
-	this.format.color = this.color;
-	this.format.font = this.font;
-	this.format.italic = this.italic;
-	this.format.indent = this.indent;
-	this.format.kerning = this.kerning;
-	this.format.leading = this.leading * RCDevice.currentDevice().dpiScale;
-	this.format.leftMargin = this.leftMargin * RCDevice.currentDevice().dpiScale;
-	this.format.letterSpacing = this.letterSpacing;
-	this.format.rightMargin = this.rightMargin * RCDevice.currentDevice().dpiScale;
-	this.format.size = this.size * RCDevice.currentDevice().dpiScale;
-	this.format.tabStops = this.tabStops;
-	this.format.target = this.target;
-	this.format.underline = this.underline;
-	this.format.url = this.url;
-	return this.format;
-}
-RCFont.prototype.getStyleSheet = function() {
-	return this.style;
-}
-RCFont.prototype.__class__ = RCFont;
-RCSignal = function(p) {
-	if( p === $_ ) return;
-	this.enabled = true;
-	this.removeAll();
-}
-RCSignal.__name__ = ["RCSignal"];
-RCSignal.prototype.listeners = null;
-RCSignal.prototype.exposableListener = null;
-RCSignal.prototype.enabled = null;
-RCSignal.prototype.add = function(listener) {
-	this.listeners.add(listener);
-}
-RCSignal.prototype.addOnce = function(listener,pos) {
-	if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once as you expect. " + pos,{ fileName : "RCSignal.hx", lineNumber : 22, className : "RCSignal", methodName : "addOnce"});
-	this.exposableListener = listener;
-}
-RCSignal.prototype.addFirst = function(listener,pos) {
-	this.listeners.push(listener);
-}
-RCSignal.prototype.remove = function(listener) {
-	var $it0 = this.listeners.iterator();
-	while( $it0.hasNext() ) {
-		var l = $it0.next();
-		if(Reflect.compareMethods(l,listener)) {
-			this.listeners.remove(listener);
-			break;
+var JSView = $hxClasses["JSView"] = function(x,y,w,h) {
+	RCDisplayObject.call(this);
+	this.size = new RCSize(w,h);
+	this.contentSize_ = this.size.copy();
+	this.scaleX_ = 1;
+	this.scaleY_ = 1;
+	this.alpha_ = 1;
+	this.layer = js.Lib.document.createElement("div");
+	this.layer.style.position = "absolute";
+	this.layer.style.margin = "0px 0px 0px 0px";
+	this.setX(x);
+	this.setY(y);
+};
+JSView.__name__ = ["JSView"];
+JSView.__super__ = RCDisplayObject;
+JSView.prototype = $extend(RCDisplayObject.prototype,{
+	layer: null
+	,layerScrollable: null
+	,graphics: null
+	,alpha_: null
+	,addChild: function(child) {
+		if(child == null) return;
+		child.viewWillAppear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 54, className : "JSView", methodName : "addChild"});
+		child.parent = this;
+		this.layer.appendChild(child.layer);
+		child.viewDidAppear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 57, className : "JSView", methodName : "addChild"});
+	}
+	,addChildAt: function(child,index) {
+		if(this.layer.childNodes[index] != null) this.layer.insertBefore(child.layer,this.layer.childNodes[index]); else this.layer.appendChild(child.layer);
+	}
+	,removeChild: function(child) {
+		if(child == null) return;
+		child.viewWillDisappear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 71, className : "JSView", methodName : "removeChild"});
+		child.parent = null;
+		this.layer.removeChild(child.layer);
+		child.viewDidDisappear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 74, className : "JSView", methodName : "removeChild"});
+	}
+	,removeFromSuperView: function() {
+		if(this.parent != null) this.parent.removeChild(this);
+	}
+	,setBackgroundColor: function(color) {
+		if(color == null) {
+			this.layer.style.background = null;
+			return color;
 		}
+		var red = (color & 16711680) >> 16;
+		var green = (color & 65280) >> 8;
+		var blue = color & 255;
+		this.layer.style.backgroundColor = "rgb(" + red + "," + green + "," + blue + ")";
+		return color;
 	}
-	if(Reflect.compareMethods(this.exposableListener,listener)) this.exposableListener = null;
-}
-RCSignal.prototype.removeAll = function() {
-	this.listeners = new List();
-	this.exposableListener = null;
-}
-RCSignal.prototype.dispatch = function(p1,p2,p3,p4,pos) {
-	if(!this.enabled) return;
-	var args = new Array();
-	var _g = 0, _g1 = [p1,p2,p3,p4];
-	while(_g < _g1.length) {
-		var p = _g1[_g];
-		++_g;
-		if(p != null) args.push(p); else break;
-	}
-	var $it0 = this.listeners.iterator();
-	while( $it0.hasNext() ) {
-		var listener = $it0.next();
-		this.callMethod(listener,args,pos);
-	}
-	if(this.exposableListener != null) {
-		this.callMethod(this.exposableListener,args,pos);
-		this.exposableListener = null;
-	}
-}
-RCSignal.prototype.callMethod = function(listener,args,pos) {
-	try {
-		listener.apply(null,args);
-	} catch( e ) {
-		haxe.Log.trace("[RCSignal error: " + e + ", called from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 67, className : "RCSignal", methodName : "callMethod"});
-		Fugu.stack();
-	}
-}
-RCSignal.prototype.exists = function(listener) {
-	var $it0 = this.listeners.iterator();
-	while( $it0.hasNext() ) {
-		var l = $it0.next();
-		if(l == listener) return true;
-	}
-	return false;
-}
-RCSignal.prototype.destroy = function() {
-	this.listeners = null;
-	this.exposableListener = null;
-}
-RCSignal.prototype.__class__ = RCSignal;
-EVResize = function(p) {
-	if( p === $_ ) return;
-	RCSignal.call(this);
-	js.Lib.window.onresize = $closure(this,"resizeHandler");
-}
-EVResize.__name__ = ["EVResize"];
-EVResize.__super__ = RCSignal;
-for(var k in RCSignal.prototype ) EVResize.prototype[k] = RCSignal.prototype[k];
-EVResize.prototype.resizeHandler = function(e) {
-	var w = js.Lib.window.innerWidth;
-	var h = js.Lib.window.innerHeight;
-	this.dispatch(w,h,null,null,{ fileName : "EVResize.hx", lineNumber : 30, className : "EVResize", methodName : "resizeHandler"});
-}
-EVResize.prototype.__class__ = EVResize;
-if(typeof caequations=='undefined') caequations = {}
-caequations.Linear = function() { }
-caequations.Linear.__name__ = ["caequations","Linear"];
-caequations.Linear.NONE = function(t,b,c,d,p_params) {
-	return c * t / d + b;
-}
-caequations.Linear.prototype.__class__ = caequations.Linear;
-CoreAnimation = function() { }
-CoreAnimation.__name__ = ["CoreAnimation"];
-CoreAnimation.latest = null;
-CoreAnimation.ticker = null;
-CoreAnimation.add = function(obj) {
-	if(obj == null) return;
-	if(obj.target == null) return;
-	var a = CoreAnimation.latest;
-	var prev = CoreAnimation.latest;
-	if(prev != null) prev.next = obj;
-	obj.prev = prev;
-	CoreAnimation.latest = obj;
-	obj.init();
-	obj.initTime();
-	if(CoreAnimation.ticker == null) {
-		CoreAnimation.ticker = new EVLoop();
-		CoreAnimation.ticker.setFuncToCall(CoreAnimation.updateAnimations);
-	}
-}
-CoreAnimation.remove = function(obj) {
-	if(obj == null) return;
-	var a = CoreAnimation.latest;
-	while(a != null) {
-		if(a.target == obj) CoreAnimation.removeCAObject(a);
-		a = a.prev;
-	}
-}
-CoreAnimation.removeCAObject = function(a) {
-	if(a.prev != null) a.prev.next = a.next;
-	if(a.next != null) a.next.prev = a.prev;
-	if(CoreAnimation.latest == a) CoreAnimation.latest = a.prev != null?a.prev:null;
-	CoreAnimation.removeTimer();
-	a = null;
-}
-CoreAnimation.removeTimer = function() {
-	if(CoreAnimation.latest == null && CoreAnimation.ticker != null) {
-		CoreAnimation.ticker.destroy();
-		CoreAnimation.ticker = null;
-	}
-}
-CoreAnimation.destroy = function() {
-	CoreAnimation.latest = null;
-	CoreAnimation.removeTimer();
-}
-CoreAnimation.updateAnimations = function() {
-	var current_time = Date.now().getTime();
-	var time_diff = 0.0;
-	var a = CoreAnimation.latest;
-	while(a != null) {
-		if(a.target == null) {
-			a = a.prev;
-			CoreAnimation.removeCAObject(a);
-			break;
+	,setClipsToBounds: function(clip) {
+		if(clip) {
+			this.layer.style.overflow = "hidden";
+			this.layerScrollable = js.Lib.document.createElement("div");
+			this.layerScrollable.style.width = this.size.width + "px";
+			this.layerScrollable.style.height = this.size.height + "px";
+			while(this.layer.hasChildNodes()) this.layerScrollable.appendChild(this.layer.removeChild(this.layer.firstChild));
+			this.layer.appendChild(this.layerScrollable);
+		} else {
+			while(this.layerScrollable.hasChildNodes()) this.layer.appendChild(this.layerScrollable.removeChild(this.layerScrollable.firstChild));
+			this.layer.style.overflow = null;
+			this.layer.removeChild(this.layerScrollable);
+			this.layerScrollable = null;
 		}
-		time_diff = current_time - a.fromTime - a.delay;
-		if(time_diff >= a.duration) time_diff = a.duration;
-		if(time_diff > 0) {
-			a.animate(time_diff);
-			if(time_diff > 0 && !a.delegate.startPointPassed) a.delegate.start();
-			if(time_diff >= a.duration) {
-				if(a.repeatCount > 0) {
-					a.repeat();
-					a.delegate.repeat();
-				} else {
-					CoreAnimation.removeCAObject(a);
-					a.delegate.stop();
-				}
+		return clip;
+	}
+	,setVisible: function(v) {
+		this.layer.style.visibility = v?"visible":"hidden";
+		return RCDisplayObject.prototype.setVisible.call(this,v);
+	}
+	,setAlpha: function(a) {
+		if(js.Lib.isIE) {
+			this.layer.style.msFilter = "progid:DXImageTransform.Microsoft.Alpha(Opacity=" + Std.string(a * 100) + ")";
+			this.layer.style.filter = "alpha(opacity=" + Std.string(a * 100) + ")";
+		} else this.layer.style.opacity = Std.string(a);
+		return RCDisplayObject.prototype.setAlpha.call(this,a);
+	}
+	,setX: function(x) {
+		this.layer.style.left = Std.string(x * RCDevice.currentDevice().dpiScale) + "px";
+		return RCDisplayObject.prototype.setX.call(this,x);
+	}
+	,setY: function(y) {
+		this.layer.style.top = Std.string(y * RCDevice.currentDevice().dpiScale) + "px";
+		return RCDisplayObject.prototype.setY.call(this,y);
+	}
+	,setWidth: function(w) {
+		this.layer.style.width = w + "px";
+		return RCDisplayObject.prototype.setWidth.call(this,w);
+	}
+	,setHeight: function(h) {
+		this.layer.style.height = h + "px";
+		return RCDisplayObject.prototype.setHeight.call(this,h);
+	}
+	,getContentSize: function() {
+		this.contentSize_.width = this.layer.scrollWidth;
+		this.contentSize_.height = this.layer.scrollHeight;
+		return this.contentSize_;
+	}
+	,scale: function(sx,sy) {
+		this.layer.style.WebkitTransformOrigin = "top left";
+		this.layer.style.WebkitTransform = "scale(" + sx + "," + sy + ")";
+	}
+	,startDrag: function(lockCenter,rect) {
+	}
+	,stopDrag: function() {
+	}
+	,getMouseX: function() {
+		return this.layer.clientX;
+		if(this.parent == null) return this.mouseX;
+		return this.parent.getMouseX() - this.getX();
+	}
+	,getMouseY: function() {
+		if(this.parent == null) return this.mouseY;
+		return this.parent.getMouseY() - this.getY();
+	}
+	,__class__: JSView
+});
+var List = $hxClasses["List"] = function() {
+	this.length = 0;
+};
+List.__name__ = ["List"];
+List.prototype = {
+	h: null
+	,q: null
+	,length: null
+	,add: function(item) {
+		var x = [item];
+		if(this.h == null) this.h = x; else this.q[1] = x;
+		this.q = x;
+		this.length++;
+	}
+	,push: function(item) {
+		var x = [item,this.h];
+		this.h = x;
+		if(this.q == null) this.q = x;
+		this.length++;
+	}
+	,first: function() {
+		return this.h == null?null:this.h[0];
+	}
+	,last: function() {
+		return this.q == null?null:this.q[0];
+	}
+	,pop: function() {
+		if(this.h == null) return null;
+		var x = this.h[0];
+		this.h = this.h[1];
+		if(this.h == null) this.q = null;
+		this.length--;
+		return x;
+	}
+	,isEmpty: function() {
+		return this.h == null;
+	}
+	,clear: function() {
+		this.h = null;
+		this.q = null;
+		this.length = 0;
+	}
+	,remove: function(v) {
+		var prev = null;
+		var l = this.h;
+		while(l != null) {
+			if(l[0] == v) {
+				if(prev == null) this.h = l[1]; else prev[1] = l[1];
+				if(this.q == l) this.q = prev;
+				this.length--;
+				return true;
 			}
-			if(a.delegate.kenBurnsPointIn != null) {
-				if(time_diff > a.delegate.kenBurnsPointIn && !a.delegate.kenBurnsPointInPassed) a.delegate.kbIn();
-				if(time_diff > a.delegate.kenBurnsPointOut && !a.delegate.kenBurnsPointOutPassed) a.delegate.kbOut();
-			}
+			prev = l;
+			l = l[1];
 		}
-		a = a.prev;
+		return false;
 	}
+	,iterator: function() {
+		return { h : this.h, hasNext : function() {
+			return this.h != null;
+		}, next : function() {
+			if(this.h == null) return null;
+			var x = this.h[0];
+			this.h = this.h[1];
+			return x;
+		}};
+	}
+	,toString: function() {
+		var s = new StringBuf();
+		var first = true;
+		var l = this.h;
+		s.b[s.b.length] = "{";
+		while(l != null) {
+			if(first) first = false; else s.b[s.b.length] = ", ";
+			s.add(Std.string(l[0]));
+			l = l[1];
+		}
+		s.b[s.b.length] = "}";
+		return s.b.join("");
+	}
+	,join: function(sep) {
+		var s = new StringBuf();
+		var first = true;
+		var l = this.h;
+		while(l != null) {
+			if(first) first = false; else s.b[s.b.length] = sep == null?"null":sep;
+			s.add(l[0]);
+			l = l[1];
+		}
+		return s.b.join("");
+	}
+	,filter: function(f) {
+		var l2 = new List();
+		var l = this.h;
+		while(l != null) {
+			var v = l[0];
+			l = l[1];
+			if(f(v)) l2.add(v);
+		}
+		return l2;
+	}
+	,map: function(f) {
+		var b = new List();
+		var l = this.h;
+		while(l != null) {
+			var v = l[0];
+			l = l[1];
+			b.add(f(v));
+		}
+		return b;
+	}
+	,__class__: List
 }
-CoreAnimation.timestamp = function() {
-	return Date.now().getTime();
+var RCAppDelegate = $hxClasses["RCAppDelegate"] = function() {
+	RCWindow.sharedWindow();
+	JSView.call(this,0,0);
+	RCNotificationCenter.addObserver("resize",this.resize.$bind(this));
+	RCNotificationCenter.addObserver("fullscreen",this.fullscreen.$bind(this));
+	this.applicationDidFinishLaunching();
+};
+RCAppDelegate.__name__ = ["RCAppDelegate"];
+RCAppDelegate.__super__ = JSView;
+RCAppDelegate.prototype = $extend(JSView.prototype,{
+	applicationDidFinishLaunching: function() {
+	}
+	,applicationDidBecomeActive: function() {
+	}
+	,applicationWillEnterForeground: function() {
+	}
+	,applicationWillTerminate: function() {
+		haxe.Log.trace("applicationWillTerminate",{ fileName : "RCAppDelegate.hx", lineNumber : 34, className : "RCAppDelegate", methodName : "applicationWillTerminate"});
+	}
+	,resize: function(w,h) {
+	}
+	,fullscreen: function(b) {
+	}
+	,__class__: RCAppDelegate
+});
+var Main = $hxClasses["Main"] = function() {
+	RCAppDelegate.call(this);
+	this.heart1();
+	RCWindow.sharedWindow().addChild(new RCStats());
+};
+Main.__name__ = ["Main"];
+Main.main = function() {
+	haxe.Firebug.redirectTraces();
+	RCWindow.sharedWindow();
 }
-CoreAnimation.prototype.__class__ = CoreAnimation;
-RCColor = function(fillColor,strokeColor,a) {
-	if( fillColor === $_ ) return;
+Main.__super__ = RCAppDelegate;
+Main.prototype = $extend(RCAppDelegate.prototype,{
+	heart1: function() {
+		var _g = 0;
+		while(_g < 200) {
+			var i = _g++;
+			this.drawParticle(i);
+		}
+	}
+	,drawParticle: function(i) {
+		var t = i / 200;
+		var p1 = new Particle(400,400,t,-1);
+		var p2 = new Particle(400,400,t,1);
+		RCWindow.sharedWindow().addChild(p1);
+		RCWindow.sharedWindow().addChild(p2);
+	}
+	,heart2: function() {
+		var iterator = new RCIterator(4,0,200,1);
+		iterator.run = this.drawParticle2.$bind(this);
+		iterator.start();
+	}
+	,drawParticle2: function(i) {
+		var scale = 20;
+		var t = i / (200 / 60);
+		var a = 0.01 * (-t * t + 40 * t + 1200);
+		var x = a * Math.sin(Math.PI * t / 180);
+		var y = a * Math.cos(Math.PI * t / 180);
+		var p1 = new Particle(800 - x * scale,400 - y * scale,t,-1);
+		var p2 = new Particle(800 - x * scale,400 - y * scale,t,1);
+		RCWindow.sharedWindow().addChild(p1);
+		RCWindow.sharedWindow().addChild(p2);
+	}
+	,logx: function(val,base) {
+		if(base == null) base = 10;
+		return Math.log(val) / Math.log(base);
+	}
+	,log10: function(val) {
+		return Math.log(val) * 0.434294481904;
+	}
+	,__class__: Main
+});
+var Particle = $hxClasses["Particle"] = function(x,y,t,s) {
+	JSView.call(this,x,y);
+	this.o_x = x;
+	this.o_y = y;
+	this.theta = t;
+	this.f_x = x;
+	this.f_y = y;
+	this.current_theta = 0.001;
+	this.sign = s;
+	this.addChild(new RCRectangle(0,0,1,1,0));
+	this.loopEvent = new EVLoop();
+	this.loopEvent.setFuncToCall(this.loopTheta.$bind(this));
+	this.timer = new haxe.Timer(40);
+	this.timer.run = this.advanceTheta.$bind(this);
+};
+Particle.__name__ = ["Particle"];
+Particle.__super__ = JSView;
+Particle.prototype = $extend(JSView.prototype,{
+	timer: null
+	,loopEvent: null
+	,o_x: null
+	,o_y: null
+	,f_x: null
+	,f_y: null
+	,theta: null
+	,current_theta: null
+	,sign: null
+	,advanceTheta: function() {
+		this.current_theta += (this.theta - this.current_theta) / 5;
+		this.fxy();
+		if(Math.abs(this.current_theta - this.theta) <= 0.001) {
+			this.current_theta = this.theta;
+			this.timer.stop();
+			this.loopEvent.stop();
+			this.fxy();
+			this.o_x = this.o_x - this.f_x * 500 * this.sign;
+			this.o_y = this.o_y - this.f_y * 500;
+			this.changeDirection();
+			this.loopEvent.setFuncToCall(this.loop.$bind(this));
+		}
+	}
+	,fxy: function() {
+		this.f_x = Math.sin(this.current_theta) * Math.cos(this.current_theta) * Math.log(Math.abs(this.current_theta));
+		this.f_y = Math.sqrt(Math.abs(this.current_theta)) * Math.cos(this.current_theta);
+	}
+	,changeDirection: function() {
+		this.f_x = this.o_x + 6 - Math.random() * 12;
+		this.f_y = this.o_y + 6 - Math.random() * 12;
+	}
+	,loopTheta: function() {
+		this.setX(this.o_x - this.f_x * 500 * this.sign);
+		this.setY(this.o_y - this.f_y * 500);
+	}
+	,loop: function() {
+		var _g = this;
+		_g.setX(_g.getX() + (this.f_x - this.getX()) / 3);
+		var _g = this;
+		_g.setY(_g.getY() + (this.f_y - this.getY()) / 3);
+		if(Math.abs(this.getX() - this.f_x) < 1) this.changeDirection();
+	}
+	,__class__: Particle
+});
+var RCColor = $hxClasses["RCColor"] = function(fillColor,strokeColor,a) {
 	this.fillColor = fillColor;
 	this.strokeColor = strokeColor;
 	this.alpha = a == null?1.0:a;
@@ -1264,7 +1062,7 @@ RCColor = function(fillColor,strokeColor,a) {
 	this.blueComponent = (fillColor & 255) / 255;
 	this.fillColorStyle = RCColor.HEXtoString(fillColor);
 	this.strokeColorStyle = RCColor.HEXtoString(strokeColor);
-}
+};
 RCColor.__name__ = ["RCColor"];
 RCColor.blackColor = function() {
 	return RCColor.colorWithWhite(0);
@@ -1333,514 +1131,18 @@ RCColor.HEXtoString = function(color) {
 RCColor.RGBtoHEX = function(r,g,b) {
 	return Math.round(r * 255) << 16 | Math.round(g * 255) << 8 | Math.round(b * 255);
 }
-RCColor.prototype.fillColor = null;
-RCColor.prototype.strokeColor = null;
-RCColor.prototype.fillColorStyle = null;
-RCColor.prototype.strokeColorStyle = null;
-RCColor.prototype.redComponent = null;
-RCColor.prototype.greenComponent = null;
-RCColor.prototype.blueComponent = null;
-RCColor.prototype.alpha = null;
-RCColor.prototype.__class__ = RCColor;
-RCNotification = function(name,functionToCall) {
-	if( name === $_ ) return;
-	this.name = name;
-	this.functionToCall = functionToCall;
+RCColor.prototype = {
+	fillColor: null
+	,strokeColor: null
+	,fillColorStyle: null
+	,strokeColorStyle: null
+	,redComponent: null
+	,greenComponent: null
+	,blueComponent: null
+	,alpha: null
+	,__class__: RCColor
 }
-RCNotification.__name__ = ["RCNotification"];
-RCNotification.prototype.name = null;
-RCNotification.prototype.functionToCall = null;
-RCNotification.prototype.toString = function() {
-	return "[RCNotification with name: '" + this.name + "', functionToCall: " + this.functionToCall + "]";
-}
-RCNotification.prototype.__class__ = RCNotification;
-RCDrawInterface = function() { }
-RCDrawInterface.__name__ = ["RCDrawInterface"];
-RCDrawInterface.prototype.configure = null;
-RCDrawInterface.prototype.redraw = null;
-RCDrawInterface.prototype.__class__ = RCDrawInterface;
-RCRectangle = function(x,y,w,h,color,alpha,r) {
-	if( x === $_ ) return;
-	if(alpha == null) alpha = 1.0;
-	RCDraw.call(this,x,y,w,h,color,alpha);
-	this.roundness = r;
-	this.redraw();
-}
-RCRectangle.__name__ = ["RCRectangle"];
-RCRectangle.__super__ = RCDraw;
-for(var k in RCDraw.prototype ) RCRectangle.prototype[k] = RCDraw.prototype[k];
-RCRectangle.prototype.roundness = null;
-RCRectangle.prototype.redraw = function() {
-	var fillColorStyle = ((function($this) {
-		var $r;
-		var $t = $this.color;
-		if(Std["is"]($t,RCColor)) $t; else throw "Class cast error";
-		$r = $t;
-		return $r;
-	}(this))).fillColorStyle;
-	var strokeColorStyle = ((function($this) {
-		var $r;
-		var $t = $this.color;
-		if(Std["is"]($t,RCColor)) $t; else throw "Class cast error";
-		$r = $t;
-		return $r;
-	}(this))).strokeColorStyle;
-	this.layer.style.margin = "0px 0px 0px 0px";
-	this.layer.style.width = this.size.width * RCDevice.currentDevice().dpiScale + "px";
-	this.layer.style.height = this.size.height * RCDevice.currentDevice().dpiScale + "px";
-	this.layer.style.backgroundColor = fillColorStyle;
-	if(strokeColorStyle != null) {
-		this.layer.style.borderStyle = "solid";
-		this.layer.style.borderWidth = this.borderThickness + "px";
-		this.layer.style.borderColor = strokeColorStyle;
-	}
-	if(this.roundness != null) {
-		this.layer.style.MozBorderRadius = this.roundness * RCDevice.currentDevice().dpiScale / 2 + "px";
-		this.layer.style.borderRadius = this.roundness * RCDevice.currentDevice().dpiScale / 2 + "px";
-	}
-}
-RCRectangle.prototype.setWidth = function(w) {
-	this.size.width = w;
-	this.redraw();
-	return w;
-}
-RCRectangle.prototype.setHeight = function(h) {
-	this.size.height = h;
-	this.redraw();
-	return h;
-}
-RCRectangle.prototype.__class__ = RCRectangle;
-RCRectangle.__interfaces__ = [RCDrawInterface];
-haxe.Firebug = function() { }
-haxe.Firebug.__name__ = ["haxe","Firebug"];
-haxe.Firebug.detect = function() {
-	try {
-		return console != null && console.error != null;
-	} catch( e ) {
-		return false;
-	}
-}
-haxe.Firebug.redirectTraces = function() {
-	haxe.Log.trace = haxe.Firebug.trace;
-	js.Lib.setErrorHandler(haxe.Firebug.onError);
-}
-haxe.Firebug.onError = function(err,stack) {
-	var buf = err + "\n";
-	var _g = 0;
-	while(_g < stack.length) {
-		var s = stack[_g];
-		++_g;
-		buf += "Called from " + s + "\n";
-	}
-	haxe.Firebug.trace(buf,null);
-	return true;
-}
-haxe.Firebug.trace = function(v,inf) {
-	var type = inf != null && inf.customParams != null?inf.customParams[0]:null;
-	if(type != "warn" && type != "info" && type != "debug" && type != "error") type = inf == null?"error":"log";
-	console[type]((inf == null?"":inf.fileName + ":" + inf.lineNumber + " : ") + Std.string(v));
-}
-haxe.Firebug.prototype.__class__ = haxe.Firebug;
-RCStats = function(x,y) {
-	if( x === $_ ) return;
-	if(y == null) y = 0;
-	if(x == null) x = 0;
-	RCRectangle.call(this,x,y,152,18,16777215,0.9,16);
-	this.addChild(new RCRectangle(1,1,150,16,3355443,0.3,16));
-	var f = RCFont.systemFontOfSize(12);
-	f.color = 16777215;
-	this.txt = new RCTextView(6,3,null,20,"Calculating...",f);
-	this.addChild(this.txt);
-	this.last = Date.now().getTime();
-	this.e = new EVLoop();
-	this.e.setFuncToCall($closure(this,"loop"));
-}
-RCStats.__name__ = ["RCStats"];
-RCStats.__super__ = RCRectangle;
-for(var k in RCRectangle.prototype ) RCStats.prototype[k] = RCRectangle.prototype[k];
-RCStats.prototype.last = null;
-RCStats.prototype.ticks = null;
-RCStats.prototype.fps = null;
-RCStats.prototype.currMemory = null;
-RCStats.prototype.txt = null;
-RCStats.prototype.e = null;
-RCStats.prototype.loop = function() {
-	this.ticks++;
-	var now = Date.now().getTime();
-	var delta = now - this.last;
-	if(delta >= 1000) {
-		this.fps = Math.round(this.ticks / delta * 1000);
-		this.ticks = 0;
-		this.last = now;
-		this.txt.setText(this.fps + " FPS,  " + this.currMemory + " Mbytes");
-	}
-}
-RCStats.prototype.destroy = function() {
-	this.e.destroy();
-	this.txt.destroy();
-	RCRectangle.prototype.destroy.call(this);
-}
-RCStats.prototype.__class__ = RCStats;
-IntIter = function(min,max) {
-	if( min === $_ ) return;
-	this.min = min;
-	this.max = max;
-}
-IntIter.__name__ = ["IntIter"];
-IntIter.prototype.min = null;
-IntIter.prototype.max = null;
-IntIter.prototype.hasNext = function() {
-	return this.min < this.max;
-}
-IntIter.prototype.next = function() {
-	return this.min++;
-}
-IntIter.prototype.__class__ = IntIter;
-haxe.Timer = function(time_ms) {
-	if( time_ms === $_ ) return;
-	var arr = haxe_timers;
-	this.id = arr.length;
-	arr[this.id] = this;
-	this.timerId = window.setInterval("haxe_timers[" + this.id + "].run();",time_ms);
-}
-haxe.Timer.__name__ = ["haxe","Timer"];
-haxe.Timer.delay = function(f,time_ms) {
-	var t = new haxe.Timer(time_ms);
-	t.run = function() {
-		t.stop();
-		f();
-	};
-	return t;
-}
-haxe.Timer.measure = function(f,pos) {
-	var t0 = haxe.Timer.stamp();
-	var r = f();
-	haxe.Log.trace(haxe.Timer.stamp() - t0 + "s",pos);
-	return r;
-}
-haxe.Timer.stamp = function() {
-	return Date.now().getTime() / 1000;
-}
-haxe.Timer.prototype.id = null;
-haxe.Timer.prototype.timerId = null;
-haxe.Timer.prototype.stop = function() {
-	if(this.id == null) return;
-	window.clearInterval(this.timerId);
-	var arr = haxe_timers;
-	arr[this.id] = null;
-	if(this.id > 100 && this.id == arr.length - 1) {
-		var p = this.id - 1;
-		while(p >= 0 && arr[p] == null) p--;
-		arr = arr.slice(0,p + 1);
-	}
-	this.id = null;
-}
-haxe.Timer.prototype.run = function() {
-}
-haxe.Timer.prototype.__class__ = haxe.Timer;
-CAObject = function(target,properties,duration,delay,Eq,pos) {
-	if( target === $_ ) return;
-	this.target = target;
-	this.properties = properties;
-	this.repeatCount = 0;
-	this.autoreverses = false;
-	this.fromTime = Date.now().getTime();
-	this.duration = duration == null?CoreAnimation.defaultDuration:duration <= 0?0.001:duration;
-	this.delay = delay == null || delay < 0?0:delay;
-	if(Eq == null) this.timingFunction = CoreAnimation.defaultTimingFunction; else this.timingFunction = Eq;
-	this.delegate = new CADelegate();
-	this.delegate.pos = pos;
-	this.fromValues = { };
-	this.toValues = { };
-}
-CAObject.__name__ = ["CAObject"];
-CAObject.prototype.target = null;
-CAObject.prototype.prev = null;
-CAObject.prototype.next = null;
-CAObject.prototype.properties = null;
-CAObject.prototype.fromValues = null;
-CAObject.prototype.toValues = null;
-CAObject.prototype.fromTime = null;
-CAObject.prototype.delay = null;
-CAObject.prototype.duration = null;
-CAObject.prototype.repeatCount = null;
-CAObject.prototype.autoreverses = null;
-CAObject.prototype.timingFunction = null;
-CAObject.prototype.constraintBounds = null;
-CAObject.prototype.delegate = null;
-CAObject.prototype.init = function() {
-	throw "CAObject should be extended (" + this.delegate.pos + ")";
-}
-CAObject.prototype.animate = function(time_diff) {
-	throw "CAObject should be extended (" + this.delegate.pos + ")";
-}
-CAObject.prototype.initTime = function() {
-	this.fromTime = Date.now().getTime();
-	this.duration = this.duration * 1000;
-	this.delay = this.delay * 1000;
-}
-CAObject.prototype.repeat = function() {
-	this.fromTime = Date.now().getTime();
-	this.delay = 0;
-	if(this.autoreverses) {
-		var v = this.fromValues;
-		this.fromValues = this.toValues;
-		this.toValues = v;
-	}
-	this.repeatCount--;
-}
-CAObject.prototype.calculate = function(time_diff,prop) {
-	return this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null);
-}
-CAObject.prototype.toString = function() {
-	return "[CAObject: target=" + this.target + ", duration=" + this.duration + ", delay=" + this.delay + ", fromTime=" + this.fromTime + ", properties=" + this.properties + ", repeatCount=" + this.repeatCount + "]";
-}
-CAObject.prototype.__class__ = CAObject;
-CATransitionInterface = function() { }
-CATransitionInterface.__name__ = ["CATransitionInterface"];
-CATransitionInterface.prototype.init = null;
-CATransitionInterface.prototype.animate = null;
-CATransitionInterface.prototype.__class__ = CATransitionInterface;
-CATween = function(target,properties,duration,delay,Eq,pos) {
-	if( target === $_ ) return;
-	CAObject.call(this,target,properties,duration,delay,Eq,pos);
-}
-CATween.__name__ = ["CATween"];
-CATween.__super__ = CAObject;
-for(var k in CAObject.prototype ) CATween.prototype[k] = CAObject.prototype[k];
-CATween.prototype.init = function() {
-	var _g = 0, _g1 = Reflect.fields(this.properties);
-	while(_g < _g1.length) {
-		var p = _g1[_g];
-		++_g;
-		if(Std["is"](Reflect.field(this.properties,p),Int) || Std["is"](Reflect.field(this.properties,p),Float)) {
-			var getter = "get" + p.substr(0,1).toUpperCase() + p.substr(1);
-			if(getter == null) this.fromValues[p] = Reflect.field(this.target,p); else this.fromValues[p] = Reflect.field(this.target,getter).apply(this.target,[]);
-			this.toValues[p] = Reflect.field(this.properties,p);
-		} else try {
-			this.fromValues[p] = Reflect.field(Reflect.field(this.properties,p),"fromValue");
-			this.target[p] = Reflect.field(this.fromValues,p);
-			this.toValues[p] = Reflect.field(Reflect.field(this.properties,p),"toValue");
-		} catch( e ) {
-			haxe.Log.trace(e,{ fileName : "CATween.hx", lineNumber : 31, className : "CATween", methodName : "init"});
-		}
-	}
-}
-CATween.prototype.animate = function(time_diff) {
-	var _g = 0, _g1 = Reflect.fields(this.toValues);
-	while(_g < _g1.length) {
-		var prop = _g1[_g];
-		++_g;
-		try {
-			var setter = "set" + prop.substr(0,1).toUpperCase() + prop.substr(1);
-			if(setter != null) Reflect.field(this.target,setter).apply(this.target,[this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null)]);
-		} catch( e ) {
-			haxe.Log.trace(e,{ fileName : "CATween.hx", lineNumber : 50, className : "CATween", methodName : "animate"});
-		}
-	}
-}
-CATween.prototype.__class__ = CATween;
-CATween.__interfaces__ = [CATransitionInterface];
-CADelegate = function(p) {
-	if( p === $_ ) return;
-	this.startPointPassed = false;
-	this.kenBurnsPointInPassed = false;
-	this.kenBurnsPointOutPassed = false;
-}
-CADelegate.__name__ = ["CADelegate"];
-CADelegate.prototype.animationDidStart = null;
-CADelegate.prototype.animationDidStop = null;
-CADelegate.prototype.animationDidReversed = null;
-CADelegate.prototype.arguments = null;
-CADelegate.prototype.kenBurnsDidFadedIn = null;
-CADelegate.prototype.kenBurnsBeginsFadingOut = null;
-CADelegate.prototype.kenBurnsArgs = null;
-CADelegate.prototype.startPointPassed = null;
-CADelegate.prototype.kenBurnsPointInPassed = null;
-CADelegate.prototype.kenBurnsPointOutPassed = null;
-CADelegate.prototype.kenBurnsPointIn = null;
-CADelegate.prototype.kenBurnsPointOut = null;
-CADelegate.prototype.pos = null;
-CADelegate.prototype.start = function() {
-	this.startPointPassed = true;
-	if(Reflect.isFunction(this.animationDidStart)) try {
-		this.animationDidStart.apply(null,this.arguments);
-	} catch( e ) {
-		haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 37, className : "CADelegate", methodName : "start"});
-	}
-}
-CADelegate.prototype.stop = function() {
-	if(Reflect.isFunction(this.animationDidStop)) try {
-		this.animationDidStop.apply(null,this.arguments);
-	} catch( e ) {
-		haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 43, className : "CADelegate", methodName : "stop"});
-		haxe.Log.trace(this.pos.className + " -> " + this.pos.methodName + " -> " + this.pos.lineNumber,{ fileName : "CADelegate.hx", lineNumber : 44, className : "CADelegate", methodName : "stop"});
-		var stack = haxe.Stack.exceptionStack();
-		haxe.Log.trace(haxe.Stack.toString(stack),{ fileName : "CADelegate.hx", lineNumber : 46, className : "CADelegate", methodName : "stop"});
-	}
-}
-CADelegate.prototype.repeat = function() {
-	if(Reflect.isFunction(this.animationDidReversed)) try {
-		this.animationDidReversed.apply(null,this.arguments);
-	} catch( e ) {
-		haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 53, className : "CADelegate", methodName : "repeat"});
-	}
-}
-CADelegate.prototype.kbIn = function() {
-	this.kenBurnsPointInPassed = true;
-	if(Reflect.isFunction(this.kenBurnsDidFadedIn)) try {
-		this.kenBurnsDidFadedIn.apply(null,this.kenBurnsArgs);
-	} catch( e ) {
-		haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 59, className : "CADelegate", methodName : "kbIn"});
-	}
-}
-CADelegate.prototype.kbOut = function() {
-	this.kenBurnsPointOutPassed = true;
-	if(Reflect.isFunction(this.kenBurnsBeginsFadingOut)) try {
-		this.kenBurnsBeginsFadingOut.apply(null,this.kenBurnsArgs);
-	} catch( e ) {
-		haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 65, className : "CADelegate", methodName : "kbOut"});
-	}
-}
-CADelegate.prototype.__class__ = CADelegate;
-Std = function() { }
-Std.__name__ = ["Std"];
-Std["is"] = function(v,t) {
-	return js.Boot.__instanceof(v,t);
-}
-Std.string = function(s) {
-	return js.Boot.__string_rec(s,"");
-}
-Std["int"] = function(x) {
-	if(x < 0) return Math.ceil(x);
-	return Math.floor(x);
-}
-Std.parseInt = function(x) {
-	var v = parseInt(x,10);
-	if(v == 0 && x.charCodeAt(1) == 120) v = parseInt(x);
-	if(isNaN(v)) return null;
-	return v;
-}
-Std.parseFloat = function(x) {
-	return parseFloat(x);
-}
-Std.random = function(x) {
-	return Math.floor(Math.random() * x);
-}
-Std.prototype.__class__ = Std;
-List = function(p) {
-	if( p === $_ ) return;
-	this.length = 0;
-}
-List.__name__ = ["List"];
-List.prototype.h = null;
-List.prototype.q = null;
-List.prototype.length = null;
-List.prototype.add = function(item) {
-	var x = [item];
-	if(this.h == null) this.h = x; else this.q[1] = x;
-	this.q = x;
-	this.length++;
-}
-List.prototype.push = function(item) {
-	var x = [item,this.h];
-	this.h = x;
-	if(this.q == null) this.q = x;
-	this.length++;
-}
-List.prototype.first = function() {
-	return this.h == null?null:this.h[0];
-}
-List.prototype.last = function() {
-	return this.q == null?null:this.q[0];
-}
-List.prototype.pop = function() {
-	if(this.h == null) return null;
-	var x = this.h[0];
-	this.h = this.h[1];
-	if(this.h == null) this.q = null;
-	this.length--;
-	return x;
-}
-List.prototype.isEmpty = function() {
-	return this.h == null;
-}
-List.prototype.clear = function() {
-	this.h = null;
-	this.q = null;
-	this.length = 0;
-}
-List.prototype.remove = function(v) {
-	var prev = null;
-	var l = this.h;
-	while(l != null) {
-		if(l[0] == v) {
-			if(prev == null) this.h = l[1]; else prev[1] = l[1];
-			if(this.q == l) this.q = prev;
-			this.length--;
-			return true;
-		}
-		prev = l;
-		l = l[1];
-	}
-	return false;
-}
-List.prototype.iterator = function() {
-	return { h : this.h, hasNext : function() {
-		return this.h != null;
-	}, next : function() {
-		if(this.h == null) return null;
-		var x = this.h[0];
-		this.h = this.h[1];
-		return x;
-	}};
-}
-List.prototype.toString = function() {
-	var s = new StringBuf();
-	var first = true;
-	var l = this.h;
-	s.b[s.b.length] = "{" == null?"null":"{";
-	while(l != null) {
-		if(first) first = false; else s.b[s.b.length] = ", " == null?"null":", ";
-		s.add(Std.string(l[0]));
-		l = l[1];
-	}
-	s.b[s.b.length] = "}" == null?"null":"}";
-	return s.b.join("");
-}
-List.prototype.join = function(sep) {
-	var s = new StringBuf();
-	var first = true;
-	var l = this.h;
-	while(l != null) {
-		if(first) first = false; else s.b[s.b.length] = sep == null?"null":sep;
-		s.add(l[0]);
-		l = l[1];
-	}
-	return s.b.join("");
-}
-List.prototype.filter = function(f) {
-	var l2 = new List();
-	var l = this.h;
-	while(l != null) {
-		var v = l[0];
-		l = l[1];
-		if(f(v)) l2.add(v);
-	}
-	return l2;
-}
-List.prototype.map = function(f) {
-	var b = new List();
-	var l = this.h;
-	while(l != null) {
-		var v = l[0];
-		l = l[1];
-		b.add(f(v));
-	}
-	return b;
-}
-List.prototype.__class__ = List;
-RCDeviceOrientation = { __ename__ : ["RCDeviceOrientation"], __constructs__ : ["UIDeviceOrientationUnknown","UIDeviceOrientationPortrait","UIDeviceOrientationPortraitUpsideDown","UIDeviceOrientationLandscapeLeft","UIDeviceOrientationLandscapeRight","UIDeviceOrientationFaceUp","UIDeviceOrientationFaceDown"] }
+var RCDeviceOrientation = $hxClasses["RCDeviceOrientation"] = { __ename__ : ["RCDeviceOrientation"], __constructs__ : ["UIDeviceOrientationUnknown","UIDeviceOrientationPortrait","UIDeviceOrientationPortraitUpsideDown","UIDeviceOrientationLandscapeLeft","UIDeviceOrientationLandscapeRight","UIDeviceOrientationFaceUp","UIDeviceOrientationFaceDown"] }
 RCDeviceOrientation.UIDeviceOrientationUnknown = ["UIDeviceOrientationUnknown",0];
 RCDeviceOrientation.UIDeviceOrientationUnknown.toString = $estr;
 RCDeviceOrientation.UIDeviceOrientationUnknown.__enum__ = RCDeviceOrientation;
@@ -1862,7 +1164,7 @@ RCDeviceOrientation.UIDeviceOrientationFaceUp.__enum__ = RCDeviceOrientation;
 RCDeviceOrientation.UIDeviceOrientationFaceDown = ["UIDeviceOrientationFaceDown",6];
 RCDeviceOrientation.UIDeviceOrientationFaceDown.toString = $estr;
 RCDeviceOrientation.UIDeviceOrientationFaceDown.__enum__ = RCDeviceOrientation;
-RCDeviceType = { __ename__ : ["RCDeviceType"], __constructs__ : ["IPhone","IPad","Android","WebOS","Mac","Flash"] }
+var RCDeviceType = $hxClasses["RCDeviceType"] = { __ename__ : ["RCDeviceType"], __constructs__ : ["IPhone","IPad","Android","WebOS","Mac","Flash"] }
 RCDeviceType.IPhone = ["IPhone",0];
 RCDeviceType.IPhone.toString = $estr;
 RCDeviceType.IPhone.__enum__ = RCDeviceType;
@@ -1881,7 +1183,7 @@ RCDeviceType.Mac.__enum__ = RCDeviceType;
 RCDeviceType.Flash = ["Flash",5];
 RCDeviceType.Flash.toString = $estr;
 RCDeviceType.Flash.__enum__ = RCDeviceType;
-RCUserAgent = { __ename__ : ["RCUserAgent"], __constructs__ : ["MSIE","GECKO","WEBKIT","OTHER"] }
+var RCUserAgent = $hxClasses["RCUserAgent"] = { __ename__ : ["RCUserAgent"], __constructs__ : ["MSIE","GECKO","WEBKIT","OTHER"] }
 RCUserAgent.MSIE = ["MSIE",0];
 RCUserAgent.MSIE.toString = $estr;
 RCUserAgent.MSIE.__enum__ = RCUserAgent;
@@ -1894,35 +1196,873 @@ RCUserAgent.WEBKIT.__enum__ = RCUserAgent;
 RCUserAgent.OTHER = ["OTHER",3];
 RCUserAgent.OTHER.toString = $estr;
 RCUserAgent.OTHER.__enum__ = RCUserAgent;
-RCDevice = function(p) {
-	if( p === $_ ) return;
+var RCDevice = $hxClasses["RCDevice"] = function() {
 	this.dpiScale = 1;
 	this.userAgent = this.detectUserAgent();
-}
+};
 RCDevice.__name__ = ["RCDevice"];
 RCDevice._currentDevice = null;
 RCDevice.currentDevice = function() {
 	if(RCDevice._currentDevice == null) RCDevice._currentDevice = new RCDevice();
 	return RCDevice._currentDevice;
 }
-RCDevice.prototype.name = null;
-RCDevice.prototype.model = null;
-RCDevice.prototype.systemName = null;
-RCDevice.prototype.systemVersion = null;
-RCDevice.prototype.orientation = null;
-RCDevice.prototype.userInterfaceIdiom = null;
-RCDevice.prototype.uniqueIdentifier = null;
-RCDevice.prototype.dpiScale = null;
-RCDevice.prototype.userAgent = null;
-RCDevice.prototype.detectUserAgent = function() {
-	var agent = js.Lib.window.navigator.userAgent.toLowerCase();
-	if(agent.indexOf("msie") > -1) return RCUserAgent.MSIE;
-	if(agent.indexOf("webkit") > -1) return RCUserAgent.WEBKIT;
-	if(agent.indexOf("gecko") > -1) return RCUserAgent.GECKO;
-	return RCUserAgent.OTHER;
+RCDevice.prototype = {
+	name: null
+	,model: null
+	,systemName: null
+	,systemVersion: null
+	,orientation: null
+	,userInterfaceIdiom: null
+	,uniqueIdentifier: null
+	,dpiScale: null
+	,userAgent: null
+	,detectUserAgent: function() {
+		var agent = js.Lib.window.navigator.userAgent.toLowerCase();
+		if(agent.indexOf("msie") > -1) return RCUserAgent.MSIE;
+		if(agent.indexOf("webkit") > -1) return RCUserAgent.WEBKIT;
+		if(agent.indexOf("gecko") > -1) return RCUserAgent.GECKO;
+		return RCUserAgent.OTHER;
+	}
+	,__class__: RCDevice
 }
-RCDevice.prototype.__class__ = RCDevice;
-ValueType = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
+var _RCDraw = _RCDraw || {}
+_RCDraw.LineScaleMode = $hxClasses["_RCDraw.LineScaleMode"] = function() { }
+_RCDraw.LineScaleMode.__name__ = ["_RCDraw","LineScaleMode"];
+_RCDraw.LineScaleMode.prototype = {
+	__class__: _RCDraw.LineScaleMode
+}
+var RCDraw = $hxClasses["RCDraw"] = function(x,y,w,h,color,alpha) {
+	if(alpha == null) alpha = 1.0;
+	JSView.call(this,x,y,w,h);
+	this.setAlpha(alpha);
+	this.borderThickness = 1;
+	try {
+		this.graphics = this.layer;
+	} catch( e ) {
+		haxe.Log.trace(e,{ fileName : "RCDraw.hx", lineNumber : 37, className : "RCDraw", methodName : "new"});
+	}
+	if(Std["is"](color,RCColor) || Std["is"](color,RCGradient)) this.color = color; else if(Std["is"](color,Int) || Std["is"](color,Int)) this.color = new RCColor(color); else if(Std["is"](color,Array)) this.color = new RCColor(color[0],color[1]); else this.color = new RCColor(0);
+};
+RCDraw.__name__ = ["RCDraw"];
+RCDraw.__super__ = JSView;
+RCDraw.prototype = $extend(JSView.prototype,{
+	color: null
+	,borderThickness: null
+	,configure: function() {
+		if(Std["is"](this.color,RCColor)) {
+			if(this.color.fillColor != null) this.graphics.beginFill(this.color.fillColor,this.color.alpha);
+			if(this.color.strokeColor != null) {
+				var pixelHinting = true;
+				var scaleMode = _RCDraw.LineScaleMode.NONE;
+				var caps = null;
+				var joints = null;
+				var miterLimit = 3;
+				this.graphics.lineStyle(this.borderThickness,this.color.strokeColor,this.color.alpha,pixelHinting,scaleMode,caps,joints,miterLimit);
+			}
+		}
+	}
+	,frame: function() {
+		return new RCRect(this.getX(),this.getY(),this.size.width,this.size.height);
+	}
+	,__class__: RCDraw
+});
+var RCDrawInterface = $hxClasses["RCDrawInterface"] = function() { }
+RCDrawInterface.__name__ = ["RCDrawInterface"];
+RCDrawInterface.prototype = {
+	configure: null
+	,redraw: null
+	,__class__: RCDrawInterface
+}
+var RCFont = $hxClasses["RCFont"] = function() {
+	this.font = "Arial";
+	this.html = true;
+	this.embedFonts = true;
+	this.autoSize = true;
+	this.selectable = false;
+	this.color = 14540253;
+	this.size = 12;
+	this.leading = 4;
+	this.leftMargin = 0;
+	this.rightMargin = 0;
+	this.letterSpacing = 0;
+	this.format = { };
+	this.style = { };
+};
+RCFont.__name__ = ["RCFont"];
+RCFont.fontWithName = function(fontName,size) {
+	var fnt = new RCFont();
+	fnt.font = fontName;
+	fnt.size = size;
+	return fnt;
+}
+RCFont.familyNames = function() {
+	return [];
+}
+RCFont.systemFontOfSize = function(size) {
+	var fnt = new RCFont();
+	fnt.size = size;
+	fnt.embedFonts = false;
+	return fnt;
+}
+RCFont.boldSystemFontOfSize = function(size) {
+	var fnt = RCFont.systemFontOfSize(size);
+	fnt.bold = true;
+	return fnt;
+}
+RCFont.italicSystemFontOfSize = function(size) {
+	var fnt = RCFont.systemFontOfSize(size);
+	fnt.italic = true;
+	return fnt;
+}
+RCFont.prototype = {
+	html: null
+	,format: null
+	,style: null
+	,embedFonts: null
+	,type: null
+	,antiAliasType: null
+	,autoSize: null
+	,displayAsPassword: null
+	,selectable: null
+	,sharpness: null
+	,thickness: null
+	,align: null
+	,blockIndent: null
+	,bold: null
+	,bullet: null
+	,color: null
+	,display: null
+	,font: null
+	,indent: null
+	,italic: null
+	,kerning: null
+	,leading: null
+	,leftMargin: null
+	,letterSpacing: null
+	,rightMargin: null
+	,size: null
+	,tabStops: null
+	,target: null
+	,underline: null
+	,url: null
+	,copy: function(exceptions) {
+		var rcfont = new RCFont();
+		var fields = Type.getInstanceFields(RCFont);
+		var _g = 0;
+		while(_g < fields.length) {
+			var field = fields[_g];
+			++_g;
+			if(field == "copy" || field == "getFormat" || field == "getStyleSheet") continue;
+			rcfont[field] = Reflect.field(this,field);
+		}
+		if(exceptions != null) {
+			var _g = 0, _g1 = Reflect.fields(exceptions);
+			while(_g < _g1.length) {
+				var excp = _g1[_g];
+				++_g;
+				if(Reflect.hasField(rcfont,excp)) rcfont[excp] = Reflect.field(exceptions,excp);
+			}
+		}
+		return rcfont;
+	}
+	,getFormat: function() {
+		this.format.align = null;
+		this.format.blockIndent = this.blockIndent;
+		this.format.bold = this.bold;
+		this.format.bullet = this.bullet;
+		this.format.color = this.color;
+		this.format.font = this.font;
+		this.format.italic = this.italic;
+		this.format.indent = this.indent;
+		this.format.kerning = this.kerning;
+		this.format.leading = this.leading * RCDevice.currentDevice().dpiScale;
+		this.format.leftMargin = this.leftMargin * RCDevice.currentDevice().dpiScale;
+		this.format.letterSpacing = this.letterSpacing;
+		this.format.rightMargin = this.rightMargin * RCDevice.currentDevice().dpiScale;
+		this.format.size = this.size * RCDevice.currentDevice().dpiScale;
+		this.format.tabStops = this.tabStops;
+		this.format.target = this.target;
+		this.format.underline = this.underline;
+		this.format.url = this.url;
+		return this.format;
+	}
+	,getStyleSheet: function() {
+		return this.style;
+	}
+	,__class__: RCFont
+	,__properties__: {get_style:"getStyleSheet",get_format:"getFormat"}
+}
+var RCGradient = $hxClasses["RCGradient"] = function(colors,alphas,linear) {
+	if(linear == null) linear = true;
+	this.gradientColors = colors;
+	this.gradientAlphas = alphas == null?[1.0,1.0]:alphas;
+	this.gradientRatios = [0,255];
+	this.focalPointRatio = 0;
+	this.tx = 0;
+	this.ty = 0;
+	this.matrixRotation = Math.PI * 0.5;
+};
+RCGradient.__name__ = ["RCGradient"];
+RCGradient.prototype = {
+	strokeColor: null
+	,gradientColors: null
+	,gradientAlphas: null
+	,gradientRatios: null
+	,spreadMethod: null
+	,interpolationMethod: null
+	,gradientType: null
+	,focalPointRatio: null
+	,tx: null
+	,ty: null
+	,matrixRotation: null
+	,__class__: RCGradient
+}
+var RCIterator = $hxClasses["RCIterator"] = function(interval,min,max,step) {
+	this.interval = interval;
+	this.min = min;
+	this.max = max;
+	this.step = step;
+	this.timer = new haxe.Timer(interval);
+};
+RCIterator.__name__ = ["RCIterator"];
+RCIterator.prototype = {
+	min: null
+	,max: null
+	,step: null
+	,percentCompleted: null
+	,timer: null
+	,interval: null
+	,run: function(i) {
+	}
+	,onComplete: function() {
+	}
+	,start: function() {
+		this.run(this.min);
+		this.timer.run = this.loop.$bind(this);
+	}
+	,loop: function() {
+		this.min += this.step;
+		this.run(this.min);
+		if(this.min >= this.max) {
+			this.destroy();
+			this.onComplete();
+		}
+	}
+	,destroy: function() {
+		if(this.timer != null) {
+			this.timer.stop();
+			this.timer = null;
+		}
+	}
+	,__class__: RCIterator
+}
+var RCNotification = $hxClasses["RCNotification"] = function(name,functionToCall) {
+	this.name = name;
+	this.functionToCall = functionToCall;
+};
+RCNotification.__name__ = ["RCNotification"];
+RCNotification.prototype = {
+	name: null
+	,functionToCall: null
+	,toString: function() {
+		return "[RCNotification with name: '" + this.name + "', functionToCall: " + this.functionToCall + "]";
+	}
+	,__class__: RCNotification
+}
+var RCNotificationCenter = $hxClasses["RCNotificationCenter"] = function() { }
+RCNotificationCenter.__name__ = ["RCNotificationCenter"];
+RCNotificationCenter.notificationsList = null;
+RCNotificationCenter.init = function() {
+	if(RCNotificationCenter.notificationsList == null) {
+		RCNotificationCenter.notificationsList = new List();
+		var fs = new EVFullScreen();
+		fs.add(RCNotificationCenter.fullScreenHandler);
+		var rs = new EVResize();
+		rs.add(RCNotificationCenter.resizeHandler);
+	}
+}
+RCNotificationCenter.resizeHandler = function(w,h) {
+	RCNotificationCenter.postNotification("resize",[w,h],{ fileName : "RCNotificationCenter.hx", lineNumber : 26, className : "RCNotificationCenter", methodName : "resizeHandler"});
+}
+RCNotificationCenter.fullScreenHandler = function(b) {
+	RCNotificationCenter.postNotification("fullscreen",[b],{ fileName : "RCNotificationCenter.hx", lineNumber : 29, className : "RCNotificationCenter", methodName : "fullScreenHandler"});
+}
+RCNotificationCenter.addObserver = function(name,func) {
+	RCNotificationCenter.init();
+	RCNotificationCenter.notificationsList.add(new RCNotification(name,func));
+}
+RCNotificationCenter.removeObserver = function(name,func) {
+	RCNotificationCenter.init();
+	var $it0 = RCNotificationCenter.notificationsList.iterator();
+	while( $it0.hasNext() ) {
+		var notification = $it0.next();
+		if(notification.name == name && Reflect.compareMethods(notification.functionToCall,func)) RCNotificationCenter.notificationsList.remove(notification);
+	}
+}
+RCNotificationCenter.postNotification = function(name,args,pos) {
+	RCNotificationCenter.init();
+	var notificationFound = false;
+	var $it0 = RCNotificationCenter.notificationsList.iterator();
+	while( $it0.hasNext() ) {
+		var notification = $it0.next();
+		if(notification.name == name) try {
+			notificationFound = true;
+			notification.functionToCall.apply(null,args);
+		} catch( e ) {
+			haxe.Log.trace("[RCNotificationCenter error calling function: " + notification.functionToCall + " from: " + Std.string(pos) + "]",{ fileName : "RCNotificationCenter.hx", lineNumber : 71, className : "RCNotificationCenter", methodName : "postNotification"});
+		}
+	}
+	return notificationFound;
+}
+RCNotificationCenter.list = function() {
+	var $it0 = RCNotificationCenter.notificationsList.iterator();
+	while( $it0.hasNext() ) {
+		var notification = $it0.next();
+		haxe.Log.trace(notification,{ fileName : "RCNotificationCenter.hx", lineNumber : 82, className : "RCNotificationCenter", methodName : "list"});
+	}
+}
+RCNotificationCenter.prototype = {
+	__class__: RCNotificationCenter
+}
+var RCPoint = $hxClasses["RCPoint"] = function(x,y) {
+	this.x = x == null?0:x;
+	this.y = y == null?0:y;
+};
+RCPoint.__name__ = ["RCPoint"];
+RCPoint.prototype = {
+	x: null
+	,y: null
+	,copy: function() {
+		return new RCPoint(this.x,this.y);
+	}
+	,toString: function() {
+		return "[RCPoint x:" + this.x + ", y:" + this.y + "]";
+	}
+	,__class__: RCPoint
+}
+var RCRect = $hxClasses["RCRect"] = function(x,y,w,h) {
+	this.origin = new RCPoint(x,y);
+	this.size = new RCSize(w,h);
+};
+RCRect.__name__ = ["RCRect"];
+RCRect.prototype = {
+	origin: null
+	,size: null
+	,copy: function() {
+		return new RCRect(this.origin.x,this.origin.y,this.size.width,this.size.height);
+	}
+	,toString: function() {
+		return "[RCRect x:" + this.origin.x + ", y:" + this.origin.y + ", width:" + this.size.width + ", height:" + this.size.height + "]";
+	}
+	,__class__: RCRect
+}
+var RCRectangle = $hxClasses["RCRectangle"] = function(x,y,w,h,color,alpha,r) {
+	if(alpha == null) alpha = 1.0;
+	haxe.Log.trace(1,{ fileName : "RCRectangle.hx", lineNumber : 16, className : "RCRectangle", methodName : "new"});
+	RCDraw.call(this,x,y,w,h,color,alpha);
+	haxe.Log.trace(1,{ fileName : "RCRectangle.hx", lineNumber : 18, className : "RCRectangle", methodName : "new"});
+	this.roundness = r;
+	this.redraw();
+	haxe.Log.trace(1,{ fileName : "RCRectangle.hx", lineNumber : 20, className : "RCRectangle", methodName : "new"});
+};
+RCRectangle.__name__ = ["RCRectangle"];
+RCRectangle.__interfaces__ = [RCDrawInterface];
+RCRectangle.__super__ = RCDraw;
+RCRectangle.prototype = $extend(RCDraw.prototype,{
+	roundness: null
+	,redraw: function() {
+		haxe.Log.trace(2,{ fileName : "RCRectangle.hx", lineNumber : 37, className : "RCRectangle", methodName : "redraw"});
+		haxe.Log.trace(this.color,{ fileName : "RCRectangle.hx", lineNumber : 37, className : "RCRectangle", methodName : "redraw"});
+		var fillColorStyle = ((function($this) {
+			var $r;
+			var $t = $this.color;
+			if(Std["is"]($t,RCColor)) $t; else throw "Class cast error";
+			$r = $t;
+			return $r;
+		}(this))).fillColorStyle;
+		haxe.Log.trace(2,{ fileName : "RCRectangle.hx", lineNumber : 38, className : "RCRectangle", methodName : "redraw"});
+		var strokeColorStyle = ((function($this) {
+			var $r;
+			var $t = $this.color;
+			if(Std["is"]($t,RCColor)) $t; else throw "Class cast error";
+			$r = $t;
+			return $r;
+		}(this))).strokeColorStyle;
+		haxe.Log.trace(2,{ fileName : "RCRectangle.hx", lineNumber : 39, className : "RCRectangle", methodName : "redraw"});
+		this.layer.style.margin = "0px 0px 0px 0px";
+		this.layer.style.width = this.size.width * RCDevice.currentDevice().dpiScale + "px";
+		this.layer.style.height = this.size.height * RCDevice.currentDevice().dpiScale + "px";
+		this.layer.style.backgroundColor = fillColorStyle;
+		if(strokeColorStyle != null) {
+			this.layer.style.borderStyle = "solid";
+			this.layer.style.borderWidth = this.borderThickness + "px";
+			this.layer.style.borderColor = strokeColorStyle;
+		}
+		if(this.roundness != null) {
+			this.layer.style.MozBorderRadius = this.roundness * RCDevice.currentDevice().dpiScale / 2 + "px";
+			this.layer.style.borderRadius = this.roundness * RCDevice.currentDevice().dpiScale / 2 + "px";
+		}
+		haxe.Log.trace(2,{ fileName : "RCRectangle.hx", lineNumber : 55, className : "RCRectangle", methodName : "redraw"});
+	}
+	,setWidth: function(w) {
+		this.size.width = w;
+		this.redraw();
+		return w;
+	}
+	,setHeight: function(h) {
+		this.size.height = h;
+		this.redraw();
+		return h;
+	}
+	,__class__: RCRectangle
+});
+var RCSize = $hxClasses["RCSize"] = function(w,h) {
+	this.width = w == null?0:w;
+	this.height = h == null?0:h;
+};
+RCSize.__name__ = ["RCSize"];
+RCSize.prototype = {
+	width: null
+	,height: null
+	,copy: function() {
+		return new RCSize(this.width,this.height);
+	}
+	,toString: function() {
+		return "[RCSize width:" + this.width + ", height:" + this.height + "]";
+	}
+	,__class__: RCSize
+}
+var RCStats = $hxClasses["RCStats"] = function(x,y) {
+	if(y == null) y = 0;
+	if(x == null) x = 0;
+	RCRectangle.call(this,x,y,152,18,16777215,0.9,16);
+	this.addChild(new RCRectangle(1,1,150,16,3355443,0.3,16));
+	var f = RCFont.systemFontOfSize(12);
+	f.color = 16777215;
+	this.txt = new RCTextView(6,3,null,20,"Calculating...",f);
+	this.addChild(this.txt);
+	this.last = Date.now().getTime();
+	this.e = new EVLoop();
+	this.e.setFuncToCall(this.loop.$bind(this));
+};
+RCStats.__name__ = ["RCStats"];
+RCStats.__super__ = RCRectangle;
+RCStats.prototype = $extend(RCRectangle.prototype,{
+	last: null
+	,ticks: null
+	,fps: null
+	,currMemory: null
+	,txt: null
+	,e: null
+	,loop: function() {
+		this.ticks++;
+		var now = Date.now().getTime();
+		var delta = now - this.last;
+		if(delta >= 1000) {
+			this.fps = Math.round(this.ticks / delta * 1000);
+			this.ticks = 0;
+			this.last = now;
+			this.txt.setText(this.fps + " FPS,  " + this.currMemory + " Mbytes");
+		}
+	}
+	,destroy: function() {
+		this.e.destroy();
+		this.txt.destroy();
+		RCRectangle.prototype.destroy.call(this);
+	}
+	,__class__: RCStats
+});
+var RCTextView = $hxClasses["RCTextView"] = function(x,y,w,h,str,rcfont) {
+	JSView.call(this,Math.round(x),Math.round(y),w,h);
+	this.rcfont = rcfont.copy();
+	this.setWidth(this.size.width);
+	this.setHeight(this.size.height);
+	this.viewDidAppear.add(this.viewDidAppear_.$bind(this));
+	this.init();
+	this.setText(str);
+};
+RCTextView.__name__ = ["RCTextView"];
+RCTextView.__super__ = JSView;
+RCTextView.prototype = $extend(JSView.prototype,{
+	target: null
+	,rcfont: null
+	,text: null
+	,init: function() {
+		this.redraw();
+	}
+	,redraw: function() {
+		var wrap = this.size.width != 0;
+		var multiline = this.size.height != 0;
+		this.layer.style.whiteSpace = wrap?"normal":"nowrap";
+		this.layer.style.wordWrap = wrap?"break-word":"normal";
+		var style = this.rcfont.selectable?"text":"none";
+		this.layer.style.WebkitUserSelect = style;
+		this.layer.style.MozUserSelect = style;
+		this.layer.style.lineHeight = this.rcfont.leading + this.rcfont.size + "px";
+		this.layer.style.fontFamily = this.rcfont.font;
+		this.layer.style.fontSize = this.rcfont.size + "px";
+		this.layer.style.fontWeight = this.rcfont.bold?"bold":"normal";
+		this.layer.style.fontStyle = this.rcfont.italic?"italic":"normal";
+		this.layer.style.letterSpacing = this.rcfont.letterSpacing + "px";
+		this.layer.style.textAlign = this.rcfont.align;
+		this.layer.style.color = RCColor.HEXtoString(this.rcfont.color);
+		if(this.rcfont.autoSize) {
+			this.layer.style.width = multiline?this.size.width + "px":"auto";
+			this.layer.style.height = "auto";
+		} else {
+			this.layer.style.width = this.size.width + "px";
+			this.layer.style.height = this.size.height + "px";
+		}
+		if(this.size.width != 0) this.setWidth(this.size.width);
+	}
+	,viewDidAppear_: function() {
+		this.size.width = this.getContentSize().width;
+	}
+	,getText: function() {
+		return this.layer.innerHTML;
+	}
+	,setText: function(str) {
+		if(this.rcfont.html) this.layer.innerHTML = str; else this.layer.innerHTML = str;
+		this.size.width = this.getContentSize().width;
+		return str;
+	}
+	,destroy: function() {
+		this.target = null;
+		JSView.prototype.destroy.call(this);
+	}
+	,__class__: RCTextView
+	,__properties__: $extend(JSView.prototype.__properties__,{set_text:"setText",get_text:"getText"})
+});
+var RCWindow = $hxClasses["RCWindow"] = function(id) {
+	JSView.call(this,0.0,0.0,0.0,0.0);
+	this.stage = js.Lib.document;
+	this.setTarget(id);
+	this.SCREEN_W = js.Lib.window.screen.width;
+	this.SCREEN_H = js.Lib.window.screen.height;
+	RCNotificationCenter.addObserver("resize",this.resizeHandler.$bind(this));
+};
+RCWindow.__name__ = ["RCWindow"];
+RCWindow.sharedWindow_ = null;
+RCWindow.sharedWindow = function(id) {
+	if(RCWindow.sharedWindow_ == null) RCWindow.sharedWindow_ = new RCWindow(id);
+	return RCWindow.sharedWindow_;
+}
+RCWindow.__super__ = JSView;
+RCWindow.prototype = $extend(JSView.prototype,{
+	target: null
+	,stage: null
+	,SCREEN_W: null
+	,SCREEN_H: null
+	,modalView: null
+	,resizeHandler: function(w,h) {
+		this.size.width = w;
+		this.size.height = h;
+	}
+	,setTarget: function(id) {
+		if(id != null) this.target = js.Lib.document.getElementById(id); else {
+			this.target = js.Lib.document.body;
+			this.target.style.margin = "0px 0px 0px 0px";
+			this.target.style.overflow = "hidden";
+			if(js.Lib.isIE) {
+				this.target.style.width = js.Lib.document.documentElement.clientWidth + "px";
+				this.target.style.height = js.Lib.document.documentElement.clientHeight + "px";
+			} else {
+				this.target.style.width = js.Lib.window.innerWidth + "px";
+				this.target.style.height = js.Lib.window.innerHeight + "px";
+			}
+		}
+		this.size.width = this.target.scrollWidth;
+		this.size.height = this.target.scrollHeight;
+		this.target.appendChild(this.layer);
+	}
+	,setBackgroundColor: function(color) {
+		if(color == null) {
+			this.target.style.background = null;
+			return color;
+		}
+		var red = (color & 16711680) >> 16;
+		var green = (color & 65280) >> 8;
+		var blue = color & 255;
+		var alpha = 1;
+		this.target.style.background = "rgba(" + red + "," + green + "," + blue + "," + alpha + ")";
+		return color;
+	}
+	,fsprefix: null
+	,fullscreen: function() {
+		if(this.supportsFullScreen()) {
+			if(this.fsprefix == null) "requestFullScreen".apply(this.target,[]); else Reflect.field(this.target,this.fsprefix + "RequestFullScreen").apply(this.target,[]);
+		}
+	}
+	,normal: function() {
+		if(this.supportsFullScreen()) {
+			if(this.fsprefix == "") "cancelFullScreen".apply(this.target,[]); else Reflect.field(this.target,this.fsprefix + "CancelFullScreen").apply(this.target,[]);
+		}
+	}
+	,isFullScreen: function() {
+		if(this.supportsFullScreen()) switch(this.fsprefix) {
+		case "":
+			return this.target.fullScreen;
+		case "webkit":
+			return this.target.webkitIsFullScreen;
+		default:
+			return Reflect.field(this.target,this.fsprefix + "FullScreen");
+		}
+		return false;
+	}
+	,supportsFullScreen: function() {
+		if(Reflect.field(this.target,"cancelFullScreen") != null) return true; else {
+			var _g = 0, _g1 = ["webkit","moz","o","ms","khtml"];
+			while(_g < _g1.length) {
+				var prefix = _g1[_g];
+				++_g;
+				if(Reflect.field(js.Lib.document,prefix + "CancelFullScreen") != null) {
+					this.fsprefix = prefix;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	,addModalViewController: function(view) {
+		this.modalView = view;
+		this.modalView.setX(0);
+		CoreAnimation.add(new CATween(this.modalView,{ y : { fromValue : this.getHeight(), toValue : 0}},0.5,0,caequations.Cubic.IN_OUT,{ fileName : "RCWindow.hx", lineNumber : 228, className : "RCWindow", methodName : "addModalViewController"}));
+		this.addChild(this.modalView);
+	}
+	,dismissModalViewController: function() {
+		if(this.modalView == null) return;
+		var anim = new CATween(this.modalView,{ y : this.getHeight()},0.3,0,caequations.Cubic.IN,{ fileName : "RCWindow.hx", lineNumber : 233, className : "RCWindow", methodName : "dismissModalViewController"});
+		anim.delegate.animationDidStop = this.destroyModalViewController.$bind(this);
+		CoreAnimation.add(anim);
+	}
+	,destroyModalViewController: function() {
+		this.modalView.destroy();
+		this.modalView = null;
+	}
+	,getCenterX: function(w) {
+		return Math.round(this.getWidth() / 2 - w / RCDevice.currentDevice().dpiScale / 2);
+	}
+	,getCenterY: function(h) {
+		return Math.round(this.getHeight() / 2 - h / RCDevice.currentDevice().dpiScale / 2);
+	}
+	,toString: function() {
+		return "[RCWindow target=" + this.target + "]";
+	}
+	,__class__: RCWindow
+});
+var Reflect = $hxClasses["Reflect"] = function() { }
+Reflect.__name__ = ["Reflect"];
+Reflect.hasField = function(o,field) {
+	return Object.prototype.hasOwnProperty.call(o,field);
+}
+Reflect.field = function(o,field) {
+	var v = null;
+	try {
+		v = o[field];
+	} catch( e ) {
+	}
+	return v;
+}
+Reflect.setField = function(o,field,value) {
+	o[field] = value;
+}
+Reflect.getProperty = function(o,field) {
+	var tmp;
+	return o == null?null:o.__properties__ && (tmp = o.__properties__["get_" + field])?o[tmp]():o[field];
+}
+Reflect.setProperty = function(o,field,value) {
+	var tmp;
+	if(o.__properties__ && (tmp = o.__properties__["set_" + field])) o[tmp](value); else o[field] = value;
+}
+Reflect.callMethod = function(o,func,args) {
+	return func.apply(o,args);
+}
+Reflect.fields = function(o) {
+	var a = [];
+	if(o != null) {
+		var hasOwnProperty = Object.prototype.hasOwnProperty;
+		for( var f in o ) {
+		if(hasOwnProperty.call(o,f)) a.push(f);
+		}
+	}
+	return a;
+}
+Reflect.isFunction = function(f) {
+	return typeof(f) == "function" && f.__name__ == null;
+}
+Reflect.compare = function(a,b) {
+	return a == b?0:a > b?1:-1;
+}
+Reflect.compareMethods = function(f1,f2) {
+	if(f1 == f2) return true;
+	if(!Reflect.isFunction(f1) || !Reflect.isFunction(f2)) return false;
+	return f1.scope == f2.scope && f1.method == f2.method && f1.method != null;
+}
+Reflect.isObject = function(v) {
+	if(v == null) return false;
+	var t = typeof(v);
+	return t == "string" || t == "object" && !v.__enum__ || t == "function" && v.__name__ != null;
+}
+Reflect.deleteField = function(o,f) {
+	if(!Reflect.hasField(o,f)) return false;
+	delete(o[f]);
+	return true;
+}
+Reflect.copy = function(o) {
+	var o2 = { };
+	var _g = 0, _g1 = Reflect.fields(o);
+	while(_g < _g1.length) {
+		var f = _g1[_g];
+		++_g;
+		o2[f] = Reflect.field(o,f);
+	}
+	return o2;
+}
+Reflect.makeVarArgs = function(f) {
+	return function() {
+		var a = Array.prototype.slice.call(arguments);
+		return f(a);
+	};
+}
+Reflect.prototype = {
+	__class__: Reflect
+}
+var Std = $hxClasses["Std"] = function() { }
+Std.__name__ = ["Std"];
+Std["is"] = function(v,t) {
+	return js.Boot.__instanceof(v,t);
+}
+Std.string = function(s) {
+	return js.Boot.__string_rec(s,"");
+}
+Std["int"] = function(x) {
+	return x | 0;
+}
+Std.parseInt = function(x) {
+	var v = parseInt(x,10);
+	if(v == 0 && x.charCodeAt(1) == 120) v = parseInt(x);
+	if(isNaN(v)) return null;
+	return v;
+}
+Std.parseFloat = function(x) {
+	return parseFloat(x);
+}
+Std.random = function(x) {
+	return Math.floor(Math.random() * x);
+}
+Std.prototype = {
+	__class__: Std
+}
+var StringBuf = $hxClasses["StringBuf"] = function() {
+	this.b = new Array();
+};
+StringBuf.__name__ = ["StringBuf"];
+StringBuf.prototype = {
+	add: function(x) {
+		this.b[this.b.length] = x == null?"null":x;
+	}
+	,addSub: function(s,pos,len) {
+		this.b[this.b.length] = s.substr(pos,len);
+	}
+	,addChar: function(c) {
+		this.b[this.b.length] = String.fromCharCode(c);
+	}
+	,toString: function() {
+		return this.b.join("");
+	}
+	,b: null
+	,__class__: StringBuf
+}
+var StringTools = $hxClasses["StringTools"] = function() { }
+StringTools.__name__ = ["StringTools"];
+StringTools.urlEncode = function(s) {
+	return encodeURIComponent(s);
+}
+StringTools.urlDecode = function(s) {
+	return decodeURIComponent(s.split("+").join(" "));
+}
+StringTools.htmlEscape = function(s) {
+	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+}
+StringTools.htmlUnescape = function(s) {
+	return s.split("&gt;").join(">").split("&lt;").join("<").split("&amp;").join("&");
+}
+StringTools.startsWith = function(s,start) {
+	return s.length >= start.length && s.substr(0,start.length) == start;
+}
+StringTools.endsWith = function(s,end) {
+	var elen = end.length;
+	var slen = s.length;
+	return slen >= elen && s.substr(slen - elen,elen) == end;
+}
+StringTools.isSpace = function(s,pos) {
+	var c = s.charCodeAt(pos);
+	return c >= 9 && c <= 13 || c == 32;
+}
+StringTools.ltrim = function(s) {
+	var l = s.length;
+	var r = 0;
+	while(r < l && StringTools.isSpace(s,r)) r++;
+	if(r > 0) return s.substr(r,l - r); else return s;
+}
+StringTools.rtrim = function(s) {
+	var l = s.length;
+	var r = 0;
+	while(r < l && StringTools.isSpace(s,l - r - 1)) r++;
+	if(r > 0) return s.substr(0,l - r); else return s;
+}
+StringTools.trim = function(s) {
+	return StringTools.ltrim(StringTools.rtrim(s));
+}
+StringTools.rpad = function(s,c,l) {
+	var sl = s.length;
+	var cl = c.length;
+	while(sl < l) if(l - sl < cl) {
+		s += c.substr(0,l - sl);
+		sl = l;
+	} else {
+		s += c;
+		sl += cl;
+	}
+	return s;
+}
+StringTools.lpad = function(s,c,l) {
+	var ns = "";
+	var sl = s.length;
+	if(sl >= l) return s;
+	var cl = c.length;
+	while(sl < l) if(l - sl < cl) {
+		ns += c.substr(0,l - sl);
+		sl = l;
+	} else {
+		ns += c;
+		sl += cl;
+	}
+	return ns + s;
+}
+StringTools.replace = function(s,sub,by) {
+	return s.split(sub).join(by);
+}
+StringTools.hex = function(n,digits) {
+	var s = "";
+	var hexChars = "0123456789ABCDEF";
+	do {
+		s = hexChars.charAt(n & 15) + s;
+		n >>>= 4;
+	} while(n > 0);
+	if(digits != null) while(s.length < digits) s = "0" + s;
+	return s;
+}
+StringTools.fastCodeAt = function(s,index) {
+	return s.cca(index);
+}
+StringTools.isEOF = function(c) {
+	return c != c;
+}
+StringTools.prototype = {
+	__class__: StringTools
+}
+var ValueType = $hxClasses["ValueType"] = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
 ValueType.TNull = ["TNull",0];
 ValueType.TNull.toString = $estr;
 ValueType.TNull.__enum__ = ValueType;
@@ -1946,7 +2086,7 @@ ValueType.TEnum = function(e) { var $x = ["TEnum",7,e]; $x.__enum__ = ValueType;
 ValueType.TUnknown = ["TUnknown",8];
 ValueType.TUnknown.toString = $estr;
 ValueType.TUnknown.__enum__ = ValueType;
-Type = function() { }
+var Type = $hxClasses["Type"] = function() { }
 Type.__name__ = ["Type"];
 Type.getClass = function(o) {
 	if(o == null) return null;
@@ -1969,32 +2109,43 @@ Type.getEnumName = function(e) {
 	return a.join(".");
 }
 Type.resolveClass = function(name) {
-	var cl;
-	try {
-		cl = eval(name);
-	} catch( e ) {
-		cl = null;
-	}
+	var cl = $hxClasses[name];
 	if(cl == null || cl.__name__ == null) return null;
 	return cl;
 }
 Type.resolveEnum = function(name) {
-	var e;
-	try {
-		e = eval(name);
-	} catch( err ) {
-		e = null;
-	}
+	var e = $hxClasses[name];
 	if(e == null || e.__ename__ == null) return null;
 	return e;
 }
 Type.createInstance = function(cl,args) {
-	if(args.length <= 3) return new cl(args[0],args[1],args[2]);
-	if(args.length > 8) throw "Too many arguments";
-	return new cl(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7]);
+	switch(args.length) {
+	case 0:
+		return new cl();
+	case 1:
+		return new cl(args[0]);
+	case 2:
+		return new cl(args[0],args[1]);
+	case 3:
+		return new cl(args[0],args[1],args[2]);
+	case 4:
+		return new cl(args[0],args[1],args[2],args[3]);
+	case 5:
+		return new cl(args[0],args[1],args[2],args[3],args[4]);
+	case 6:
+		return new cl(args[0],args[1],args[2],args[3],args[4],args[5]);
+	case 7:
+		return new cl(args[0],args[1],args[2],args[3],args[4],args[5],args[6]);
+	case 8:
+		return new cl(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7]);
+	default:
+		throw "Too many arguments";
+	}
+	return null;
 }
 Type.createEmptyInstance = function(cl) {
-	return new cl($_);
+	function empty() {}; empty.prototype = cl.prototype;
+	return new empty();
 }
 Type.createEnum = function(e,constr,params) {
 	var f = Reflect.field(e,constr);
@@ -2012,14 +2163,17 @@ Type.createEnumIndex = function(e,index,params) {
 	return Type.createEnum(e,c,params);
 }
 Type.getInstanceFields = function(c) {
-	var a = Reflect.fields(c.prototype);
+	var a = [];
+	for(var i in c.prototype) a.push(i);
 	a.remove("__class__");
+	a.remove("__properties__");
 	return a;
 }
 Type.getClassFields = function(c) {
 	var a = Reflect.fields(c);
 	a.remove("__name__");
 	a.remove("__interfaces__");
+	a.remove("__properties__");
 	a.remove("__super__");
 	a.remove("prototype");
 	return a;
@@ -2078,108 +2232,202 @@ Type.enumParameters = function(e) {
 Type.enumIndex = function(e) {
 	return e[1];
 }
-Type.prototype.__class__ = Type;
-if(typeof js=='undefined') js = {}
-js.Lib = function() { }
-js.Lib.__name__ = ["js","Lib"];
-js.Lib.isIE = null;
-js.Lib.isOpera = null;
-js.Lib.document = null;
-js.Lib.window = null;
-js.Lib.alert = function(v) {
-	alert(js.Boot.__string_rec(v,""));
-}
-js.Lib.eval = function(code) {
-	return eval(code);
-}
-js.Lib.setErrorHandler = function(f) {
-	js.Lib.onerror = f;
-}
-js.Lib.prototype.__class__ = js.Lib;
-RCTextView = function(x,y,w,h,str,rcfont) {
-	if( x === $_ ) return;
-	JSView.call(this,Math.round(x),Math.round(y),w,h);
-	this.rcfont = rcfont.copy();
-	this.setWidth(this.size.width);
-	this.setHeight(this.size.height);
-	this.viewDidAppear.add($closure(this,"viewDidAppear_"));
-	this.init();
-	this.setText(str);
-}
-RCTextView.__name__ = ["RCTextView"];
-RCTextView.__super__ = JSView;
-for(var k in JSView.prototype ) RCTextView.prototype[k] = JSView.prototype[k];
-RCTextView.prototype.target = null;
-RCTextView.prototype.rcfont = null;
-RCTextView.prototype.text = null;
-RCTextView.prototype.init = function() {
-	this.redraw();
-}
-RCTextView.prototype.redraw = function() {
-	var wrap = this.size.width != 0;
-	var multiline = this.size.height != 0;
-	this.layer.style.whiteSpace = wrap?"normal":"nowrap";
-	this.layer.style.wordWrap = wrap?"break-word":"normal";
-	var style = this.rcfont.selectable?"text":"none";
-	this.layer.style.WebkitUserSelect = style;
-	this.layer.style.MozUserSelect = style;
-	this.layer.style.lineHeight = this.rcfont.leading + this.rcfont.size + "px";
-	this.layer.style.fontFamily = this.rcfont.font;
-	this.layer.style.fontSize = this.rcfont.size + "px";
-	this.layer.style.fontWeight = this.rcfont.bold?"bold":"normal";
-	this.layer.style.fontStyle = this.rcfont.italic?"italic":"normal";
-	this.layer.style.letterSpacing = this.rcfont.letterSpacing + "px";
-	this.layer.style.textAlign = this.rcfont.align;
-	this.layer.style.color = RCColor.HEXtoString(this.rcfont.color);
-	if(this.rcfont.autoSize) {
-		this.layer.style.width = multiline?this.size.width + "px":"auto";
-		this.layer.style.height = "auto";
-	} else {
-		this.layer.style.width = this.size.width + "px";
-		this.layer.style.height = this.size.height + "px";
+Type.allEnums = function(e) {
+	var all = [];
+	var cst = e.__constructs__;
+	var _g = 0;
+	while(_g < cst.length) {
+		var c = cst[_g];
+		++_g;
+		var v = Reflect.field(e,c);
+		if(!Reflect.isFunction(v)) all.push(v);
 	}
-	if(this.size.width != 0) this.setWidth(this.size.width);
+	return all;
 }
-RCTextView.prototype.viewDidAppear_ = function() {
-	this.size.width = this.getContentSize().width;
+Type.prototype = {
+	__class__: Type
 }
-RCTextView.prototype.getText = function() {
-	return this.layer.innerHTML;
+caequations.Cubic = $hxClasses["caequations.Cubic"] = function() { }
+caequations.Cubic.__name__ = ["caequations","Cubic"];
+caequations.Cubic.IN = function(t,b,c,d,p_params) {
+	return c * (t /= d) * t * t + b;
 }
-RCTextView.prototype.setText = function(str) {
-	if(this.rcfont.html) this.layer.innerHTML = str; else this.layer.innerHTML = str;
-	this.size.width = this.getContentSize().width;
-	return str;
+caequations.Cubic.OUT = function(t,b,c,d,p_params) {
+	return c * ((t = t / d - 1) * t * t + 1) + b;
 }
-RCTextView.prototype.destroy = function() {
-	this.target = null;
-	JSView.prototype.destroy.call(this);
+caequations.Cubic.IN_OUT = function(t,b,c,d,p_params) {
+	if((t /= d / 2) < 1) return c / 2 * t * t * t + b;
+	return c / 2 * ((t -= 2) * t * t + 2) + b;
 }
-RCTextView.prototype.__class__ = RCTextView;
-js.Boot = function() { }
+caequations.Cubic.OUT_IN = function(t,b,c,d,p_params) {
+	if(t < d / 2) return caequations.Cubic.OUT(t * 2,b,c / 2,d,null);
+	return caequations.Cubic.IN(t * 2 - d,b + c / 2,c / 2,d,null);
+}
+caequations.Cubic.prototype = {
+	__class__: caequations.Cubic
+}
+var haxe = haxe || {}
+haxe.Firebug = $hxClasses["haxe.Firebug"] = function() { }
+haxe.Firebug.__name__ = ["haxe","Firebug"];
+haxe.Firebug.detect = function() {
+	try {
+		return console != null && console.error != null;
+	} catch( e ) {
+		return false;
+	}
+}
+haxe.Firebug.redirectTraces = function() {
+	haxe.Log.trace = haxe.Firebug.trace;
+	js.Lib.onerror = haxe.Firebug.onError;
+}
+haxe.Firebug.onError = function(err,stack) {
+	var buf = err + "\n";
+	var _g = 0;
+	while(_g < stack.length) {
+		var s = stack[_g];
+		++_g;
+		buf += "Called from " + s + "\n";
+	}
+	haxe.Firebug.trace(buf,null);
+	return true;
+}
+haxe.Firebug.trace = function(v,inf) {
+	var type = inf != null && inf.customParams != null?inf.customParams[0]:null;
+	if(type != "warn" && type != "info" && type != "debug" && type != "error") type = inf == null?"error":"log";
+	console[type]((inf == null?"":inf.fileName + ":" + inf.lineNumber + " : ") + Std.string(v));
+}
+haxe.Firebug.prototype = {
+	__class__: haxe.Firebug
+}
+haxe.Log = $hxClasses["haxe.Log"] = function() { }
+haxe.Log.__name__ = ["haxe","Log"];
+haxe.Log.trace = function(v,infos) {
+	js.Boot.__trace(v,infos);
+}
+haxe.Log.clear = function() {
+	js.Boot.__clear_trace();
+}
+haxe.Log.prototype = {
+	__class__: haxe.Log
+}
+haxe.StackItem = $hxClasses["haxe.StackItem"] = { __ename__ : ["haxe","StackItem"], __constructs__ : ["CFunction","Module","FilePos","Method","Lambda"] }
+haxe.StackItem.CFunction = ["CFunction",0];
+haxe.StackItem.CFunction.toString = $estr;
+haxe.StackItem.CFunction.__enum__ = haxe.StackItem;
+haxe.StackItem.Module = function(m) { var $x = ["Module",1,m]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
+haxe.StackItem.FilePos = function(s,file,line) { var $x = ["FilePos",2,s,file,line]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
+haxe.StackItem.Method = function(classname,method) { var $x = ["Method",3,classname,method]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
+haxe.StackItem.Lambda = function(v) { var $x = ["Lambda",4,v]; $x.__enum__ = haxe.StackItem; $x.toString = $estr; return $x; }
+haxe.Stack = $hxClasses["haxe.Stack"] = function() { }
+haxe.Stack.__name__ = ["haxe","Stack"];
+haxe.Stack.callStack = function() {
+	return [];
+}
+haxe.Stack.exceptionStack = function() {
+	return [];
+}
+haxe.Stack.toString = function(stack) {
+	var b = new StringBuf();
+	var _g = 0;
+	while(_g < stack.length) {
+		var s = stack[_g];
+		++_g;
+		b.b[b.b.length] = "\nCalled from ";
+		haxe.Stack.itemToString(b,s);
+	}
+	return b.b.join("");
+}
+haxe.Stack.itemToString = function(b,s) {
+	var $e = (s);
+	switch( $e[1] ) {
+	case 0:
+		b.b[b.b.length] = "a C function";
+		break;
+	case 1:
+		var m = $e[2];
+		b.b[b.b.length] = "module ";
+		b.b[b.b.length] = m == null?"null":m;
+		break;
+	case 2:
+		var line = $e[4], file = $e[3], s1 = $e[2];
+		if(s1 != null) {
+			haxe.Stack.itemToString(b,s1);
+			b.b[b.b.length] = " (";
+		}
+		b.b[b.b.length] = file == null?"null":file;
+		b.b[b.b.length] = " line ";
+		b.b[b.b.length] = line == null?"null":line;
+		if(s1 != null) b.b[b.b.length] = ")";
+		break;
+	case 3:
+		var meth = $e[3], cname = $e[2];
+		b.b[b.b.length] = cname == null?"null":cname;
+		b.b[b.b.length] = ".";
+		b.b[b.b.length] = meth == null?"null":meth;
+		break;
+	case 4:
+		var n = $e[2];
+		b.b[b.b.length] = "local function #";
+		b.b[b.b.length] = n == null?"null":n;
+		break;
+	}
+}
+haxe.Stack.makeStack = function(s) {
+	return null;
+}
+haxe.Stack.prototype = {
+	__class__: haxe.Stack
+}
+haxe.Timer = $hxClasses["haxe.Timer"] = function(time_ms) {
+	var me = this;
+	this.id = window.setInterval(function() {
+		me.run();
+	},time_ms);
+};
+haxe.Timer.__name__ = ["haxe","Timer"];
+haxe.Timer.delay = function(f,time_ms) {
+	var t = new haxe.Timer(time_ms);
+	t.run = function() {
+		t.stop();
+		f();
+	};
+	return t;
+}
+haxe.Timer.measure = function(f,pos) {
+	var t0 = haxe.Timer.stamp();
+	var r = f();
+	haxe.Log.trace(haxe.Timer.stamp() - t0 + "s",pos);
+	return r;
+}
+haxe.Timer.stamp = function() {
+	return Date.now().getTime() / 1000;
+}
+haxe.Timer.prototype = {
+	id: null
+	,stop: function() {
+		if(this.id == null) return;
+		window.clearInterval(this.id);
+		this.id = null;
+	}
+	,run: function() {
+	}
+	,__class__: haxe.Timer
+}
+var js = js || {}
+js.Boot = $hxClasses["js.Boot"] = function() { }
 js.Boot.__name__ = ["js","Boot"];
 js.Boot.__unhtml = function(s) {
 	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
 }
 js.Boot.__trace = function(v,i) {
 	var msg = i != null?i.fileName + ":" + i.lineNumber + ": ":"";
-	msg += js.Boot.__unhtml(js.Boot.__string_rec(v,"")) + "<br/>";
+	msg += js.Boot.__string_rec(v,"");
 	var d = document.getElementById("haxe:trace");
-	if(d == null) alert("No haxe:trace element defined\n" + msg); else d.innerHTML += msg;
+	if(d != null) d.innerHTML += js.Boot.__unhtml(msg) + "<br/>"; else if(typeof(console) != "undefined" && console.log != null) console.log(msg);
 }
 js.Boot.__clear_trace = function() {
 	var d = document.getElementById("haxe:trace");
 	if(d != null) d.innerHTML = "";
-}
-js.Boot.__closure = function(o,f) {
-	var m = o[f];
-	if(m == null) return null;
-	var f1 = function() {
-		return m.apply(o,arguments);
-	};
-	f1.scope = o;
-	f1.method = m;
-	return f1;
 }
 js.Boot.__string_rec = function(o,s) {
 	if(o == null) return "null";
@@ -2230,7 +2478,7 @@ js.Boot.__string_rec = function(o,s) {
 		if(hasp && !o.hasOwnProperty(k)) {
 			continue;
 		}
-		if(k == "prototype" || k == "__class__" || k == "__super__" || k == "__interfaces__") {
+		if(k == "prototype" || k == "__class__" || k == "__super__" || k == "__interfaces__" || k == "__properties__") {
 			continue;
 		}
 		if(str.length != 2) str += ", \n";
@@ -2321,7 +2569,7 @@ js.Boot.__init = function() {
 	if(String.prototype.cca == null) String.prototype.cca = String.prototype.charCodeAt;
 	String.prototype.charCodeAt = function(i) {
 		var x = this.cca(i);
-		if(x != x) return null;
+		if(x != x) return undefined;
 		return x;
 	};
 	var oldsub = String.prototype.substr;
@@ -2334,227 +2582,36 @@ js.Boot.__init = function() {
 		} else if(len < 0) len = this.length + len - pos;
 		return oldsub.apply(this,[pos,len]);
 	};
-	$closure = js.Boot.__closure;
+	Function.prototype["$bind"] = function(o) {
+		var f = function() {
+			return f.method.apply(f.scope,arguments);
+		};
+		f.scope = o;
+		f.method = this;
+		return f;
+	};
 }
-js.Boot.prototype.__class__ = js.Boot;
-caequations.Cubic = function() { }
-caequations.Cubic.__name__ = ["caequations","Cubic"];
-caequations.Cubic.IN = function(t,b,c,d,p_params) {
-	return c * (t /= d) * t * t + b;
+js.Boot.prototype = {
+	__class__: js.Boot
 }
-caequations.Cubic.OUT = function(t,b,c,d,p_params) {
-	return c * ((t = t / d - 1) * t * t + 1) + b;
+js.Lib = $hxClasses["js.Lib"] = function() { }
+js.Lib.__name__ = ["js","Lib"];
+js.Lib.isIE = null;
+js.Lib.isOpera = null;
+js.Lib.document = null;
+js.Lib.window = null;
+js.Lib.alert = function(v) {
+	alert(js.Boot.__string_rec(v,""));
 }
-caequations.Cubic.IN_OUT = function(t,b,c,d,p_params) {
-	if((t /= d / 2) < 1) return c / 2 * t * t * t + b;
-	return c / 2 * ((t -= 2) * t * t + 2) + b;
+js.Lib.eval = function(code) {
+	return eval(code);
 }
-caequations.Cubic.OUT_IN = function(t,b,c,d,p_params) {
-	if(t < d / 2) return caequations.Cubic.OUT(t * 2,b,c / 2,d,null);
-	return caequations.Cubic.IN(t * 2 - d,b + c / 2,c / 2,d,null);
+js.Lib.setErrorHandler = function(f) {
+	js.Lib.onerror = f;
 }
-caequations.Cubic.prototype.__class__ = caequations.Cubic;
-RCPoint = function(x,y) {
-	if( x === $_ ) return;
-	this.x = x == null?0:x;
-	this.y = y == null?0:y;
+js.Lib.prototype = {
+	__class__: js.Lib
 }
-RCPoint.__name__ = ["RCPoint"];
-RCPoint.prototype.x = null;
-RCPoint.prototype.y = null;
-RCPoint.prototype.copy = function() {
-	return new RCPoint(this.x,this.y);
-}
-RCPoint.prototype.toString = function() {
-	return "[RCPoint x:" + this.x + ", y:" + this.y + "]";
-}
-RCPoint.prototype.__class__ = RCPoint;
-RCGradient = function(colors,alphas,linear) {
-	if( colors === $_ ) return;
-	if(linear == null) linear = true;
-	this.gradientColors = colors;
-	this.gradientAlphas = alphas == null?[1.0,1.0]:alphas;
-	this.gradientRatios = [0,255];
-	this.focalPointRatio = 0;
-	this.tx = 0;
-	this.ty = 0;
-	this.matrixRotation = Math.PI * 0.5;
-}
-RCGradient.__name__ = ["RCGradient"];
-RCGradient.prototype.strokeColor = null;
-RCGradient.prototype.gradientColors = null;
-RCGradient.prototype.gradientAlphas = null;
-RCGradient.prototype.gradientRatios = null;
-RCGradient.prototype.spreadMethod = null;
-RCGradient.prototype.interpolationMethod = null;
-RCGradient.prototype.gradientType = null;
-RCGradient.prototype.focalPointRatio = null;
-RCGradient.prototype.tx = null;
-RCGradient.prototype.ty = null;
-RCGradient.prototype.matrixRotation = null;
-RCGradient.prototype.__class__ = RCGradient;
-RCRect = function(x,y,w,h) {
-	if( x === $_ ) return;
-	this.origin = new RCPoint(x,y);
-	this.size = new RCSize(w,h);
-}
-RCRect.__name__ = ["RCRect"];
-RCRect.prototype.origin = null;
-RCRect.prototype.size = null;
-RCRect.prototype.copy = function() {
-	return new RCRect(this.origin.x,this.origin.y,this.size.width,this.size.height);
-}
-RCRect.prototype.toString = function() {
-	return "[RCRect x:" + this.origin.x + ", y:" + this.origin.y + ", width:" + this.size.width + ", height:" + this.size.height + "]";
-}
-RCRect.prototype.__class__ = RCRect;
-EVFullScreen = function(p) {
-	if( p === $_ ) return;
-	RCSignal.call(this);
-}
-EVFullScreen.__name__ = ["EVFullScreen"];
-EVFullScreen.__super__ = RCSignal;
-for(var k in RCSignal.prototype ) EVFullScreen.prototype[k] = RCSignal.prototype[k];
-EVFullScreen.prototype.__class__ = EVFullScreen;
-RCAppDelegate = function(p) {
-	if( p === $_ ) return;
-	RCWindow.sharedWindow();
-	JSView.call(this,0,0);
-	RCNotificationCenter.addObserver("resize",$closure(this,"resize"));
-	RCNotificationCenter.addObserver("fullscreen",$closure(this,"fullscreen"));
-	this.applicationDidFinishLaunching();
-}
-RCAppDelegate.__name__ = ["RCAppDelegate"];
-RCAppDelegate.__super__ = JSView;
-for(var k in JSView.prototype ) RCAppDelegate.prototype[k] = JSView.prototype[k];
-RCAppDelegate.prototype.applicationDidFinishLaunching = function() {
-}
-RCAppDelegate.prototype.applicationDidBecomeActive = function() {
-}
-RCAppDelegate.prototype.applicationWillEnterForeground = function() {
-}
-RCAppDelegate.prototype.applicationWillTerminate = function() {
-	haxe.Log.trace("applicationWillTerminate",{ fileName : "RCAppDelegate.hx", lineNumber : 34, className : "RCAppDelegate", methodName : "applicationWillTerminate"});
-}
-RCAppDelegate.prototype.resize = function(w,h) {
-}
-RCAppDelegate.prototype.fullscreen = function(b) {
-}
-RCAppDelegate.prototype.__class__ = RCAppDelegate;
-Main = function(p) {
-	if( p === $_ ) return;
-	RCAppDelegate.call(this);
-	this.heart1();
-	RCWindow.sharedWindow().addChild(new RCStats());
-}
-Main.__name__ = ["Main"];
-Main.__super__ = RCAppDelegate;
-for(var k in RCAppDelegate.prototype ) Main.prototype[k] = RCAppDelegate.prototype[k];
-Main.main = function() {
-	haxe.Firebug.redirectTraces();
-	RCWindow.sharedWindow();
-}
-Main.prototype.heart1 = function() {
-	var _g = 0;
-	while(_g < 200) {
-		var i = _g++;
-		this.drawParticle(i);
-	}
-}
-Main.prototype.drawParticle = function(i) {
-	var t = i / 200;
-	var p1 = new Particle(400,400,t,-1);
-	var p2 = new Particle(400,400,t,1);
-	RCWindow.sharedWindow().addChild(p1);
-	RCWindow.sharedWindow().addChild(p2);
-}
-Main.prototype.heart2 = function() {
-	var iterator = new RCIterator(4,0,200,1);
-	iterator.run = $closure(this,"drawParticle2");
-	iterator.start();
-}
-Main.prototype.drawParticle2 = function(i) {
-	var scale = 20;
-	var t = i / (200 / 60);
-	var a = 0.01 * (-t * t + 40 * t + 1200);
-	var x = a * Math.sin(Math.PI * t / 180);
-	var y = a * Math.cos(Math.PI * t / 180);
-	var p1 = new Particle(800 - x * scale,400 - y * scale,t,-1);
-	var p2 = new Particle(800 - x * scale,400 - y * scale,t,1);
-	RCWindow.sharedWindow().addChild(p1);
-	RCWindow.sharedWindow().addChild(p2);
-}
-Main.prototype.logx = function(val,base) {
-	if(base == null) base = 10;
-	return Math.log(val) / Math.log(base);
-}
-Main.prototype.log10 = function(val) {
-	return Math.log(val) * 0.434294481904;
-}
-Main.prototype.__class__ = Main;
-Particle = function(x,y,t,s) {
-	if( x === $_ ) return;
-	JSView.call(this,x,y);
-	this.o_x = x;
-	this.o_y = y;
-	this.theta = t;
-	this.f_x = x;
-	this.f_y = y;
-	this.current_theta = 0.001;
-	this.sign = s;
-	this.addChild(new RCRectangle(0,0,1,1,0));
-	this.loopEvent = new EVLoop();
-	this.loopEvent.setFuncToCall($closure(this,"loopTheta"));
-	this.timer = new haxe.Timer(40);
-	this.timer.run = $closure(this,"advanceTheta");
-}
-Particle.__name__ = ["Particle"];
-Particle.__super__ = JSView;
-for(var k in JSView.prototype ) Particle.prototype[k] = JSView.prototype[k];
-Particle.prototype.timer = null;
-Particle.prototype.loopEvent = null;
-Particle.prototype.o_x = null;
-Particle.prototype.o_y = null;
-Particle.prototype.f_x = null;
-Particle.prototype.f_y = null;
-Particle.prototype.theta = null;
-Particle.prototype.current_theta = null;
-Particle.prototype.sign = null;
-Particle.prototype.advanceTheta = function() {
-	this.current_theta += (this.theta - this.current_theta) / 5;
-	this.fxy();
-	if(Math.abs(this.current_theta - this.theta) <= 0.001) {
-		this.current_theta = this.theta;
-		this.timer.stop();
-		this.loopEvent.stop();
-		this.fxy();
-		this.o_x = this.o_x - this.f_x * 500 * this.sign;
-		this.o_y = this.o_y - this.f_y * 500;
-		this.changeDirection();
-		this.loopEvent.setFuncToCall($closure(this,"loop"));
-	}
-}
-Particle.prototype.fxy = function() {
-	this.f_x = Math.sin(this.current_theta) * Math.cos(this.current_theta) * Math.log(Math.abs(this.current_theta));
-	this.f_y = Math.sqrt(Math.abs(this.current_theta)) * Math.cos(this.current_theta);
-}
-Particle.prototype.changeDirection = function() {
-	this.f_x = this.o_x + 6 - Math.random() * 12;
-	this.f_y = this.o_y + 6 - Math.random() * 12;
-}
-Particle.prototype.loopTheta = function() {
-	this.setX(this.o_x - this.f_x * 500 * this.sign);
-	this.setY(this.o_y - this.f_y * 500);
-}
-Particle.prototype.loop = function() {
-	var _g = this;
-	_g.setX(_g.getX() + (this.f_x - this.getX()) / 3);
-	var _g = this;
-	_g.setY(_g.getY() + (this.f_y - this.getY()) / 3);
-	if(Math.abs(this.getX() - this.f_x) < 1) this.changeDirection();
-}
-Particle.prototype.__class__ = Particle;
-$_ = {}
 js.Boot.__res = {}
 js.Boot.__init();
 {
@@ -2598,29 +2655,15 @@ js.Boot.__init();
 		var s = date.getSeconds();
 		return date.getFullYear() + "-" + (m < 10?"0" + m:"" + m) + "-" + (d1 < 10?"0" + d1:"" + d1) + " " + (h < 10?"0" + h:"" + h) + ":" + (mi < 10?"0" + mi:"" + mi) + ":" + (s < 10?"0" + s:"" + s);
 	};
-	d.prototype.__class__ = d;
+	d.prototype.__class__ = $hxClasses["Date"] = d;
 	d.__name__ = ["Date"];
-}
-if(typeof(haxe_timers) == "undefined") haxe_timers = [];
-{
-	String.prototype.__class__ = String;
-	String.__name__ = ["String"];
-	Array.prototype.__class__ = Array;
-	Array.__name__ = ["Array"];
-	Int = { __name__ : ["Int"]};
-	Dynamic = { __name__ : ["Dynamic"]};
-	Float = Number;
-	Float.__name__ = ["Float"];
-	Bool = { __ename__ : ["Bool"]};
-	Class = { __name__ : ["Class"]};
-	Enum = { };
-	Void = { __ename__ : ["Void"]};
 }
 {
 	Math.__name__ = ["Math"];
 	Math.NaN = Number["NaN"];
 	Math.NEGATIVE_INFINITY = Number["NEGATIVE_INFINITY"];
 	Math.POSITIVE_INFINITY = Number["POSITIVE_INFINITY"];
+	$hxClasses["Math"] = Math;
 	Math.isFinite = function(i) {
 		return isFinite(i);
 	};
@@ -2629,19 +2672,35 @@ if(typeof(haxe_timers) == "undefined") haxe_timers = [];
 	};
 }
 {
-	js.Lib.document = document;
-	js.Lib.window = window;
-	onerror = function(msg,url,line) {
-		var f = js.Lib.onerror;
-		if( f == null )
-			return false;
-		return f(msg,[url+":"+line]);
+	String.prototype.__class__ = $hxClasses["String"] = String;
+	String.__name__ = ["String"];
+	Array.prototype.__class__ = $hxClasses["Array"] = Array;
+	Array.__name__ = ["Array"];
+	var Int = $hxClasses["Int"] = { __name__ : ["Int"]};
+	var Dynamic = $hxClasses["Dynamic"] = { __name__ : ["Dynamic"]};
+	var Float = $hxClasses["Float"] = Number;
+	Float.__name__ = ["Float"];
+	var Bool = $hxClasses["Bool"] = Boolean;
+	Bool.__ename__ = ["Bool"];
+	var Class = $hxClasses["Class"] = { __name__ : ["Class"]};
+	var Enum = { };
+	var Void = $hxClasses["Void"] = { __ename__ : ["Void"]};
+}
+{
+	if(typeof document != "undefined") js.Lib.document = document;
+	if(typeof window != "undefined") {
+		js.Lib.window = window;
+		js.Lib.window.onerror = function(msg,url,line) {
+			var f = js.Lib.onerror;
+			if(f == null) return false;
+			return f(msg,[url + ":" + line]);
+		};
 	}
 }
-_RCDraw.LineScaleMode.NONE = null;
-EVLoop.FPS = 60;
 CoreAnimation.defaultTimingFunction = caequations.Linear.NONE;
 CoreAnimation.defaultDuration = 0.8;
+EVLoop.FPS = 60;
+Main.PARTICLES = 200;
 RCColor.BLACK = 0;
 RCColor.WHITE = 16777215;
 RCColor.RED = 16711680;
@@ -2649,6 +2708,6 @@ RCColor.GREEN = 65280;
 RCColor.BLUE = 255;
 RCColor.CYAN = 65535;
 RCColor.YELLOW = 16776960;
+_RCDraw.LineScaleMode.NONE = null;
 js.Lib.onerror = null;
-Main.PARTICLES = 200;
 Main.main()

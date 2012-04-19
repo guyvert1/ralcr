@@ -51,6 +51,7 @@ class Evaluate {
 			case "stageheight":	RCWindow.sharedWindow().height;
 			case "photowidth":	rect == null ? 0.0 : rect.size.width;
 			case "photoheight":	rect == null ? 0.0 : rect.size.height;
+			case "content_max_width": RCWindow.sharedWindow().width;
 			default :			Std.parseInt ( str );
 		});
 	}

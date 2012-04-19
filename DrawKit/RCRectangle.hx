@@ -13,6 +13,7 @@ class RCRectangle extends RCDraw, implements RCDrawInterface {
 	
 	
 	public function new (x, y, w, h, ?color:Dynamic, ?alpha:Float=1.0, ?r:Null<Int>) {
+		
 		super (x, y, w, h, color, alpha);
 		
 		this.roundness = r;
@@ -33,7 +34,7 @@ class RCRectangle extends RCDraw, implements RCDrawInterface {
 		layer.graphics.endFill();
 		
 #elseif js
-	
+		
 		var fillColorStyle = cast (color, RCColor).fillColorStyle;
 		var strokeColorStyle = cast (color, RCColor).strokeColorStyle;
 		

@@ -70,8 +70,10 @@ class Fugu {
 									strength:Float=0.6)
 	{
 		#if (flash || nme)
-		var filter = new flash.filters.GlowFilter (color, alpha, blur, blur, strength, 3, false, false);
-		target.layer.filters = blur==null ? null : [filter];
+			var filters :Array<flash.filters.BitmapFilter> = [];
+			var filter = new flash.filters.GlowFilter (color, alpha, blur, blur, strength, 3, false, false);
+			filters.push ( filter );
+			target.layer.filters = blur==null ? null : filters;
 		#end
 	}
 	
