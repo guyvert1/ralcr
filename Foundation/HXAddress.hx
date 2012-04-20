@@ -219,9 +219,8 @@ class HXAddress {
      * @param url The resource to be opened.
      * @param target Target window.
      */
-	public static function href (url:String, ?target:String="_self") :Void {
-		var js_target = #if js true #else false #end;
-		if (_availability && (isActiveX() || js_target)) {
+	@:keep public static function href (url:String, ?target:String="_self") :Void {
+		if (_availability && (isActiveX() || isJS())) {
 			ExternalInterface.call ('SWFAddress.href', url, target);
 			return;
 		}
@@ -237,10 +236,11 @@ class HXAddress {
      * @param options Options which get evaluted and passed to the window.open() method.
      * @param handler Optional JavsScript handler code for popup handling.
      */
-	public static function popup (url:String, ?name:String="popup", ?options:String='""', ?handler:String="") :Void {
-		var js_target = #if js true #else false #end;
-		if (_availability && (isActiveX() || js_target || ExternalInterface.call ('asual.util.Browser.isSafari')))
+	@:keep public static function popup (url:String, ?name:String="popup", ?options:String='""', ?handler:String="") :Void {
+		
+		if (_availability && (isActiveX() || isJS() || ExternalInterface.call ('asual.util.Browser.isSafari')))
 		{
+			trace("good to go");
 			ExternalInterface.call ('SWFAddress.popup', url, name, options, handler);
 			return;
 		}
@@ -487,6 +487,9 @@ class HXAddress {
 			return true;
 		#end
 	}
+	static function isJS () :Bool {
+		return #if js true #else false #end;
+	}
 }
 
 
@@ -533,6 +536,7 @@ class JSExternalInterface {
 		}
 	}
 	public static function call(functionName:String, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic) :Dynamic {
+		
 		switch (functionName) {
 			case "SWFAddress.back" : SWFAddress.back();
 			case "SWFAddress.forward" : SWFAddress.forward();

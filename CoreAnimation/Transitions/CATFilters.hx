@@ -169,7 +169,7 @@ class CATFilters extends CAObject, implements CATransitionInterface {
 	function getCurrentGlowFilter (obj:DisplayObjectContainer) :GlowFilter {
 		for (f in obj.filters)
 			if (Std.is (f, GlowFilter))
-				return f;
+				return cast (f, flash.filters.GlowFilter);
 		var glow = new GlowFilter();
 			glow.alpha = 1;
 			glow.blurX = 0;
@@ -181,14 +181,14 @@ class CATFilters extends CAObject, implements CATransitionInterface {
 	function getCurrentBlurFilter (obj:DisplayObjectContainer) :BlurFilter {
 		for (f in obj.filters)
 			if (Std.is (f, BlurFilter))
-				return f;
+				return cast (f, flash.filters.BlurFilter);
 				return new BlurFilter (0, 0, 3);
 	}
 	
 	function getCurrentShadowFilter (obj:DisplayObjectContainer) :DropShadowFilter {
 		for (f in obj.filters)
 			if (Std.is (f, DropShadowFilter))
-				return f;
+				return cast (f, flash.filters.DropShadowFilter);
 		var shadow = new DropShadowFilter();
 			shadow.distance = 0;
 			shadow.angle = 0;

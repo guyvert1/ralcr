@@ -891,7 +891,7 @@ HXAddressSignal.prototype = {
 			try {
 				listener.apply(null,[args.copy()]);
 			} catch( e ) {
-				haxe.Log.trace("[HXAddressEvent error calling: " + listener + "]",{ fileName : "HXAddress.hx", lineNumber : 521, className : "HXAddressSignal", methodName : "dispatch"});
+				haxe.Log.trace("[HXAddressEvent error calling: " + listener + "]",{ fileName : "HXAddress.hx", lineNumber : 524, className : "HXAddressSignal", methodName : "dispatch"});
 			}
 		}
 	}
@@ -1061,8 +1061,7 @@ HXAddress.go = function(delta) {
 }
 HXAddress.href = function(url,target) {
 	if(target == null) target = "_self";
-	var js_target = true;
-	if(HXAddress._availability && (HXAddress.isActiveX() || js_target)) {
+	if(HXAddress._availability && (HXAddress.isActiveX() || HXAddress.isJS())) {
 		JSExternalInterface.call("SWFAddress.href",url,target);
 		return;
 	}
@@ -1071,8 +1070,8 @@ HXAddress.popup = function(url,name,options,handler) {
 	if(handler == null) handler = "";
 	if(options == null) options = "\"\"";
 	if(name == null) name = "popup";
-	var js_target = true;
-	if(HXAddress._availability && (HXAddress.isActiveX() || js_target || JSExternalInterface.call("asual.util.Browser.isSafari"))) {
+	if(HXAddress._availability && (HXAddress.isActiveX() || HXAddress.isJS() || JSExternalInterface.call("asual.util.Browser.isSafari"))) {
+		haxe.Log.trace("good to go",{ fileName : "HXAddress.hx", lineNumber : 243, className : "HXAddress", methodName : "popup"});
 		JSExternalInterface.call("SWFAddress.popup",url,name,options,handler);
 		return;
 	}
@@ -1196,6 +1195,9 @@ HXAddress.isMac = function() {
 	return true;
 }
 HXAddress.isActiveX = function() {
+	return true;
+}
+HXAddress.isJS = function() {
 	return true;
 }
 HXAddress.prototype = {
@@ -1564,6 +1566,7 @@ JSView.prototype = $extend(RCDisplayObject.prototype,{
 		return RCDisplayObject.prototype.setY.call(this,y);
 	}
 	,setWidth: function(w) {
+		haxe.Log.trace("setw " + w,{ fileName : "JSView.hx", lineNumber : 162, className : "JSView", methodName : "setWidth"});
 		this.layer.style.width = w + "px";
 		return RCDisplayObject.prototype.setWidth.call(this,w);
 	}
@@ -3342,12 +3345,9 @@ RCRect.prototype = {
 }
 var RCRectangle = $hxClasses["RCRectangle"] = function(x,y,w,h,color,alpha,r) {
 	if(alpha == null) alpha = 1.0;
-	haxe.Log.trace(1,{ fileName : "RCRectangle.hx", lineNumber : 16, className : "RCRectangle", methodName : "new"});
 	RCDraw.call(this,x,y,w,h,color,alpha);
-	haxe.Log.trace(1,{ fileName : "RCRectangle.hx", lineNumber : 18, className : "RCRectangle", methodName : "new"});
 	this.roundness = r;
 	this.redraw();
-	haxe.Log.trace(1,{ fileName : "RCRectangle.hx", lineNumber : 20, className : "RCRectangle", methodName : "new"});
 };
 RCRectangle.__name__ = ["RCRectangle"];
 RCRectangle.__interfaces__ = [RCDrawInterface];
@@ -3355,8 +3355,6 @@ RCRectangle.__super__ = RCDraw;
 RCRectangle.prototype = $extend(RCDraw.prototype,{
 	roundness: null
 	,redraw: function() {
-		haxe.Log.trace(2,{ fileName : "RCRectangle.hx", lineNumber : 37, className : "RCRectangle", methodName : "redraw"});
-		haxe.Log.trace(this.color,{ fileName : "RCRectangle.hx", lineNumber : 37, className : "RCRectangle", methodName : "redraw"});
 		var fillColorStyle = ((function($this) {
 			var $r;
 			var $t = $this.color;
@@ -3364,7 +3362,6 @@ RCRectangle.prototype = $extend(RCDraw.prototype,{
 			$r = $t;
 			return $r;
 		}(this))).fillColorStyle;
-		haxe.Log.trace(2,{ fileName : "RCRectangle.hx", lineNumber : 38, className : "RCRectangle", methodName : "redraw"});
 		var strokeColorStyle = ((function($this) {
 			var $r;
 			var $t = $this.color;
@@ -3372,7 +3369,6 @@ RCRectangle.prototype = $extend(RCDraw.prototype,{
 			$r = $t;
 			return $r;
 		}(this))).strokeColorStyle;
-		haxe.Log.trace(2,{ fileName : "RCRectangle.hx", lineNumber : 39, className : "RCRectangle", methodName : "redraw"});
 		this.layer.style.margin = "0px 0px 0px 0px";
 		this.layer.style.width = this.size.width * RCDevice.currentDevice().dpiScale + "px";
 		this.layer.style.height = this.size.height * RCDevice.currentDevice().dpiScale + "px";
@@ -3386,7 +3382,6 @@ RCRectangle.prototype = $extend(RCDraw.prototype,{
 			this.layer.style.MozBorderRadius = this.roundness * RCDevice.currentDevice().dpiScale / 2 + "px";
 			this.layer.style.borderRadius = this.roundness * RCDevice.currentDevice().dpiScale / 2 + "px";
 		}
-		haxe.Log.trace(2,{ fileName : "RCRectangle.hx", lineNumber : 55, className : "RCRectangle", methodName : "redraw"});
 	}
 	,setWidth: function(w) {
 		this.size.width = w;

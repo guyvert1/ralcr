@@ -159,6 +159,7 @@ class JSView extends RCDisplayObject {
 		return super.setY ( y );
 	}
 	override public function setWidth (w:Float) :Float {
+		trace("setw "+w);
 		layer.style.width = w + "px";
 		return super.setWidth ( w );
 	}
