@@ -159,7 +159,6 @@ class JSView extends RCDisplayObject {
 		return super.setY ( y );
 	}
 	override public function setWidth (w:Float) :Float {
-		trace("setw "+w);
 		layer.style.width = w + "px";
 		return super.setWidth ( w );
 	}
@@ -186,10 +185,31 @@ class JSView extends RCDisplayObject {
 		scale (scaleX_, scaleY_);
 		return scaleY_;
 	}*/
+	var transformProperty :String;
 	override public function scale (sx:Float, sy:Float) :Void {
-		untyped layer.style.WebkitTransformOrigin = "top left";
-		untyped layer.style.WebkitTransform = "scale(" + sx + "," + sy + ")";
+		untyped layer.style[getTransformProperty()+"Origin"] = "top left";
+		untyped layer.style[getTransformProperty()] = "scale(" + sx + "," + sy + ")";
 	}
+	function getTransformProperty () :String {
+	    // Note that in some versions of IE9 it is critical that
+	    // msTransform appear in this list before MozTransform
+		if (transformProperty != null)
+			return transformProperty;
+	    for (p in ['transform', 'WebkitTransform', 'msTransform', 'MozTransform', 'OTransform']) {
+			if (untyped layer.style[p] != null) {
+				transformProperty = p;
+				return p;
+	        }
+	    }
+	    return "transform";
+	}
+	
+	
+	override public function setRotation (r:Float) :Float {
+		untyped layer.style[getTransformProperty()] = "rotate(" + r + "deg)";
+		return super.setRotation ( r );
+	}
+	
 	public function startDrag (?lockCenter:Bool, ?rect:RCRect) :Void {
 		
 	}

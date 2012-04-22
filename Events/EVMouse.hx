@@ -85,7 +85,7 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 					return;
 				}
 			}
-			targets.add ({target:target, type:type, instance:this});
+			//targets.add ({target:target, type:type, instance:this});
 			switch (type) {
 				case UP:			layer.onmouseup = mouseHandler;
 				case DOWN:			layer.onmousedown = mouseHandler;
@@ -121,13 +121,16 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 				case MOVE:			layer.onmousemove = null;
 				case CLICK:			layer.onclick = null;
 				case DOUBLE_CLICK:	layer.ondblclick = null;
-				case WHEEL:			null;
+				case WHEEL:			removeWheelListener();
 			}
 		#end
 	}
 	
 	function mouseHandler (e:MouseEvent) {
 		#if js
+			// IE is retarded and doesn't pass the event object 
+			if (e == null)
+				e = untyped js.Lib.window.event;
 /*			if (js.Lib.isIE)
 				untyped e.returnValue = false;
 			else
@@ -149,6 +152,9 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 #if js
 	
 	function addWheelListener () {
+		trace("ADD WHEEL");
+		//untyped layer.mousewheel = MouseScroll;
+		
         // For mouse scrolling in Firefox
         if (untyped layer.addEventListener) {
 			// Internet Explorer 9, Opera, Google Chrome and Safari
@@ -160,7 +166,25 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 		else if (untyped layer.attachEvent) {
 			untyped layer.attachEvent ("onmousewheel", MouseScroll);
 		}
+		removeWheelListener();
 	}
+	function removeWheelListener () {
+		trace("REMOVE WHEEL");
+		//untyped layer.mousewheel = null;
+		
+        // For mouse scrolling in Firefox
+        if (untyped layer.removeEventListener) {trace("REMOVE WHEEL");
+			// Internet Explorer 9, Opera, Google Chrome and Safari
+			untyped layer.removeEventListener ("mousewheel", MouseScroll, false);trace("REMOVE WHEEL");
+			// Firefox
+			untyped layer.removeEventListener ("DOMMouseScroll", MouseScroll, false);trace("REMOVE WHEEL");
+		}
+		// IE < 9
+		else if (untyped layer.detachEvent) {trace("REMOVE WHEEL");
+			untyped layer.detachEvent ("onmousewheel", MouseScroll);
+		}
+	}
+	
     function MouseScroll (e) {
 		
 		if (Reflect.field(e, 'wheelDelta') != null) {
@@ -173,13 +197,15 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 			delta = - Math.round ( e.detail*5 );
 		}
 		this.e = e;
-		dispatch ( this );
+		//dispatch ( this );
+		trace(delta);
     }
 	
 #end
 	
 	
-	override public function destroy () :Void {
+	override public function destroy (?pos:haxe.PosInfos) :Void {
+		trace("destroy mouse "+type);
 		removeEventListener();
 		super.destroy();
 	}

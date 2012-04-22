@@ -348,7 +348,7 @@ RCSignal.prototype = {
 		this.listeners.add(listener);
 	}
 	,addOnce: function(listener,pos) {
-		if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once as you expect. " + pos,{ fileName : "RCSignal.hx", lineNumber : 22, className : "RCSignal", methodName : "addOnce"});
+		if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once as you expect. " + pos,{ fileName : "RCSignal.hx", lineNumber : 23, className : "RCSignal", methodName : "addOnce"});
 		this.exposableListener = listener;
 	}
 	,addFirst: function(listener,pos) {
@@ -359,7 +359,7 @@ RCSignal.prototype = {
 		while( $it0.hasNext() ) {
 			var l = $it0.next();
 			if(Reflect.compareMethods(l,listener)) {
-				this.listeners.remove(listener);
+				this.listeners.remove(l);
 				break;
 			}
 		}
@@ -392,7 +392,7 @@ RCSignal.prototype = {
 		try {
 			listener.apply(null,args);
 		} catch( e ) {
-			haxe.Log.trace("[RCSignal error: " + e + ", called from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 67, className : "RCSignal", methodName : "callMethod"});
+			haxe.Log.trace("[RCSignal error: " + e + ", called from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 74, className : "RCSignal", methodName : "callMethod"});
 			Fugu.stack();
 		}
 	}
@@ -404,7 +404,7 @@ RCSignal.prototype = {
 		}
 		return false;
 	}
-	,destroy: function() {
+	,destroy: function(pos) {
 		this.listeners = null;
 		this.exposableListener = null;
 	}
@@ -480,7 +480,6 @@ EVMouse.prototype = $extend(RCSignal.prototype,{
 				return;
 			}
 		}
-		this.targets.add({ target : this.target, type : this.type, instance : this});
 		switch(this.type) {
 		case "mouseup":
 			this.layer.onmouseup = this.mouseHandler.$bind(this);
@@ -534,30 +533,47 @@ EVMouse.prototype = $extend(RCSignal.prototype,{
 			this.layer.ondblclick = null;
 			break;
 		case "mousewheel":
-			null;
+			this.removeWheelListener();
 			break;
 		}
 	}
 	,mouseHandler: function(e) {
+		if(e == null) e = js.Lib.window.event;
 		this.e = e;
-		this.dispatch(this,null,null,null,{ fileName : "EVMouse.hx", lineNumber : 137, className : "EVMouse", methodName : "mouseHandler"});
+		this.dispatch(this,null,null,null,{ fileName : "EVMouse.hx", lineNumber : 140, className : "EVMouse", methodName : "mouseHandler"});
 	}
 	,updateAfterEvent: function() {
 	}
 	,addWheelListener: function() {
+		haxe.Log.trace("ADD WHEEL",{ fileName : "EVMouse.hx", lineNumber : 155, className : "EVMouse", methodName : "addWheelListener"});
 		if(this.layer.addEventListener) {
 			this.layer.addEventListener("mousewheel",this.MouseScroll.$bind(this),false);
 			this.layer.addEventListener("DOMMouseScroll",this.MouseScroll.$bind(this),false);
 		} else if(this.layer.attachEvent) this.layer.attachEvent("onmousewheel",this.MouseScroll.$bind(this));
+		this.removeWheelListener();
+	}
+	,removeWheelListener: function() {
+		haxe.Log.trace("REMOVE WHEEL",{ fileName : "EVMouse.hx", lineNumber : 172, className : "EVMouse", methodName : "removeWheelListener"});
+		if(this.layer.removeEventListener) {
+			haxe.Log.trace("REMOVE WHEEL",{ fileName : "EVMouse.hx", lineNumber : 176, className : "EVMouse", methodName : "removeWheelListener"});
+			this.layer.removeEventListener("mousewheel",this.MouseScroll.$bind(this),false);
+			haxe.Log.trace("REMOVE WHEEL",{ fileName : "EVMouse.hx", lineNumber : 178, className : "EVMouse", methodName : "removeWheelListener"});
+			this.layer.removeEventListener("DOMMouseScroll",this.MouseScroll.$bind(this),false);
+			haxe.Log.trace("REMOVE WHEEL",{ fileName : "EVMouse.hx", lineNumber : 180, className : "EVMouse", methodName : "removeWheelListener"});
+		} else if(this.layer.detachEvent) {
+			haxe.Log.trace("REMOVE WHEEL",{ fileName : "EVMouse.hx", lineNumber : 183, className : "EVMouse", methodName : "removeWheelListener"});
+			this.layer.detachEvent("onmousewheel",this.MouseScroll.$bind(this));
+		}
 	}
 	,MouseScroll: function(e) {
 		if(Reflect.field(e,"wheelDelta") != null) this.delta = e.wheelDelta; else if(Reflect.field(e,"detail") != null) this.delta = -Math.round(e.detail * 5);
 		this.e = e;
-		this.dispatch(this,null,null,null,{ fileName : "EVMouse.hx", lineNumber : 176, className : "EVMouse", methodName : "MouseScroll"});
+		haxe.Log.trace(this.delta,{ fileName : "EVMouse.hx", lineNumber : 201, className : "EVMouse", methodName : "MouseScroll"});
 	}
-	,destroy: function() {
+	,destroy: function(pos) {
+		haxe.Log.trace("destroy mouse " + this.type,{ fileName : "EVMouse.hx", lineNumber : 208, className : "EVMouse", methodName : "destroy"});
 		this.removeEventListener();
-		RCSignal.prototype.destroy.call(this);
+		RCSignal.prototype.destroy.call(this,{ fileName : "EVMouse.hx", lineNumber : 210, className : "EVMouse", methodName : "destroy"});
 	}
 	,__class__: EVMouse
 });
@@ -1566,7 +1582,6 @@ JSView.prototype = $extend(RCDisplayObject.prototype,{
 		return RCDisplayObject.prototype.setY.call(this,y);
 	}
 	,setWidth: function(w) {
-		haxe.Log.trace("setw " + w,{ fileName : "JSView.hx", lineNumber : 162, className : "JSView", methodName : "setWidth"});
 		this.layer.style.width = w + "px";
 		return RCDisplayObject.prototype.setWidth.call(this,w);
 	}
@@ -1579,9 +1594,27 @@ JSView.prototype = $extend(RCDisplayObject.prototype,{
 		this.contentSize_.height = this.layer.scrollHeight;
 		return this.contentSize_;
 	}
+	,transformProperty: null
 	,scale: function(sx,sy) {
-		this.layer.style.WebkitTransformOrigin = "top left";
-		this.layer.style.WebkitTransform = "scale(" + sx + "," + sy + ")";
+		this.layer.style[this.getTransformProperty() + "Origin"] = "top left";
+		this.layer.style[this.getTransformProperty()] = "scale(" + sx + "," + sy + ")";
+	}
+	,getTransformProperty: function() {
+		if(this.transformProperty != null) return this.transformProperty;
+		var _g = 0, _g1 = ["transform","WebkitTransform","msTransform","MozTransform","OTransform"];
+		while(_g < _g1.length) {
+			var p = _g1[_g];
+			++_g;
+			if(this.layer.style[p] != null) {
+				this.transformProperty = p;
+				return p;
+			}
+		}
+		return "transform";
+	}
+	,setRotation: function(r) {
+		this.layer.style[this.getTransformProperty()] = "rotate(" + r + "deg)";
+		return RCDisplayObject.prototype.setRotation.call(this,r);
 	}
 	,startDrag: function(lockCenter,rect) {
 	}
@@ -2191,11 +2224,11 @@ RCControl.prototype = $extend(JSView.prototype,{
 		return this.state_ == RCControlState.HIGHLIGHTED;
 	}
 	,destroy: function() {
-		this.click.destroy();
-		this.press.destroy();
-		this.release.destroy();
-		this.over.destroy();
-		this.out.destroy();
+		this.click.destroy({ fileName : "RCControl.hx", lineNumber : 167, className : "RCControl", methodName : "destroy"});
+		this.press.destroy({ fileName : "RCControl.hx", lineNumber : 168, className : "RCControl", methodName : "destroy"});
+		this.release.destroy({ fileName : "RCControl.hx", lineNumber : 169, className : "RCControl", methodName : "destroy"});
+		this.over.destroy({ fileName : "RCControl.hx", lineNumber : 170, className : "RCControl", methodName : "destroy"});
+		this.out.destroy({ fileName : "RCControl.hx", lineNumber : 171, className : "RCControl", methodName : "destroy"});
 		JSView.prototype.destroy.call(this);
 	}
 	,__class__: RCControl
@@ -3512,9 +3545,9 @@ RCScrollBar.prototype = $extend(RCControl.prototype,{
 		return this.value_;
 	}
 	,destroy: function() {
-		this.valueChanged.destroy();
-		this.mouseUpOverStage_.destroy();
-		this.mouseMoveOverStage_.destroy();
+		this.valueChanged.destroy({ fileName : "RCScrollBar.hx", lineNumber : 156, className : "RCScrollBar", methodName : "destroy"});
+		this.mouseUpOverStage_.destroy({ fileName : "RCScrollBar.hx", lineNumber : 157, className : "RCScrollBar", methodName : "destroy"});
+		this.mouseMoveOverStage_.destroy({ fileName : "RCScrollBar.hx", lineNumber : 158, className : "RCScrollBar", methodName : "destroy"});
 		this.skin.destroy();
 		RCControl.prototype.destroy.call(this);
 	}
@@ -3795,9 +3828,9 @@ RCSegmentedControl.prototype = $extend(JSView.prototype,{
 			}
 		}
 		this.items = null;
-		this.click.destroy();
-		this.itemAdded.destroy();
-		this.itemRemoved.destroy();
+		this.click.destroy({ fileName : "RCSegmentedControl.hx", lineNumber : 233, className : "RCSegmentedControl", methodName : "destroy"});
+		this.itemAdded.destroy({ fileName : "RCSegmentedControl.hx", lineNumber : 234, className : "RCSegmentedControl", methodName : "destroy"});
+		this.itemRemoved.destroy({ fileName : "RCSegmentedControl.hx", lineNumber : 235, className : "RCSegmentedControl", methodName : "destroy"});
 		JSView.prototype.destroy.call(this);
 	}
 	,__class__: RCSegmentedControl
@@ -3978,9 +4011,9 @@ RCSlider.prototype = $extend(RCControl.prototype,{
 		return v;
 	}
 	,destroy: function() {
-		this.mouseUpOverStage_.destroy();
-		this.mouseMoveOverStage_.destroy();
-		this.valueChanged.destroy();
+		this.mouseUpOverStage_.destroy({ fileName : "RCSlider.hx", lineNumber : 216, className : "RCSlider", methodName : "destroy"});
+		this.mouseMoveOverStage_.destroy({ fileName : "RCSlider.hx", lineNumber : 217, className : "RCSlider", methodName : "destroy"});
+		this.valueChanged.destroy({ fileName : "RCSlider.hx", lineNumber : 218, className : "RCSlider", methodName : "destroy"});
 		this.skin.destroy();
 		RCControl.prototype.destroy.call(this);
 	}
@@ -4087,9 +4120,9 @@ RCSliderSync.prototype = {
 	}
 	,destroy: function() {
 		this.hold();
-		this.valueChanged.destroy();
+		this.valueChanged.destroy({ fileName : "RCSliderSync.hx", lineNumber : 168, className : "RCSliderSync", methodName : "destroy"});
 		this.ticker.destroy();
-		this.mouseWheel.destroy();
+		this.mouseWheel.destroy({ fileName : "RCSliderSync.hx", lineNumber : 170, className : "RCSliderSync", methodName : "destroy"});
 	}
 	,__class__: RCSliderSync
 	,__properties__: {set_valueFinal:"setFinalValue",set_valueStart:"setStartValue",set_valueMax:"setMaxValue"}
@@ -4112,11 +4145,6 @@ RCSwf.prototype = $extend(RCImage.prototype,{
 		this.percentLoaded = 0;
 		this.layer.id = this.id_;
 		this.layer.appendChild(this.layer);
-		this.target = new js.SWFObject(URL,this.id_,500,400,"9","#cecece");
-		this.target.addParam("AllowScriptAccess","always");
-		this.target.addParam("AllowNetworking","all");
-		this.target.addParam("wmode","transparent");
-		this.target.write(this.id_);
 	}
 	,completeHandler: function(e) {
 		haxe.Log.trace(e,{ fileName : "RCSwf.hx", lineNumber : 59, className : "RCSwf", methodName : "completeHandler"});
@@ -5569,17 +5597,6 @@ js.Boot.__init();
 			return f(msg,[url + ":" + line]);
 		};
 	}
-}
-{
-	/**
- * SWFObject v1.5: Flash Player detection and embed - http://blog.deconcept.com/swfobject/
- *
- * SWFObject is (c) 2007 Geoff Stearns and is released under the MIT License:
- * http://www.opensource.org/licenses/mit-license.php
- *
- */
-if(typeof deconcept=="undefined"){var deconcept=new Object();}if(typeof deconcept.util=="undefined"){deconcept.util=new Object();}if(typeof deconcept.SWFObjectUtil=="undefined"){deconcept.SWFObjectUtil=new Object();}deconcept.SWFObject=function(_1,id,w,h,_5,c,_7,_8,_9,_a){if(!document.getElementById){return;}this.DETECT_KEY=_a?_a:"detectflash";this.skipDetect=deconcept.util.getRequestParameter(this.DETECT_KEY);this.params=new Object();this.variables=new Object();this.attributes=new Array();if(_1){this.setAttribute("swf",_1);}if(id){this.setAttribute("id",id);}if(w){this.setAttribute("width",w);}if(h){this.setAttribute("height",h);}if(_5){this.setAttribute("version",new deconcept.PlayerVersion(_5.toString().split(".")));}this.installedVer=deconcept.SWFObjectUtil.getPlayerVersion();if(!window.opera&&document.all&&this.installedVer.major>7){deconcept.SWFObject.doPrepUnload=true;}if(c){this.addParam("bgcolor",c);}var q=_7?_7:"high";this.addParam("quality",q);this.setAttribute("useExpressInstall",false);this.setAttribute("doExpressInstall",false);var _c=(_8)?_8:window.location;this.setAttribute("xiRedirectUrl",_c);this.setAttribute("redirectUrl","");if(_9){this.setAttribute("redirectUrl",_9);}};deconcept.SWFObject.prototype={useExpressInstall:function(_d){this.xiSWFPath=!_d?"expressinstall.swf":_d;this.setAttribute("useExpressInstall",true);},setAttribute:function(_e,_f){this.attributes[_e]=_f;},getAttribute:function(_10){return this.attributes[_10];},addParam:function(_11,_12){this.params[_11]=_12;},getParams:function(){return this.params;},addVariable:function(_13,_14){this.variables[_13]=_14;},getVariable:function(_15){return this.variables[_15];},getVariables:function(){return this.variables;},getVariablePairs:function(){var _16=new Array();var key;var _18=this.getVariables();for(key in _18){_16[_16.length]=key+"="+_18[key];}return _16;},getSWFHTML:function(){var _19="";if(navigator.plugins&&navigator.mimeTypes&&navigator.mimeTypes.length){if(this.getAttribute("doExpressInstall")){this.addVariable("MMplayerType","PlugIn");this.setAttribute("swf",this.xiSWFPath);}_19="<embed type=\"application/x-shockwave-flash\" src=\""+this.getAttribute("swf")+"\" width=\""+this.getAttribute("width")+"\" height=\""+this.getAttribute("height")+"\" style=\""+this.getAttribute("style")+"\"";_19+=" id=\""+this.getAttribute("id")+"\" name=\""+this.getAttribute("id")+"\" ";var _1a=this.getParams();for(var key in _1a){_19+=[key]+"=\""+_1a[key]+"\" ";}var _1c=this.getVariablePairs().join("&");if(_1c.length>0){_19+="flashvars=\""+_1c+"\"";}_19+="/>";}else{if(this.getAttribute("doExpressInstall")){this.addVariable("MMplayerType","ActiveX");this.setAttribute("swf",this.xiSWFPath);}_19="<object id=\""+this.getAttribute("id")+"\" classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" width=\""+this.getAttribute("width")+"\" height=\""+this.getAttribute("height")+"\" style=\""+this.getAttribute("style")+"\">";_19+="<param name=\"movie\" value=\""+this.getAttribute("swf")+"\" />";var _1d=this.getParams();for(var key in _1d){_19+="<param name=\""+key+"\" value=\""+_1d[key]+"\" />";}var _1f=this.getVariablePairs().join("&");if(_1f.length>0){_19+="<param name=\"flashvars\" value=\""+_1f+"\" />";}_19+="</object>";}return _19;},write:function(_20){if(this.getAttribute("useExpressInstall")){var _21=new deconcept.PlayerVersion([6,0,65]);if(this.installedVer.versionIsValid(_21)&&!this.installedVer.versionIsValid(this.getAttribute("version"))){this.setAttribute("doExpressInstall",true);this.addVariable("MMredirectURL",escape(this.getAttribute("xiRedirectUrl")));document.title=document.title.slice(0,47)+" - Flash Player Installation";this.addVariable("MMdoctitle",document.title);}}if(this.skipDetect||this.getAttribute("doExpressInstall")||this.installedVer.versionIsValid(this.getAttribute("version"))){var n=(typeof _20=="string")?document.getElementById(_20):_20;n.innerHTML=this.getSWFHTML();return true;}else{if(this.getAttribute("redirectUrl")!=""){document.location.replace(this.getAttribute("redirectUrl"));}}return false;}};deconcept.SWFObjectUtil.getPlayerVersion=function(){var _23=new deconcept.PlayerVersion([0,0,0]);if(navigator.plugins&&navigator.mimeTypes.length){var x=navigator.plugins["Shockwave Flash"];if(x&&x.description){_23=new deconcept.PlayerVersion(x.description.replace(/([a-zA-Z]|\s)+/,"").replace(/(\s+r|\s+b[0-9]+)/,".").split("."));}}else{if(navigator.userAgent&&navigator.userAgent.indexOf("Windows CE")>=0){var axo=1;var _26=3;while(axo){try{_26++;axo=new ActiveXObject("ShockwaveFlash.ShockwaveFlash."+_26);_23=new deconcept.PlayerVersion([_26,0,0]);}catch(e){axo=null;}}}else{try{var axo=new ActiveXObject("ShockwaveFlash.ShockwaveFlash.7");}catch(e){try{var axo=new ActiveXObject("ShockwaveFlash.ShockwaveFlash.6");_23=new deconcept.PlayerVersion([6,0,21]);axo.AllowScriptAccess="always";}catch(e){if(_23.major==6){return _23;}}try{axo=new ActiveXObject("ShockwaveFlash.ShockwaveFlash");}catch(e){}}if(axo!=null){_23=new deconcept.PlayerVersion(axo.GetVariable("$version").split(" ")[1].split(","));}}}return _23;};deconcept.PlayerVersion=function(_29){this.major=_29[0]!=null?parseInt(_29[0]):0;this.minor=_29[1]!=null?parseInt(_29[1]):0;this.rev=_29[2]!=null?parseInt(_29[2]):0;};deconcept.PlayerVersion.prototype.versionIsValid=function(fv){if(this.major<fv.major){return false;}if(this.major>fv.major){return true;}if(this.minor<fv.minor){return false;}if(this.minor>fv.minor){return true;}if(this.rev<fv.rev){return false;}return true;};deconcept.util={getRequestParameter:function(_2b){var q=document.location.search||document.location.hash;if(_2b==null){return q;}if(q){var _2d=q.substring(1).split("&");for(var i=0;i<_2d.length;i++){if(_2d[i].substring(0,_2d[i].indexOf("="))==_2b){return _2d[i].substring((_2d[i].indexOf("=")+1));}}}return "";}};deconcept.SWFObjectUtil.cleanupSWFs=function(){var _2f=document.getElementsByTagName("OBJECT");for(var i=_2f.length-1;i>=0;i--){_2f[i].style.display="none";for(var x in _2f[i]){if(typeof _2f[i][x]=="function"){_2f[i][x]=function(){};}}}};if(deconcept.SWFObject.doPrepUnload){if(!deconcept.unloadSet){deconcept.SWFObjectUtil.prepUnload=function(){__flash_unloadHandler=function(){};__flash_savedUnloadHandler=function(){};window.attachEvent("onunload",deconcept.SWFObjectUtil.cleanupSWFs);};window.attachEvent("onbeforeunload",deconcept.SWFObjectUtil.prepUnload);deconcept.unloadSet=true;}}if(!document.getElementById&&document.all){document.getElementById=function(id){return document.all[id];};}var getQueryParamValue=deconcept.util.getRequestParameter;var FlashObject=deconcept.SWFObject;var SWFObject=deconcept.SWFObject;;
-	js.SWFObject = deconcept.SWFObject;
 }
 js["XMLHttpRequest"] = window.XMLHttpRequest?XMLHttpRequest:window.ActiveXObject?function() {
 	try {

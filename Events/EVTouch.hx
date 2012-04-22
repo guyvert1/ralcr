@@ -129,7 +129,7 @@ class EVTouch extends RCSignal<EVMouse->Void> {
 			e.updateAfterEvent();
 		#end
 	}
-	override public function destroy () :Void {
+	override public function destroy (?pos:haxe.PosInfos) :Void {
 		removeEventListener();
 		super.destroy();
 	}

@@ -277,7 +277,7 @@ RCSignal.prototype = {
 		this.listeners.add(listener);
 	}
 	,addOnce: function(listener,pos) {
-		if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once as you expect. " + pos,{ fileName : "RCSignal.hx", lineNumber : 22, className : "RCSignal", methodName : "addOnce"});
+		if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once as you expect. " + pos,{ fileName : "RCSignal.hx", lineNumber : 23, className : "RCSignal", methodName : "addOnce"});
 		this.exposableListener = listener;
 	}
 	,addFirst: function(listener,pos) {
@@ -288,7 +288,7 @@ RCSignal.prototype = {
 		while( $it0.hasNext() ) {
 			var l = $it0.next();
 			if(Reflect.compareMethods(l,listener)) {
-				this.listeners.remove(listener);
+				this.listeners.remove(l);
 				break;
 			}
 		}
@@ -321,7 +321,7 @@ RCSignal.prototype = {
 		try {
 			listener.apply(null,args);
 		} catch( e ) {
-			haxe.Log.trace("[RCSignal error: " + e + ", called from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 67, className : "RCSignal", methodName : "callMethod"});
+			haxe.Log.trace("[RCSignal error: " + e + ", called from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 74, className : "RCSignal", methodName : "callMethod"});
 			Fugu.stack();
 		}
 	}
@@ -333,7 +333,7 @@ RCSignal.prototype = {
 		}
 		return false;
 	}
-	,destroy: function() {
+	,destroy: function(pos) {
 		this.listeners = null;
 		this.exposableListener = null;
 	}
@@ -771,7 +771,6 @@ JSView.prototype = $extend(RCDisplayObject.prototype,{
 		return RCDisplayObject.prototype.setY.call(this,y);
 	}
 	,setWidth: function(w) {
-		haxe.Log.trace("setw " + w,{ fileName : "JSView.hx", lineNumber : 162, className : "JSView", methodName : "setWidth"});
 		this.layer.style.width = w + "px";
 		return RCDisplayObject.prototype.setWidth.call(this,w);
 	}
@@ -784,9 +783,27 @@ JSView.prototype = $extend(RCDisplayObject.prototype,{
 		this.contentSize_.height = this.layer.scrollHeight;
 		return this.contentSize_;
 	}
+	,transformProperty: null
 	,scale: function(sx,sy) {
-		this.layer.style.WebkitTransformOrigin = "top left";
-		this.layer.style.WebkitTransform = "scale(" + sx + "," + sy + ")";
+		this.layer.style[this.getTransformProperty() + "Origin"] = "top left";
+		this.layer.style[this.getTransformProperty()] = "scale(" + sx + "," + sy + ")";
+	}
+	,getTransformProperty: function() {
+		if(this.transformProperty != null) return this.transformProperty;
+		var _g = 0, _g1 = ["transform","WebkitTransform","msTransform","MozTransform","OTransform"];
+		while(_g < _g1.length) {
+			var p = _g1[_g];
+			++_g;
+			if(this.layer.style[p] != null) {
+				this.transformProperty = p;
+				return p;
+			}
+		}
+		return "transform";
+	}
+	,setRotation: function(r) {
+		this.layer.style[this.getTransformProperty()] = "rotate(" + r + "deg)";
+		return RCDisplayObject.prototype.setRotation.call(this,r);
 	}
 	,startDrag: function(lockCenter,rect) {
 	}
