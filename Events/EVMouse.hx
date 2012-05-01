@@ -197,8 +197,8 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 			delta = - Math.round ( e.detail*5 );
 		}
 		this.e = e;
-		//dispatch ( this );
-		trace(delta);
+		dispatch ( this );
+		//trace(delta);
     }
 	
 #end
