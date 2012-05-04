@@ -33,7 +33,9 @@ class RCTableView extends RCView {
 	
 	
 	public function new (x, y, w, h) {
+		
 		super (x, y);
+		
 		size.width = w;
 		size.height = h;
 		this.indexPath = new RCIndexPath (0, 0);
@@ -60,7 +62,7 @@ class RCTableView extends RCView {
 		mouseUp_ = new EVMouse (EVMouse.UP, RCWindow.sharedWindow().stage);
 	}
 	
-	public function init () :Void {
+	override public function init () :Void {
 		
 		maxCells = Math.ceil (size.height/44+1);
 		

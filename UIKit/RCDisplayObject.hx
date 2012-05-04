@@ -44,6 +44,10 @@ class RCDisplayObject {
 		viewDidDisappear = new RCSignal<Void->Void>();
 	}
 	
+	public function init () :Void {
+		
+	}
+	
 	
 	// Getter / Setters methods
 	//

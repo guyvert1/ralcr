@@ -68,6 +68,10 @@ class RCControl extends RCView {
 		#end
 		configureDispatchers();
 		setEnabled ( true );// This will configure the right mouse listeners
+	}
+	
+	// You must init only after you've added it as a child
+	override public function init () :Void {
 		setState ( NORMAL );
 	}
 	

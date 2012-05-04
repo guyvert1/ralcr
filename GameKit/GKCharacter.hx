@@ -19,7 +19,8 @@ class GKCharacter extends GKSprite {
 		init();
 	}
 	
-	public function init () :Void {
+	override public function init () :Void {
+		super.init();
 		frames = new Hash<MovieClip>();
 	}
 	

@@ -29,6 +29,7 @@ class RCDropDown extends RCView {
 	
 	
 	public function new (x, y, w:Int, h:Int, skin:RCSkin) {
+		
 		super (x, y);
 		
 		this.size.width = w;
@@ -44,7 +45,10 @@ class RCDropDown extends RCView {
 		// add selected value
 		//select ( labels[0] );
 	}
-	public function init (labels:Array<String>, ?maxLines:Int=10) :Void {
+	public function initWithLabels (labels:Array<String>, ?maxLines:Int=10) :Void {
+		
+		super.init();
+		
 		this.labels = labels;
 		this.maxLines = maxLines;
 	}

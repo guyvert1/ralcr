@@ -21,7 +21,9 @@ class RCTableViewCell extends RCControl {
 		init();
 	}
 	
-	public function init () {
+	override public function init () {
+		
+		super.init();
 		
 		backgroundView = new RCRectangle (0, 0, size.width, size.height-1, 0xFFFFFF, 1);
 		this.addChild ( backgroundView );

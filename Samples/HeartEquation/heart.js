@@ -405,7 +405,13 @@ Fugu.safeDestroy = function(obj,destroy,pos) {
 			haxe.Log.trace("[Error when destroying object: " + o + ", called from " + Std.string(pos) + "]",{ fileName : "Fugu.hx", lineNumber : 28, className : "Fugu", methodName : "safeDestroy"});
 			haxe.Log.trace(Fugu.stack(),{ fileName : "Fugu.hx", lineNumber : 29, className : "Fugu", methodName : "safeDestroy"});
 		}
-		if(Std["is"](o,JSView)) o.removeFromSuperView(); else {
+		if(Std["is"](o,JSView)) ((function($this) {
+			var $r;
+			var $t = o;
+			if(Std["is"]($t,JSView)) $t; else throw "Class cast error";
+			$r = $t;
+			return $r;
+		}(this))).removeFromSuperView(); else {
 			var parent = null;
 			try {
 				parent = o.parent;
@@ -549,6 +555,8 @@ RCDisplayObject.prototype = {
 	,contentSize_: null
 	,originalSize: null
 	,caobj: null
+	,init: function() {
+	}
 	,setVisible: function(v) {
 		return this.visible = v;
 	}
@@ -694,6 +702,8 @@ var JSView = $hxClasses["JSView"] = function(x,y,w,h) {
 	this.layer = js.Lib.document.createElement("div");
 	this.layer.style.position = "absolute";
 	this.layer.style.margin = "0px 0px 0px 0px";
+	this.layer.style.width = "auto";
+	this.layer.style.height = "auto";
 	this.setX(x);
 	this.setY(y);
 };
@@ -706,20 +716,20 @@ JSView.prototype = $extend(RCDisplayObject.prototype,{
 	,alpha_: null
 	,addChild: function(child) {
 		if(child == null) return;
-		child.viewWillAppear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 54, className : "JSView", methodName : "addChild"});
+		child.viewWillAppear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 57, className : "JSView", methodName : "addChild"});
 		child.parent = this;
 		this.layer.appendChild(child.layer);
-		child.viewDidAppear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 57, className : "JSView", methodName : "addChild"});
+		child.viewDidAppear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 60, className : "JSView", methodName : "addChild"});
 	}
 	,addChildAt: function(child,index) {
 		if(this.layer.childNodes[index] != null) this.layer.insertBefore(child.layer,this.layer.childNodes[index]); else this.layer.appendChild(child.layer);
 	}
 	,removeChild: function(child) {
 		if(child == null) return;
-		child.viewWillDisappear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 71, className : "JSView", methodName : "removeChild"});
+		child.viewWillDisappear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 74, className : "JSView", methodName : "removeChild"});
 		child.parent = null;
 		this.layer.removeChild(child.layer);
-		child.viewDidDisappear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 74, className : "JSView", methodName : "removeChild"});
+		child.viewDidDisappear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 77, className : "JSView", methodName : "removeChild"});
 	}
 	,removeFromSuperView: function() {
 		if(this.parent != null) this.parent.removeChild(this);
@@ -1698,6 +1708,7 @@ RCTextView.prototype = $extend(JSView.prototype,{
 	,rcfont: null
 	,text: null
 	,init: function() {
+		JSView.prototype.init.call(this);
 		this.redraw();
 	}
 	,redraw: function() {

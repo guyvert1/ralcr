@@ -66,6 +66,7 @@ class RCVideo extends RCView, implements RCVideoInterface {
 	
 	
 	public function new (x, y, URL:String, ?w:Null<Float>, ?h:Null<Float>) {
+		
 		super (x, y, w, h);
 		
 		this.videoURL = URL;
@@ -85,7 +86,10 @@ class RCVideo extends RCView, implements RCVideoInterface {
 	}
 	
 	// sets up the player for video files
-	public function init () :Void {
+	override public function init () :Void {
+		
+		super.init();
+		
 		// Create timer to update all visual parts of the player
 		timer = new Timer ( updateTime );
 		timer.addEventListener (TimerEvent.TIMER, loop);

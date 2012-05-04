@@ -36,6 +36,7 @@ class RCScrollBar extends RCControl {
 	*  indicatorSize is the width or height of the scrollbar indicator
 	*/
 	public function new (x, y, w:Float, h:Float, indicatorSize:Float, skin:RCSkin) {
+		
 		super (x, y, w, h);
 		
 		this.moving = false;
@@ -46,7 +47,12 @@ class RCScrollBar extends RCControl {
 		this.indicatorSize = indicatorSize;
 		this.viewDidAppear.add ( init );
 	}
-	function init () {
+	
+	override public function init () {
+		
+		super.init();
+		
+		
 		// Decide the direction of movement
 		direction_ = (size.width > size.height) ? HORIZONTAL : VERTICAL;
 		
@@ -153,10 +159,12 @@ class RCScrollBar extends RCControl {
 	
 	// Clean mess
 	override public function destroy () :Void {
+		
 		valueChanged.destroy();
 		mouseUpOverStage_.destroy();
 		mouseMoveOverStage_.destroy();
 		skin.destroy();
+		
 		super.destroy();
 	}
 }

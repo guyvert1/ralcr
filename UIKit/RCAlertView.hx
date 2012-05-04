@@ -18,6 +18,7 @@ class RCAlertView extends RCView {
 	
 	
 	public function new (skin:RCSkin) {
+		
 		super(0,0);
 		
 		this.background = skin.normal.background;
@@ -26,7 +27,7 @@ class RCAlertView extends RCView {
 		this.addChild ( this.text );
 	}
 	
-	public function init (arr:Array<String>, constructButton:RCIndexPath->RCButton) :Void {
+	public function initWithLabels (arr:Array<String>, constructButton:RCIndexPath->RCButton) :Void {
 		
 		buttons = new RCGroup<RCButton>(0, 0, 10, null, constructButton);
 		buttons.add ( arr );
@@ -45,9 +46,11 @@ class RCAlertView extends RCView {
 	
 	
 	override public function destroy () :Void {
+		
 		if (buttons != null)
 			buttons.destroy();
 			buttons = null;
+		
 		super.destroy();
 	}
 }

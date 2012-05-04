@@ -6,6 +6,7 @@
 //  Copyright (c) 2011-2012 ralcr.com. 
 //	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
+//	Do not use directly this class, use RCView
 
 import js.Lib;
 import js.Dom;
@@ -41,6 +42,8 @@ class JSView extends RCDisplayObject {
 		// In JS, the div must be positioned absolute
 		layer.style.position = "absolute";
 		layer.style.margin = "0px 0px 0px 0px";
+		layer.style.width = "auto";
+		layer.style.height = "auto";
 		
 		setX ( x );
 		setY ( y );
@@ -48,16 +51,16 @@ class JSView extends RCDisplayObject {
 	
 	
 	
-	override public function addChild (child:JSView) :Void
-	{
+	override public function addChild (child:JSView) :Void {
+		
 		if (child == null) return;
 		child.viewWillAppear.dispatch();
 		child.parent = this;
 		layer.appendChild ( child.layer );
 		child.viewDidAppear.dispatch();
 	}
-	override public function addChildAt (child:JSView, index:Int) :Void
-	{
+	override public function addChildAt (child:JSView, index:Int) :Void {
+		
 		if (layer.childNodes[index] != null) {
 			layer.insertBefore (child.layer, layer.childNodes[index]);
 		}
@@ -65,16 +68,16 @@ class JSView extends RCDisplayObject {
 			layer.appendChild ( child.layer );
 		}
 	}
-	override public function removeChild (child:JSView) :Void
-	{
+	override public function removeChild (child:JSView) :Void {
+		
 		if (child == null) return;
 		child.viewWillDisappear.dispatch();
 		child.parent = null;
 		layer.removeChild ( child.layer );
 		child.viewDidDisappear.dispatch();
 	}
-	public function removeFromSuperView () :Void
-	{
+	public function removeFromSuperView () :Void {
+		
 		if (parent != null)
 			parent.removeChild ( this );
 	}

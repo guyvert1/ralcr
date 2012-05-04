@@ -45,7 +45,9 @@ class RCTextView extends RCView {
 		init();
 		setText ( str );
 	}
-	function init () :Void {
+	override public function init () :Void {
+		
+		super.init();
 		redraw();
 	}
 	

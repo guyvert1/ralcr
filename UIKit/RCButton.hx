@@ -56,6 +56,11 @@ class RCButton extends RCControl {
 		addChild ( currentImage );
 		addChild ( skin.hit );
 		
+		// Set the width of the button
+		// FF and Opera can't get it automatically
+		size.width = currentBackground.width;
+		size.height = currentBackground.height;
+		
 		super.setState ( state );
 	}
 	

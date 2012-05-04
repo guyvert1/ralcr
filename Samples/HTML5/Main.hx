@@ -22,7 +22,24 @@ class Main {
 		haxe.Firebug.redirectTraces();
 		
 		try{
-		
+		RCWindow.sharedWindow();
+			var group = new RCGroup<RCButtonRadio> (200,230,0,null,createRadioButton);
+			RCWindow.sharedWindow().addChild ( group );
+			group.add([1,2,3,4,5,5]);
+			
+			
+			var f = new RCFont();
+				f.color = 0xFFFFFF;
+				f.font = "Arial";
+				f.size = 30;
+				f.embedFonts = false;
+			var t = new RCTextView (50, 30, null, null, #if flash "FLASH" #else "HTML5" #end, f);
+			RCWindow.sharedWindow().addChild ( t );
+			trace("t.width "+t.width);
+			
+			
+			return;
+			
 		win = RCWindow.sharedWindow();
 		//RCWindow.setTarget ("js");
 		win.backgroundColor = 0xefefef;
@@ -46,7 +63,7 @@ class Main {
 		RCAssets.loadFontWithKey("Futu", "../assets/FUTUNEBI.TTF");
 		RCAssets.onComplete = testJsFont;
 		//function(){trace("RCAssets did finish loading assets"); trace(RCAssets.getFileWithKey("some_text"));}
-		trace("step2 - RCRectangle");
+		//trace("step2 - RCRectangle");
 		
 		// Draw a colored rectangle
 		var rect = new RCRectangle(0,0, 300, 150, RCColor.redColor());
@@ -54,23 +71,23 @@ class Main {
 		rect.clipsToBounds = true;
 		rect.center = new RCPoint (RCWindow.sharedWindow().width/2, RCWindow.sharedWindow().height/2);
 		
-		trace("step2 - RCImage");
+		//trace("step2 - RCImage");
 		ph = new RCImage(1, 1, "../assets/900x600.jpg");
 		ph.onComplete = resizePhoto;
 		rect.addChild ( ph );
 		
-		trace("step3 - ellipse");
+		//trace("step3 - ellipse");
 		circ = new RCEllipse(0,0, 100, 100, RCColor.darkGrayColor());
 	 	RCWindow.sharedWindow().addChild ( circ );
 		//circ.center = new RCPoint(120,120);
 		
-		trace("step4 - CASequence");
+/*		trace("step4 - CASequence");
 		trace(RCWindow.sharedWindow().target.scrollWidth);
 		trace(RCWindow.sharedWindow().target.offsetWidth);
 		trace(RCWindow.sharedWindow().target.clientWidth);
 		trace(RCWindow.sharedWindow().target.scrollHeight);
 		trace(RCWindow.sharedWindow().target.offsetHeight);
-		trace(RCWindow.sharedWindow().target.clientHeight);
+		trace(RCWindow.sharedWindow().target.clientHeight);*/
 		
 		
 		// Test the animation engine
@@ -82,25 +99,25 @@ class Main {
 		var seq = new CASequence ([cast a1, cast a2, cast a3, cast a4]);
 		seq.start();
 		
-		trace("step5 - line");
+		//trace("step5 - line");
 		lin = new RCLine(30,300, 400, 600, 0xff3300);
 		RCWindow.sharedWindow().addChild ( lin );
 		
 		
-		trace("step6 - Keys");
+		//trace("step6 - Keys");
 		var k = new RCKeys();
 			k.onLeft = moveLeft;
 			k.onRight = moveRight;
 		
-		trace("step7 - Mouse");
+		//trace("step7 - Mouse");
 		var m = new EVMouse( EVMouse.OVER, rect.layer );
 			m.add ( function(_){ trace("onOver"); } );
 		
-		trace("step8 - text");
+		//trace("step8 - text");
 		testTexts();
-		trace("step8 - signals");
+		//trace("step8 - signals");
 		testSignals();
-		trace("step8 - buttons");
+		//trace("step8 - buttons");
 		testButtons();
 		
 		// Shared objects
@@ -110,10 +127,10 @@ class Main {
 		trace(RCUserDefaults.stringForKey("key1"));*/
 		
 		// Add slider
-		trace("step9 - SKSlider");
+		//trace("step9 - SKSlider");
 		var s = new haxe.SKSlider();
-		trace("step9 - RCSlider");
-		var sl = new RCSlider(50, 250, 160, 10, s);trace("step9 - RCSlider");
+		//trace("step9 - RCSlider");
+		var sl = new RCSlider(50, 250, 160, 10, s);
 		//sl.valueChanged.add ( function(e:RCSlider){trace(e.value);} );
 		RCWindow.sharedWindow().addChild ( sl );
 		sl.maxValue = 500;
@@ -121,14 +138,14 @@ class Main {
 		
 		
 		
-		trace("step10 - Http");
+		//trace("step10 - Http");
 		req = new HTTPRequest();
 		req.onComplete = function (){ trace("http result "+req.result); }
 		req.onError = function (){ trace("http error "+req.result); }
 		req.onStatus = function (){ trace("http status "+req.status); }
 		req.readFile("../assets/data.txt");
 		
-		trace("step11 - CATCallFunc");
+		//trace("step11 - CATCallFunc");
 		var anim = new CATCallFunc (setAlpha_, {alpha:{fromValue:0, toValue:1}}, 2.8, 0, caequations.Cubic.IN_OUT);
 		CoreAnimation.add ( anim );
 		
@@ -145,6 +162,7 @@ class Main {
 			f.embedFonts = false;
 		var t = new RCTextView (50, 120, null, null, "blah blah blah", f);
 		RCWindow.sharedWindow().addChild ( t );
+		trace("t.width "+t.width);
 	}
 	
 	
@@ -206,10 +224,10 @@ class Main {
 		signal.dispatch ( Math.random() );
 	}
 	static function printNr(nr:Int){
-		trace("printNr "+nr);
+		//trace("printNr "+nr);
 	}
 	static function printNr2(nr:Int){
-		trace("printNr2 "+nr);
+		//trace("printNr2 "+nr);
 	}
 	
 	
@@ -218,11 +236,14 @@ class Main {
 		// Add some buttons
 		var s = new haxe.SKButton("Switch");
 		var b = new RCButton(50, 200, s);
+
+		RCWindow.sharedWindow().addChild ( b );
+		//trace("b.width "+b.width);
+		
 		b.onRelease = function(){ HXAddress.href(#if flash "js.html" #else "flash.html" #end); }
 		b.onOver = function(){trace("over");}
 		b.onOut = function(){trace("out");}
 		b.onPress = function(){trace("press");}
-		RCWindow.sharedWindow().addChild ( b );
 		
 		var s = new haxe.SKButtonRadio();
 		var b = new RCButtonRadio(200, 200, s);
@@ -242,6 +263,7 @@ class Main {
 	}
 	static function createRadioButton (indexPath:RCIndexPath) :RCButtonRadio {
 		var s = new haxe.SKButtonRadio();
+		var s = new SkinButtonWithText ("blah blah", null);
 		var b = new RCButtonRadio(0,0,s);
 		return b;
 	}
@@ -258,6 +280,7 @@ class Main {
 			f.embedFonts = false;
 		var t = new RCTextView (50, 30, null, null, #if flash "FLASH" #else "HTML5" #end, f);
 		RCWindow.sharedWindow().addChild ( t );
+		trace("t.width "+t.width);
 		
 		var f2 = f.copy();
 			f2.color = 0xffffff;
