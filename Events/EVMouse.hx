@@ -60,10 +60,12 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 		if (layer == null)
 			layer = target;
 		
+		
 		addEventListener( pos );
 	}
 	
 	function addEventListener (?pos:haxe.PosInfos) :Void {
+		
 		#if (flash || nme)
 			switch (type) {
 				case UP:			layer.addEventListener (MouseEvent.MOUSE_UP, mouseHandler);
@@ -152,39 +154,36 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 #if js
 	
 	function addWheelListener () {
-		trace("ADD WHEEL");
-		//untyped layer.mousewheel = MouseScroll;
 		
-        // For mouse scrolling in Firefox
+		mouseScrollHandler = MouseScroll;
+		
         if (untyped layer.addEventListener) {
 			// Internet Explorer 9, Opera, Google Chrome and Safari
-			untyped layer.addEventListener ("mousewheel", MouseScroll, false);
+			untyped layer.addEventListener ("mousewheel", mouseScrollHandler, false);
 			// Firefox
-			untyped layer.addEventListener ("DOMMouseScroll", MouseScroll, false);
+			untyped layer.addEventListener ("DOMMouseScroll", mouseScrollHandler, false);
 		}
-		// IE < 9
 		else if (untyped layer.attachEvent) {
-			untyped layer.attachEvent ("onmousewheel", MouseScroll);
-		}
-		removeWheelListener();
-	}
-	function removeWheelListener () {
-		trace("REMOVE WHEEL");
-		//untyped layer.mousewheel = null;
-		
-        // For mouse scrolling in Firefox
-        if (untyped layer.removeEventListener) {trace("REMOVE WHEEL");
-			// Internet Explorer 9, Opera, Google Chrome and Safari
-			untyped layer.removeEventListener ("mousewheel", MouseScroll, false);trace("REMOVE WHEEL");
-			// Firefox
-			untyped layer.removeEventListener ("DOMMouseScroll", MouseScroll, false);trace("REMOVE WHEEL");
-		}
-		// IE < 9
-		else if (untyped layer.detachEvent) {trace("REMOVE WHEEL");
-			untyped layer.detachEvent ("onmousewheel", MouseScroll);
+			// IE < 9
+			untyped layer.attachEvent ("onmousewheel", mouseScrollHandler);
 		}
 	}
 	
+	function removeWheelListener () {
+		
+        if (untyped layer.removeEventListener) {
+			// Internet Explorer 9, Opera, Google Chrome and Safari
+			untyped layer.removeEventListener ("mousewheel", mouseScrollHandler, false);
+			// Firefox
+			untyped layer.removeEventListener ("DOMMouseScroll", mouseScrollHandler, false);
+		}
+		else if (untyped layer.detachEvent) {
+			// IE < 9
+			untyped layer.detachEvent ("onmousewheel", mouseScrollHandler);
+		}
+	}
+	
+	var mouseScrollHandler :Dynamic;// Haxe bug, need to store here the reference
     function MouseScroll (e) {
 		
 		if (Reflect.field(e, 'wheelDelta') != null) {
@@ -198,15 +197,14 @@ class EVMouse extends RCSignal<EVMouse->Void> {
 		}
 		this.e = e;
 		dispatch ( this );
-		//trace(delta);
     }
 	
 #end
 	
 	
 	override public function destroy (?pos:haxe.PosInfos) :Void {
-		trace("destroy mouse "+type);
 		removeEventListener();
 		super.destroy();
 	}
+	
 }

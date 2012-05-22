@@ -62,7 +62,6 @@ class RCGroup<T:RCView> extends RCView {
 		
 		// Keep all items arranged
 		keepItemsArranged();
-		//haxe.Timer.delay(keepItemsArranged,100);
 	}
 	
 	public function remove (i:Int) :Void {
@@ -88,14 +87,15 @@ class RCGroup<T:RCView> extends RCView {
 			var old_s = items[i-1];
 			
 			if (i != 0) {
-				if (gapX != null) newX = old_s.x + cast(old_s).skin.normal.background.size.width + gapX;
+				//if (gapX != null) newX = old_s.x + cast(old_s).skin.normal.background.size.width + gapX;
+				if (gapX != null) newX = old_s.x + old_s.width + gapX;
 				if (gapY != null) newY = old_s.y + old_s.height + gapY;
 			}
 			
 			new_s.x = newX;
 			new_s.y = newY;
-			size.width = newX + cast(new_s).skin.normal.background.size.width;
-			//size.width = newX + new_s.size.width;
+			//size.width = newX + cast(new_s).skin.normal.background.size.width;
+			size.width = newX + new_s.size.width;
 			size.height = newY + new_s.size.height;
 		}
 		update.dispatch( this );

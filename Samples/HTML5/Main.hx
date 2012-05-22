@@ -21,6 +21,11 @@ class Main {
 	static function main() {
 		haxe.Firebug.redirectTraces();
 		
+		var mousew = new EVMouse ( EVMouse.WHEEL, RCWindow.sharedWindow().target );
+			//mousew.add ( function(e:EVMouse){ } );
+			//mousew.remove ( wheelHandler );
+			//mousew.destroy();
+			
 		try{
 		RCWindow.sharedWindow();
 			var group = new RCGroup<RCButtonRadio> (200,230,0,null,createRadioButton);

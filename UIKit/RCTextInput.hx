@@ -34,7 +34,9 @@ class RCTextInput extends RCControl {
 	public var textView :RCTextView;
 	
 	public function new (x:Float, y:Float, w:Null<Float>, h:Null<Float>, str:String, rcfont:RCFont) {
+		
 		super (w, y, w, h);
+		
 		textView = new RCTextView (x, y, w, h, str, rcfont);
 		addChild ( textView );
 		
@@ -48,7 +50,9 @@ class RCTextInput extends RCControl {
 			textView.target.multiline = (size.height == 0) ? false : true;
 			textView.target.selectable = true;*/
 		#elseif js
-			
+			untyped textView.target.layer.contentEditable = "true";
+			//textView.layer = js.Lib.document.createElement("textarea");
+			//textView.appendChild ( textView );
 		#end
 	}
 	public function getText() :String {
@@ -131,10 +135,12 @@ class RCTextInput extends RCControl {
 	
 	// clean mess
 	override public function destroy () :Void {
+		
 		editingDidBegin.destroy();
 		editingChanged.destroy();
 		editingDidEnd.destroy();
 		editingDidEndOnExit.destroy();
+		
 		super.destroy();
 	}
 }

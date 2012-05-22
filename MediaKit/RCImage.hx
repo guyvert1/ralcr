@@ -96,6 +96,7 @@ class RCImage extends RCView {
 	*  For JS it loads it from external or from cache
 	**/
 	public function new (x, y, URL:String) {
+		
 		super (x, y);
 		
 		#if (nme || flash)

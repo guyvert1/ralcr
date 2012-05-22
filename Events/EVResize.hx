@@ -7,7 +7,9 @@
 class EVResize extends RCSignal<Int->Int->Void> {
 	
 	public function new () {
+		
 		super();
+		
 		#if (flash || nme)
 			flash.Lib.current.stage.addEventListener (Event.RESIZE, resizeHandler);
 		#elseif js
@@ -16,6 +18,7 @@ class EVResize extends RCSignal<Int->Int->Void> {
 	}
 	
 	function resizeHandler (e:Event) {
+		
 		#if (flash || nme)
 			var w = flash.Lib.current.stage.stageWidth;
 			var h = flash.Lib.current.stage.stageHeight;
@@ -27,6 +30,7 @@ class EVResize extends RCSignal<Int->Int->Void> {
 			var w = js.Lib.window.innerWidth;
 			var h = js.Lib.window.innerHeight;
 		#end
+		
 		dispatch ( w, h );
 	}
 }

@@ -1,5 +1,5 @@
 //
-//  RCTextView
+//  RCTextView.hx
 //
 //  Created by Cristi Baluta on 2011-02-01.
 //  Updated 2011-2012 ralcr.com. 
@@ -80,6 +80,7 @@ class RCTextView extends RCView {
 			// If NME, autoSize the textfield to left, will align it later
 			target.autoSize = flash.text.TextFieldAutoSize.LEFT;
 		#end
+		
 		target.wordWrap = (size.width == 0) ? false : true;
 		target.multiline = (size.height == 0) ? false : true;
 		target.selectable = rcfont.selectable;
@@ -122,7 +123,7 @@ class RCTextView extends RCView {
 		layer.style.letterSpacing = rcfont.letterSpacing + "px";
 		layer.style.textAlign = rcfont.align;// "center", "left", "right"
 		layer.style.color = RCColor.HEXtoString ( rcfont.color );
-		
+		untyped layer.style.contentEditable = "true";
 		if (rcfont.autoSize) {
 			layer.style.width = multiline ? size.width + "px" : "auto";
 			layer.style.height = "auto";
@@ -132,13 +133,6 @@ class RCTextView extends RCView {
 			layer.style.height = size.height + "px";
 		}
 		
-/*		layer.innerHTML = "";
-		layer.style.fontFamily = rcfont.font;
-		layer.style.fontWeight = rcfont.bold;
-    	layer.style.fontSize = rcfont.size;
-    	layer.style.fontStyle = rcfont.style;*/
-    	//layer.style.fontVariant = rcfont.variant;
-
 		if (size.width != 0) setWidth ( size.width );
 		//layer.style.textAlign = rcfont.align;
 	}
@@ -183,7 +177,7 @@ class RCTextView extends RCView {
 			// because align is not supported in combination with autoSize
 			if (size.width != null)
 				target.x = switch (rcfont.align) {
-					case "center": Math.round ((size.width - target.width)/2);
+					case "center": Math.round ((size.width - target.width) / 2);
 					case "right": Math.round (size.width - target.width);
 					default: 0;
 				}; 

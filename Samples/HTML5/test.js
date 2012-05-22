@@ -476,7 +476,7 @@ EVMouse.prototype = $extend(RCSignal.prototype,{
 		while( $it0.hasNext() ) {
 			var t = $it0.next();
 			if(t.target == this.target && t.type == this.type) {
-				haxe.Log.trace("Target already in use by this event type. Called from " + pos,{ fileName : "EVMouse.hx", lineNumber : 83, className : "EVMouse", methodName : "addEventListener"});
+				haxe.Log.trace("Target already in use by this event type. Called from " + pos,{ fileName : "EVMouse.hx", lineNumber : 85, className : "EVMouse", methodName : "addEventListener"});
 				return;
 			}
 		}
@@ -506,7 +506,7 @@ EVMouse.prototype = $extend(RCSignal.prototype,{
 			this.addWheelListener();
 			break;
 		default:
-			haxe.Log.trace("The mouse event you're trying to add does not exist. " + pos,{ fileName : "EVMouse.hx", lineNumber : 98, className : "EVMouse", methodName : "addEventListener"});
+			haxe.Log.trace("The mouse event you're trying to add does not exist. " + pos,{ fileName : "EVMouse.hx", lineNumber : 100, className : "EVMouse", methodName : "addEventListener"});
 		}
 	}
 	,removeEventListener: function() {
@@ -540,40 +540,32 @@ EVMouse.prototype = $extend(RCSignal.prototype,{
 	,mouseHandler: function(e) {
 		if(e == null) e = js.Lib.window.event;
 		this.e = e;
-		this.dispatch(this,null,null,null,{ fileName : "EVMouse.hx", lineNumber : 140, className : "EVMouse", methodName : "mouseHandler"});
+		this.dispatch(this,null,null,null,{ fileName : "EVMouse.hx", lineNumber : 142, className : "EVMouse", methodName : "mouseHandler"});
 	}
 	,updateAfterEvent: function() {
 	}
 	,addWheelListener: function() {
-		haxe.Log.trace("ADD WHEEL",{ fileName : "EVMouse.hx", lineNumber : 155, className : "EVMouse", methodName : "addWheelListener"});
+		this.mouseScrollHandler = this.MouseScroll.$bind(this);
 		if(this.layer.addEventListener) {
-			this.layer.addEventListener("mousewheel",this.MouseScroll.$bind(this),false);
-			this.layer.addEventListener("DOMMouseScroll",this.MouseScroll.$bind(this),false);
-		} else if(this.layer.attachEvent) this.layer.attachEvent("onmousewheel",this.MouseScroll.$bind(this));
-		this.removeWheelListener();
+			this.layer.addEventListener("mousewheel",this.mouseScrollHandler,false);
+			this.layer.addEventListener("DOMMouseScroll",this.mouseScrollHandler,false);
+		} else if(this.layer.attachEvent) this.layer.attachEvent("onmousewheel",this.mouseScrollHandler);
 	}
 	,removeWheelListener: function() {
-		haxe.Log.trace("REMOVE WHEEL",{ fileName : "EVMouse.hx", lineNumber : 172, className : "EVMouse", methodName : "removeWheelListener"});
 		if(this.layer.removeEventListener) {
-			haxe.Log.trace("REMOVE WHEEL",{ fileName : "EVMouse.hx", lineNumber : 176, className : "EVMouse", methodName : "removeWheelListener"});
-			this.layer.removeEventListener("mousewheel",this.MouseScroll.$bind(this),false);
-			haxe.Log.trace("REMOVE WHEEL",{ fileName : "EVMouse.hx", lineNumber : 178, className : "EVMouse", methodName : "removeWheelListener"});
-			this.layer.removeEventListener("DOMMouseScroll",this.MouseScroll.$bind(this),false);
-			haxe.Log.trace("REMOVE WHEEL",{ fileName : "EVMouse.hx", lineNumber : 180, className : "EVMouse", methodName : "removeWheelListener"});
-		} else if(this.layer.detachEvent) {
-			haxe.Log.trace("REMOVE WHEEL",{ fileName : "EVMouse.hx", lineNumber : 183, className : "EVMouse", methodName : "removeWheelListener"});
-			this.layer.detachEvent("onmousewheel",this.MouseScroll.$bind(this));
-		}
+			this.layer.removeEventListener("mousewheel",this.mouseScrollHandler,false);
+			this.layer.removeEventListener("DOMMouseScroll",this.mouseScrollHandler,false);
+		} else if(this.layer.detachEvent) this.layer.detachEvent("onmousewheel",this.mouseScrollHandler);
 	}
+	,mouseScrollHandler: null
 	,MouseScroll: function(e) {
 		if(Reflect.field(e,"wheelDelta") != null) this.delta = e.wheelDelta; else if(Reflect.field(e,"detail") != null) this.delta = -Math.round(e.detail * 5);
 		this.e = e;
-		this.dispatch(this,null,null,null,{ fileName : "EVMouse.hx", lineNumber : 200, className : "EVMouse", methodName : "MouseScroll"});
+		this.dispatch(this,null,null,null,{ fileName : "EVMouse.hx", lineNumber : 199, className : "EVMouse", methodName : "MouseScroll"});
 	}
 	,destroy: function(pos) {
-		haxe.Log.trace("destroy mouse " + this.type,{ fileName : "EVMouse.hx", lineNumber : 208, className : "EVMouse", methodName : "destroy"});
 		this.removeEventListener();
-		RCSignal.prototype.destroy.call(this,{ fileName : "EVMouse.hx", lineNumber : 210, className : "EVMouse", methodName : "destroy"});
+		RCSignal.prototype.destroy.call(this,{ fileName : "EVMouse.hx", lineNumber : 207, className : "EVMouse", methodName : "destroy"});
 	}
 	,__class__: EVMouse
 });
@@ -587,7 +579,7 @@ EVResize.prototype = $extend(RCSignal.prototype,{
 	resizeHandler: function(e) {
 		var w = js.Lib.window.innerWidth;
 		var h = js.Lib.window.innerHeight;
-		this.dispatch(w,h,null,null,{ fileName : "EVResize.hx", lineNumber : 30, className : "EVResize", methodName : "resizeHandler"});
+		this.dispatch(w,h,null,null,{ fileName : "EVResize.hx", lineNumber : 34, className : "EVResize", methodName : "resizeHandler"});
 	}
 	,__class__: EVResize
 });
@@ -1763,6 +1755,7 @@ Main.req = null;
 Main.win = null;
 Main.main = function() {
 	haxe.Firebug.redirectTraces();
+	var mousew = new EVMouse("mousewheel",RCWindow.sharedWindow().target,{ fileName : "Main.hx", lineNumber : 24, className : "Main", methodName : "main"});
 	try {
 		RCWindow.sharedWindow();
 		var group = new RCGroup(200,230,0,null,Main.createRadioButton);
@@ -1775,7 +1768,7 @@ Main.main = function() {
 		f.embedFonts = false;
 		var t = new RCTextView(50,30,null,null,"HTML5",f);
 		RCWindow.sharedWindow().addChild(t);
-		haxe.Log.trace("t.width " + t.getWidth(),{ fileName : "Main.hx", lineNumber : 38, className : "Main", methodName : "main"});
+		haxe.Log.trace("t.width " + t.getWidth(),{ fileName : "Main.hx", lineNumber : 43, className : "Main", methodName : "main"});
 		return;
 		Main.win = RCWindow.sharedWindow();
 		Main.win.setBackgroundColor(15724527);
@@ -1795,11 +1788,11 @@ Main.main = function() {
 		Main.circ = new RCEllipse(0,0,100,100,RCColor.darkGrayColor());
 		RCWindow.sharedWindow().addChild(Main.circ);
 		var size = RCWindow.sharedWindow().size;
-		haxe.Log.trace(size,{ fileName : "Main.hx", lineNumber : 94, className : "Main", methodName : "main"});
-		var a1 = new CATween(Main.circ,{ x : size.width - 100, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 95, className : "Main", methodName : "main"});
-		var a2 = new CATween(Main.circ,{ x : size.width - 100, y : size.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 96, className : "Main", methodName : "main"});
-		var a3 = new CATween(Main.circ,{ x : 0, y : size.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 97, className : "Main", methodName : "main"});
-		var a4 = new CATween(Main.circ,{ x : 0, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 98, className : "Main", methodName : "main"});
+		haxe.Log.trace(size,{ fileName : "Main.hx", lineNumber : 99, className : "Main", methodName : "main"});
+		var a1 = new CATween(Main.circ,{ x : size.width - 100, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 100, className : "Main", methodName : "main"});
+		var a2 = new CATween(Main.circ,{ x : size.width - 100, y : size.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 101, className : "Main", methodName : "main"});
+		var a3 = new CATween(Main.circ,{ x : 0, y : size.height - 100},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 102, className : "Main", methodName : "main"});
+		var a4 = new CATween(Main.circ,{ x : 0, y : 0},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 103, className : "Main", methodName : "main"});
 		var seq = new CASequence([a1,a2,a3,a4]);
 		seq.start();
 		Main.lin = new RCLine(30,300,400,600,16724736);
@@ -1807,9 +1800,9 @@ Main.main = function() {
 		var k = new RCKeys();
 		k.onLeft = Main.moveLeft;
 		k.onRight = Main.moveRight;
-		var m = new EVMouse("mouseover",rect.layer,{ fileName : "Main.hx", lineNumber : 113, className : "Main", methodName : "main"});
+		var m = new EVMouse("mouseover",rect.layer,{ fileName : "Main.hx", lineNumber : 118, className : "Main", methodName : "main"});
 		m.add(function(_) {
-			haxe.Log.trace("onOver",{ fileName : "Main.hx", lineNumber : 114, className : "Main", methodName : "main"});
+			haxe.Log.trace("onOver",{ fileName : "Main.hx", lineNumber : 119, className : "Main", methodName : "main"});
 		});
 		Main.testTexts();
 		Main.testSignals();
@@ -1821,20 +1814,20 @@ Main.main = function() {
 		sl.setValue(30);
 		Main.req = new HTTPRequest();
 		Main.req.onComplete = function() {
-			haxe.Log.trace("http result " + Main.req.result,{ fileName : "Main.hx", lineNumber : 143, className : "Main", methodName : "main"});
+			haxe.Log.trace("http result " + Main.req.result,{ fileName : "Main.hx", lineNumber : 148, className : "Main", methodName : "main"});
 		};
 		Main.req.onError = function() {
-			haxe.Log.trace("http error " + Main.req.result,{ fileName : "Main.hx", lineNumber : 144, className : "Main", methodName : "main"});
+			haxe.Log.trace("http error " + Main.req.result,{ fileName : "Main.hx", lineNumber : 149, className : "Main", methodName : "main"});
 		};
 		Main.req.onStatus = function() {
-			haxe.Log.trace("http status " + Main.req.status,{ fileName : "Main.hx", lineNumber : 145, className : "Main", methodName : "main"});
+			haxe.Log.trace("http status " + Main.req.status,{ fileName : "Main.hx", lineNumber : 150, className : "Main", methodName : "main"});
 		};
 		Main.req.readFile("../assets/data.txt");
-		var anim = new CATCallFunc(Main.setAlpha_,{ alpha : { fromValue : 0, toValue : 1}},2.8,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 149, className : "Main", methodName : "main"});
+		var anim = new CATCallFunc(Main.setAlpha_,{ alpha : { fromValue : 0, toValue : 1}},2.8,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 154, className : "Main", methodName : "main"});
 		CoreAnimation.add(anim);
 	} catch( e ) {
 		Fugu.stack();
-		haxe.Log.trace(e,{ fileName : "Main.hx", lineNumber : 153, className : "Main", methodName : "main"});
+		haxe.Log.trace(e,{ fileName : "Main.hx", lineNumber : 158, className : "Main", methodName : "main"});
 	}
 }
 Main.setAlpha_ = function(a) {
@@ -1848,16 +1841,16 @@ Main.testJsFont = function() {
 	f.embedFonts = false;
 	var t = new RCTextView(50,120,null,null,"blah blah blah",f);
 	RCWindow.sharedWindow().addChild(t);
-	haxe.Log.trace("t.width " + t.getWidth(),{ fileName : "Main.hx", lineNumber : 165, className : "Main", methodName : "testJsFont"});
+	haxe.Log.trace("t.width " + t.getWidth(),{ fileName : "Main.hx", lineNumber : 170, className : "Main", methodName : "testJsFont"});
 }
 Main.resizePhoto = function() {
-	haxe.Log.trace("startResizing",{ fileName : "Main.hx", lineNumber : 178, className : "Main", methodName : "resizePhoto"});
-	haxe.Log.trace(Main.ph.getContentSize(),{ fileName : "Main.hx", lineNumber : 193, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace("startResizing",{ fileName : "Main.hx", lineNumber : 183, className : "Main", methodName : "resizePhoto"});
+	haxe.Log.trace(Main.ph.getContentSize(),{ fileName : "Main.hx", lineNumber : 198, className : "Main", methodName : "resizePhoto"});
 	var scrollview = new RCScrollView(780,10,300,300);
 	RCWindow.sharedWindow().addChild(scrollview);
 	scrollview.setContentView(Main.ph);
 	return;
-	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 201, className : "Main", methodName : "resizePhoto"});
+	var anim = new CATween(Main.ph,{ x : { fromValue : -Main.ph.getWidth(), toValue : Main.ph.getWidth()}},2,0,caequations.Cubic.IN_OUT,{ fileName : "Main.hx", lineNumber : 206, className : "Main", methodName : "resizePhoto"});
 	anim.repeatCount = 5;
 	anim.autoreverses = true;
 	CoreAnimation.add(anim);
@@ -1874,13 +1867,13 @@ Main.signal = null;
 Main.testSignals = function() {
 	Main.signal = new RCSignal();
 	Main.signal.add(Main.printNr);
-	Main.signal.addOnce(Main.printNr2,{ fileName : "Main.hx", lineNumber : 220, className : "Main", methodName : "testSignals"});
+	Main.signal.addOnce(Main.printNr2,{ fileName : "Main.hx", lineNumber : 225, className : "Main", methodName : "testSignals"});
 	Main.signal.remove(Main.printNr);
 	Main.signal.removeAll();
 	var _g = 0;
 	while(_g < 5) {
 		var i = _g++;
-		Main.signal.dispatch(Math.random(),null,null,null,{ fileName : "Main.hx", lineNumber : 224, className : "Main", methodName : "testSignals"});
+		Main.signal.dispatch(Math.random(),null,null,null,{ fileName : "Main.hx", lineNumber : 229, className : "Main", methodName : "testSignals"});
 	}
 }
 Main.printNr = function(nr) {
@@ -1896,13 +1889,13 @@ Main.testButtons = function() {
 			HXAddress.href("flash.html");
 		};
 		b.onOver = function() {
-			haxe.Log.trace("over",{ fileName : "Main.hx", lineNumber : 244, className : "Main", methodName : "testButtons"});
+			haxe.Log.trace("over",{ fileName : "Main.hx", lineNumber : 249, className : "Main", methodName : "testButtons"});
 		};
 		b.onOut = function() {
-			haxe.Log.trace("out",{ fileName : "Main.hx", lineNumber : 245, className : "Main", methodName : "testButtons"});
+			haxe.Log.trace("out",{ fileName : "Main.hx", lineNumber : 250, className : "Main", methodName : "testButtons"});
 		};
 		b.onPress = function() {
-			haxe.Log.trace("press",{ fileName : "Main.hx", lineNumber : 246, className : "Main", methodName : "testButtons"});
+			haxe.Log.trace("press",{ fileName : "Main.hx", lineNumber : 251, className : "Main", methodName : "testButtons"});
 		};
 		var s1 = new haxe.SKButtonRadio();
 		var b1 = new RCButtonRadio(200,200,s1);
@@ -1921,7 +1914,7 @@ Main.createRadioButton = function(indexPath) {
 	return b;
 }
 Main.segClick = function(s) {
-	haxe.Log.trace(s.getSelectedIndex(),{ fileName : "Main.hx", lineNumber : 271, className : "Main", methodName : "segClick"});
+	haxe.Log.trace(s.getSelectedIndex(),{ fileName : "Main.hx", lineNumber : 276, className : "Main", methodName : "segClick"});
 }
 Main.testTexts = function() {
 	try {
@@ -1932,7 +1925,7 @@ Main.testTexts = function() {
 		f.embedFonts = false;
 		var t = new RCTextView(50,30,null,null,"HTML5",f);
 		RCWindow.sharedWindow().addChild(t);
-		haxe.Log.trace("t.width " + t.getWidth(),{ fileName : "Main.hx", lineNumber : 283, className : "Main", methodName : "testTexts"});
+		haxe.Log.trace("t.width " + t.getWidth(),{ fileName : "Main.hx", lineNumber : 288, className : "Main", methodName : "testTexts"});
 		var f2 = f.copy();
 		f2.color = 16777215;
 		f2.size = 16;
@@ -2902,9 +2895,9 @@ RCGroup.prototype = $extend(JSView.prototype,{
 		this.keepItemsArranged();
 	}
 	,remove: function(i) {
-		Fugu.safeDestroy(this.items[i],null,{ fileName : "RCGroup.hx", lineNumber : 70, className : "RCGroup", methodName : "remove"});
+		Fugu.safeDestroy(this.items[i],null,{ fileName : "RCGroup.hx", lineNumber : 69, className : "RCGroup", methodName : "remove"});
 		this.keepItemsArranged();
-		this.itemRemove.dispatch(new RCIndexPath(0,i),null,null,null,{ fileName : "RCGroup.hx", lineNumber : 75, className : "RCGroup", methodName : "remove"});
+		this.itemRemove.dispatch(new RCIndexPath(0,i),null,null,null,{ fileName : "RCGroup.hx", lineNumber : 74, className : "RCGroup", methodName : "remove"});
 	}
 	,keepItemsArranged: function() {
 		var _g1 = 0, _g = this.items.length;
@@ -2914,12 +2907,12 @@ RCGroup.prototype = $extend(JSView.prototype,{
 			var new_s = this.items[i];
 			var old_s = this.items[i - 1];
 			if(i != 0) {
-				if(this.gapX != null) newX = old_s.getX() + old_s.skin.normal.background.size.width + this.gapX;
+				if(this.gapX != null) newX = old_s.getX() + old_s.getWidth() + this.gapX;
 				if(this.gapY != null) newY = old_s.getY() + old_s.getHeight() + this.gapY;
 			}
 			new_s.setX(newX);
 			new_s.setY(newY);
-			this.size.width = newX + new_s.skin.normal.background.size.width;
+			this.size.width = newX + new_s.size.width;
 			this.size.height = newY + new_s.size.height;
 		}
 		this.update.dispatch(this,null,null,null,{ fileName : "RCGroup.hx", lineNumber : 101, className : "RCGroup", methodName : "keepItemsArranged"});
@@ -4288,6 +4281,7 @@ RCTextView.prototype = $extend(JSView.prototype,{
 		this.layer.style.letterSpacing = this.rcfont.letterSpacing + "px";
 		this.layer.style.textAlign = this.rcfont.align;
 		this.layer.style.color = RCColor.HEXtoString(this.rcfont.color);
+		this.layer.style.contentEditable = "true";
 		if(this.rcfont.autoSize) {
 			this.layer.style.width = multiline?this.size.width + "px":"auto";
 			this.layer.style.height = "auto";

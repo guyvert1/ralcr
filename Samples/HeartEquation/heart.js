@@ -384,7 +384,7 @@ EVResize.prototype = $extend(RCSignal.prototype,{
 	resizeHandler: function(e) {
 		var w = js.Lib.window.innerWidth;
 		var h = js.Lib.window.innerHeight;
-		this.dispatch(w,h,null,null,{ fileName : "EVResize.hx", lineNumber : 30, className : "EVResize", methodName : "resizeHandler"});
+		this.dispatch(w,h,null,null,{ fileName : "EVResize.hx", lineNumber : 34, className : "EVResize", methodName : "resizeHandler"});
 	}
 	,__class__: EVResize
 });
@@ -1727,6 +1727,7 @@ RCTextView.prototype = $extend(JSView.prototype,{
 		this.layer.style.letterSpacing = this.rcfont.letterSpacing + "px";
 		this.layer.style.textAlign = this.rcfont.align;
 		this.layer.style.color = RCColor.HEXtoString(this.rcfont.color);
+		this.layer.style.contentEditable = "true";
 		if(this.rcfont.autoSize) {
 			this.layer.style.width = multiline?this.size.width + "px":"auto";
 			this.layer.style.height = "auto";
