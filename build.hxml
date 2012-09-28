@@ -1,5 +1,5 @@
-#-as3 AS3_GENERATED
--swf frameworks.swc
+# -as3 AS3_GENERATED
+-swf sdk.ralcr.swc
 -swf-version 10
 -main Main.hx
 #--dead-code-elimination

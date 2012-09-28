@@ -1,15 +1,14 @@
 //
-//  GKSound
+//  GKSound.hx
 //
 //  Created by Cristi Baluta on 2010-12-09.
 //  Copyright (c) 2010 ralcr.com. 
 //	This software is released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
 //
-import flash.media.Sound;
 
 class GKSound {
 	
-	static var sounds :Hash<Sound>;
+	//static var sounds :Hash<Sound>;
 	static var mp3s :Hash<RCAudio>;
 	
 	
@@ -18,8 +17,10 @@ class GKSound {
 	}
 	
 	public static function init () :Void {
-		if (sounds != null) return;
-		sounds = new Hash<Sound>();
+		
+		if (mp3s != null) return;
+		
+		//sounds = new Hash<Sound>();
 		mp3s = new Hash<RCAudio>();
 	}
 	
