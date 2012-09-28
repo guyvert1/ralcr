@@ -11,6 +11,7 @@
 import js.Lib;
 import js.Dom;
 import JSCanvas;
+import RCDevice;
 
 
 class JSView extends RCDisplayObject {
@@ -143,7 +144,7 @@ class JSView extends RCDisplayObject {
 	}
 	override public function setAlpha (a:Float) :Float {
 		
-		if (js.Lib.isIE) {
+		if (RCDevice.currentDevice().userAgent == MSIE) {
 			untyped layer.style.msFilter = "progid:DXImageTransform.Microsoft.Alpha(Opacity="+Std.string(a*100)+")";
 			untyped layer.style.filter = "alpha(opacity="+Std.string(a*100)+")";
 			//if(a==0)layer.style.background = "url(pixel.png) repeat";

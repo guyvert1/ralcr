@@ -19,13 +19,17 @@ enum RCDeviceOrientation {
 enum RCDeviceType {
     IPhone;
     IPad;
+    IPod;
 	Android;
 	WebOS;
 	Mac;
 	Flash;
+	Playstation;
+	Other;
 }
 enum RCUserAgent {
 	MSIE;
+	MSIE9;
 	GECKO;
 	WEBKIT;
 	OTHER;
@@ -61,6 +65,7 @@ class RCDevice {
 			dpiScale = 1;
 			#if js
 				userAgent = detectUserAgent();
+				userInterfaceIdiom = detectUserInterfaceIdiom();
 			#end
 		#end
 	}
@@ -71,9 +76,21 @@ class RCDevice {
 		
 		var agent = js.Lib.window.navigator.userAgent.toLowerCase();
 		if (agent.indexOf("msie") > -1) return MSIE;
+		if (agent.indexOf("msie 9.") > -1) return MSIE9;
 		if (agent.indexOf("webkit") > -1) return WEBKIT;
 		if (agent.indexOf("gecko") > -1) return GECKO;
+			 
 		return OTHER;
+	}
+	function detectUserInterfaceIdiom() :RCDeviceType {
+		
+		var agent = js.Lib.window.navigator.userAgent.toLowerCase();
+		if (agent.indexOf("iphone") > -1) return IPhone;
+		if (agent.indexOf("ipad") > -1) return IPad;
+		if (agent.indexOf("ipod") > -1) return IPod;
+		if (agent.indexOf("playstation") > -1) return Playstation;
+		
+		return Other;
 	}
 	
 #end

@@ -25,7 +25,11 @@ class Main {
 			//mousew.add ( function(e:EVMouse){ } );
 			//mousew.remove ( wheelHandler );
 			//mousew.destroy();
-			
+		
+		
+		var colision = GKMath.linesIntersection (new RCPoint(10,10), new RCPoint(100,100), new RCPoint(10,100), new RCPoint(100,10));
+		trace("colision "+colision);
+		return;
 		try{
 		RCWindow.sharedWindow();
 			var group = new RCGroup<RCButtonRadio> (200,230,0,null,createRadioButton);
@@ -43,7 +47,7 @@ class Main {
 			trace("t.width "+t.width);
 			
 			
-			return;
+			//return;
 			
 		win = RCWindow.sharedWindow();
 		//RCWindow.setTarget ("js");

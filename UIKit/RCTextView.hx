@@ -175,7 +175,7 @@ class RCTextView extends RCView {
 		#if nme
 			// Align the text by doing some math for NME 
 			// because align is not supported in combination with autoSize
-			if (size.width != null)
+			if (size.width != 0)
 				target.x = switch (rcfont.align) {
 					case "center": Math.round ((size.width - target.width) / 2);
 					case "right": Math.round (size.width - target.width);

@@ -14,13 +14,14 @@ import RCDateTools;
 import RCFont;
 import RCIterator;
 import RCAssets;
-//import RCLocalization; // Do not compile it because it requires the xml to be present
+//import RCLocalization; // Do not compile it because it requires an xml specific to each app
 import RCMath;
 import RCSize;
 import RCPoint;
 import RCRect;
 import RCStringTools;
 import RCUserDefaults;
+/*import RCVector;*/
 import Zeta;
 
 // Events
@@ -174,8 +175,11 @@ import PNGEncoder;
 import WAVWriter;
 
 // GameKit
+//import GKBoid;
 import GKCharacter;
 import GKHealth;
+import GKMath;
+import GKPathFinding;
 import GKScore;
 import GKSound;
 import GKSprite;

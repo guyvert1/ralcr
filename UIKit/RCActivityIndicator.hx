@@ -1,5 +1,5 @@
 //
-//  RCIndeterminateProgressIndicator
+//  RCActivityIndicator.hx
 //
 //  Created by Baluta Cristian on 2008-12-01.
 //  Copyright (c) 2009 http://ralcr.com. 
@@ -13,6 +13,7 @@ class RCActivityIndicator extends RCProgressIndicator {
 	var enterFrame :EVLoop;
 	
 	public function new (x, y, stepX:Int, skin:RCSkin) {
+		
 		super (x, y, skin);
 		
 		this.stepX = stepX;

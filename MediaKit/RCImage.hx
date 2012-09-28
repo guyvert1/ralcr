@@ -28,6 +28,7 @@
 	typedef ErrorEvent = Event;
 	typedef IOErrorEvent = Event;
 #end
+	import RCDevice;
 
 
 class RCImage extends RCView {
@@ -183,7 +184,7 @@ class RCImage extends RCView {
 		
 		#if js
 			// onload is called too soon in IE if the image is cached
-			if (js.Lib.isIE) {
+			if (RCDevice.currentDevice().userAgent == MSIE) {
 				haxe.Timer.delay (function() { onComplete(); }, 1);
 				return;
 			}

@@ -1,4 +1,4 @@
-var $_, $hxClasses = $hxClasses || {}, $estr = function() { return js.Boot.__string_rec(this,''); }
+var $hxClasses = $hxClasses || {},$estr = function() { return js.Boot.__string_rec(this,''); };
 function $extend(from, fields) {
 	function inherit() {}; inherit.prototype = from; var proto = new inherit();
 	for (var name in fields) proto[name] = fields[name];
@@ -72,7 +72,7 @@ var CAObject = $hxClasses["CAObject"] = function(target,properties,duration,dela
 	this.properties = properties;
 	this.repeatCount = 0;
 	this.autoreverses = false;
-	this.fromTime = Date.now().getTime();
+	this.fromTime = new Date().getTime();
 	this.duration = duration == null?CoreAnimation.defaultDuration:duration <= 0?0.001:duration;
 	this.delay = delay == null || delay < 0?0:delay;
 	if(Eq == null) this.timingFunction = CoreAnimation.defaultTimingFunction; else this.timingFunction = Eq;
@@ -98,18 +98,18 @@ CAObject.prototype = {
 	,constraintBounds: null
 	,delegate: null
 	,init: function() {
-		throw "CAObject should be extended (" + this.delegate.pos + ")";
+		throw "CAObject should be extended (" + Std.string(this.delegate.pos) + ")";
 	}
 	,animate: function(time_diff) {
-		throw "CAObject should be extended (" + this.delegate.pos + ")";
+		throw "CAObject should be extended (" + Std.string(this.delegate.pos) + ")";
 	}
 	,initTime: function() {
-		this.fromTime = Date.now().getTime();
+		this.fromTime = new Date().getTime();
 		this.duration = this.duration * 1000;
 		this.delay = this.delay * 1000;
 	}
 	,repeat: function() {
-		this.fromTime = Date.now().getTime();
+		this.fromTime = new Date().getTime();
 		this.delay = 0;
 		if(this.autoreverses) {
 			var v = this.fromValues;
@@ -122,7 +122,7 @@ CAObject.prototype = {
 		return this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null);
 	}
 	,toString: function() {
-		return "[CAObject: target=" + this.target + ", duration=" + this.duration + ", delay=" + this.delay + ", fromTime=" + this.fromTime + ", properties=" + this.properties + ", repeatCount=" + this.repeatCount + "]";
+		return "[CAObject: target=" + Std.string(this.target) + ", duration=" + this.duration + ", delay=" + this.delay + ", fromTime=" + this.fromTime + ", properties=" + Std.string(this.properties) + ", repeatCount=" + this.repeatCount + "]";
 	}
 	,__class__: CAObject
 }
@@ -145,8 +145,8 @@ CATween.prototype = $extend(CAObject.prototype,{
 		while(_g < _g1.length) {
 			var p = _g1[_g];
 			++_g;
-			if(Std["is"](Reflect.field(this.properties,p),Int) || Std["is"](Reflect.field(this.properties,p),Float)) {
-				var getter = "get" + p.substr(0,1).toUpperCase() + p.substr(1);
+			if(js.Boot.__instanceof(Reflect.field(this.properties,p),Int) || js.Boot.__instanceof(Reflect.field(this.properties,p),Float)) {
+				var getter = "get" + HxOverrides.substr(p,0,1).toUpperCase() + HxOverrides.substr(p,1,null);
 				if(getter == null) this.fromValues[p] = Reflect.field(this.target,p); else this.fromValues[p] = Reflect.field(this.target,getter).apply(this.target,[]);
 				this.toValues[p] = Reflect.field(this.properties,p);
 			} else try {
@@ -164,7 +164,7 @@ CATween.prototype = $extend(CAObject.prototype,{
 			var prop = _g1[_g];
 			++_g;
 			try {
-				var setter = "set" + prop.substr(0,1).toUpperCase() + prop.substr(1);
+				var setter = "set" + HxOverrides.substr(prop,0,1).toUpperCase() + HxOverrides.substr(prop,1,null);
 				if(setter != null) Reflect.field(this.target,setter).apply(this.target,[this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null)]);
 			} catch( e ) {
 				haxe.Log.trace(e,{ fileName : "CATween.hx", lineNumber : 50, className : "CATween", methodName : "animate"});
@@ -178,9 +178,6 @@ caequations.Linear = $hxClasses["caequations.Linear"] = function() { }
 caequations.Linear.__name__ = ["caequations","Linear"];
 caequations.Linear.NONE = function(t,b,c,d,p_params) {
 	return c * t / d + b;
-}
-caequations.Linear.prototype = {
-	__class__: caequations.Linear
 }
 var CoreAnimation = $hxClasses["CoreAnimation"] = function() { }
 CoreAnimation.__name__ = ["CoreAnimation"];
@@ -227,7 +224,7 @@ CoreAnimation.destroy = function() {
 	CoreAnimation.removeTimer();
 }
 CoreAnimation.updateAnimations = function() {
-	var current_time = Date.now().getTime();
+	var current_time = new Date().getTime();
 	var time_diff = 0.0;
 	var a = CoreAnimation.latest;
 	while(a != null) {
@@ -259,10 +256,7 @@ CoreAnimation.updateAnimations = function() {
 	}
 }
 CoreAnimation.timestamp = function() {
-	return Date.now().getTime();
-}
-CoreAnimation.prototype = {
-	__class__: CoreAnimation
+	return new Date().getTime();
 }
 var RCSignal = $hxClasses["RCSignal"] = function() {
 	this.enabled = true;
@@ -277,7 +271,7 @@ RCSignal.prototype = {
 		this.listeners.add(listener);
 	}
 	,addOnce: function(listener,pos) {
-		if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once as you expect. " + pos,{ fileName : "RCSignal.hx", lineNumber : 23, className : "RCSignal", methodName : "addOnce"});
+		if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once as you expect. " + Std.string(pos),{ fileName : "RCSignal.hx", lineNumber : 23, className : "RCSignal", methodName : "addOnce"});
 		this.exposableListener = listener;
 	}
 	,addFirst: function(listener,pos) {
@@ -321,7 +315,7 @@ RCSignal.prototype = {
 		try {
 			listener.apply(null,args);
 		} catch( e ) {
-			haxe.Log.trace("[RCSignal error: " + e + ", called from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 74, className : "RCSignal", methodName : "callMethod"});
+			haxe.Log.trace("[RCSignal error: " + Std.string(e) + ", called from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 74, className : "RCSignal", methodName : "callMethod"});
 			Fugu.stack();
 		}
 	}
@@ -357,7 +351,7 @@ EVLoop.prototype = {
 		this.stop();
 		this.run = func;
 		this.ticker = new haxe.Timer(Math.round(1 / EVLoop.FPS * 1000));
-		this.ticker.run = this.loop.$bind(this);
+		this.ticker.run = $bind(this,this.loop);
 		return func;
 	}
 	,loop: function() {
@@ -376,7 +370,7 @@ EVLoop.prototype = {
 }
 var EVResize = $hxClasses["EVResize"] = function() {
 	RCSignal.call(this);
-	js.Lib.window.onresize = this.resizeHandler.$bind(this);
+	js.Lib.window.onresize = $bind(this,this.resizeHandler);
 };
 EVResize.__name__ = ["EVResize"];
 EVResize.__super__ = RCSignal;
@@ -393,7 +387,7 @@ Fugu.__name__ = ["Fugu"];
 Fugu.safeDestroy = function(obj,destroy,pos) {
 	if(destroy == null) destroy = true;
 	if(obj == null) return false;
-	var objs = Std["is"](obj,Array)?obj:[obj];
+	var objs = js.Boot.__instanceof(obj,Array)?obj:[obj];
 	var _g = 0;
 	while(_g < objs.length) {
 		var o = objs[_g];
@@ -402,16 +396,10 @@ Fugu.safeDestroy = function(obj,destroy,pos) {
 		if(destroy) try {
 			o.destroy();
 		} catch( e ) {
-			haxe.Log.trace("[Error when destroying object: " + o + ", called from " + Std.string(pos) + "]",{ fileName : "Fugu.hx", lineNumber : 28, className : "Fugu", methodName : "safeDestroy"});
+			haxe.Log.trace("[Error when destroying object: " + Std.string(o) + ", called from " + Std.string(pos) + "]",{ fileName : "Fugu.hx", lineNumber : 28, className : "Fugu", methodName : "safeDestroy"});
 			haxe.Log.trace(Fugu.stack(),{ fileName : "Fugu.hx", lineNumber : 29, className : "Fugu", methodName : "safeDestroy"});
 		}
-		if(Std["is"](o,JSView)) ((function($this) {
-			var $r;
-			var $t = o;
-			if(Std["is"]($t,JSView)) $t; else throw "Class cast error";
-			$r = $t;
-			return $r;
-		}(this))).removeFromSuperView(); else {
+		if(js.Boot.__instanceof(o,JSView)) (js.Boot.__cast(o , JSView)).removeFromSuperView(); else {
 			var parent = null;
 			try {
 				parent = o.parent;
@@ -430,7 +418,7 @@ Fugu.safeRemove = function(obj) {
 }
 Fugu.safeAdd = function(target,obj) {
 	if(target == null || obj == null) return false;
-	var objs = Std["is"](obj,Array)?obj:[obj];
+	var objs = js.Boot.__instanceof(obj,Array)?obj:[obj];
 	var _g = 0;
 	while(_g < objs.length) {
 		var o = objs[_g];
@@ -494,8 +482,70 @@ Fugu.stack = function() {
 	var stack = haxe.Stack.exceptionStack();
 	haxe.Log.trace(haxe.Stack.toString(stack),{ fileName : "Fugu.hx", lineNumber : 161, className : "Fugu", methodName : "stack"});
 }
-Fugu.prototype = {
-	__class__: Fugu
+var HxOverrides = $hxClasses["HxOverrides"] = function() { }
+HxOverrides.__name__ = ["HxOverrides"];
+HxOverrides.dateStr = function(date) {
+	var m = date.getMonth() + 1;
+	var d = date.getDate();
+	var h = date.getHours();
+	var mi = date.getMinutes();
+	var s = date.getSeconds();
+	return date.getFullYear() + "-" + (m < 10?"0" + m:"" + m) + "-" + (d < 10?"0" + d:"" + d) + " " + (h < 10?"0" + h:"" + h) + ":" + (mi < 10?"0" + mi:"" + mi) + ":" + (s < 10?"0" + s:"" + s);
+}
+HxOverrides.strDate = function(s) {
+	switch(s.length) {
+	case 8:
+		var k = s.split(":");
+		var d = new Date();
+		d.setTime(0);
+		d.setUTCHours(k[0]);
+		d.setUTCMinutes(k[1]);
+		d.setUTCSeconds(k[2]);
+		return d;
+	case 10:
+		var k = s.split("-");
+		return new Date(k[0],k[1] - 1,k[2],0,0,0);
+	case 19:
+		var k = s.split(" ");
+		var y = k[0].split("-");
+		var t = k[1].split(":");
+		return new Date(y[0],y[1] - 1,y[2],t[0],t[1],t[2]);
+	default:
+		throw "Invalid date format : " + s;
+	}
+}
+HxOverrides.cca = function(s,index) {
+	var x = s.charCodeAt(index);
+	if(x != x) return undefined;
+	return x;
+}
+HxOverrides.substr = function(s,pos,len) {
+	if(pos != null && pos != 0 && len != null && len < 0) return "";
+	if(len == null) len = s.length;
+	if(pos < 0) {
+		pos = s.length + pos;
+		if(pos < 0) pos = 0;
+	} else if(len < 0) len = s.length + len - pos;
+	return s.substr(pos,len);
+}
+HxOverrides.remove = function(a,obj) {
+	var i = 0;
+	var l = a.length;
+	while(i < l) {
+		if(a[i] == obj) {
+			a.splice(i,1);
+			return true;
+		}
+		i++;
+	}
+	return false;
+}
+HxOverrides.iter = function(a) {
+	return { cur : 0, arr : a, hasNext : function() {
+		return this.cur < this.arr.length;
+	}, next : function() {
+		return this.arr[this.cur++];
+	}};
 }
 var IntIter = $hxClasses["IntIter"] = function(min,max) {
 	this.min = min;
@@ -515,9 +565,6 @@ IntIter.prototype = {
 }
 var JSCanvas = $hxClasses["JSCanvas"] = function() { }
 JSCanvas.__name__ = ["JSCanvas"];
-JSCanvas.prototype = {
-	__class__: JSCanvas
-}
 var RCDisplayObject = $hxClasses["RCDisplayObject"] = function() {
 	this.viewWillAppear = new RCSignal();
 	this.viewWillDisappear = new RCSignal();
@@ -716,20 +763,20 @@ JSView.prototype = $extend(RCDisplayObject.prototype,{
 	,alpha_: null
 	,addChild: function(child) {
 		if(child == null) return;
-		child.viewWillAppear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 57, className : "JSView", methodName : "addChild"});
+		child.viewWillAppear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 58, className : "JSView", methodName : "addChild"});
 		child.parent = this;
 		this.layer.appendChild(child.layer);
-		child.viewDidAppear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 60, className : "JSView", methodName : "addChild"});
+		child.viewDidAppear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 61, className : "JSView", methodName : "addChild"});
 	}
 	,addChildAt: function(child,index) {
 		if(this.layer.childNodes[index] != null) this.layer.insertBefore(child.layer,this.layer.childNodes[index]); else this.layer.appendChild(child.layer);
 	}
 	,removeChild: function(child) {
 		if(child == null) return;
-		child.viewWillDisappear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 74, className : "JSView", methodName : "removeChild"});
+		child.viewWillDisappear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 75, className : "JSView", methodName : "removeChild"});
 		child.parent = null;
 		this.layer.removeChild(child.layer);
-		child.viewDidDisappear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 77, className : "JSView", methodName : "removeChild"});
+		child.viewDidDisappear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 78, className : "JSView", methodName : "removeChild"});
 	}
 	,removeFromSuperView: function() {
 		if(this.parent != null) this.parent.removeChild(this);
@@ -766,7 +813,7 @@ JSView.prototype = $extend(RCDisplayObject.prototype,{
 		return RCDisplayObject.prototype.setVisible.call(this,v);
 	}
 	,setAlpha: function(a) {
-		if(js.Lib.isIE) {
+		if(RCDevice.currentDevice().userAgent == RCUserAgent.MSIE) {
 			this.layer.style.msFilter = "progid:DXImageTransform.Microsoft.Alpha(Opacity=" + Std.string(a * 100) + ")";
 			this.layer.style.filter = "alpha(opacity=" + Std.string(a * 100) + ")";
 		} else this.layer.style.opacity = Std.string(a);
@@ -946,8 +993,8 @@ List.prototype = {
 var RCAppDelegate = $hxClasses["RCAppDelegate"] = function() {
 	RCWindow.sharedWindow();
 	JSView.call(this,0,0);
-	RCNotificationCenter.addObserver("resize",this.resize.$bind(this));
-	RCNotificationCenter.addObserver("fullscreen",this.fullscreen.$bind(this));
+	RCNotificationCenter.addObserver("resize",$bind(this,this.resize));
+	RCNotificationCenter.addObserver("fullscreen",$bind(this,this.fullscreen));
 	this.applicationDidFinishLaunching();
 };
 RCAppDelegate.__name__ = ["RCAppDelegate"];
@@ -996,7 +1043,7 @@ Main.prototype = $extend(RCAppDelegate.prototype,{
 	}
 	,heart2: function() {
 		var iterator = new RCIterator(4,0,200,1);
-		iterator.run = this.drawParticle2.$bind(this);
+		iterator.run = $bind(this,this.drawParticle2);
 		iterator.start();
 	}
 	,drawParticle2: function(i) {
@@ -1030,9 +1077,9 @@ var Particle = $hxClasses["Particle"] = function(x,y,t,s) {
 	this.sign = s;
 	this.addChild(new RCRectangle(0,0,1,1,0));
 	this.loopEvent = new EVLoop();
-	this.loopEvent.setFuncToCall(this.loopTheta.$bind(this));
+	this.loopEvent.setFuncToCall($bind(this,this.loopTheta));
 	this.timer = new haxe.Timer(40);
-	this.timer.run = this.advanceTheta.$bind(this);
+	this.timer.run = $bind(this,this.advanceTheta);
 };
 Particle.__name__ = ["Particle"];
 Particle.__super__ = JSView;
@@ -1057,7 +1104,7 @@ Particle.prototype = $extend(JSView.prototype,{
 			this.o_x = this.o_x - this.f_x * 500 * this.sign;
 			this.o_y = this.o_y - this.f_y * 500;
 			this.changeDirection();
-			this.loopEvent.setFuncToCall(this.loop.$bind(this));
+			this.loopEvent.setFuncToCall($bind(this,this.loop));
 		}
 	}
 	,fxy: function() {
@@ -1192,41 +1239,54 @@ RCDeviceOrientation.UIDeviceOrientationFaceUp.__enum__ = RCDeviceOrientation;
 RCDeviceOrientation.UIDeviceOrientationFaceDown = ["UIDeviceOrientationFaceDown",6];
 RCDeviceOrientation.UIDeviceOrientationFaceDown.toString = $estr;
 RCDeviceOrientation.UIDeviceOrientationFaceDown.__enum__ = RCDeviceOrientation;
-var RCDeviceType = $hxClasses["RCDeviceType"] = { __ename__ : ["RCDeviceType"], __constructs__ : ["IPhone","IPad","Android","WebOS","Mac","Flash"] }
+var RCDeviceType = $hxClasses["RCDeviceType"] = { __ename__ : ["RCDeviceType"], __constructs__ : ["IPhone","IPad","IPod","Android","WebOS","Mac","Flash","Playstation","Other"] }
 RCDeviceType.IPhone = ["IPhone",0];
 RCDeviceType.IPhone.toString = $estr;
 RCDeviceType.IPhone.__enum__ = RCDeviceType;
 RCDeviceType.IPad = ["IPad",1];
 RCDeviceType.IPad.toString = $estr;
 RCDeviceType.IPad.__enum__ = RCDeviceType;
-RCDeviceType.Android = ["Android",2];
+RCDeviceType.IPod = ["IPod",2];
+RCDeviceType.IPod.toString = $estr;
+RCDeviceType.IPod.__enum__ = RCDeviceType;
+RCDeviceType.Android = ["Android",3];
 RCDeviceType.Android.toString = $estr;
 RCDeviceType.Android.__enum__ = RCDeviceType;
-RCDeviceType.WebOS = ["WebOS",3];
+RCDeviceType.WebOS = ["WebOS",4];
 RCDeviceType.WebOS.toString = $estr;
 RCDeviceType.WebOS.__enum__ = RCDeviceType;
-RCDeviceType.Mac = ["Mac",4];
+RCDeviceType.Mac = ["Mac",5];
 RCDeviceType.Mac.toString = $estr;
 RCDeviceType.Mac.__enum__ = RCDeviceType;
-RCDeviceType.Flash = ["Flash",5];
+RCDeviceType.Flash = ["Flash",6];
 RCDeviceType.Flash.toString = $estr;
 RCDeviceType.Flash.__enum__ = RCDeviceType;
-var RCUserAgent = $hxClasses["RCUserAgent"] = { __ename__ : ["RCUserAgent"], __constructs__ : ["MSIE","GECKO","WEBKIT","OTHER"] }
+RCDeviceType.Playstation = ["Playstation",7];
+RCDeviceType.Playstation.toString = $estr;
+RCDeviceType.Playstation.__enum__ = RCDeviceType;
+RCDeviceType.Other = ["Other",8];
+RCDeviceType.Other.toString = $estr;
+RCDeviceType.Other.__enum__ = RCDeviceType;
+var RCUserAgent = $hxClasses["RCUserAgent"] = { __ename__ : ["RCUserAgent"], __constructs__ : ["MSIE","MSIE9","GECKO","WEBKIT","OTHER"] }
 RCUserAgent.MSIE = ["MSIE",0];
 RCUserAgent.MSIE.toString = $estr;
 RCUserAgent.MSIE.__enum__ = RCUserAgent;
-RCUserAgent.GECKO = ["GECKO",1];
+RCUserAgent.MSIE9 = ["MSIE9",1];
+RCUserAgent.MSIE9.toString = $estr;
+RCUserAgent.MSIE9.__enum__ = RCUserAgent;
+RCUserAgent.GECKO = ["GECKO",2];
 RCUserAgent.GECKO.toString = $estr;
 RCUserAgent.GECKO.__enum__ = RCUserAgent;
-RCUserAgent.WEBKIT = ["WEBKIT",2];
+RCUserAgent.WEBKIT = ["WEBKIT",3];
 RCUserAgent.WEBKIT.toString = $estr;
 RCUserAgent.WEBKIT.__enum__ = RCUserAgent;
-RCUserAgent.OTHER = ["OTHER",3];
+RCUserAgent.OTHER = ["OTHER",4];
 RCUserAgent.OTHER.toString = $estr;
 RCUserAgent.OTHER.__enum__ = RCUserAgent;
 var RCDevice = $hxClasses["RCDevice"] = function() {
 	this.dpiScale = 1;
 	this.userAgent = this.detectUserAgent();
+	this.userInterfaceIdiom = this.detectUserInterfaceIdiom();
 };
 RCDevice.__name__ = ["RCDevice"];
 RCDevice._currentDevice = null;
@@ -1247,18 +1307,24 @@ RCDevice.prototype = {
 	,detectUserAgent: function() {
 		var agent = js.Lib.window.navigator.userAgent.toLowerCase();
 		if(agent.indexOf("msie") > -1) return RCUserAgent.MSIE;
+		if(agent.indexOf("msie 9.") > -1) return RCUserAgent.MSIE9;
 		if(agent.indexOf("webkit") > -1) return RCUserAgent.WEBKIT;
 		if(agent.indexOf("gecko") > -1) return RCUserAgent.GECKO;
 		return RCUserAgent.OTHER;
+	}
+	,detectUserInterfaceIdiom: function() {
+		var agent = js.Lib.window.navigator.userAgent.toLowerCase();
+		if(agent.indexOf("iphone") > -1) return RCDeviceType.IPhone;
+		if(agent.indexOf("ipad") > -1) return RCDeviceType.IPad;
+		if(agent.indexOf("ipod") > -1) return RCDeviceType.IPod;
+		if(agent.indexOf("playstation") > -1) return RCDeviceType.Playstation;
+		return RCDeviceType.Other;
 	}
 	,__class__: RCDevice
 }
 var _RCDraw = _RCDraw || {}
 _RCDraw.LineScaleMode = $hxClasses["_RCDraw.LineScaleMode"] = function() { }
 _RCDraw.LineScaleMode.__name__ = ["_RCDraw","LineScaleMode"];
-_RCDraw.LineScaleMode.prototype = {
-	__class__: _RCDraw.LineScaleMode
-}
 var RCDraw = $hxClasses["RCDraw"] = function(x,y,w,h,color,alpha) {
 	if(alpha == null) alpha = 1.0;
 	JSView.call(this,x,y,w,h);
@@ -1269,7 +1335,7 @@ var RCDraw = $hxClasses["RCDraw"] = function(x,y,w,h,color,alpha) {
 	} catch( e ) {
 		haxe.Log.trace(e,{ fileName : "RCDraw.hx", lineNumber : 37, className : "RCDraw", methodName : "new"});
 	}
-	if(Std["is"](color,RCColor) || Std["is"](color,RCGradient)) this.color = color; else if(Std["is"](color,Int) || Std["is"](color,Int)) this.color = new RCColor(color); else if(Std["is"](color,Array)) this.color = new RCColor(color[0],color[1]); else this.color = new RCColor(0);
+	if(js.Boot.__instanceof(color,RCColor) || js.Boot.__instanceof(color,RCGradient)) this.color = color; else if(js.Boot.__instanceof(color,Int) || js.Boot.__instanceof(color,Int)) this.color = new RCColor(color); else if(js.Boot.__instanceof(color,Array)) this.color = new RCColor(color[0],color[1]); else this.color = new RCColor(0);
 };
 RCDraw.__name__ = ["RCDraw"];
 RCDraw.__super__ = JSView;
@@ -1277,7 +1343,7 @@ RCDraw.prototype = $extend(JSView.prototype,{
 	color: null
 	,borderThickness: null
 	,configure: function() {
-		if(Std["is"](this.color,RCColor)) {
+		if(js.Boot.__instanceof(this.color,RCColor)) {
 			if(this.color.fillColor != null) this.graphics.beginFill(this.color.fillColor,this.color.alpha);
 			if(this.color.strokeColor != null) {
 				var pixelHinting = true;
@@ -1466,7 +1532,7 @@ RCIterator.prototype = {
 	}
 	,start: function() {
 		this.run(this.min);
-		this.timer.run = this.loop.$bind(this);
+		this.timer.run = $bind(this,this.loop);
 	}
 	,loop: function() {
 		this.min += this.step;
@@ -1493,7 +1559,7 @@ RCNotification.prototype = {
 	name: null
 	,functionToCall: null
 	,toString: function() {
-		return "[RCNotification with name: '" + this.name + "', functionToCall: " + this.functionToCall + "]";
+		return "[RCNotification with name: '" + this.name + "', functionToCall: " + Std.string(this.functionToCall) + "]";
 	}
 	,__class__: RCNotification
 }
@@ -1537,7 +1603,7 @@ RCNotificationCenter.postNotification = function(name,args,pos) {
 			notificationFound = true;
 			notification.functionToCall.apply(null,args);
 		} catch( e ) {
-			haxe.Log.trace("[RCNotificationCenter error calling function: " + notification.functionToCall + " from: " + Std.string(pos) + "]",{ fileName : "RCNotificationCenter.hx", lineNumber : 71, className : "RCNotificationCenter", methodName : "postNotification"});
+			haxe.Log.trace("[RCNotificationCenter error calling function: " + Std.string(notification.functionToCall) + " from: " + Std.string(pos) + "]",{ fileName : "RCNotificationCenter.hx", lineNumber : 71, className : "RCNotificationCenter", methodName : "postNotification"});
 		}
 	}
 	return notificationFound;
@@ -1548,9 +1614,6 @@ RCNotificationCenter.list = function() {
 		var notification = $it0.next();
 		haxe.Log.trace(notification,{ fileName : "RCNotificationCenter.hx", lineNumber : 82, className : "RCNotificationCenter", methodName : "list"});
 	}
-}
-RCNotificationCenter.prototype = {
-	__class__: RCNotificationCenter
 }
 var RCPoint = $hxClasses["RCPoint"] = function(x,y) {
 	this.x = x == null?0:x;
@@ -1596,20 +1659,8 @@ RCRectangle.__super__ = RCDraw;
 RCRectangle.prototype = $extend(RCDraw.prototype,{
 	roundness: null
 	,redraw: function() {
-		var fillColorStyle = ((function($this) {
-			var $r;
-			var $t = $this.color;
-			if(Std["is"]($t,RCColor)) $t; else throw "Class cast error";
-			$r = $t;
-			return $r;
-		}(this))).fillColorStyle;
-		var strokeColorStyle = ((function($this) {
-			var $r;
-			var $t = $this.color;
-			if(Std["is"]($t,RCColor)) $t; else throw "Class cast error";
-			$r = $t;
-			return $r;
-		}(this))).strokeColorStyle;
+		var fillColorStyle = (js.Boot.__cast(this.color , RCColor)).fillColorStyle;
+		var strokeColorStyle = (js.Boot.__cast(this.color , RCColor)).strokeColorStyle;
 		this.layer.style.margin = "0px 0px 0px 0px";
 		this.layer.style.width = this.size.width * RCDevice.currentDevice().dpiScale + "px";
 		this.layer.style.height = this.size.height * RCDevice.currentDevice().dpiScale + "px";
@@ -1661,9 +1712,9 @@ var RCStats = $hxClasses["RCStats"] = function(x,y) {
 	f.color = 16777215;
 	this.txt = new RCTextView(6,3,null,20,"Calculating...",f);
 	this.addChild(this.txt);
-	this.last = Date.now().getTime();
+	this.last = new Date().getTime();
 	this.e = new EVLoop();
-	this.e.setFuncToCall(this.loop.$bind(this));
+	this.e.setFuncToCall($bind(this,this.loop));
 };
 RCStats.__name__ = ["RCStats"];
 RCStats.__super__ = RCRectangle;
@@ -1676,7 +1727,7 @@ RCStats.prototype = $extend(RCRectangle.prototype,{
 	,e: null
 	,loop: function() {
 		this.ticks++;
-		var now = Date.now().getTime();
+		var now = new Date().getTime();
 		var delta = now - this.last;
 		if(delta >= 1000) {
 			this.fps = Math.round(this.ticks / delta * 1000);
@@ -1697,7 +1748,7 @@ var RCTextView = $hxClasses["RCTextView"] = function(x,y,w,h,str,rcfont) {
 	this.rcfont = rcfont.copy();
 	this.setWidth(this.size.width);
 	this.setHeight(this.size.height);
-	this.viewDidAppear.add(this.viewDidAppear_.$bind(this));
+	this.viewDidAppear.add($bind(this,this.viewDidAppear_));
 	this.init();
 	this.setText(str);
 };
@@ -1761,7 +1812,7 @@ var RCWindow = $hxClasses["RCWindow"] = function(id) {
 	this.setTarget(id);
 	this.SCREEN_W = js.Lib.window.screen.width;
 	this.SCREEN_H = js.Lib.window.screen.height;
-	RCNotificationCenter.addObserver("resize",this.resizeHandler.$bind(this));
+	RCNotificationCenter.addObserver("resize",$bind(this,this.resizeHandler));
 };
 RCWindow.__name__ = ["RCWindow"];
 RCWindow.sharedWindow_ = null;
@@ -1785,7 +1836,7 @@ RCWindow.prototype = $extend(JSView.prototype,{
 			this.target = js.Lib.document.body;
 			this.target.style.margin = "0px 0px 0px 0px";
 			this.target.style.overflow = "hidden";
-			if(js.Lib.isIE) {
+			if(RCDevice.currentDevice().userAgent == RCUserAgent.MSIE) {
 				this.target.style.width = js.Lib.document.documentElement.clientWidth + "px";
 				this.target.style.height = js.Lib.document.documentElement.clientHeight + "px";
 			} else {
@@ -1795,6 +1846,7 @@ RCWindow.prototype = $extend(JSView.prototype,{
 		}
 		this.size.width = this.target.scrollWidth;
 		this.size.height = this.target.scrollHeight;
+		haxe.Log.trace(this.size,{ fileName : "RCWindow.hx", lineNumber : 109, className : "RCWindow", methodName : "setTarget"});
 		this.target.appendChild(this.layer);
 	}
 	,setBackgroundColor: function(color) {
@@ -1848,13 +1900,13 @@ RCWindow.prototype = $extend(JSView.prototype,{
 	,addModalViewController: function(view) {
 		this.modalView = view;
 		this.modalView.setX(0);
-		CoreAnimation.add(new CATween(this.modalView,{ y : { fromValue : this.getHeight(), toValue : 0}},0.5,0,caequations.Cubic.IN_OUT,{ fileName : "RCWindow.hx", lineNumber : 228, className : "RCWindow", methodName : "addModalViewController"}));
+		CoreAnimation.add(new CATween(this.modalView,{ y : { fromValue : this.getHeight(), toValue : 0}},0.5,0,caequations.Cubic.IN_OUT,{ fileName : "RCWindow.hx", lineNumber : 229, className : "RCWindow", methodName : "addModalViewController"}));
 		this.addChild(this.modalView);
 	}
 	,dismissModalViewController: function() {
 		if(this.modalView == null) return;
-		var anim = new CATween(this.modalView,{ y : this.getHeight()},0.3,0,caequations.Cubic.IN,{ fileName : "RCWindow.hx", lineNumber : 233, className : "RCWindow", methodName : "dismissModalViewController"});
-		anim.delegate.animationDidStop = this.destroyModalViewController.$bind(this);
+		var anim = new CATween(this.modalView,{ y : this.getHeight()},0.3,0,caequations.Cubic.IN,{ fileName : "RCWindow.hx", lineNumber : 234, className : "RCWindow", methodName : "dismissModalViewController"});
+		anim.delegate.animationDidStop = $bind(this,this.destroyModalViewController);
 		CoreAnimation.add(anim);
 	}
 	,destroyModalViewController: function() {
@@ -1868,7 +1920,7 @@ RCWindow.prototype = $extend(JSView.prototype,{
 		return Math.round(this.getHeight() / 2 - h / RCDevice.currentDevice().dpiScale / 2);
 	}
 	,toString: function() {
-		return "[RCWindow target=" + this.target + "]";
+		return "[RCWindow target=" + Std.string(this.target) + "]";
 	}
 	,__class__: RCWindow
 });
@@ -1910,7 +1962,7 @@ Reflect.fields = function(o) {
 	return a;
 }
 Reflect.isFunction = function(f) {
-	return typeof(f) == "function" && f.__name__ == null;
+	return typeof(f) == "function" && !(f.__name__ || f.__ename__);
 }
 Reflect.compare = function(a,b) {
 	return a == b?0:a > b?1:-1;
@@ -1923,7 +1975,7 @@ Reflect.compareMethods = function(f1,f2) {
 Reflect.isObject = function(v) {
 	if(v == null) return false;
 	var t = typeof(v);
-	return t == "string" || t == "object" && !v.__enum__ || t == "function" && v.__name__ != null;
+	return t == "string" || t == "object" && !v.__enum__ || t == "function" && (v.__name__ || v.__ename__);
 }
 Reflect.deleteField = function(o,f) {
 	if(!Reflect.hasField(o,f)) return false;
@@ -1946,9 +1998,6 @@ Reflect.makeVarArgs = function(f) {
 		return f(a);
 	};
 }
-Reflect.prototype = {
-	__class__: Reflect
-}
 var Std = $hxClasses["Std"] = function() { }
 Std.__name__ = ["Std"];
 Std["is"] = function(v,t) {
@@ -1962,7 +2011,7 @@ Std["int"] = function(x) {
 }
 Std.parseInt = function(x) {
 	var v = parseInt(x,10);
-	if(v == 0 && x.charCodeAt(1) == 120) v = parseInt(x);
+	if(v == 0 && HxOverrides.cca(x,1) == 120) v = parseInt(x);
 	if(isNaN(v)) return null;
 	return v;
 }
@@ -1971,9 +2020,6 @@ Std.parseFloat = function(x) {
 }
 Std.random = function(x) {
 	return Math.floor(Math.random() * x);
-}
-Std.prototype = {
-	__class__: Std
 }
 var StringBuf = $hxClasses["StringBuf"] = function() {
 	this.b = new Array();
@@ -1984,7 +2030,7 @@ StringBuf.prototype = {
 		this.b[this.b.length] = x == null?"null":x;
 	}
 	,addSub: function(s,pos,len) {
-		this.b[this.b.length] = s.substr(pos,len);
+		this.b[this.b.length] = HxOverrides.substr(s,pos,len);
 	}
 	,addChar: function(c) {
 		this.b[this.b.length] = String.fromCharCode(c);
@@ -2010,28 +2056,28 @@ StringTools.htmlUnescape = function(s) {
 	return s.split("&gt;").join(">").split("&lt;").join("<").split("&amp;").join("&");
 }
 StringTools.startsWith = function(s,start) {
-	return s.length >= start.length && s.substr(0,start.length) == start;
+	return s.length >= start.length && HxOverrides.substr(s,0,start.length) == start;
 }
 StringTools.endsWith = function(s,end) {
 	var elen = end.length;
 	var slen = s.length;
-	return slen >= elen && s.substr(slen - elen,elen) == end;
+	return slen >= elen && HxOverrides.substr(s,slen - elen,elen) == end;
 }
 StringTools.isSpace = function(s,pos) {
-	var c = s.charCodeAt(pos);
+	var c = HxOverrides.cca(s,pos);
 	return c >= 9 && c <= 13 || c == 32;
 }
 StringTools.ltrim = function(s) {
 	var l = s.length;
 	var r = 0;
 	while(r < l && StringTools.isSpace(s,r)) r++;
-	if(r > 0) return s.substr(r,l - r); else return s;
+	if(r > 0) return HxOverrides.substr(s,r,l - r); else return s;
 }
 StringTools.rtrim = function(s) {
 	var l = s.length;
 	var r = 0;
 	while(r < l && StringTools.isSpace(s,l - r - 1)) r++;
-	if(r > 0) return s.substr(0,l - r); else return s;
+	if(r > 0) return HxOverrides.substr(s,0,l - r); else return s;
 }
 StringTools.trim = function(s) {
 	return StringTools.ltrim(StringTools.rtrim(s));
@@ -2040,7 +2086,7 @@ StringTools.rpad = function(s,c,l) {
 	var sl = s.length;
 	var cl = c.length;
 	while(sl < l) if(l - sl < cl) {
-		s += c.substr(0,l - sl);
+		s += HxOverrides.substr(c,0,l - sl);
 		sl = l;
 	} else {
 		s += c;
@@ -2054,7 +2100,7 @@ StringTools.lpad = function(s,c,l) {
 	if(sl >= l) return s;
 	var cl = c.length;
 	while(sl < l) if(l - sl < cl) {
-		ns += c.substr(0,l - sl);
+		ns += HxOverrides.substr(c,0,l - sl);
 		sl = l;
 	} else {
 		ns += c;
@@ -2076,13 +2122,10 @@ StringTools.hex = function(n,digits) {
 	return s;
 }
 StringTools.fastCodeAt = function(s,index) {
-	return s.cca(index);
+	return s.charCodeAt(index);
 }
 StringTools.isEOF = function(c) {
 	return c != c;
-}
-StringTools.prototype = {
-	__class__: StringTools
 }
 var ValueType = $hxClasses["ValueType"] = { __ename__ : ["ValueType"], __constructs__ : ["TNull","TInt","TFloat","TBool","TObject","TFunction","TClass","TEnum","TUnknown"] }
 ValueType.TNull = ["TNull",0];
@@ -2112,7 +2155,6 @@ var Type = $hxClasses["Type"] = function() { }
 Type.__name__ = ["Type"];
 Type.getClass = function(o) {
 	if(o == null) return null;
-	if(o.__enum__ != null) return null;
 	return o.__class__;
 }
 Type.getEnum = function(o) {
@@ -2132,12 +2174,12 @@ Type.getEnumName = function(e) {
 }
 Type.resolveClass = function(name) {
 	var cl = $hxClasses[name];
-	if(cl == null || cl.__name__ == null) return null;
+	if(cl == null || !cl.__name__) return null;
 	return cl;
 }
 Type.resolveEnum = function(name) {
 	var e = $hxClasses[name];
-	if(e == null || e.__ename__ == null) return null;
+	if(e == null || !e.__ename__) return null;
 	return e;
 }
 Type.createInstance = function(cl,args) {
@@ -2187,22 +2229,22 @@ Type.createEnumIndex = function(e,index,params) {
 Type.getInstanceFields = function(c) {
 	var a = [];
 	for(var i in c.prototype) a.push(i);
-	a.remove("__class__");
-	a.remove("__properties__");
+	HxOverrides.remove(a,"__class__");
+	HxOverrides.remove(a,"__properties__");
 	return a;
 }
 Type.getClassFields = function(c) {
 	var a = Reflect.fields(c);
-	a.remove("__name__");
-	a.remove("__interfaces__");
-	a.remove("__properties__");
-	a.remove("__super__");
-	a.remove("prototype");
+	HxOverrides.remove(a,"__name__");
+	HxOverrides.remove(a,"__interfaces__");
+	HxOverrides.remove(a,"__properties__");
+	HxOverrides.remove(a,"__super__");
+	HxOverrides.remove(a,"prototype");
 	return a;
 }
 Type.getEnumConstructs = function(e) {
 	var a = e.__constructs__;
-	return a.copy();
+	return a.slice();
 }
 Type["typeof"] = function(v) {
 	switch(typeof(v)) {
@@ -2221,7 +2263,7 @@ Type["typeof"] = function(v) {
 		if(c != null) return ValueType.TClass(c);
 		return ValueType.TObject;
 	case "function":
-		if(v.__name__ != null) return ValueType.TObject;
+		if(v.__name__ || v.__ename__) return ValueType.TObject;
 		return ValueType.TFunction;
 	case "undefined":
 		return ValueType.TNull;
@@ -2266,9 +2308,6 @@ Type.allEnums = function(e) {
 	}
 	return all;
 }
-Type.prototype = {
-	__class__: Type
-}
 caequations.Cubic = $hxClasses["caequations.Cubic"] = function() { }
 caequations.Cubic.__name__ = ["caequations","Cubic"];
 caequations.Cubic.IN = function(t,b,c,d,p_params) {
@@ -2284,9 +2323,6 @@ caequations.Cubic.IN_OUT = function(t,b,c,d,p_params) {
 caequations.Cubic.OUT_IN = function(t,b,c,d,p_params) {
 	if(t < d / 2) return caequations.Cubic.OUT(t * 2,b,c / 2,d,null);
 	return caequations.Cubic.IN(t * 2 - d,b + c / 2,c / 2,d,null);
-}
-caequations.Cubic.prototype = {
-	__class__: caequations.Cubic
 }
 var haxe = haxe || {}
 haxe.Firebug = $hxClasses["haxe.Firebug"] = function() { }
@@ -2318,9 +2354,6 @@ haxe.Firebug.trace = function(v,inf) {
 	if(type != "warn" && type != "info" && type != "debug" && type != "error") type = inf == null?"error":"log";
 	console[type]((inf == null?"":inf.fileName + ":" + inf.lineNumber + " : ") + Std.string(v));
 }
-haxe.Firebug.prototype = {
-	__class__: haxe.Firebug
-}
 haxe.Log = $hxClasses["haxe.Log"] = function() { }
 haxe.Log.__name__ = ["haxe","Log"];
 haxe.Log.trace = function(v,infos) {
@@ -2328,9 +2361,6 @@ haxe.Log.trace = function(v,infos) {
 }
 haxe.Log.clear = function() {
 	js.Boot.__clear_trace();
-}
-haxe.Log.prototype = {
-	__class__: haxe.Log
 }
 haxe.StackItem = $hxClasses["haxe.StackItem"] = { __ename__ : ["haxe","StackItem"], __constructs__ : ["CFunction","Module","FilePos","Method","Lambda"] }
 haxe.StackItem.CFunction = ["CFunction",0];
@@ -2397,9 +2427,6 @@ haxe.Stack.itemToString = function(b,s) {
 haxe.Stack.makeStack = function(s) {
 	return null;
 }
-haxe.Stack.prototype = {
-	__class__: haxe.Stack
-}
 haxe.Timer = $hxClasses["haxe.Timer"] = function(time_ms) {
 	var me = this;
 	this.id = window.setInterval(function() {
@@ -2422,7 +2449,7 @@ haxe.Timer.measure = function(f,pos) {
 	return r;
 }
 haxe.Timer.stamp = function() {
-	return Date.now().getTime() / 1000;
+	return new Date().getTime() / 1000;
 }
 haxe.Timer.prototype = {
 	id: null
@@ -2451,15 +2478,24 @@ js.Boot.__clear_trace = function() {
 	var d = document.getElementById("haxe:trace");
 	if(d != null) d.innerHTML = "";
 }
+js.Boot.isClass = function(o) {
+	return o.__name__;
+}
+js.Boot.isEnum = function(e) {
+	return e.__ename__;
+}
+js.Boot.getClass = function(o) {
+	return o.__class__;
+}
 js.Boot.__string_rec = function(o,s) {
 	if(o == null) return "null";
 	if(s.length >= 5) return "<...>";
 	var t = typeof(o);
-	if(t == "function" && (o.__name__ != null || o.__ename__ != null)) t = "object";
+	if(t == "function" && (o.__name__ || o.__ename__)) t = "object";
 	switch(t) {
 	case "object":
 		if(o instanceof Array) {
-			if(o.__enum__ != null) {
+			if(o.__enum__) {
 				if(o.length == 2) return o[0];
 				var str = o[0] + "(";
 				s += "\t";
@@ -2554,74 +2590,21 @@ js.Boot.__instanceof = function(o,cl) {
 		return true;
 	default:
 		if(o == null) return false;
-		return o.__enum__ == cl || cl == Class && o.__name__ != null || cl == Enum && o.__ename__ != null;
+		if(cl == Class && o.__name__ != null) return true; else null;
+		if(cl == Enum && o.__ename__ != null) return true; else null;
+		return o.__enum__ == cl;
 	}
 }
-js.Boot.__init = function() {
-	js.Lib.isIE = typeof document!='undefined' && document.all != null && typeof window!='undefined' && window.opera == null;
-	js.Lib.isOpera = typeof window!='undefined' && window.opera != null;
-	Array.prototype.copy = Array.prototype.slice;
-	Array.prototype.insert = function(i,x) {
-		this.splice(i,0,x);
-	};
-	Array.prototype.remove = Array.prototype.indexOf?function(obj) {
-		var idx = this.indexOf(obj);
-		if(idx == -1) return false;
-		this.splice(idx,1);
-		return true;
-	}:function(obj) {
-		var i = 0;
-		var l = this.length;
-		while(i < l) {
-			if(this[i] == obj) {
-				this.splice(i,1);
-				return true;
-			}
-			i++;
-		}
-		return false;
-	};
-	Array.prototype.iterator = function() {
-		return { cur : 0, arr : this, hasNext : function() {
-			return this.cur < this.arr.length;
-		}, next : function() {
-			return this.arr[this.cur++];
-		}};
-	};
-	if(String.prototype.cca == null) String.prototype.cca = String.prototype.charCodeAt;
-	String.prototype.charCodeAt = function(i) {
-		var x = this.cca(i);
-		if(x != x) return undefined;
-		return x;
-	};
-	var oldsub = String.prototype.substr;
-	String.prototype.substr = function(pos,len) {
-		if(pos != null && pos != 0 && len != null && len < 0) return "";
-		if(len == null) len = this.length;
-		if(pos < 0) {
-			pos = this.length + pos;
-			if(pos < 0) pos = 0;
-		} else if(len < 0) len = this.length + len - pos;
-		return oldsub.apply(this,[pos,len]);
-	};
-	Function.prototype["$bind"] = function(o) {
-		var f = function() {
-			return f.method.apply(f.scope,arguments);
-		};
-		f.scope = o;
-		f.method = this;
-		return f;
-	};
-}
-js.Boot.prototype = {
-	__class__: js.Boot
+js.Boot.__cast = function(o,t) {
+	if(js.Boot.__instanceof(o,t)) return o; else throw "Cannot cast " + Std.string(o) + " to " + Std.string(t);
 }
 js.Lib = $hxClasses["js.Lib"] = function() { }
 js.Lib.__name__ = ["js","Lib"];
-js.Lib.isIE = null;
-js.Lib.isOpera = null;
 js.Lib.document = null;
 js.Lib.window = null;
+js.Lib.debug = function() {
+	debugger;
+}
 js.Lib.alert = function(v) {
 	alert(js.Boot.__string_rec(v,""));
 }
@@ -2631,93 +2614,48 @@ js.Lib.eval = function(code) {
 js.Lib.setErrorHandler = function(f) {
 	js.Lib.onerror = f;
 }
-js.Lib.prototype = {
-	__class__: js.Lib
-}
-js.Boot.__res = {}
-js.Boot.__init();
-{
-	var d = Date;
-	d.now = function() {
-		return new Date();
+var $_;
+function $bind(o,m) { var f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; return f; };
+if(Array.prototype.indexOf) HxOverrides.remove = function(a,o) {
+	var i = a.indexOf(o);
+	if(i == -1) return false;
+	a.splice(i,1);
+	return true;
+}; else null;
+Math.__name__ = ["Math"];
+Math.NaN = Number.NaN;
+Math.NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY;
+Math.POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
+$hxClasses.Math = Math;
+Math.isFinite = function(i) {
+	return isFinite(i);
+};
+Math.isNaN = function(i) {
+	return isNaN(i);
+};
+String.prototype.__class__ = $hxClasses.String = String;
+String.__name__ = ["String"];
+Array.prototype.__class__ = $hxClasses.Array = Array;
+Array.__name__ = ["Array"];
+Date.prototype.__class__ = $hxClasses.Date = Date;
+Date.__name__ = ["Date"];
+var Int = $hxClasses.Int = { __name__ : ["Int"]};
+var Dynamic = $hxClasses.Dynamic = { __name__ : ["Dynamic"]};
+var Float = $hxClasses.Float = Number;
+Float.__name__ = ["Float"];
+var Bool = $hxClasses.Bool = Boolean;
+Bool.__ename__ = ["Bool"];
+var Class = $hxClasses.Class = { __name__ : ["Class"]};
+var Enum = { };
+var Void = $hxClasses.Void = { __ename__ : ["Void"]};
+if(typeof document != "undefined") js.Lib.document = document;
+if(typeof window != "undefined") {
+	js.Lib.window = window;
+	js.Lib.window.onerror = function(msg,url,line) {
+		var f = js.Lib.onerror;
+		if(f == null) return false;
+		return f(msg,[url + ":" + line]);
 	};
-	d.fromTime = function(t) {
-		var d1 = new Date();
-		d1["setTime"](t);
-		return d1;
-	};
-	d.fromString = function(s) {
-		switch(s.length) {
-		case 8:
-			var k = s.split(":");
-			var d1 = new Date();
-			d1["setTime"](0);
-			d1["setUTCHours"](k[0]);
-			d1["setUTCMinutes"](k[1]);
-			d1["setUTCSeconds"](k[2]);
-			return d1;
-		case 10:
-			var k = s.split("-");
-			return new Date(k[0],k[1] - 1,k[2],0,0,0);
-		case 19:
-			var k = s.split(" ");
-			var y = k[0].split("-");
-			var t = k[1].split(":");
-			return new Date(y[0],y[1] - 1,y[2],t[0],t[1],t[2]);
-		default:
-			throw "Invalid date format : " + s;
-		}
-	};
-	d.prototype["toString"] = function() {
-		var date = this;
-		var m = date.getMonth() + 1;
-		var d1 = date.getDate();
-		var h = date.getHours();
-		var mi = date.getMinutes();
-		var s = date.getSeconds();
-		return date.getFullYear() + "-" + (m < 10?"0" + m:"" + m) + "-" + (d1 < 10?"0" + d1:"" + d1) + " " + (h < 10?"0" + h:"" + h) + ":" + (mi < 10?"0" + mi:"" + mi) + ":" + (s < 10?"0" + s:"" + s);
-	};
-	d.prototype.__class__ = $hxClasses["Date"] = d;
-	d.__name__ = ["Date"];
-}
-{
-	Math.__name__ = ["Math"];
-	Math.NaN = Number["NaN"];
-	Math.NEGATIVE_INFINITY = Number["NEGATIVE_INFINITY"];
-	Math.POSITIVE_INFINITY = Number["POSITIVE_INFINITY"];
-	$hxClasses["Math"] = Math;
-	Math.isFinite = function(i) {
-		return isFinite(i);
-	};
-	Math.isNaN = function(i) {
-		return isNaN(i);
-	};
-}
-{
-	String.prototype.__class__ = $hxClasses["String"] = String;
-	String.__name__ = ["String"];
-	Array.prototype.__class__ = $hxClasses["Array"] = Array;
-	Array.__name__ = ["Array"];
-	var Int = $hxClasses["Int"] = { __name__ : ["Int"]};
-	var Dynamic = $hxClasses["Dynamic"] = { __name__ : ["Dynamic"]};
-	var Float = $hxClasses["Float"] = Number;
-	Float.__name__ = ["Float"];
-	var Bool = $hxClasses["Bool"] = Boolean;
-	Bool.__ename__ = ["Bool"];
-	var Class = $hxClasses["Class"] = { __name__ : ["Class"]};
-	var Enum = { };
-	var Void = $hxClasses["Void"] = { __ename__ : ["Void"]};
-}
-{
-	if(typeof document != "undefined") js.Lib.document = document;
-	if(typeof window != "undefined") {
-		js.Lib.window = window;
-		js.Lib.window.onerror = function(msg,url,line) {
-			var f = js.Lib.onerror;
-			if(f == null) return false;
-			return f(msg,[url + ":" + line]);
-		};
-	}
 }
 CoreAnimation.defaultTimingFunction = caequations.Linear.NONE;
 CoreAnimation.defaultDuration = 0.8;
@@ -2732,4 +2670,4 @@ RCColor.CYAN = 65535;
 RCColor.YELLOW = 16776960;
 _RCDraw.LineScaleMode.NONE = null;
 js.Lib.onerror = null;
-Main.main()
+Main.main();

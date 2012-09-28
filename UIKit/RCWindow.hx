@@ -18,6 +18,7 @@
 #elseif js
 	import js.Dom;
 #end
+	import RCDevice;// RCUserAgent
 
 
 class RCWindow extends RCView {
@@ -93,7 +94,7 @@ class RCWindow extends RCView {
 				target.style.margin = "0px 0px 0px 0px";
 				target.style.overflow = "hidden";
 				
-				if (js.Lib.isIE) {
+				if (RCDevice.currentDevice().userAgent == MSIE) {
 					target.style.width = untyped js.Lib.document.documentElement.clientWidth + "px";
 					target.style.height = untyped js.Lib.document.documentElement.clientHeight + "px";
 				}
@@ -105,7 +106,7 @@ class RCWindow extends RCView {
 			
 			size.width = target.scrollWidth;
 			size.height = target.scrollHeight;
-			
+			trace(size);
 			target.appendChild ( layer );
 			
 		#end

@@ -11,6 +11,7 @@ package ios;
 class SKTabBarItem extends RCSkin {
 	
 	public function new (label:String, linkage:String, ?colors:Array<Null<Int>>) {
+		
 		super (colors);
 		
 		// Attach an object from library
