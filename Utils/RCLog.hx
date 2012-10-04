@@ -1,3 +1,5 @@
+import RCDevice;
+
 class RCLog {
 	
 	public static function redirectTraces () {
@@ -17,7 +19,7 @@ class RCLog {
 	public static function trace (v : Dynamic, ?inf : haxe.PosInfos) : Void
 	{
 		#if js
-			if (js.Lib.isIE) return;
+			if (RCDevice.currentDevice().userAgent == MSIE) return;
 		#end
 		if ( ALLOW_TRACES_FROM.length == 0 ) {
 			firebugTrace ( v, inf );

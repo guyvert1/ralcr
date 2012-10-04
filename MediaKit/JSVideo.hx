@@ -116,7 +116,7 @@ class JSVideo extends RCView, implements RCVideoInterface {
 		this.updateTime = DISPLAY_TIMER_UPDATE_DELAY;
 		volume_ = DEFAULT_VOLUME;
 		
-		this.addChild ( background = new RCRectangle (0, 0, w, h, 0x000000, 0.2) );
+		this.addChild ( background = new RCRectangle (0, 0, w, h, 0x000000, 0) );
 		
 		init();
     }
@@ -134,6 +134,9 @@ class JSVideo extends RCView, implements RCVideoInterface {
 		// Create a new net connection
 		video = Lib.document.createElement("video");
         video.setAttribute("preload", "auto");
+		video.autoplay = "autoplay";
+		video.controls = null;//"controls";
+		video.src = this.videoURL;
         layer.appendChild ( video );
 
         //video.width = size.width;
@@ -155,7 +158,11 @@ class JSVideo extends RCView, implements RCVideoInterface {
         //if (autoPlay) video.autoplay = "";
         //else video.removeAttribute("autoplay");
 	}
-	
+	public function addAlternativeURL (url:String) :Void {
+		
+		if (video.canPlayType("video/"+url.split(".").pop()))
+			video.src = url;
+	}
 	
 	
 	public function secureTokenResponse (token:String) :Void {}
@@ -269,9 +276,6 @@ class JSVideo extends RCView, implements RCVideoInterface {
 	 */
 	public function startVideo (?file:String) :Void {
 		
-		video.autoplay = "autoplay";
-		video.controls = null;//"controls";
-		video.src = this.videoURL;
 		
         #if ios
         	// bug: http://clubajax.org/ipad-bug-fix-for-dynamically-created-html5-video/
