@@ -194,7 +194,7 @@ class RCFont {
 		// Copy all RCFont properties to the new object
 		for (field in fields) {
 			// Restricted fields
-			if (field == "copy" || field == "getFormat" || field == "getStyleSheet") continue;
+			if (field == "copy" || field == "getFormat" || field == "getStyleSheet" || field == "get_format" || field == "get_style") continue;
 			Reflect.setField (rcfont, field, Reflect.field (this, field));
 		}
 		
