@@ -10,28 +10,9 @@ import js.Lib;
 import haxe.Timer;
 
 /*
-Useful links:
 
  - W3C http://www.w3.org/TR/html5/video.html
- // http://www.w3.org/TR/html5/video.html#mediaevents
- - Mozilla https://developer.mozilla.org/En/Using_audio_and_video_in_Firefox
- - Safari http://developer.apple.com/library/safari/#documentation/AudioVideo/Conceptual/Using_HTML5_Audio_Video/Introduction/Introduction.html
- - Opera http://dev.opera.com/articles/view/everything-you-need-to-know-about-html5-video-and-audio/
-*/
-    // In flash we look at bytesloaded vs bytestotal. This isn't very accurate however
-    // and can't be done with latest html5 video. Instead we monitor buffer windows which
-    // are the blocks of loaded video content.
-    //
-    // See: http://code.google.com/p/chromium/issues/detail?id=41603#c2
-    // See: http://www.whatwg.org/specs/web-apps/current-work/multipage/video.html#dom-media-buffered
-    // See: http://hacks.mozilla.org/2010/08/html5-video-buffered-property-available-in-firefox-4/
-    //
-    // Note: There seems to be a bug under Chrome where the buffer windows expends to full
-    //       playback duration if user pauses or interacts with stream, even though
-    //       the stream is not buffered to that position. ms 16/02/11
-    //
-    // TODO: currently we have one window, look at supporting multiple. ms 16/02/11
-	/*
+ 
 	onabort	script 	Script to be run on abort
 	oncanplay     script	Script to be run when a file is ready to start playing (when it has buffered enough to begin)
 	oncanplaythrough     script	Script to be run when a file can be played all the way to the end without pausing for buffering
@@ -122,8 +103,6 @@ class JSVideo extends RCView, implements RCVideoInterface {
     }
 	
 	
-	//
-	// sets up the player for video files
 	override public function init () :Void {
 		
 		super.init();
@@ -131,7 +110,7 @@ class JSVideo extends RCView, implements RCVideoInterface {
 		// Create timer to update all visual parts of the player
 		timer = new Timer ( updateTime );
 		
-		// Create a new net connection
+		// Create video tag element
 		video = Lib.document.createElement("video");
         video.setAttribute("preload", "auto");
 		video.autoplay = "autoplay";
@@ -142,10 +121,6 @@ class JSVideo extends RCView, implements RCVideoInterface {
         //video.width = size.width;
         //video.height = size.height;
 		
-        #if ios
-        video.setAttribute("controls", "");
-        #end
-		
         video.addEventListener("error", errorHandler, false);
         video.addEventListener("loadedmetadata", onMetaData, false);
         video.addEventListener("playing", videoDidStartHandler, false);
@@ -154,9 +129,6 @@ class JSVideo extends RCView, implements RCVideoInterface {
         video.addEventListener("canplay", onBufferFullHandler, false);
         video.addEventListener("canplaythrough", onBufferFullHandler, false);
         video.addEventListener("waiting", onBufferEmptyHandler, false);
-		
-        //if (autoPlay) video.autoplay = "";
-        //else video.removeAttribute("autoplay");
 	}
 	public function addAlternativeURL (url:String) :Void {
 		

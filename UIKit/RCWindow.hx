@@ -203,6 +203,8 @@ class RCWindow extends RCView {
 			return false;
 			
 		#end
+		
+			return false;
 	}
 	
 	

@@ -11,25 +11,27 @@ var CADelegate = $hxClasses["CADelegate"] = function() {
 };
 CADelegate.__name__ = ["CADelegate"];
 CADelegate.prototype = {
-	animationDidStart: null
-	,animationDidStop: null
-	,animationDidReversed: null
-	,arguments: null
-	,kenBurnsDidFadedIn: null
-	,kenBurnsBeginsFadingOut: null
-	,kenBurnsArgs: null
-	,startPointPassed: null
-	,kenBurnsPointInPassed: null
-	,kenBurnsPointOutPassed: null
-	,kenBurnsPointIn: null
-	,kenBurnsPointOut: null
-	,pos: null
-	,start: function() {
-		this.startPointPassed = true;
-		if(Reflect.isFunction(this.animationDidStart)) try {
-			this.animationDidStart.apply(null,this.arguments);
+	kbOut: function() {
+		this.kenBurnsPointOutPassed = true;
+		if(Reflect.isFunction(this.kenBurnsBeginsFadingOut)) try {
+			this.kenBurnsBeginsFadingOut.apply(null,this.kenBurnsArgs);
 		} catch( e ) {
-			haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 37, className : "CADelegate", methodName : "start"});
+			haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 65, className : "CADelegate", methodName : "kbOut"});
+		}
+	}
+	,kbIn: function() {
+		this.kenBurnsPointInPassed = true;
+		if(Reflect.isFunction(this.kenBurnsDidFadedIn)) try {
+			this.kenBurnsDidFadedIn.apply(null,this.kenBurnsArgs);
+		} catch( e ) {
+			haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 59, className : "CADelegate", methodName : "kbIn"});
+		}
+	}
+	,repeat: function() {
+		if(Reflect.isFunction(this.animationDidReversed)) try {
+			this.animationDidReversed.apply(null,this.arguments);
+		} catch( e ) {
+			haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 53, className : "CADelegate", methodName : "repeat"});
 		}
 	}
 	,stop: function() {
@@ -42,29 +44,27 @@ CADelegate.prototype = {
 			haxe.Log.trace(haxe.Stack.toString(stack),{ fileName : "CADelegate.hx", lineNumber : 46, className : "CADelegate", methodName : "stop"});
 		}
 	}
-	,repeat: function() {
-		if(Reflect.isFunction(this.animationDidReversed)) try {
-			this.animationDidReversed.apply(null,this.arguments);
+	,start: function() {
+		this.startPointPassed = true;
+		if(Reflect.isFunction(this.animationDidStart)) try {
+			this.animationDidStart.apply(null,this.arguments);
 		} catch( e ) {
-			haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 53, className : "CADelegate", methodName : "repeat"});
+			haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 37, className : "CADelegate", methodName : "start"});
 		}
 	}
-	,kbIn: function() {
-		this.kenBurnsPointInPassed = true;
-		if(Reflect.isFunction(this.kenBurnsDidFadedIn)) try {
-			this.kenBurnsDidFadedIn.apply(null,this.kenBurnsArgs);
-		} catch( e ) {
-			haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 59, className : "CADelegate", methodName : "kbIn"});
-		}
-	}
-	,kbOut: function() {
-		this.kenBurnsPointOutPassed = true;
-		if(Reflect.isFunction(this.kenBurnsBeginsFadingOut)) try {
-			this.kenBurnsBeginsFadingOut.apply(null,this.kenBurnsArgs);
-		} catch( e ) {
-			haxe.Log.trace(e,{ fileName : "CADelegate.hx", lineNumber : 65, className : "CADelegate", methodName : "kbOut"});
-		}
-	}
+	,pos: null
+	,kenBurnsPointOut: null
+	,kenBurnsPointIn: null
+	,kenBurnsPointOutPassed: null
+	,kenBurnsPointInPassed: null
+	,startPointPassed: null
+	,kenBurnsArgs: null
+	,kenBurnsBeginsFadingOut: null
+	,kenBurnsDidFadedIn: null
+	,arguments: null
+	,animationDidReversed: null
+	,animationDidStop: null
+	,animationDidStart: null
 	,__class__: CADelegate
 }
 var CAObject = $hxClasses["CAObject"] = function(target,properties,duration,delay,Eq,pos) {
@@ -83,30 +83,11 @@ var CAObject = $hxClasses["CAObject"] = function(target,properties,duration,dela
 };
 CAObject.__name__ = ["CAObject"];
 CAObject.prototype = {
-	target: null
-	,prev: null
-	,next: null
-	,properties: null
-	,fromValues: null
-	,toValues: null
-	,fromTime: null
-	,delay: null
-	,duration: null
-	,repeatCount: null
-	,autoreverses: null
-	,timingFunction: null
-	,constraintBounds: null
-	,delegate: null
-	,init: function() {
-		throw "CAObject should be extended (" + Std.string(this.delegate.pos) + ")";
+	toString: function() {
+		return "[CAObject: target=" + Std.string(this.target) + ", duration=" + this.duration + ", delay=" + this.delay + ", fromTime=" + this.fromTime + ", properties=" + Std.string(this.properties) + ", repeatCount=" + this.repeatCount + "]";
 	}
-	,animate: function(time_diff) {
-		throw "CAObject should be extended (" + Std.string(this.delegate.pos) + ")";
-	}
-	,initTime: function() {
-		this.fromTime = new Date().getTime();
-		this.duration = this.duration * 1000;
-		this.delay = this.delay * 1000;
+	,calculate: function(time_diff,prop) {
+		return this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null);
 	}
 	,repeat: function() {
 		this.fromTime = new Date().getTime();
@@ -118,19 +99,38 @@ CAObject.prototype = {
 		}
 		this.repeatCount--;
 	}
-	,calculate: function(time_diff,prop) {
-		return this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null);
+	,initTime: function() {
+		this.fromTime = new Date().getTime();
+		this.duration = this.duration * 1000;
+		this.delay = this.delay * 1000;
 	}
-	,toString: function() {
-		return "[CAObject: target=" + Std.string(this.target) + ", duration=" + this.duration + ", delay=" + this.delay + ", fromTime=" + this.fromTime + ", properties=" + Std.string(this.properties) + ", repeatCount=" + this.repeatCount + "]";
+	,animate: function(time_diff) {
+		throw "CAObject should be extended (" + Std.string(this.delegate.pos) + ")";
 	}
+	,init: function() {
+		throw "CAObject should be extended (" + Std.string(this.delegate.pos) + ")";
+	}
+	,delegate: null
+	,constraintBounds: null
+	,timingFunction: null
+	,autoreverses: null
+	,repeatCount: null
+	,duration: null
+	,delay: null
+	,fromTime: null
+	,toValues: null
+	,fromValues: null
+	,properties: null
+	,next: null
+	,prev: null
+	,target: null
 	,__class__: CAObject
 }
 var CATransitionInterface = $hxClasses["CATransitionInterface"] = function() { }
 CATransitionInterface.__name__ = ["CATransitionInterface"];
 CATransitionInterface.prototype = {
-	init: null
-	,animate: null
+	animate: null
+	,init: null
 	,__class__: CATransitionInterface
 }
 var CATween = $hxClasses["CATween"] = function(target,properties,duration,delay,Eq,pos) {
@@ -140,7 +140,20 @@ CATween.__name__ = ["CATween"];
 CATween.__interfaces__ = [CATransitionInterface];
 CATween.__super__ = CAObject;
 CATween.prototype = $extend(CAObject.prototype,{
-	init: function() {
+	animate: function(time_diff) {
+		var _g = 0, _g1 = Reflect.fields(this.toValues);
+		while(_g < _g1.length) {
+			var prop = _g1[_g];
+			++_g;
+			try {
+				var setter = "set" + HxOverrides.substr(prop,0,1).toUpperCase() + HxOverrides.substr(prop,1,null);
+				if(setter != null) Reflect.field(this.target,setter).apply(this.target,[this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null)]);
+			} catch( e ) {
+				haxe.Log.trace(e,{ fileName : "CATween.hx", lineNumber : 50, className : "CATween", methodName : "animate"});
+			}
+		}
+	}
+	,init: function() {
 		var _g = 0, _g1 = Reflect.fields(this.properties);
 		while(_g < _g1.length) {
 			var p = _g1[_g];
@@ -155,19 +168,6 @@ CATween.prototype = $extend(CAObject.prototype,{
 				this.toValues[p] = Reflect.field(Reflect.field(this.properties,p),"toValue");
 			} catch( e ) {
 				haxe.Log.trace(e,{ fileName : "CATween.hx", lineNumber : 31, className : "CATween", methodName : "init"});
-			}
-		}
-	}
-	,animate: function(time_diff) {
-		var _g = 0, _g1 = Reflect.fields(this.toValues);
-		while(_g < _g1.length) {
-			var prop = _g1[_g];
-			++_g;
-			try {
-				var setter = "set" + HxOverrides.substr(prop,0,1).toUpperCase() + HxOverrides.substr(prop,1,null);
-				if(setter != null) Reflect.field(this.target,setter).apply(this.target,[this.timingFunction(time_diff,Reflect.field(this.fromValues,prop),Reflect.field(this.toValues,prop) - Reflect.field(this.fromValues,prop),this.duration,null)]);
-			} catch( e ) {
-				haxe.Log.trace(e,{ fileName : "CATween.hx", lineNumber : 50, className : "CATween", methodName : "animate"});
 			}
 		}
 	}
@@ -264,33 +264,25 @@ var RCSignal = $hxClasses["RCSignal"] = function() {
 };
 RCSignal.__name__ = ["RCSignal"];
 RCSignal.prototype = {
-	listeners: null
-	,exposableListener: null
-	,enabled: null
-	,add: function(listener) {
-		this.listeners.add(listener);
+	destroy: function(pos) {
+		this.listeners = null;
+		this.exposableListener = null;
 	}
-	,addOnce: function(listener,pos) {
-		if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once as you expect. " + Std.string(pos),{ fileName : "RCSignal.hx", lineNumber : 23, className : "RCSignal", methodName : "addOnce"});
-		this.exposableListener = listener;
-	}
-	,addFirst: function(listener,pos) {
-		this.listeners.push(listener);
-	}
-	,remove: function(listener) {
+	,exists: function(listener) {
 		var $it0 = this.listeners.iterator();
 		while( $it0.hasNext() ) {
 			var l = $it0.next();
-			if(Reflect.compareMethods(l,listener)) {
-				this.listeners.remove(l);
-				break;
-			}
+			if(l == listener) return true;
 		}
-		if(Reflect.compareMethods(this.exposableListener,listener)) this.exposableListener = null;
+		return false;
 	}
-	,removeAll: function() {
-		this.listeners = new List();
-		this.exposableListener = null;
+	,callMethod: function(listener,args,pos) {
+		try {
+			listener.apply(null,args);
+		} catch( e ) {
+			haxe.Log.trace("[RCSignal error: " + Std.string(e) + ", called from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 74, className : "RCSignal", methodName : "callMethod"});
+			Fugu.stack();
+		}
 	}
 	,dispatch: function(p1,p2,p3,p4,pos) {
 		if(!this.enabled) return;
@@ -311,26 +303,34 @@ RCSignal.prototype = {
 			this.exposableListener = null;
 		}
 	}
-	,callMethod: function(listener,args,pos) {
-		try {
-			listener.apply(null,args);
-		} catch( e ) {
-			haxe.Log.trace("[RCSignal error: " + Std.string(e) + ", called from: " + Std.string(pos) + "]",{ fileName : "RCSignal.hx", lineNumber : 74, className : "RCSignal", methodName : "callMethod"});
-			Fugu.stack();
-		}
+	,removeAll: function() {
+		this.listeners = new List();
+		this.exposableListener = null;
 	}
-	,exists: function(listener) {
+	,remove: function(listener) {
 		var $it0 = this.listeners.iterator();
 		while( $it0.hasNext() ) {
 			var l = $it0.next();
-			if(l == listener) return true;
+			if(Reflect.compareMethods(l,listener)) {
+				this.listeners.remove(l);
+				break;
+			}
 		}
-		return false;
+		if(Reflect.compareMethods(this.exposableListener,listener)) this.exposableListener = null;
 	}
-	,destroy: function(pos) {
-		this.listeners = null;
-		this.exposableListener = null;
+	,addFirst: function(listener,pos) {
+		this.listeners.push(listener);
 	}
+	,addOnce: function(listener,pos) {
+		if(this.exists(listener)) haxe.Log.trace("This listener is already added, it will not be called only once as you expect. " + Std.string(pos),{ fileName : "RCSignal.hx", lineNumber : 23, className : "RCSignal", methodName : "addOnce"});
+		this.exposableListener = listener;
+	}
+	,add: function(listener) {
+		this.listeners.add(listener);
+	}
+	,enabled: null
+	,exposableListener: null
+	,listeners: null
 	,__class__: RCSignal
 }
 var EVFullScreen = $hxClasses["EVFullScreen"] = function() {
@@ -345,8 +345,17 @@ var EVLoop = $hxClasses["EVLoop"] = function() {
 };
 EVLoop.__name__ = ["EVLoop"];
 EVLoop.prototype = {
-	ticker: null
-	,run: null
+	destroy: function() {
+		this.stop();
+	}
+	,stop: function() {
+		if(this.ticker == null) return;
+		this.ticker.stop();
+		this.ticker = null;
+	}
+	,loop: function() {
+		if(this.run != null) this.run();
+	}
 	,setFuncToCall: function(func) {
 		this.stop();
 		this.run = func;
@@ -354,17 +363,8 @@ EVLoop.prototype = {
 		this.ticker.run = $bind(this,this.loop);
 		return func;
 	}
-	,loop: function() {
-		if(this.run != null) this.run();
-	}
-	,stop: function() {
-		if(this.ticker == null) return;
-		this.ticker.stop();
-		this.ticker = null;
-	}
-	,destroy: function() {
-		this.stop();
-	}
+	,run: null
+	,ticker: null
 	,__class__: EVLoop
 	,__properties__: {set_run:"setFuncToCall"}
 }
@@ -553,14 +553,14 @@ var IntIter = $hxClasses["IntIter"] = function(min,max) {
 };
 IntIter.__name__ = ["IntIter"];
 IntIter.prototype = {
-	min: null
-	,max: null
+	next: function() {
+		return this.min++;
+	}
 	,hasNext: function() {
 		return this.min < this.max;
 	}
-	,next: function() {
-		return this.min++;
-	}
+	,max: null
+	,min: null
 	,__class__: IntIter
 }
 var JSCanvas = $hxClasses["JSCanvas"] = function() { }
@@ -573,119 +573,42 @@ var RCDisplayObject = $hxClasses["RCDisplayObject"] = function() {
 };
 RCDisplayObject.__name__ = ["RCDisplayObject"];
 RCDisplayObject.prototype = {
-	viewWillAppear: null
-	,viewWillDisappear: null
-	,viewDidAppear: null
-	,viewDidDisappear: null
-	,bounds: null
-	,size: null
-	,contentSize: null
-	,center: null
-	,clipsToBounds: null
-	,backgroundColor: null
-	,x: null
-	,y: null
-	,width: null
-	,height: null
-	,scaleX: null
-	,scaleY: null
-	,alpha: null
-	,rotation: null
-	,visible: null
-	,mouseX: null
-	,mouseY: null
-	,parent: null
-	,x_: null
-	,y_: null
-	,scaleX_: null
-	,scaleY_: null
-	,contentSize_: null
-	,originalSize: null
-	,caobj: null
-	,init: function() {
+	toString: function() {
+		return "[RCView bounds:" + this.getBounds().origin.x + "x" + this.getBounds().origin.x + "," + this.getBounds().size.width + "x" + this.getBounds().size.height + "]";
 	}
-	,setVisible: function(v) {
-		return this.visible = v;
+	,destroy: function() {
+		CoreAnimation.remove(this.caobj);
+		this.size = null;
 	}
-	,getAlpha: function() {
-		return this.alpha;
+	,addAnimation: function(obj) {
+		CoreAnimation.add(this.caobj = obj);
 	}
-	,setAlpha: function(a) {
-		return this.alpha = a;
+	,removeChild: function(child) {
 	}
-	,getX: function() {
-		return this.x_;
+	,addChildAt: function(child,index) {
 	}
-	,setX: function(x) {
-		return this.x_ = x;
+	,addChild: function(child) {
 	}
-	,getY: function() {
-		return this.y_;
+	,getMouseY: function() {
+		return 0;
 	}
-	,setY: function(y) {
-		return this.y_ = y;
+	,getMouseX: function() {
+		return 0;
 	}
-	,getWidth: function() {
-		return this.size.width;
+	,resetScale: function() {
+		this.setWidth(this.originalSize.width);
+		this.setHeight(this.originalSize.height);
 	}
-	,setWidth: function(w) {
-		return this.size.width = w;
+	,scale: function(sx,sy) {
 	}
-	,getHeight: function() {
-		return this.size.height;
-	}
-	,setHeight: function(h) {
-		return this.size.height = h;
-	}
-	,getContentSize: function() {
-		return this.size;
-	}
-	,setContentSize: function(s) {
-		return this.contentSize = s;
-	}
-	,setRotation: function(r) {
-		return this.rotation = r;
-	}
-	,getRotation: function() {
-		return this.rotation;
-	}
-	,getBounds: function() {
-		return new RCRect(this.x_,this.y_,this.size.width,this.size.height);
-	}
-	,setBounds: function(b) {
-		this.setX(b.origin.x);
-		this.setY(b.origin.y);
-		this.setWidth(b.size.width);
-		this.setHeight(b.size.height);
-		return b;
-	}
-	,getScaleX: function() {
-		return this.scaleX_;
-	}
-	,setScaleX: function(sx) {
-		this.scaleX_ = sx;
-		this.scale(this.scaleX_,this.scaleY_);
-		return this.scaleX_;
-	}
-	,getScaleY: function() {
-		return this.scaleY_;
-	}
-	,setScaleY: function(sy) {
-		this.scaleY_ = sy;
-		this.scale(this.scaleX_,this.scaleY_);
-		return this.scaleY_;
-	}
-	,setClipsToBounds: function(clip) {
-		return clip;
-	}
-	,setBackgroundColor: function(color) {
-		return color;
-	}
-	,setCenter: function(pos) {
-		this.center = pos;
-		this.setX(pos.x - this.size.width / 2 | 0);
-		this.setY(pos.y - this.size.height / 2 | 0);
-		return this.center;
+	,scaleToFill: function(w,h) {
+		if(w / this.originalSize.width > h / this.originalSize.height) {
+			this.setWidth(w);
+			this.setHeight(w * this.originalSize.height / this.originalSize.width);
+		} else {
+			this.setHeight(h);
+			this.setWidth(h * this.originalSize.width / this.originalSize.height);
+		}
 	}
 	,scaleToFit: function(w,h) {
 		if(this.size.width / w > this.size.height / h && this.size.width > w) {
@@ -699,45 +622,122 @@ RCDisplayObject.prototype = {
 			this.setHeight(this.size.height);
 		} else this.resetScale();
 	}
-	,scaleToFill: function(w,h) {
-		if(w / this.originalSize.width > h / this.originalSize.height) {
-			this.setWidth(w);
-			this.setHeight(w * this.originalSize.height / this.originalSize.width);
-		} else {
-			this.setHeight(h);
-			this.setWidth(h * this.originalSize.width / this.originalSize.height);
-		}
+	,setCenter: function(pos) {
+		this.center = pos;
+		this.setX(pos.x - this.size.width / 2 | 0);
+		this.setY(pos.y - this.size.height / 2 | 0);
+		return this.center;
 	}
-	,scale: function(sx,sy) {
+	,setBackgroundColor: function(color) {
+		return color;
 	}
-	,resetScale: function() {
-		this.setWidth(this.originalSize.width);
-		this.setHeight(this.originalSize.height);
+	,setClipsToBounds: function(clip) {
+		return clip;
 	}
-	,getMouseX: function() {
-		return 0;
+	,setScaleY: function(sy) {
+		this.scaleY_ = sy;
+		this.scale(this.scaleX_,this.scaleY_);
+		return this.scaleY_;
 	}
-	,getMouseY: function() {
-		return 0;
+	,getScaleY: function() {
+		return this.scaleY_;
 	}
-	,addChild: function(child) {
+	,setScaleX: function(sx) {
+		this.scaleX_ = sx;
+		this.scale(this.scaleX_,this.scaleY_);
+		return this.scaleX_;
 	}
-	,addChildAt: function(child,index) {
+	,getScaleX: function() {
+		return this.scaleX_;
 	}
-	,removeChild: function(child) {
+	,setBounds: function(b) {
+		this.setX(b.origin.x);
+		this.setY(b.origin.y);
+		this.setWidth(b.size.width);
+		this.setHeight(b.size.height);
+		return b;
 	}
-	,addAnimation: function(obj) {
-		CoreAnimation.add(this.caobj = obj);
+	,getBounds: function() {
+		return new RCRect(this.x_,this.y_,this.size.width,this.size.height);
 	}
-	,destroy: function() {
-		CoreAnimation.remove(this.caobj);
-		this.size = null;
+	,getRotation: function() {
+		return this.rotation;
 	}
-	,toString: function() {
-		return "[RCView bounds:" + this.getBounds().origin.x + "x" + this.getBounds().origin.x + "," + this.getBounds().size.width + "x" + this.getBounds().size.height + "]";
+	,setRotation: function(r) {
+		return this.rotation = r;
 	}
+	,setContentSize: function(s) {
+		return this.contentSize = s;
+	}
+	,getContentSize: function() {
+		return this.size;
+	}
+	,setHeight: function(h) {
+		return this.size.height = h;
+	}
+	,getHeight: function() {
+		return this.size.height;
+	}
+	,setWidth: function(w) {
+		return this.size.width = w;
+	}
+	,getWidth: function() {
+		return this.size.width;
+	}
+	,setY: function(y) {
+		return this.y_ = y;
+	}
+	,getY: function() {
+		return this.y_;
+	}
+	,setX: function(x) {
+		return this.x_ = x;
+	}
+	,getX: function() {
+		return this.x_;
+	}
+	,setAlpha: function(a) {
+		return this.alpha = a;
+	}
+	,getAlpha: function() {
+		return this.alpha;
+	}
+	,setVisible: function(v) {
+		return this.visible = v;
+	}
+	,init: function() {
+	}
+	,caobj: null
+	,originalSize: null
+	,contentSize_: null
+	,scaleY_: null
+	,scaleX_: null
+	,y_: null
+	,x_: null
+	,parent: null
+	,mouseY: null
+	,mouseX: null
+	,visible: null
+	,rotation: null
+	,alpha: null
+	,scaleY: null
+	,scaleX: null
+	,height: null
+	,width: null
+	,y: null
+	,x: null
+	,backgroundColor: null
+	,clipsToBounds: null
+	,center: null
+	,contentSize: null
+	,size: null
+	,bounds: null
+	,viewDidDisappear: null
+	,viewDidAppear: null
+	,viewWillDisappear: null
+	,viewWillAppear: null
 	,__class__: RCDisplayObject
-	,__properties__: {get_mouseY:"getMouseY",get_mouseX:"getMouseX",set_visible:"setVisible",set_rotation:"setRotation",get_rotation:"getRotation",set_alpha:"setAlpha",get_alpha:"getAlpha",set_scaleY:"setScaleY",get_scaleY:"getScaleY",set_scaleX:"setScaleX",get_scaleX:"getScaleX",set_height:"setHeight",get_height:"getHeight",set_width:"setWidth",get_width:"getWidth",set_y:"setY",get_y:"getY",set_x:"setX",get_x:"getX",set_backgroundColor:"setBackgroundColor",set_clipsToBounds:"setClipsToBounds",set_center:"setCenter",set_contentSize:"setContentSize",get_contentSize:"getContentSize",set_bounds:"setBounds",get_bounds:"getBounds"}
+	,__properties__: {set_bounds:"setBounds",get_bounds:"getBounds",set_contentSize:"setContentSize",get_contentSize:"getContentSize",set_center:"setCenter",set_clipsToBounds:"setClipsToBounds",set_backgroundColor:"setBackgroundColor",set_x:"setX",get_x:"getX",set_y:"setY",get_y:"getY",set_width:"setWidth",get_width:"getWidth",set_height:"setHeight",get_height:"getHeight",set_scaleX:"setScaleX",get_scaleX:"getScaleX",set_scaleY:"setScaleY",get_scaleY:"getScaleY",set_alpha:"setAlpha",get_alpha:"getAlpha",set_rotation:"setRotation",get_rotation:"getRotation",set_visible:"setVisible",get_mouseX:"getMouseX",get_mouseY:"getMouseY"}
 }
 var JSView = $hxClasses["JSView"] = function(x,y,w,h) {
 	RCDisplayObject.call(this);
@@ -757,40 +757,72 @@ var JSView = $hxClasses["JSView"] = function(x,y,w,h) {
 JSView.__name__ = ["JSView"];
 JSView.__super__ = RCDisplayObject;
 JSView.prototype = $extend(RCDisplayObject.prototype,{
-	layer: null
-	,layerScrollable: null
-	,graphics: null
-	,alpha_: null
-	,addChild: function(child) {
-		if(child == null) return;
-		child.viewWillAppear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 58, className : "JSView", methodName : "addChild"});
-		child.parent = this;
-		this.layer.appendChild(child.layer);
-		child.viewDidAppear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 61, className : "JSView", methodName : "addChild"});
+	getMouseY: function() {
+		if(this.parent == null) return this.mouseY;
+		return this.parent.getMouseY() - this.getY();
 	}
-	,addChildAt: function(child,index) {
-		if(this.layer.childNodes[index] != null) this.layer.insertBefore(child.layer,this.layer.childNodes[index]); else this.layer.appendChild(child.layer);
+	,getMouseX: function() {
+		return this.layer.clientX;
+		if(this.parent == null) return this.mouseX;
+		return this.parent.getMouseX() - this.getX();
 	}
-	,removeChild: function(child) {
-		if(child == null) return;
-		child.viewWillDisappear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 75, className : "JSView", methodName : "removeChild"});
-		child.parent = null;
-		this.layer.removeChild(child.layer);
-		child.viewDidDisappear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 78, className : "JSView", methodName : "removeChild"});
+	,stopDrag: function() {
 	}
-	,removeFromSuperView: function() {
-		if(this.parent != null) this.parent.removeChild(this);
+	,startDrag: function(lockCenter,rect) {
 	}
-	,setBackgroundColor: function(color) {
-		if(color == null) {
-			this.layer.style.background = null;
-			return color;
+	,setRotation: function(r) {
+		this.layer.style[this.getTransformProperty()] = "rotate(" + r + "deg)";
+		return RCDisplayObject.prototype.setRotation.call(this,r);
+	}
+	,getTransformProperty: function() {
+		if(this.transformProperty != null) return this.transformProperty;
+		var _g = 0, _g1 = ["transform","WebkitTransform","msTransform","MozTransform","OTransform"];
+		while(_g < _g1.length) {
+			var p = _g1[_g];
+			++_g;
+			if(this.layer.style[p] != null) {
+				this.transformProperty = p;
+				return p;
+			}
 		}
-		var red = (color & 16711680) >> 16;
-		var green = (color & 65280) >> 8;
-		var blue = color & 255;
-		this.layer.style.backgroundColor = "rgb(" + red + "," + green + "," + blue + ")";
-		return color;
+		return "transform";
+	}
+	,scale: function(sx,sy) {
+		this.layer.style[this.getTransformProperty() + "Origin"] = "top left";
+		this.layer.style[this.getTransformProperty()] = "scale(" + sx + "," + sy + ")";
+	}
+	,transformProperty: null
+	,getContentSize: function() {
+		this.contentSize_.width = this.layer.scrollWidth;
+		this.contentSize_.height = this.layer.scrollHeight;
+		return this.contentSize_;
+	}
+	,setHeight: function(h) {
+		this.layer.style.height = h + "px";
+		return RCDisplayObject.prototype.setHeight.call(this,h);
+	}
+	,setWidth: function(w) {
+		this.layer.style.width = w + "px";
+		return RCDisplayObject.prototype.setWidth.call(this,w);
+	}
+	,setY: function(y) {
+		this.layer.style.top = Std.string(y * RCDevice.currentDevice().dpiScale) + "px";
+		return RCDisplayObject.prototype.setY.call(this,y);
+	}
+	,setX: function(x) {
+		this.layer.style.left = Std.string(x * RCDevice.currentDevice().dpiScale) + "px";
+		return RCDisplayObject.prototype.setX.call(this,x);
+	}
+	,setAlpha: function(a) {
+		if(RCDevice.currentDevice().userAgent == RCUserAgent.MSIE) {
+			this.layer.style.msFilter = "progid:DXImageTransform.Microsoft.Alpha(Opacity=" + Std.string(a * 100) + ")";
+			this.layer.style.filter = "alpha(opacity=" + Std.string(a * 100) + ")";
+		} else this.layer.style.opacity = Std.string(a);
+		return RCDisplayObject.prototype.setAlpha.call(this,a);
+	}
+	,setVisible: function(v) {
+		this.layer.style.visibility = v?"visible":"hidden";
+		return RCDisplayObject.prototype.setVisible.call(this,v);
 	}
 	,setClipsToBounds: function(clip) {
 		if(clip) {
@@ -808,73 +840,41 @@ JSView.prototype = $extend(RCDisplayObject.prototype,{
 		}
 		return clip;
 	}
-	,setVisible: function(v) {
-		this.layer.style.visibility = v?"visible":"hidden";
-		return RCDisplayObject.prototype.setVisible.call(this,v);
-	}
-	,setAlpha: function(a) {
-		if(RCDevice.currentDevice().userAgent == RCUserAgent.MSIE) {
-			this.layer.style.msFilter = "progid:DXImageTransform.Microsoft.Alpha(Opacity=" + Std.string(a * 100) + ")";
-			this.layer.style.filter = "alpha(opacity=" + Std.string(a * 100) + ")";
-		} else this.layer.style.opacity = Std.string(a);
-		return RCDisplayObject.prototype.setAlpha.call(this,a);
-	}
-	,setX: function(x) {
-		this.layer.style.left = Std.string(x * RCDevice.currentDevice().dpiScale) + "px";
-		return RCDisplayObject.prototype.setX.call(this,x);
-	}
-	,setY: function(y) {
-		this.layer.style.top = Std.string(y * RCDevice.currentDevice().dpiScale) + "px";
-		return RCDisplayObject.prototype.setY.call(this,y);
-	}
-	,setWidth: function(w) {
-		this.layer.style.width = w + "px";
-		return RCDisplayObject.prototype.setWidth.call(this,w);
-	}
-	,setHeight: function(h) {
-		this.layer.style.height = h + "px";
-		return RCDisplayObject.prototype.setHeight.call(this,h);
-	}
-	,getContentSize: function() {
-		this.contentSize_.width = this.layer.scrollWidth;
-		this.contentSize_.height = this.layer.scrollHeight;
-		return this.contentSize_;
-	}
-	,transformProperty: null
-	,scale: function(sx,sy) {
-		this.layer.style[this.getTransformProperty() + "Origin"] = "top left";
-		this.layer.style[this.getTransformProperty()] = "scale(" + sx + "," + sy + ")";
-	}
-	,getTransformProperty: function() {
-		if(this.transformProperty != null) return this.transformProperty;
-		var _g = 0, _g1 = ["transform","WebkitTransform","msTransform","MozTransform","OTransform"];
-		while(_g < _g1.length) {
-			var p = _g1[_g];
-			++_g;
-			if(this.layer.style[p] != null) {
-				this.transformProperty = p;
-				return p;
-			}
+	,setBackgroundColor: function(color) {
+		if(color == null) {
+			this.layer.style.background = null;
+			return color;
 		}
-		return "transform";
+		var red = (color & 16711680) >> 16;
+		var green = (color & 65280) >> 8;
+		var blue = color & 255;
+		this.layer.style.backgroundColor = "rgb(" + red + "," + green + "," + blue + ")";
+		return color;
 	}
-	,setRotation: function(r) {
-		this.layer.style[this.getTransformProperty()] = "rotate(" + r + "deg)";
-		return RCDisplayObject.prototype.setRotation.call(this,r);
+	,removeFromSuperView: function() {
+		if(this.parent != null) this.parent.removeChild(this);
 	}
-	,startDrag: function(lockCenter,rect) {
+	,removeChild: function(child) {
+		if(child == null) return;
+		child.viewWillDisappear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 75, className : "JSView", methodName : "removeChild"});
+		child.parent = null;
+		this.layer.removeChild(child.layer);
+		child.viewDidDisappear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 78, className : "JSView", methodName : "removeChild"});
 	}
-	,stopDrag: function() {
+	,addChildAt: function(child,index) {
+		if(this.layer.childNodes[index] != null) this.layer.insertBefore(child.layer,this.layer.childNodes[index]); else this.layer.appendChild(child.layer);
 	}
-	,getMouseX: function() {
-		return this.layer.clientX;
-		if(this.parent == null) return this.mouseX;
-		return this.parent.getMouseX() - this.getX();
+	,addChild: function(child) {
+		if(child == null) return;
+		child.viewWillAppear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 58, className : "JSView", methodName : "addChild"});
+		child.parent = this;
+		this.layer.appendChild(child.layer);
+		child.viewDidAppear.dispatch(null,null,null,null,{ fileName : "JSView.hx", lineNumber : 61, className : "JSView", methodName : "addChild"});
 	}
-	,getMouseY: function() {
-		if(this.parent == null) return this.mouseY;
-		return this.parent.getMouseY() - this.getY();
-	}
+	,alpha_: null
+	,graphics: null
+	,layerScrollable: null
+	,layer: null
 	,__class__: JSView
 });
 var List = $hxClasses["List"] = function() {
@@ -882,42 +882,59 @@ var List = $hxClasses["List"] = function() {
 };
 List.__name__ = ["List"];
 List.prototype = {
-	h: null
-	,q: null
-	,length: null
-	,add: function(item) {
-		var x = [item];
-		if(this.h == null) this.h = x; else this.q[1] = x;
-		this.q = x;
-		this.length++;
+	map: function(f) {
+		var b = new List();
+		var l = this.h;
+		while(l != null) {
+			var v = l[0];
+			l = l[1];
+			b.add(f(v));
+		}
+		return b;
 	}
-	,push: function(item) {
-		var x = [item,this.h];
-		this.h = x;
-		if(this.q == null) this.q = x;
-		this.length++;
+	,filter: function(f) {
+		var l2 = new List();
+		var l = this.h;
+		while(l != null) {
+			var v = l[0];
+			l = l[1];
+			if(f(v)) l2.add(v);
+		}
+		return l2;
 	}
-	,first: function() {
-		return this.h == null?null:this.h[0];
+	,join: function(sep) {
+		var s = new StringBuf();
+		var first = true;
+		var l = this.h;
+		while(l != null) {
+			if(first) first = false; else s.b += Std.string(sep);
+			s.b += Std.string(l[0]);
+			l = l[1];
+		}
+		return s.b;
 	}
-	,last: function() {
-		return this.q == null?null:this.q[0];
+	,toString: function() {
+		var s = new StringBuf();
+		var first = true;
+		var l = this.h;
+		s.b += Std.string("{");
+		while(l != null) {
+			if(first) first = false; else s.b += Std.string(", ");
+			s.b += Std.string(Std.string(l[0]));
+			l = l[1];
+		}
+		s.b += Std.string("}");
+		return s.b;
 	}
-	,pop: function() {
-		if(this.h == null) return null;
-		var x = this.h[0];
-		this.h = this.h[1];
-		if(this.h == null) this.q = null;
-		this.length--;
-		return x;
-	}
-	,isEmpty: function() {
-		return this.h == null;
-	}
-	,clear: function() {
-		this.h = null;
-		this.q = null;
-		this.length = 0;
+	,iterator: function() {
+		return { h : this.h, hasNext : function() {
+			return this.h != null;
+		}, next : function() {
+			if(this.h == null) return null;
+			var x = this.h[0];
+			this.h = this.h[1];
+			return x;
+		}};
 	}
 	,remove: function(v) {
 		var prev = null;
@@ -934,60 +951,43 @@ List.prototype = {
 		}
 		return false;
 	}
-	,iterator: function() {
-		return { h : this.h, hasNext : function() {
-			return this.h != null;
-		}, next : function() {
-			if(this.h == null) return null;
-			var x = this.h[0];
-			this.h = this.h[1];
-			return x;
-		}};
+	,clear: function() {
+		this.h = null;
+		this.q = null;
+		this.length = 0;
 	}
-	,toString: function() {
-		var s = new StringBuf();
-		var first = true;
-		var l = this.h;
-		s.b[s.b.length] = "{";
-		while(l != null) {
-			if(first) first = false; else s.b[s.b.length] = ", ";
-			s.add(Std.string(l[0]));
-			l = l[1];
-		}
-		s.b[s.b.length] = "}";
-		return s.b.join("");
+	,isEmpty: function() {
+		return this.h == null;
 	}
-	,join: function(sep) {
-		var s = new StringBuf();
-		var first = true;
-		var l = this.h;
-		while(l != null) {
-			if(first) first = false; else s.b[s.b.length] = sep == null?"null":sep;
-			s.add(l[0]);
-			l = l[1];
-		}
-		return s.b.join("");
+	,pop: function() {
+		if(this.h == null) return null;
+		var x = this.h[0];
+		this.h = this.h[1];
+		if(this.h == null) this.q = null;
+		this.length--;
+		return x;
 	}
-	,filter: function(f) {
-		var l2 = new List();
-		var l = this.h;
-		while(l != null) {
-			var v = l[0];
-			l = l[1];
-			if(f(v)) l2.add(v);
-		}
-		return l2;
+	,last: function() {
+		return this.q == null?null:this.q[0];
 	}
-	,map: function(f) {
-		var b = new List();
-		var l = this.h;
-		while(l != null) {
-			var v = l[0];
-			l = l[1];
-			b.add(f(v));
-		}
-		return b;
+	,first: function() {
+		return this.h == null?null:this.h[0];
 	}
+	,push: function(item) {
+		var x = [item,this.h];
+		this.h = x;
+		if(this.q == null) this.q = x;
+		this.length++;
+	}
+	,add: function(item) {
+		var x = [item];
+		if(this.h == null) this.h = x; else this.q[1] = x;
+		this.q = x;
+		this.length++;
+	}
+	,length: null
+	,q: null
+	,h: null
 	,__class__: List
 }
 var RCAppDelegate = $hxClasses["RCAppDelegate"] = function() {
@@ -1000,18 +1000,18 @@ var RCAppDelegate = $hxClasses["RCAppDelegate"] = function() {
 RCAppDelegate.__name__ = ["RCAppDelegate"];
 RCAppDelegate.__super__ = JSView;
 RCAppDelegate.prototype = $extend(JSView.prototype,{
-	applicationDidFinishLaunching: function() {
+	fullscreen: function(b) {
 	}
-	,applicationDidBecomeActive: function() {
-	}
-	,applicationWillEnterForeground: function() {
+	,resize: function(w,h) {
 	}
 	,applicationWillTerminate: function() {
 		haxe.Log.trace("applicationWillTerminate",{ fileName : "RCAppDelegate.hx", lineNumber : 34, className : "RCAppDelegate", methodName : "applicationWillTerminate"});
 	}
-	,resize: function(w,h) {
+	,applicationWillEnterForeground: function() {
 	}
-	,fullscreen: function(b) {
+	,applicationDidBecomeActive: function() {
+	}
+	,applicationDidFinishLaunching: function() {
 	}
 	,__class__: RCAppDelegate
 });
@@ -1027,24 +1027,12 @@ Main.main = function() {
 }
 Main.__super__ = RCAppDelegate;
 Main.prototype = $extend(RCAppDelegate.prototype,{
-	heart1: function() {
-		var _g = 0;
-		while(_g < 200) {
-			var i = _g++;
-			this.drawParticle(i);
-		}
+	log10: function(val) {
+		return Math.log(val) * 0.434294481904;
 	}
-	,drawParticle: function(i) {
-		var t = i / 200;
-		var p1 = new Particle(400,400,t,-1);
-		var p2 = new Particle(400,400,t,1);
-		RCWindow.sharedWindow().addChild(p1);
-		RCWindow.sharedWindow().addChild(p2);
-	}
-	,heart2: function() {
-		var iterator = new RCIterator(4,0,200,1);
-		iterator.run = $bind(this,this.drawParticle2);
-		iterator.start();
+	,logx: function(val,base) {
+		if(base == null) base = 10;
+		return Math.log(val) / Math.log(base);
 	}
 	,drawParticle2: function(i) {
 		var scale = 20;
@@ -1057,12 +1045,24 @@ Main.prototype = $extend(RCAppDelegate.prototype,{
 		RCWindow.sharedWindow().addChild(p1);
 		RCWindow.sharedWindow().addChild(p2);
 	}
-	,logx: function(val,base) {
-		if(base == null) base = 10;
-		return Math.log(val) / Math.log(base);
+	,heart2: function() {
+		var iterator = new RCIterator(4,0,200,1);
+		iterator.run = $bind(this,this.drawParticle2);
+		iterator.start();
 	}
-	,log10: function(val) {
-		return Math.log(val) * 0.434294481904;
+	,drawParticle: function(i) {
+		var t = i / 200;
+		var p1 = new Particle(400,400,t,-1);
+		var p2 = new Particle(400,400,t,1);
+		RCWindow.sharedWindow().addChild(p1);
+		RCWindow.sharedWindow().addChild(p2);
+	}
+	,heart1: function() {
+		var _g = 0;
+		while(_g < 200) {
+			var i = _g++;
+			this.drawParticle(i);
+		}
 	}
 	,__class__: Main
 });
@@ -1084,15 +1084,25 @@ var Particle = $hxClasses["Particle"] = function(x,y,t,s) {
 Particle.__name__ = ["Particle"];
 Particle.__super__ = JSView;
 Particle.prototype = $extend(JSView.prototype,{
-	timer: null
-	,loopEvent: null
-	,o_x: null
-	,o_y: null
-	,f_x: null
-	,f_y: null
-	,theta: null
-	,current_theta: null
-	,sign: null
+	loop: function() {
+		var _g = this;
+		_g.setX(_g.getX() + (this.f_x - this.getX()) / 3);
+		var _g = this;
+		_g.setY(_g.getY() + (this.f_y - this.getY()) / 3);
+		if(Math.abs(this.getX() - this.f_x) < 1) this.changeDirection();
+	}
+	,loopTheta: function() {
+		this.setX(this.o_x - this.f_x * 500 * this.sign);
+		this.setY(this.o_y - this.f_y * 500);
+	}
+	,changeDirection: function() {
+		this.f_x = this.o_x + 6 - Math.random() * 12;
+		this.f_y = this.o_y + 6 - Math.random() * 12;
+	}
+	,fxy: function() {
+		this.f_x = Math.sin(this.current_theta) * Math.cos(this.current_theta) * Math.log(Math.abs(this.current_theta));
+		this.f_y = Math.sqrt(Math.abs(this.current_theta)) * Math.cos(this.current_theta);
+	}
 	,advanceTheta: function() {
 		this.current_theta += (this.theta - this.current_theta) / 5;
 		this.fxy();
@@ -1107,25 +1117,15 @@ Particle.prototype = $extend(JSView.prototype,{
 			this.loopEvent.setFuncToCall($bind(this,this.loop));
 		}
 	}
-	,fxy: function() {
-		this.f_x = Math.sin(this.current_theta) * Math.cos(this.current_theta) * Math.log(Math.abs(this.current_theta));
-		this.f_y = Math.sqrt(Math.abs(this.current_theta)) * Math.cos(this.current_theta);
-	}
-	,changeDirection: function() {
-		this.f_x = this.o_x + 6 - Math.random() * 12;
-		this.f_y = this.o_y + 6 - Math.random() * 12;
-	}
-	,loopTheta: function() {
-		this.setX(this.o_x - this.f_x * 500 * this.sign);
-		this.setY(this.o_y - this.f_y * 500);
-	}
-	,loop: function() {
-		var _g = this;
-		_g.setX(_g.getX() + (this.f_x - this.getX()) / 3);
-		var _g = this;
-		_g.setY(_g.getY() + (this.f_y - this.getY()) / 3);
-		if(Math.abs(this.getX() - this.f_x) < 1) this.changeDirection();
-	}
+	,sign: null
+	,current_theta: null
+	,theta: null
+	,f_y: null
+	,f_x: null
+	,o_y: null
+	,o_x: null
+	,loopEvent: null
+	,timer: null
 	,__class__: Particle
 });
 var RCColor = $hxClasses["RCColor"] = function(fillColor,strokeColor,a) {
@@ -1207,14 +1207,14 @@ RCColor.RGBtoHEX = function(r,g,b) {
 	return Math.round(r * 255) << 16 | Math.round(g * 255) << 8 | Math.round(b * 255);
 }
 RCColor.prototype = {
-	fillColor: null
-	,strokeColor: null
-	,fillColorStyle: null
-	,strokeColorStyle: null
-	,redComponent: null
-	,greenComponent: null
+	alpha: null
 	,blueComponent: null
-	,alpha: null
+	,greenComponent: null
+	,redComponent: null
+	,strokeColorStyle: null
+	,fillColorStyle: null
+	,strokeColor: null
+	,fillColor: null
 	,__class__: RCColor
 }
 var RCDeviceOrientation = $hxClasses["RCDeviceOrientation"] = { __ename__ : ["RCDeviceOrientation"], __constructs__ : ["UIDeviceOrientationUnknown","UIDeviceOrientationPortrait","UIDeviceOrientationPortraitUpsideDown","UIDeviceOrientationLandscapeLeft","UIDeviceOrientationLandscapeRight","UIDeviceOrientationFaceUp","UIDeviceOrientationFaceDown"] }
@@ -1295,15 +1295,14 @@ RCDevice.currentDevice = function() {
 	return RCDevice._currentDevice;
 }
 RCDevice.prototype = {
-	name: null
-	,model: null
-	,systemName: null
-	,systemVersion: null
-	,orientation: null
-	,userInterfaceIdiom: null
-	,uniqueIdentifier: null
-	,dpiScale: null
-	,userAgent: null
+	detectUserInterfaceIdiom: function() {
+		var agent = js.Lib.window.navigator.userAgent.toLowerCase();
+		if(agent.indexOf("iphone") > -1) return RCDeviceType.IPhone;
+		if(agent.indexOf("ipad") > -1) return RCDeviceType.IPad;
+		if(agent.indexOf("ipod") > -1) return RCDeviceType.IPod;
+		if(agent.indexOf("playstation") > -1) return RCDeviceType.Playstation;
+		return RCDeviceType.Other;
+	}
 	,detectUserAgent: function() {
 		var agent = js.Lib.window.navigator.userAgent.toLowerCase();
 		if(agent.indexOf("msie") > -1) return RCUserAgent.MSIE;
@@ -1312,14 +1311,15 @@ RCDevice.prototype = {
 		if(agent.indexOf("gecko") > -1) return RCUserAgent.GECKO;
 		return RCUserAgent.OTHER;
 	}
-	,detectUserInterfaceIdiom: function() {
-		var agent = js.Lib.window.navigator.userAgent.toLowerCase();
-		if(agent.indexOf("iphone") > -1) return RCDeviceType.IPhone;
-		if(agent.indexOf("ipad") > -1) return RCDeviceType.IPad;
-		if(agent.indexOf("ipod") > -1) return RCDeviceType.IPod;
-		if(agent.indexOf("playstation") > -1) return RCDeviceType.Playstation;
-		return RCDeviceType.Other;
-	}
+	,userAgent: null
+	,dpiScale: null
+	,uniqueIdentifier: null
+	,userInterfaceIdiom: null
+	,orientation: null
+	,systemVersion: null
+	,systemName: null
+	,model: null
+	,name: null
 	,__class__: RCDevice
 }
 var _RCDraw = _RCDraw || {}
@@ -1340,8 +1340,9 @@ var RCDraw = $hxClasses["RCDraw"] = function(x,y,w,h,color,alpha) {
 RCDraw.__name__ = ["RCDraw"];
 RCDraw.__super__ = JSView;
 RCDraw.prototype = $extend(JSView.prototype,{
-	color: null
-	,borderThickness: null
+	frame: function() {
+		return new RCRect(this.getX(),this.getY(),this.size.width,this.size.height);
+	}
 	,configure: function() {
 		if(js.Boot.__instanceof(this.color,RCColor)) {
 			if(this.color.fillColor != null) this.graphics.beginFill(this.color.fillColor,this.color.alpha);
@@ -1355,16 +1356,15 @@ RCDraw.prototype = $extend(JSView.prototype,{
 			}
 		}
 	}
-	,frame: function() {
-		return new RCRect(this.getX(),this.getY(),this.size.width,this.size.height);
-	}
+	,borderThickness: null
+	,color: null
 	,__class__: RCDraw
 });
 var RCDrawInterface = $hxClasses["RCDrawInterface"] = function() { }
 RCDrawInterface.__name__ = ["RCDrawInterface"];
 RCDrawInterface.prototype = {
-	configure: null
-	,redraw: null
+	redraw: null
+	,configure: null
 	,__class__: RCDrawInterface
 }
 var RCFont = $hxClasses["RCFont"] = function() {
@@ -1409,55 +1409,8 @@ RCFont.italicSystemFontOfSize = function(size) {
 	return fnt;
 }
 RCFont.prototype = {
-	html: null
-	,format: null
-	,style: null
-	,embedFonts: null
-	,type: null
-	,antiAliasType: null
-	,autoSize: null
-	,displayAsPassword: null
-	,selectable: null
-	,sharpness: null
-	,thickness: null
-	,align: null
-	,blockIndent: null
-	,bold: null
-	,bullet: null
-	,color: null
-	,display: null
-	,font: null
-	,indent: null
-	,italic: null
-	,kerning: null
-	,leading: null
-	,leftMargin: null
-	,letterSpacing: null
-	,rightMargin: null
-	,size: null
-	,tabStops: null
-	,target: null
-	,underline: null
-	,url: null
-	,copy: function(exceptions) {
-		var rcfont = new RCFont();
-		var fields = Type.getInstanceFields(RCFont);
-		var _g = 0;
-		while(_g < fields.length) {
-			var field = fields[_g];
-			++_g;
-			if(field == "copy" || field == "getFormat" || field == "getStyleSheet") continue;
-			rcfont[field] = Reflect.field(this,field);
-		}
-		if(exceptions != null) {
-			var _g = 0, _g1 = Reflect.fields(exceptions);
-			while(_g < _g1.length) {
-				var excp = _g1[_g];
-				++_g;
-				if(Reflect.hasField(rcfont,excp)) rcfont[excp] = Reflect.field(exceptions,excp);
-			}
-		}
-		return rcfont;
+	getStyleSheet: function() {
+		return this.style;
 	}
 	,getFormat: function() {
 		this.format.align = null;
@@ -1480,11 +1433,58 @@ RCFont.prototype = {
 		this.format.url = this.url;
 		return this.format;
 	}
-	,getStyleSheet: function() {
-		return this.style;
+	,copy: function(exceptions) {
+		var rcfont = new RCFont();
+		var fields = Type.getInstanceFields(RCFont);
+		var _g = 0;
+		while(_g < fields.length) {
+			var field = fields[_g];
+			++_g;
+			if(field == "copy" || field == "getFormat" || field == "getStyleSheet" || field == "get_format" || field == "get_style") continue;
+			rcfont[field] = Reflect.field(this,field);
+		}
+		if(exceptions != null) {
+			var _g = 0, _g1 = Reflect.fields(exceptions);
+			while(_g < _g1.length) {
+				var excp = _g1[_g];
+				++_g;
+				if(Reflect.hasField(rcfont,excp)) rcfont[excp] = Reflect.field(exceptions,excp);
+			}
+		}
+		return rcfont;
 	}
+	,url: null
+	,underline: null
+	,target: null
+	,tabStops: null
+	,size: null
+	,rightMargin: null
+	,letterSpacing: null
+	,leftMargin: null
+	,leading: null
+	,kerning: null
+	,italic: null
+	,indent: null
+	,font: null
+	,display: null
+	,color: null
+	,bullet: null
+	,bold: null
+	,blockIndent: null
+	,align: null
+	,thickness: null
+	,sharpness: null
+	,selectable: null
+	,displayAsPassword: null
+	,autoSize: null
+	,antiAliasType: null
+	,type: null
+	,embedFonts: null
+	,style: null
+	,format: null
+	,html: null
 	,__class__: RCFont
-	,__properties__: {get_style:"getStyleSheet",get_format:"getFormat"}
+	,__properties__: {get_format:"getFormat",get_style:"getStyleSheet"}
 }
 var RCGradient = $hxClasses["RCGradient"] = function(colors,alphas,linear) {
 	if(linear == null) linear = true;
@@ -1498,17 +1498,17 @@ var RCGradient = $hxClasses["RCGradient"] = function(colors,alphas,linear) {
 };
 RCGradient.__name__ = ["RCGradient"];
 RCGradient.prototype = {
-	strokeColor: null
-	,gradientColors: null
-	,gradientAlphas: null
-	,gradientRatios: null
-	,spreadMethod: null
-	,interpolationMethod: null
-	,gradientType: null
-	,focalPointRatio: null
-	,tx: null
+	matrixRotation: null
 	,ty: null
-	,matrixRotation: null
+	,tx: null
+	,focalPointRatio: null
+	,gradientType: null
+	,interpolationMethod: null
+	,spreadMethod: null
+	,gradientRatios: null
+	,gradientAlphas: null
+	,gradientColors: null
+	,strokeColor: null
 	,__class__: RCGradient
 }
 var RCIterator = $hxClasses["RCIterator"] = function(interval,min,max,step) {
@@ -1520,19 +1520,11 @@ var RCIterator = $hxClasses["RCIterator"] = function(interval,min,max,step) {
 };
 RCIterator.__name__ = ["RCIterator"];
 RCIterator.prototype = {
-	min: null
-	,max: null
-	,step: null
-	,percentCompleted: null
-	,timer: null
-	,interval: null
-	,run: function(i) {
-	}
-	,onComplete: function() {
-	}
-	,start: function() {
-		this.run(this.min);
-		this.timer.run = $bind(this,this.loop);
+	destroy: function() {
+		if(this.timer != null) {
+			this.timer.stop();
+			this.timer = null;
+		}
 	}
 	,loop: function() {
 		this.min += this.step;
@@ -1542,12 +1534,20 @@ RCIterator.prototype = {
 			this.onComplete();
 		}
 	}
-	,destroy: function() {
-		if(this.timer != null) {
-			this.timer.stop();
-			this.timer = null;
-		}
+	,start: function() {
+		this.run(this.min);
+		this.timer.run = $bind(this,this.loop);
 	}
+	,onComplete: function() {
+	}
+	,run: function(i) {
+	}
+	,interval: null
+	,timer: null
+	,percentCompleted: null
+	,step: null
+	,max: null
+	,min: null
 	,__class__: RCIterator
 }
 var RCNotification = $hxClasses["RCNotification"] = function(name,functionToCall) {
@@ -1556,11 +1556,11 @@ var RCNotification = $hxClasses["RCNotification"] = function(name,functionToCall
 };
 RCNotification.__name__ = ["RCNotification"];
 RCNotification.prototype = {
-	name: null
-	,functionToCall: null
-	,toString: function() {
+	toString: function() {
 		return "[RCNotification with name: '" + this.name + "', functionToCall: " + Std.string(this.functionToCall) + "]";
 	}
+	,functionToCall: null
+	,name: null
 	,__class__: RCNotification
 }
 var RCNotificationCenter = $hxClasses["RCNotificationCenter"] = function() { }
@@ -1621,14 +1621,14 @@ var RCPoint = $hxClasses["RCPoint"] = function(x,y) {
 };
 RCPoint.__name__ = ["RCPoint"];
 RCPoint.prototype = {
-	x: null
-	,y: null
+	toString: function() {
+		return "[RCPoint x:" + this.x + ", y:" + this.y + "]";
+	}
 	,copy: function() {
 		return new RCPoint(this.x,this.y);
 	}
-	,toString: function() {
-		return "[RCPoint x:" + this.x + ", y:" + this.y + "]";
-	}
+	,y: null
+	,x: null
 	,__class__: RCPoint
 }
 var RCRect = $hxClasses["RCRect"] = function(x,y,w,h) {
@@ -1637,14 +1637,14 @@ var RCRect = $hxClasses["RCRect"] = function(x,y,w,h) {
 };
 RCRect.__name__ = ["RCRect"];
 RCRect.prototype = {
-	origin: null
-	,size: null
+	toString: function() {
+		return "[RCRect x:" + this.origin.x + ", y:" + this.origin.y + ", width:" + this.size.width + ", height:" + this.size.height + "]";
+	}
 	,copy: function() {
 		return new RCRect(this.origin.x,this.origin.y,this.size.width,this.size.height);
 	}
-	,toString: function() {
-		return "[RCRect x:" + this.origin.x + ", y:" + this.origin.y + ", width:" + this.size.width + ", height:" + this.size.height + "]";
-	}
+	,size: null
+	,origin: null
 	,__class__: RCRect
 }
 var RCRectangle = $hxClasses["RCRectangle"] = function(x,y,w,h,color,alpha,r) {
@@ -1657,7 +1657,16 @@ RCRectangle.__name__ = ["RCRectangle"];
 RCRectangle.__interfaces__ = [RCDrawInterface];
 RCRectangle.__super__ = RCDraw;
 RCRectangle.prototype = $extend(RCDraw.prototype,{
-	roundness: null
+	setHeight: function(h) {
+		this.size.height = h;
+		this.redraw();
+		return h;
+	}
+	,setWidth: function(w) {
+		this.size.width = w;
+		this.redraw();
+		return w;
+	}
 	,redraw: function() {
 		var fillColorStyle = (js.Boot.__cast(this.color , RCColor)).fillColorStyle;
 		var strokeColorStyle = (js.Boot.__cast(this.color , RCColor)).strokeColorStyle;
@@ -1675,16 +1684,7 @@ RCRectangle.prototype = $extend(RCDraw.prototype,{
 			this.layer.style.borderRadius = this.roundness * RCDevice.currentDevice().dpiScale / 2 + "px";
 		}
 	}
-	,setWidth: function(w) {
-		this.size.width = w;
-		this.redraw();
-		return w;
-	}
-	,setHeight: function(h) {
-		this.size.height = h;
-		this.redraw();
-		return h;
-	}
+	,roundness: null
 	,__class__: RCRectangle
 });
 var RCSize = $hxClasses["RCSize"] = function(w,h) {
@@ -1693,14 +1693,14 @@ var RCSize = $hxClasses["RCSize"] = function(w,h) {
 };
 RCSize.__name__ = ["RCSize"];
 RCSize.prototype = {
-	width: null
-	,height: null
+	toString: function() {
+		return "[RCSize width:" + this.width + ", height:" + this.height + "]";
+	}
 	,copy: function() {
 		return new RCSize(this.width,this.height);
 	}
-	,toString: function() {
-		return "[RCSize width:" + this.width + ", height:" + this.height + "]";
-	}
+	,height: null
+	,width: null
 	,__class__: RCSize
 }
 var RCStats = $hxClasses["RCStats"] = function(x,y) {
@@ -1719,12 +1719,11 @@ var RCStats = $hxClasses["RCStats"] = function(x,y) {
 RCStats.__name__ = ["RCStats"];
 RCStats.__super__ = RCRectangle;
 RCStats.prototype = $extend(RCRectangle.prototype,{
-	last: null
-	,ticks: null
-	,fps: null
-	,currMemory: null
-	,txt: null
-	,e: null
+	destroy: function() {
+		this.e.destroy();
+		this.txt.destroy();
+		RCRectangle.prototype.destroy.call(this);
+	}
 	,loop: function() {
 		this.ticks++;
 		var now = new Date().getTime();
@@ -1736,11 +1735,12 @@ RCStats.prototype = $extend(RCRectangle.prototype,{
 			this.txt.setText(this.fps + " FPS,  " + this.currMemory + " Mbytes");
 		}
 	}
-	,destroy: function() {
-		this.e.destroy();
-		this.txt.destroy();
-		RCRectangle.prototype.destroy.call(this);
-	}
+	,e: null
+	,txt: null
+	,currMemory: null
+	,fps: null
+	,ticks: null
+	,last: null
 	,__class__: RCStats
 });
 var RCTextView = $hxClasses["RCTextView"] = function(x,y,w,h,str,rcfont) {
@@ -1755,12 +1755,20 @@ var RCTextView = $hxClasses["RCTextView"] = function(x,y,w,h,str,rcfont) {
 RCTextView.__name__ = ["RCTextView"];
 RCTextView.__super__ = JSView;
 RCTextView.prototype = $extend(JSView.prototype,{
-	target: null
-	,rcfont: null
-	,text: null
-	,init: function() {
-		JSView.prototype.init.call(this);
-		this.redraw();
+	destroy: function() {
+		this.target = null;
+		JSView.prototype.destroy.call(this);
+	}
+	,setText: function(str) {
+		if(this.rcfont.html) this.layer.innerHTML = str; else this.layer.innerHTML = str;
+		this.size.width = this.getContentSize().width;
+		return str;
+	}
+	,getText: function() {
+		return this.layer.innerHTML;
+	}
+	,viewDidAppear_: function() {
+		this.size.width = this.getContentSize().width;
 	}
 	,redraw: function() {
 		var wrap = this.size.width != 0;
@@ -1788,21 +1796,13 @@ RCTextView.prototype = $extend(JSView.prototype,{
 		}
 		if(this.size.width != 0) this.setWidth(this.size.width);
 	}
-	,viewDidAppear_: function() {
-		this.size.width = this.getContentSize().width;
+	,init: function() {
+		JSView.prototype.init.call(this);
+		this.redraw();
 	}
-	,getText: function() {
-		return this.layer.innerHTML;
-	}
-	,setText: function(str) {
-		if(this.rcfont.html) this.layer.innerHTML = str; else this.layer.innerHTML = str;
-		this.size.width = this.getContentSize().width;
-		return str;
-	}
-	,destroy: function() {
-		this.target = null;
-		JSView.prototype.destroy.call(this);
-	}
+	,text: null
+	,rcfont: null
+	,target: null
 	,__class__: RCTextView
 	,__properties__: $extend(JSView.prototype.__properties__,{set_text:"setText",get_text:"getText"})
 });
@@ -1822,14 +1822,79 @@ RCWindow.sharedWindow = function(id) {
 }
 RCWindow.__super__ = JSView;
 RCWindow.prototype = $extend(JSView.prototype,{
-	target: null
-	,stage: null
-	,SCREEN_W: null
-	,SCREEN_H: null
-	,modalView: null
-	,resizeHandler: function(w,h) {
-		this.size.width = w;
-		this.size.height = h;
+	toString: function() {
+		return "[RCWindow target=" + Std.string(this.target) + "]";
+	}
+	,getCenterY: function(h) {
+		return Math.round(this.getHeight() / 2 - h / RCDevice.currentDevice().dpiScale / 2);
+	}
+	,getCenterX: function(w) {
+		return Math.round(this.getWidth() / 2 - w / RCDevice.currentDevice().dpiScale / 2);
+	}
+	,destroyModalViewController: function() {
+		this.modalView.destroy();
+		this.modalView = null;
+	}
+	,dismissModalViewController: function() {
+		if(this.modalView == null) return;
+		var anim = new CATween(this.modalView,{ y : this.getHeight()},0.3,0,caequations.Cubic.IN,{ fileName : "RCWindow.hx", lineNumber : 236, className : "RCWindow", methodName : "dismissModalViewController"});
+		anim.delegate.animationDidStop = $bind(this,this.destroyModalViewController);
+		CoreAnimation.add(anim);
+	}
+	,addModalViewController: function(view) {
+		this.modalView = view;
+		this.modalView.setX(0);
+		CoreAnimation.add(new CATween(this.modalView,{ y : { fromValue : this.getHeight(), toValue : 0}},0.5,0,caequations.Cubic.IN_OUT,{ fileName : "RCWindow.hx", lineNumber : 231, className : "RCWindow", methodName : "addModalViewController"}));
+		this.addChild(this.modalView);
+	}
+	,supportsFullScreen: function() {
+		if(Reflect.field(this.target,"cancelFullScreen") != null) return true; else {
+			var _g = 0, _g1 = ["webkit","moz","o","ms","khtml"];
+			while(_g < _g1.length) {
+				var prefix = _g1[_g];
+				++_g;
+				if(Reflect.field(js.Lib.document,prefix + "CancelFullScreen") != null) {
+					this.fsprefix = prefix;
+					return true;
+				}
+			}
+		}
+		return false;
+		return false;
+	}
+	,isFullScreen: function() {
+		if(this.supportsFullScreen()) switch(this.fsprefix) {
+		case "":
+			return this.target.fullScreen;
+		case "webkit":
+			return this.target.webkitIsFullScreen;
+		default:
+			return Reflect.field(this.target,this.fsprefix + "FullScreen");
+		}
+		return false;
+	}
+	,normal: function() {
+		if(this.supportsFullScreen()) {
+			if(this.fsprefix == "") "cancelFullScreen".apply(this.target,[]); else Reflect.field(this.target,this.fsprefix + "CancelFullScreen").apply(this.target,[]);
+		}
+	}
+	,fullscreen: function() {
+		if(this.supportsFullScreen()) {
+			if(this.fsprefix == null) "requestFullScreen".apply(this.target,[]); else Reflect.field(this.target,this.fsprefix + "RequestFullScreen").apply(this.target,[]);
+		}
+	}
+	,fsprefix: null
+	,setBackgroundColor: function(color) {
+		if(color == null) {
+			this.target.style.background = null;
+			return color;
+		}
+		var red = (color & 16711680) >> 16;
+		var green = (color & 65280) >> 8;
+		var blue = color & 255;
+		var alpha = 1;
+		this.target.style.background = "rgba(" + red + "," + green + "," + blue + "," + alpha + ")";
+		return color;
 	}
 	,setTarget: function(id) {
 		if(id != null) this.target = js.Lib.document.getElementById(id); else {
@@ -1849,79 +1914,15 @@ RCWindow.prototype = $extend(JSView.prototype,{
 		haxe.Log.trace(this.size,{ fileName : "RCWindow.hx", lineNumber : 109, className : "RCWindow", methodName : "setTarget"});
 		this.target.appendChild(this.layer);
 	}
-	,setBackgroundColor: function(color) {
-		if(color == null) {
-			this.target.style.background = null;
-			return color;
-		}
-		var red = (color & 16711680) >> 16;
-		var green = (color & 65280) >> 8;
-		var blue = color & 255;
-		var alpha = 1;
-		this.target.style.background = "rgba(" + red + "," + green + "," + blue + "," + alpha + ")";
-		return color;
+	,resizeHandler: function(w,h) {
+		this.size.width = w;
+		this.size.height = h;
 	}
-	,fsprefix: null
-	,fullscreen: function() {
-		if(this.supportsFullScreen()) {
-			if(this.fsprefix == null) "requestFullScreen".apply(this.target,[]); else Reflect.field(this.target,this.fsprefix + "RequestFullScreen").apply(this.target,[]);
-		}
-	}
-	,normal: function() {
-		if(this.supportsFullScreen()) {
-			if(this.fsprefix == "") "cancelFullScreen".apply(this.target,[]); else Reflect.field(this.target,this.fsprefix + "CancelFullScreen").apply(this.target,[]);
-		}
-	}
-	,isFullScreen: function() {
-		if(this.supportsFullScreen()) switch(this.fsprefix) {
-		case "":
-			return this.target.fullScreen;
-		case "webkit":
-			return this.target.webkitIsFullScreen;
-		default:
-			return Reflect.field(this.target,this.fsprefix + "FullScreen");
-		}
-		return false;
-	}
-	,supportsFullScreen: function() {
-		if(Reflect.field(this.target,"cancelFullScreen") != null) return true; else {
-			var _g = 0, _g1 = ["webkit","moz","o","ms","khtml"];
-			while(_g < _g1.length) {
-				var prefix = _g1[_g];
-				++_g;
-				if(Reflect.field(js.Lib.document,prefix + "CancelFullScreen") != null) {
-					this.fsprefix = prefix;
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	,addModalViewController: function(view) {
-		this.modalView = view;
-		this.modalView.setX(0);
-		CoreAnimation.add(new CATween(this.modalView,{ y : { fromValue : this.getHeight(), toValue : 0}},0.5,0,caequations.Cubic.IN_OUT,{ fileName : "RCWindow.hx", lineNumber : 229, className : "RCWindow", methodName : "addModalViewController"}));
-		this.addChild(this.modalView);
-	}
-	,dismissModalViewController: function() {
-		if(this.modalView == null) return;
-		var anim = new CATween(this.modalView,{ y : this.getHeight()},0.3,0,caequations.Cubic.IN,{ fileName : "RCWindow.hx", lineNumber : 234, className : "RCWindow", methodName : "dismissModalViewController"});
-		anim.delegate.animationDidStop = $bind(this,this.destroyModalViewController);
-		CoreAnimation.add(anim);
-	}
-	,destroyModalViewController: function() {
-		this.modalView.destroy();
-		this.modalView = null;
-	}
-	,getCenterX: function(w) {
-		return Math.round(this.getWidth() / 2 - w / RCDevice.currentDevice().dpiScale / 2);
-	}
-	,getCenterY: function(h) {
-		return Math.round(this.getHeight() / 2 - h / RCDevice.currentDevice().dpiScale / 2);
-	}
-	,toString: function() {
-		return "[RCWindow target=" + Std.string(this.target) + "]";
-	}
+	,modalView: null
+	,SCREEN_H: null
+	,SCREEN_W: null
+	,stage: null
+	,target: null
 	,__class__: RCWindow
 });
 var Reflect = $hxClasses["Reflect"] = function() { }
@@ -2011,7 +2012,7 @@ Std["int"] = function(x) {
 }
 Std.parseInt = function(x) {
 	var v = parseInt(x,10);
-	if(v == 0 && HxOverrides.cca(x,1) == 120) v = parseInt(x);
+	if(v == 0 && (HxOverrides.cca(x,1) == 120 || HxOverrides.cca(x,1) == 88)) v = parseInt(x);
 	if(isNaN(v)) return null;
 	return v;
 }
@@ -2022,21 +2023,21 @@ Std.random = function(x) {
 	return Math.floor(Math.random() * x);
 }
 var StringBuf = $hxClasses["StringBuf"] = function() {
-	this.b = new Array();
+	this.b = "";
 };
 StringBuf.__name__ = ["StringBuf"];
 StringBuf.prototype = {
-	add: function(x) {
-		this.b[this.b.length] = x == null?"null":x;
+	toString: function() {
+		return this.b;
 	}
 	,addSub: function(s,pos,len) {
-		this.b[this.b.length] = HxOverrides.substr(s,pos,len);
+		this.b += HxOverrides.substr(s,pos,len);
 	}
 	,addChar: function(c) {
-		this.b[this.b.length] = String.fromCharCode(c);
+		this.b += String.fromCharCode(c);
 	}
-	,toString: function() {
-		return this.b.join("");
+	,add: function(x) {
+		this.b += Std.string(x);
 	}
 	,b: null
 	,__class__: StringBuf
@@ -2373,7 +2374,31 @@ haxe.StackItem.Lambda = function(v) { var $x = ["Lambda",4,v]; $x.__enum__ = hax
 haxe.Stack = $hxClasses["haxe.Stack"] = function() { }
 haxe.Stack.__name__ = ["haxe","Stack"];
 haxe.Stack.callStack = function() {
-	return [];
+	var oldValue = Error.prepareStackTrace;
+	Error.prepareStackTrace = function(error,callsites) {
+		var stack = [];
+		var _g = 0;
+		while(_g < callsites.length) {
+			var site = callsites[_g];
+			++_g;
+			var method = null;
+			var fullName = site.getFunctionName();
+			if(fullName != null) {
+				var idx = fullName.lastIndexOf(".");
+				if(idx >= 0) {
+					var className = HxOverrides.substr(fullName,0,idx);
+					var methodName = HxOverrides.substr(fullName,idx + 1,null);
+					method = haxe.StackItem.Method(className,methodName);
+				}
+			}
+			stack.push(haxe.StackItem.FilePos(method,site.getFileName(),site.getLineNumber()));
+		}
+		return stack;
+	};
+	var a = haxe.Stack.makeStack(new Error().stack);
+	a.shift();
+	Error.prepareStackTrace = oldValue;
+	return a;
 }
 haxe.Stack.exceptionStack = function() {
 	return [];
@@ -2384,48 +2409,58 @@ haxe.Stack.toString = function(stack) {
 	while(_g < stack.length) {
 		var s = stack[_g];
 		++_g;
-		b.b[b.b.length] = "\nCalled from ";
+		b.b += Std.string("\nCalled from ");
 		haxe.Stack.itemToString(b,s);
 	}
-	return b.b.join("");
+	return b.b;
 }
 haxe.Stack.itemToString = function(b,s) {
 	var $e = (s);
 	switch( $e[1] ) {
 	case 0:
-		b.b[b.b.length] = "a C function";
+		b.b += Std.string("a C function");
 		break;
 	case 1:
 		var m = $e[2];
-		b.b[b.b.length] = "module ";
-		b.b[b.b.length] = m == null?"null":m;
+		b.b += Std.string("module ");
+		b.b += Std.string(m);
 		break;
 	case 2:
 		var line = $e[4], file = $e[3], s1 = $e[2];
 		if(s1 != null) {
 			haxe.Stack.itemToString(b,s1);
-			b.b[b.b.length] = " (";
+			b.b += Std.string(" (");
 		}
-		b.b[b.b.length] = file == null?"null":file;
-		b.b[b.b.length] = " line ";
-		b.b[b.b.length] = line == null?"null":line;
-		if(s1 != null) b.b[b.b.length] = ")";
+		b.b += Std.string(file);
+		b.b += Std.string(" line ");
+		b.b += Std.string(line);
+		if(s1 != null) b.b += Std.string(")");
 		break;
 	case 3:
 		var meth = $e[3], cname = $e[2];
-		b.b[b.b.length] = cname == null?"null":cname;
-		b.b[b.b.length] = ".";
-		b.b[b.b.length] = meth == null?"null":meth;
+		b.b += Std.string(cname);
+		b.b += Std.string(".");
+		b.b += Std.string(meth);
 		break;
 	case 4:
 		var n = $e[2];
-		b.b[b.b.length] = "local function #";
-		b.b[b.b.length] = n == null?"null":n;
+		b.b += Std.string("local function #");
+		b.b += Std.string(n);
 		break;
 	}
 }
 haxe.Stack.makeStack = function(s) {
-	return null;
+	if(typeof(s) == "string") {
+		var stack = s.split("\n");
+		var m = [];
+		var _g = 0;
+		while(_g < stack.length) {
+			var line = stack[_g];
+			++_g;
+			m.push(haxe.StackItem.Module(line));
+		}
+		return m;
+	} else return s;
 }
 haxe.Timer = $hxClasses["haxe.Timer"] = function(time_ms) {
 	var me = this;
@@ -2452,14 +2487,14 @@ haxe.Timer.stamp = function() {
 	return new Date().getTime() / 1000;
 }
 haxe.Timer.prototype = {
-	id: null
+	run: function() {
+	}
 	,stop: function() {
 		if(this.id == null) return;
 		window.clearInterval(this.id);
 		this.id = null;
 	}
-	,run: function() {
-	}
+	,id: null
 	,__class__: haxe.Timer
 }
 var js = js || {}
@@ -2471,8 +2506,8 @@ js.Boot.__unhtml = function(s) {
 js.Boot.__trace = function(v,i) {
 	var msg = i != null?i.fileName + ":" + i.lineNumber + ": ":"";
 	msg += js.Boot.__string_rec(v,"");
-	var d = document.getElementById("haxe:trace");
-	if(d != null) d.innerHTML += js.Boot.__unhtml(msg) + "<br/>"; else if(typeof(console) != "undefined" && console.log != null) console.log(msg);
+	var d;
+	if(typeof(document) != "undefined" && (d = document.getElementById("haxe:trace")) != null) d.innerHTML += js.Boot.__unhtml(msg) + "<br/>"; else if(typeof(console) != "undefined" && console.log != null) console.log(msg);
 }
 js.Boot.__clear_trace = function() {
 	var d = document.getElementById("haxe:trace");

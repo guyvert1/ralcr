@@ -102,8 +102,8 @@ class RCAssets {
 			loadFont (key, URL);
 		}
 		else {
-			// Resolve url for retina image assets
 			if (RCDevice.currentDevice().dpiScale == 2) {
+				// Resolve url for retina image assets
 				var u = URL.split(".");
 				var ext = u.pop();
 				URL = u.join(".") + "@2x." + ext;
@@ -114,7 +114,7 @@ class RCAssets {
 		return true;
 	}
 	function loadPhoto (key:String, URL:String) :Void {
-		//trace("load photo "+key+", "+URL);
+		trace("load photo "+key+", "+URL);
 		var photo = new RCImage (0, 0, URL);
 			photo.onProgress = callback (progressHandler, key, photo);
 			photo.onComplete = callback (completeHandler, key, photo);

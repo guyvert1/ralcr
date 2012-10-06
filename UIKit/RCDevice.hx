@@ -60,7 +60,7 @@ class RCDevice {
 	public function new ()
 	{
 		#if (cpp || neko)
-			dpiScale = stage.dpiScale;
+			dpiScale = flash.Lib.current.stage.dpiScale;
 		#else
 			dpiScale = 1;
 			#if js
